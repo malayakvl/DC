@@ -216,7 +216,7 @@ export default function Tooth18() {
       }
     }
 
-    if (type === 'leave' && diagnozis !== 'paradont_health') {
+    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth18.show) {
         document.getElementById('TH-18').classList.remove('f-tooth-active');
       }

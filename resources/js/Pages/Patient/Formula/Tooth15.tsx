@@ -24,6 +24,7 @@ import {
 } from '../../../Redux/Formula/selectors';
 import setupDiagnoze from '../../../lib/tfunctions';
 import PeriodontitStage15 from './periodontit15';
+import { excludeToothEffect } from '../../../Constants';
 
 export default function Tooth15() {
   const dispatch = useDispatch<any>();
@@ -207,13 +208,13 @@ export default function Tooth15() {
   };
 
   const showHideTeeth = type => {
-    if (type === 'over' && diagnozis !== 'paradont_health') {
+    if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth15.show) {
         document.getElementById('TH-15').classList.add('f-tooth-active');
       }
     }
 
-    if (type === 'leave') {
+    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'child' && !teethDiagnozis.tooth55.show) {
         document.getElementById('TH-55').classList.remove('f-tooth-active');
       }
@@ -227,13 +228,13 @@ export default function Tooth15() {
   };
 
   const showHideTopCommonView = type => {
-    if (type === 'over' && diagnozis !== 'paradont_health') {
+    if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth15.show) {
         document.getElementById('TH-55').classList.remove('f-tooth-active');
         document.getElementById('TH-15').classList.add('f-tooth-active');
       }
     }
-    if (type === 'leave' && diagnozis !== 'paradont_health') {
+    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth15.show) {
         document.getElementById('TH-15').classList.remove('f-tooth-active');
         if (teethDiagnozis.tooth55.show) {
