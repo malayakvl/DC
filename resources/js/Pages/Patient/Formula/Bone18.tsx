@@ -74,6 +74,7 @@ export default function Bone18() {
           dispatch(setSelectedToothNumber(18));
           dispatch(setChangeDia(Math.random()));
           if (diagnozis) {
+console.log('aa')
             const tDiaData = setupDiagnoze(
               18,
               diagnozis,

@@ -18,8 +18,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import Perio from './Perio/index';
-import Formula from './Formula/index';
-import FormulaMilk from './FormulaMilk/index';
 import {
   getDiagnosisSelector,
   getSealColor1Selector,
@@ -34,21 +32,6 @@ import {
   getMetalicCrownColorSelector,
   getZirconiaCrownColorSelector,
 } from '../../Redux/Formula/selectors';
-import {
-  setTeethType,
-  setDiagnosis,
-  setSubDiagnosis,
-  setSealColor1,
-  setSealColor2,
-  setSealColor3,
-  setSealServicalColor,
-  setVinirColor,
-  setCeramicCrownColor,
-  setMCeramicCrownColor,
-  setMetalicCrownColor,
-  setZirconiaCrownColor,
-  setDiagnosisClass,
-} from '../../Redux/Formula';
 import Details from './Partials/Details';
 
 export default function index({ patientData, treatmentData, clinicData }) {

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
 import lngPatient from '../../Lang/Patient/translation';
@@ -13,7 +13,6 @@ import {
   faPrint,
   faUserDoctor,
 } from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect } from 'react';
 import Formula from './Formula/index';
 import {
   getDiagnosisSelector,
@@ -28,7 +27,6 @@ import {
   getCeramicMCrownColorSelector,
   getMetalicCrownColorSelector,
   getZirconiaCrownColorSelector,
-  getTeethDiagnozisSelector,
 } from '../../Redux/Formula/selectors';
 import {
   setTeethType,
@@ -48,10 +46,11 @@ import {
   showAllAdult,
   showAllChild,
   setDataDiagnozes,
-  setClearFormula,
+  setClearFormula, setChangeDia,
 } from '../../Redux/Formula';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import Details from './Partials/Details';
+import { emptyFormula } from '../../Constants';
 
 export default function index({ patientData, treatmentData, clinicData }) {
   const [tab, setTab] = useState('history');
@@ -66,9 +65,14 @@ export default function index({ patientData, treatmentData, clinicData }) {
   });
   const dispatch = useDispatch<any>();
   const teethType = useSelector(teethTypeSelector);
+
+  // if (!treatmentData.formula) {
+  //   dispatch(setChangeDia(Math.random()));
+  //   dispatch(setToothDiagnoze(emptyFormula));
+  // }
   const tData = treatmentData.formula
     ? JSON.parse(treatmentData.formula)
-    : useSelector(getTeethDiagnozisSelector);
+    : null;
 
   const diagnozis = useSelector(getDiagnosisSelector);
   const subdiagnozis = useSelector(getSubDiagnosisSelector);
@@ -88,6 +92,13 @@ export default function index({ patientData, treatmentData, clinicData }) {
     treatmentData: treatmentData,
     formula_type: teethType,
   });
+
+  useEffect(() => {
+    dispatch(setTeethType(treatmentData.formula_type));
+    if (treatmentData.formula !== null) {
+      dispatch(setDataDiagnozes(tData));
+    }
+  }, [treatmentData]);
 
   const showAllTeeth = () => {
     if (teethType === 'adult') {
@@ -202,11 +213,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
       });
     }
   };
-
-  useEffect(() => {
-    dispatch(setTeethType(treatmentData.formula_type));
-    dispatch(setDataDiagnozes(tData));
-  }, [treatmentData]);
 
   return (
     <AuthenticatedLayout header={<Head />}>

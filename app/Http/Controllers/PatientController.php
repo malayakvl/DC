@@ -123,8 +123,6 @@ class PatientController extends Controller
             $patientTreatment = new PatientTreatment();
             $patientTreatment->fill($request->all());
             $patientTreatment->save();
-//             dd(1);exit;
-// dd(FormulaTeethContant::FORMULA_TYPE);exit;
             $patientData = Patient::where('id', '=', $request->user_id)->first();
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
