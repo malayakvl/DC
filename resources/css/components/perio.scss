@@ -1,0 +1,49 @@
+.perio-select {
+    font-size: 11px !important;
+    padding:0px !important;
+    max-width: 60px;
+    width: 60px;
+    border: none;
+}
+.perio-table {
+    width: 1335px !important;
+    // background-color: beige;
+
+}
+.f-prerio {
+    // background:yellow;
+  max-height: 322px;
+}
+.perio-table .tooth-img {
+    width: 1242px !important;
+}
+.perio-table td{
+    text-align: center;
+    // padding: 2px 5px;
+    border-left:solid 1px;
+    // border-bottom:solid 1px;
+    border-color: #e3e3e3;
+    // width: 74px !important;
+    // border-bottom: solid 1px;
+
+}
+.perio-table td.title{
+    text-align: left;
+    font-size: 12px;
+    width: 150px;
+    padding: 0px 10px;
+    white-space: nowrap;
+    border-left: none !important;
+}
+
+.psr-input {
+    border: none;
+    border-bottom: 1px rgba(200, 200, 200, 0.9) solid;
+    width: 15px;
+    text-align: center;
+    outline: none;
+    font-size: 9px;
+    padding: 1px;
+    margin: 0 2px;
+    min-width: 15px !important;
+}

@@ -1,0 +1,10 @@
+.tabls-list {
+    li {
+        display: inline-block;
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    li.active {
+        border-bottom: solid 2px purple;
+    }
+}

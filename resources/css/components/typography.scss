@@ -1,0 +1,27 @@
+h2 {
+    @apply font-semibold leading-tight text-purple-800 py-4 ;
+    font-weight: bold !important;
+}
+
+h3 {
+    @apply font-semibold leading-tight py-4 text-center;
+    color: #830874 !important;
+    font-weight: bold !important;
+}
+h5 {
+    @apply font-semibold leading-tight text-purple-800 py-4;
+    font-weight: bold !important;
+}
+
+.dropdown-span {
+    @apply block text-sm px-4 py-2 cursor-pointer;
+}
+.dropdown-span:hover {
+    background-color: #e7dcfd;
+}
+.text-orange-700 {
+    color: #e0187b;
+}
+.text-purple-700 {
+    color: #830874 !important;
+}

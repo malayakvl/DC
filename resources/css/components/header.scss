@@ -1,0 +1,131 @@
+.top-header {
+    // background: #6d6b6f !important;
+    background-image: linear-gradient(to left top, rgb(121, 40, 202), rgb(223, 44, 134)) !important;
+}
+
+.header-fixed {
+    position: fixed;
+    width: 100%;
+    background: white;
+    z-index: 9999;
+    //top: 0;
+}
+.top-menu-nav {
+    @apply block md:inline-flex md:items-center;
+    color: #fff;
+    //font-weight: bold;
+    margin-right: 10px;
+}
+.logo-title-new {
+    font-family: "Pacifico", cursive;
+    color: #f3f2f6;
+    //position: absolute;
+    //left: 20px;
+    white-space: nowrap;
+    top: 0;
+    font-size: 44px;
+    letter-spacing: 1px;
+    font-weight: 900;
+    @apply hidden md:inline-block;
+}
+.logo-m-new {
+    padding-left: 45px;
+    margin-top: 10px;
+}
+
+.logo-title-main {
+    font-family: "Pacifico", cursive;
+    color: #d6d1e3;
+    //position: absolute;
+    left: 20px;
+    white-space: nowrap;
+    top: 0;
+    font-size: 44px;
+    letter-spacing: 1px;
+    font-weight: 900;
+    @apply hidden md:inline-block;
+}
+.logo-title {
+    font-family: "Roboto", cursive;
+    color: #FFF;
+    //position: absolute;
+    //left: 20px;
+    white-space: nowrap;
+    top: 0;
+    font-size: 22px;
+    letter-spacing: 1px;
+    //font-weight: 900;
+    @apply hidden md:inline-block;
+}
+.logo-title-main {
+    margin-left: 5px;
+    margin-top: -10px;
+    //left: 107px;
+    //left: calc(50% - 112px);
+    //color: #fff;
+    //white-space: nowrap;
+    //top: 175px;
+    font-size: 40px;
+}
+/*.top-menu {*/
+/*    padding-left: 110px;*/
+/*}*/
+.logo-title-p {
+    @apply text-orange-700;
+}
+.top-gradient {
+    @apply absolute  -top-44  h-40 w-[36rem]
+        transform-gpu md:right-20 bg-[linear-gradient(115deg,var(--tw-gradient-stops))]
+        from-[#fff1be] from-[28%] via-[#ee87cb]
+        via-[70%] to-[#452596]
+        rotate-[-10deg] rounded-full
+        blur-3xl
+}
+.logo {
+    max-height: 50px;
+}
+.logo-main {
+    //position: absolute;
+    //top: 75px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+    //left: calc(50% - 185px);
+}
+.logo-reg {
+    position: absolute;
+    top: 0;
+    left: -14px;
+    height: 40px;
+    background: url("../../images/header/logo-t.svg");
+    //border: solid 1px;
+    width: 40px;
+    background-size: contain;
+}
+.submenu {
+    @apply block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100
+        data-[focus]:text-gray-900 data-[focus]:outline-none text-sm;
+}
+.nav-content {
+    position: absolute;
+    top:6px;
+    right: 0;
+}
+.truncate {
+    //background: #f4eddf; /* Цвет фона */
+    //padding: 10px; /* Поля вокруг текста */
+    white-space: nowrap; /* Текст не переносится */
+    overflow: hidden; /* Обрезаем всё за пределами блока */
+    text-overflow: ellipsis; /* Добавляем многоточие */
+    max-width: 105px;
+    height: 15px;
+    //display: contents;
+    display: inline-block;
+}
+.user-profile-role {
+    @apply block text-left normal-case font-bold text-[10px];
+    color: #fff;
+}
+.lng-menu {
+    background: transparent !important;
+}

@@ -1,0 +1,64 @@
+.data-table {
+    @apply min-w-full text-left text-sm/6 text-zinc-950 dark:text-white;
+}
+.data-table thead {
+    @apply text-zinc-500 dark:text-zinc-400;
+}
+.data-table th {
+    @apply border-b border-b-zinc-950/10 px-4 py-2 font-medium
+        first:pl-[var(--gutter,theme(spacing.2))]
+        last:pr-[var(--gutter,theme(spacing.2))]
+        dark:border-b-white/10 sm:first:pl-1 sm:last:pr-1;
+}
+.data-table tr {
+    @apply has-[[data-row-link][data-focus]]:outline
+        has-[[data-row-link][data-focus]]:outline-2
+        has-[[data-row-link][data-focus]]:-outline-offset-2
+        has-[[data-row-link][data-focus]]:outline-blue-500
+        dark:focus-within:bg-white/[2.5%] hover:bg-zinc-950/[2.5%] dark:hover:bg-white/[2.5%];
+}
+.data-table td {
+    @apply relative px-4 first:pl-[var(--gutter,theme(spacing.2))]
+        last:pr-[var(--gutter,theme(spacing.2))] border-b border-zinc-950/5
+        dark:border-white/5 py-4 sm:first:pl-1 sm:last:pr-1;
+}
+//.text-orange-700 {
+//    color: #746079 !important;
+//}
+.hscroll {
+    overflow-x: auto; /* Horizontal */
+}
+.percent-tbl {
+    color: green;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.table{
+    border: 1px solid #eee;
+    table-layout: fixed;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.table th {
+    font-weight: bold;
+    padding: 5px;
+    background: #efefef;
+    border: 1px solid #dddddd;
+}
+.table td{
+    padding: 5px 10px;
+    border: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+}
+.table tbody tr:nth-child(odd){
+    background: #fff;
+}
+.table tbody tr:nth-child(even){
+    background: #F7F7F7;
+}
+.table tbody .tqty, .table thead .tqty {
+    text-align: right;
+}
+
