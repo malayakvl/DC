@@ -24,6 +24,7 @@ import {
 } from '../../../Redux/Formula/selectors';
 import setupDiagnoze from '../../../lib/tfunctions';
 import PeriodontitStage47 from './periodontit47';
+import { excludeToothEffect } from '../../../Constants';
 
 export default function Tooth47() {
   const dispatch = useDispatch<any>();
@@ -207,13 +208,13 @@ export default function Tooth47() {
   };
 
   const showHideTeeth = type => {
-    if (type === 'over') {
+    if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth47.show) {
         document.getElementById('TH-47').classList.add('f-tooth-active');
       }
     }
 
-    if (type === 'leave') {
+    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth47.show) {
         document.getElementById('TH-47').classList.remove('f-tooth-active');
       }
