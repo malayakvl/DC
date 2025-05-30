@@ -46,7 +46,8 @@ import {
   showAllAdult,
   showAllChild,
   setDataDiagnozes,
-  setClearFormula, setChangeDia,
+  setClearFormula,
+  setChangeDia,
 } from '../../Redux/Formula';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import Details from './Partials/Details';

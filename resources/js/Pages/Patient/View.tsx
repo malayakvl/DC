@@ -20,8 +20,13 @@ import lngFormula from '../../Lang/Formula/translation';
 import InputText from '../../Components/Form/InputText';
 import ViewFormula from './ViewFormula';
 import moment from 'moment';
-import {setChangeDia, setClearFormula, setDataDiagnozes, setSelectedToothNumber} from "../../Redux/Formula";
-import { emptyFormula } from "../../Constants";
+import {
+  setChangeDia,
+  setClearFormula,
+  setDataDiagnozes,
+  setSelectedToothNumber,
+} from '../../Redux/Formula';
+import { emptyFormula } from '../../Constants';
 
 export default function index({ patientData, type, treatmentData }) {
   const dispatch = useDispatch();
@@ -306,12 +311,15 @@ export default function index({ patientData, type, treatmentData }) {
                 <div className="w-2/3">
                   <ul className="sub-tab text-right mt-1 mb-4 mt-[-10px]">
                     <li className="relative">
-                      <button type="submit" onClick={() => {
-                        dispatch(setChangeDia(Math.random()));
-                        dispatch(setSelectedToothNumber(''));
-                        dispatch(setClearFormula(emptyFormula));
-                        setTab('formula')
-                      }}>
+                      <button
+                        type="submit"
+                        onClick={() => {
+                          dispatch(setChangeDia(Math.random()));
+                          dispatch(setSelectedToothNumber(''));
+                          dispatch(setClearFormula(emptyFormula));
+                          setTab('formula');
+                        }}
+                      >
                         <i className="icon-formula" />
                         <span className="inline-block ml-[35px]">
                           {msg.get('patient.tab.formula')}

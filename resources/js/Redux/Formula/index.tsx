@@ -362,7 +362,6 @@ const initialState = {
       significantly_gums: false,
       no_inflammatory_process: false,
 
-
       // periodontit
       periodontit: false,
       periodontit_stage: '',

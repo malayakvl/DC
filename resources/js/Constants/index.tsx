@@ -142,4060 +142,4060 @@ export const excludeToothEffect = [
 export const emptyFormula = {
   tooth18: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
-        psr1: 0,
-        psr2: 0,
-        psr3: 0,
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    show: false,
+    change_color: false,
+    fissure: false,
+    psr1: 0,
+    psr2: 0,
+    psr3: 0,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth17: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth16: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth15: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth14: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth13: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth12: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth11: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth21: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth22: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth23: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth24: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth25: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth26: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth27: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth28: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth48: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth47: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth46: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth45: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth44: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth43: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth42: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth41: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth31: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth32: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth33: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth34: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth35: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth36: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth37: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth38: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth55: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth54: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth53: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth52: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth51: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth61: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth62: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth63: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth64: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth65: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth85: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth84: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth83: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth82: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth81: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth71: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth72: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth73: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth74: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
   tooth75: {
     active: false,
-        show: false,
-        change_color: false,
-        fissure: false,
+    show: false,
+    change_color: false,
+    fissure: false,
 
-        // caries vars
-        caries: false,
-        caries_top: false,
-        caries_bottom: false,
-        caries_left: false,
-        caries_right: false,
-        caries_center: false,
+    // caries vars
+    caries: false,
+    caries_top: false,
+    caries_bottom: false,
+    caries_left: false,
+    caries_right: false,
+    caries_center: false,
 
-        cervical_caries: false,
-        tartar: false,
-        pulpit: false,
-        // channel not sealed
-        channel_not_sealed: false,
-        channel_top_sealed: false,
-        channel_part_sealed: false,
-        channel_class: '',
-        // periodontit
-        periodontit: false,
-        periodontit_stage: '',
-        periodontit_st1: false,
-        periodontit_st2: false,
-        periodontit_st3: false,
-        periodontit_class: '',
+    cervical_caries: false,
+    tartar: false,
+    pulpit: false,
+    // channel not sealed
+    channel_not_sealed: false,
+    channel_top_sealed: false,
+    channel_part_sealed: false,
+    channel_class: '',
+    // periodontit
+    periodontit: false,
+    periodontit_stage: '',
+    periodontit_st1: false,
+    periodontit_st2: false,
+    periodontit_st3: false,
+    periodontit_class: '',
 
-        // seal vars
-        seal: false,
-        seal_top: false,
-        seal_top_color: '',
-        seal_bottom: false,
-        seal_bottom_color: '',
-        seal_left: false,
-        seal_left_color: '',
-        seal_right: false,
-        seal_right_color: '',
-        seal_center: false,
-        seal_center_color: '',
+    // seal vars
+    seal: false,
+    seal_top: false,
+    seal_top_color: '',
+    seal_bottom: false,
+    seal_bottom_color: '',
+    seal_left: false,
+    seal_left_color: '',
+    seal_right: false,
+    seal_right_color: '',
+    seal_center: false,
+    seal_center_color: '',
 
-        // seal cervical vars
-        seal_cervical: false,
-        seal_cervical_color: '',
+    // seal cervical vars
+    seal_cervical: false,
+    seal_cervical_color: '',
 
-        // vinir vars
-        vinir: false,
-        vinir_color: '',
-        // vinir vars
-        temporary_crown: false,
-        // ceramic crown
-        ceramic_crown: false,
-        ceramic_crown_color: '',
-        // metaloceramic crown
-        mceramic_crown: false,
-        mceramic_crown_color: '',
-        // metalic crown
-        metalic_crown: false,
-        metalic_crown_color: '',
-        // zirconia crown
-        zirconia_crown: false,
-        zirconia_crown_color: '',
-        // pin
-        pin: false,
-        apex: false,
-        absent: false,
-        culttab: false,
-        abutment: false,
-        abutment_implant: false,
-        shaper: false,
-        implant: false,
-        // paradontit
-        parodontit: false,
-        parodontit_stage: '',
-        parodontit_stage_all: false,
+    // vinir vars
+    vinir: false,
+    vinir_color: '',
+    // vinir vars
+    temporary_crown: false,
+    // ceramic crown
+    ceramic_crown: false,
+    ceramic_crown_color: '',
+    // metaloceramic crown
+    mceramic_crown: false,
+    mceramic_crown_color: '',
+    // metalic crown
+    metalic_crown: false,
+    metalic_crown_color: '',
+    // zirconia crown
+    zirconia_crown: false,
+    zirconia_crown_color: '',
+    // pin
+    pin: false,
+    apex: false,
+    absent: false,
+    culttab: false,
+    abutment: false,
+    abutment_implant: false,
+    shaper: false,
+    implant: false,
+    // paradontit
+    parodontit: false,
+    parodontit_stage: '',
+    parodontit_stage_all: false,
   },
 };
