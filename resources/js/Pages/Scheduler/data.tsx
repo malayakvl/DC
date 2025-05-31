@@ -7,6 +7,7 @@ export const EVENTS = [
     admin_id: 1,
     id: 1,
     eventId: 1,
+    draggable: true
   },
 ];
 

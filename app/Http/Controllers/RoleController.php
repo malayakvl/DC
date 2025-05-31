@@ -62,7 +62,7 @@ class RoleController extends Controller implements HasMiddleware
 //       $permission = Permission::where('name', 'patient-delete')->first();
 //       $permission->assignRole($role);
         $roles = Role::where('special', null)->orderBy('name','ASC')->get();
-        return Inertia::render('Role/Index', [
+        return Inertia::render('Role/__Index', [
             'roleData' => $roles
         ]);
     }

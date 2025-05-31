@@ -1,34 +1,16 @@
+import React, { useState } from 'react';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import React, { useState, useRef, useEffect } from 'react';
-import Lang from 'lang.js';
-import lngScheduler from '../../Lang/Scheduler/translation';
-import { appLangSelector } from '../../Redux/Layout/selectors';
-import { Scheduler } from '@aldabil/react-scheduler';
-import { Button, Typography } from '@mui/material';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
-import { RESOURCES, EVENTS } from './data';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  showSchedulePopupAction,
-  setSchedulePopupDoctorAction,
-  setScheduleTimeAction,
-  showScheduleErrorPopupAction,
-  setScheduleDateAction,
-  setRemoteEventsAction,
-} from '../../Redux/Scheduler';
-// import { fetchEventsAction } from "../../Redux/Scheduler/actions"
-import {
-  eventsDataSelector,
-  showErrorPopupSelector,
-  showSchedulePopupSelector,
-} from '../../Redux/Scheduler/selectors';
-import Modal from '../../Components/Modal/Modal';
-import SchedulerFormCreate from './Form/FormPopupCreate';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
-import ModalError from '../../Components/Modal/ModalError';
-import { SchedulerRef } from '@aldabil/react-scheduler/types';
-import { SketchPicker } from 'react-color';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
+import DatePicker from 'react-datepicker';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Head } from '@inertiajs/react';
+
+const localizer = momentLocalizer(moment);
+const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function Index({
   customerData,
@@ -37,327 +19,298 @@ export default function Index({
   cabinetData,
   eventsData,
 }) {
-  const appLang = useSelector(appLangSelector);
-  const msg = new Lang({
-    messages: lngScheduler,
-    locale: appLang,
+  const [people] = useState([
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+  ]);
+  const [rooms] = useState([
+    { id: 'A', name: 'Cabinet 1' },
+    { id: 'B', name: 'Cabinet 2' },
+    { id: 'C', name: 'Cabinet 3' },
+  ]);
+
+  const [events] = useState({
+    1: [
+      {
+        id: 1,
+        title: 'Alice Meeting',
+        start: new Date(2025, 4, 31, 10, 0), // 31 May 2025
+        end: new Date(2025, 4, 31, 11, 0),
+        allDay: false,
+        priority: 'high',
+        category: 'Work',
+        description: 'Team sync-up',
+        room: 'A',
+      },
+      {
+        id: 3,
+        title: 'Alice Presentation',
+        start: new Date(2025, 4, 31, 14, 0),
+        end: new Date(2025, 4, 31, 15, 0),
+        allDay: false,
+        priority: 'low',
+        category: 'Work',
+        description: 'Client presentation',
+        room: 'B',
+      },
+    ],
+    2: [
+      {
+        id: 2,
+        title: 'Bob Lunch',
+        start: new Date(2025, 4, 31, 12, 0),
+        end: new Date(2025, 4, 31, 13, 0),
+        allDay: false,
+        priority: 'low',
+        category: 'Personal',
+        description: 'Lunch with friends',
+        room: 'C',
+      },
+    ],
+    3: [
+      {
+        id: 4,
+        title: 'Charlie Review',
+        start: new Date(2025, 4, 31, 11, 0),
+        end: new Date(2025, 4, 31, 12, 0),
+        allDay: false,
+        priority: 'high',
+        category: 'Work',
+        description: 'Project review',
+        room: 'A',
+      },
+    ],
   });
-  const [mode, setMode] = useState<'default' | 'tabs'>('default');
-  const [eventConverted, setEventConverted] = useState(true);
-  const calendarRef = useRef<SchedulerRef>(null);
-  const dispatch = useDispatch();
-  const showSchedulePopup = useSelector(showSchedulePopupSelector);
-  const showScheduleErrorPopup = useSelector(showErrorPopupSelector);
-  const remoteEventsData = useSelector(eventsDataSelector);
-  const {
-    data,
-    setData,
-    delete: destroy,
-    processing,
-    reset,
-    errors,
-    clearErrors,
-  } = useForm({
-    title: '',
-    doctor_id: '',
-    patient_id: '',
+
+  const [tasks, setTasks] = useState([
+    {
+      id: 3,
+      title: 'Task 1',
+      duration: '1:00',
+      priority: 'high',
+      category: 'Work',
+      description: 'Prepare presentation',
+    },
+    {
+      id: 4,
+      title: 'Task 2',
+      duration: '2:00',
+      priority: 'low',
+      category: 'Personal',
+      description: 'Call client',
+    },
+  ]);
+
+  const [activePerson, setActivePerson] = useState(1);
+  const [filter, setFilter] = useState('all');
+  const [dateRange, setDateRange] = useState({
+    start: new Date(2025, 4, 31), // 31 May 2025
+    end: new Date(2025, 5, 6),   // 6 June 2025
   });
-  const closeModal = () => {
-    clearErrors();
-    reset();
-  };
-  const showSellPopup = e => {
-    return;
+
+  const filteredEvents = (events[activePerson] || []).filter((event) =>
+    filter === 'all' ? true : event.category === filter
+  );
+  const [draggedTask, setDraggedTask] = useState(null);
+
+  const filteredTasks = tasks.filter((task) =>
+    filter === 'all' ? true : task.category === filter
+  );
+
+  const onEventDrop = ({ event, start, end, allDay }) => {
+    console.log('Event dropped:', { event, start, end, allDay });
+    setEvents((prev) => ({
+      ...prev,
+      [activePerson]: prev[activePerson].map((ev) =>
+        ev.id === event.id ? { ...ev, start, end, allDay } : ev
+      ),
+    }));
   };
 
-  const fetchRemote = async query => {
-    const start = moment(query.start).format('YYYY-MM-DD');
-    const end = moment(query.end).format('YYYY-MM-DD');
-    axios
-      .get(`/scheduler/fetchEvents?start=${start}&end=${end}`)
-      .then(response => {
-        dispatch(setRemoteEventsAction(response.data.items));
-        return new Promise(res => {
-          if (remoteEventsData.length > 0) {
-            remoteEventsData.forEach(_event => {
-              _event.start = new Date(_event.startDate);
-              _event.end = new Date(_event.endDate);
-            });
-            setEventConverted(true);
-          } else {
-            setEventConverted(true);
-          }
-          setTimeout(() => {
-            res(remoteEventsData);
-          }, 3000);
-        });
-      })
-      .catch(error => {
-        console.log('ERROR:: ', error.response.data);
-      });
+  const onEventResize = ({ event, start, end }) => {
+    console.log('Event resized:', { event, start, end });
+    setEvents((prev) => ({
+      ...prev,
+      [activePerson]: prev[activePerson].map((ev) =>
+        ev.id === event.id ? { ...ev, start, end } : ev
+      ),
+    }));
   };
 
-  useEffect(() => {
-    eventsData = remoteEventsData;
-    if (remoteEventsData.length > 0) {
-      remoteEventsData.forEach(_event => {
-        _event.start = new Date(_event.startDate);
-        _event.end = new Date(_event.endDate);
-      });
-      setEventConverted(true);
-    } else {
-      setEventConverted(true);
+  const onDropFromOutside = ({ start, allDay }) => {
+    if (!draggedTask) {
+      console.error('No dragged task found');
+      return;
     }
-  }, [remoteEventsData]);
 
+    console.log('Dropping task:', draggedTask);
+
+    const eventStart = new Date(start);
+    const eventEnd = new Date(
+      eventStart.getTime() + parseInt(draggedTask.duration.split(':')[0]) * 60 * 60 * 1000
+    );
+
+    // Check date range
+    const rangeStart = moment(dateRange.start).startOf('day').toDate();
+    const rangeEnd = moment(dateRange.end || dateRange.start).endOf('day').toDate();
+    if (eventStart < rangeStart || eventEnd > rangeEnd) {
+      console.warn('Event is outside the selected date range:', { eventStart, eventEnd, dateRange });
+      alert('Please place the event within the selected date range (31 May - 6 June 2025).');
+      setDraggedTask(null);
+      return;
+    }
+
+    const newEvent = {
+      id: draggedTask.id,
+      title: `${people.find((p) => p.id === activePerson).name} - ${draggedTask.title}`,
+      start: eventStart,
+      end: eventEnd,
+      allDay: allDay || false,
+      priority: draggedTask.priority,
+      category: draggedTask.category,
+      description: draggedTask.description,
+    };
+
+    console.log('New event created:', newEvent);
+
+    // Delay state updates to avoid DOM conflicts
+    try {
+      setTimeout(() => {
+        setEvents((prev) => {
+          const updatedEvents = {
+            ...prev,
+            [activePerson]: [...(prev[activePerson] || []), newEvent],
+          };
+          console.log('Updated events:', updatedEvents);
+          return updatedEvents;
+        });
+
+        setTasks((prev) => {
+          const updatedTasks = prev.filter((task) => task.id !== draggedTask.id);
+          console.log('Updated tasks:', updatedTasks);
+          return updatedTasks;
+        });
+
+        setDraggedTask(null);
+      }, 100); // Increased delay to ensure library cleanup
+    } catch (error) {
+      console.error('Error during drop operation:', error);
+    }
+  };
+
+  const handleDragStart = (task) => {
+    setDraggedTask(task);
+    console.log('Drag started for task:', task);
+  };
+
+  const dragFromOutsideItem = () => {
+    if (!draggedTask) return null;
+    console.log('Providing dragFromOutsideItem:', draggedTask);
+    // Minimal data to avoid library issues
+    return {
+      title: draggedTask.title,
+      start: new Date(),
+      end: new Date(new Date().getTime() + parseInt(draggedTask.duration.split(':')[0]) * 60 * 60 * 1000),
+    };
+  };
+
+  const handleDateRangeChange = (dates) => {
+    const [start, end] = dates;
+    setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
+  };
+console.log(rooms)
   return (
-    <AuthenticatedLayout header={<Head title="Dental Care - Scheduler" />}>
-      <Head title="Dental Care - Scheduler" />
-      <div className="py-0">
-        <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex">
-                  <h2>{msg.get('scheduler.title.list')}</h2>
-                </div>
-              </header>
-            </section>
-            <Modal show={showSchedulePopup} onClose={closeModal}>
-              <SchedulerFormCreate
-                formData={formData}
-                clinicData={clinicData}
-                customerData={customerData}
-                cabinetData={cabinetData}
-              />
-            </Modal>
-            <ModalError show={showScheduleErrorPopup} onClose={closeModal}>
-              <div
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                role="alert"
-              >
-                <span className="block sm:inline">
-                  {msg.get('scheduler.error.popup')}
-                </span>
-                <span
-                  className="absolute top-0 bottom-0 right-0 px-4 py-3"
-                  onClick={() => {
-                    dispatch(showScheduleErrorPopupAction(false));
-                    const element = document.getElementsByTagName('body')[0];
-                    element.style.overflow = 'inherit';
-                  }}
-                >
-                  <svg
-                    className="fill-current h-6 w-6 text-red-500"
-                    role="button"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0
-                                            1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10
-                                            8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758
-                                            3.15a1.2 1.2 0 0 1 0 1.698z"
-                    />
-                  </svg>
-                </span>
-              </div>
-            </ModalError>
-            {eventConverted && (
-              <>
-                <>
-                  <div style={{ textAlign: 'center' }}>
-                    <span>{msg.get('scheduler.calendar.view')}: </span>
-                    <Button
-                      color={mode === 'default' ? 'primary' : 'inherit'}
-                      variant={mode === 'default' ? 'contained' : 'text'}
-                      size="small"
-                      onClick={() => {
-                        setMode('default');
-                        calendarRef.current?.scheduler?.handleState(
-                          'default',
-                          'resourceViewMode'
-                        );
-                      }}
-                    >
-                      {msg.get('scheduler.calendar.tabdefault')}
-                    </Button>
-                    <Button
-                      color={mode === 'tabs' ? 'primary' : 'inherit'}
-                      variant={mode === 'tabs' ? 'contained' : 'text'}
-                      size="small"
-                      onClick={() => {
-                        setMode('tabs');
-                        console.log('Tabs');
-                        calendarRef.current?.scheduler?.handleState(
-                          'tabs',
-                          'resourceViewMode'
-                        );
-                      }}
-                    >
-                      {msg.get('scheduler.calendar.tabds')}
-                    </Button>
-                  </div>
-                </>
-                <Scheduler
-                  ref={calendarRef}
-                  events={remoteEventsData}
-                  resources={customerData}
-                  hourFormat={12}
-                  resourceFields={{
-                    idField: 'id',
-                    textField: 'name',
-                    subTextField: 'phone',
-                    avatarField: 'avatar',
-                    colorField: 'color',
-                  }}
-                  week={{
-                    weekDays: [0, 1, 2, 3, 4, 5],
-                    weekStartOn: 1,
-                    startHour: 9,
-                    endHour: 19,
-                    step: 30,
-                    cellRenderer: ({
-                      height,
-                      start,
-                      onCellClick,
-                      ...props
-                    }) => {
-                      // Fake some condition up
-                      const hour = start.getHours();
-                      const disabled = hour === 8;
-                      const restProps = disabled ? {} : props;
-                      return (
-                        <Button
-                          style={{
-                            height: '100%',
-                            background: disabled ? '#eee' : 'transparent',
-                            cursor: disabled ? 'not-allowed' : 'pointer',
-                          }}
-                          onClick={event => {
-                            if (disabled) {
-                              return alert('Opss');
-                            }
-                            return showSellPopup(event);
-                          }}
-                          disableRipple={disabled}
-                          {...restProps}
-                        ></Button>
-                      );
-                    },
-                  }}
-                  eventRenderer={({ event, ...props }) => {
-                    return (
-                      <div
-                        onMouseOver={() => console.log(1)}
-                        style={{
-                          display: 'inherit',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          height: '100%',
-                          background: event.color,
-                          position: 'relative',
-                        }}
-                        {...props}
-                      >
-                        {calendarRef.current?.scheduler.view === 'day' && (
-                          <div style={{ height: 20, fontSize: '12px' }}>
-                            {event.event_time_from} - {event.event_time_to}
-                          </div>
-                        )}
-                        {calendarRef.current?.scheduler.view === 'month' && (
-                          <div style={{ height: 20, fontSize: '12px' }}>
-                            Month
-                          </div>
-                        )}
-                        <div
-                          className="schedule-status-circle rounded-full"
-                          style={{ backgroundColor: event.status_color }}
-                        />
-
-                        <div style={{ fontSize: '12px' }}>
-                          {event.title} &nbsp;[{event.cabinet_name}]
-                        </div>
-                        <div style={{ height: 20, fontSize: '12px' }}>
-                          {msg.get('scheduler.patient')}:
-                          <b>
-                            &nbsp;{event.first_name} {event.last_name}
-                          </b>
-                        </div>
-                      </div>
-                    );
-                    // if (event.id === 35) {
-                    //     return (
-                    //         <div
-                    //             style={{
-                    //                 display: "flex",
-                    //                 flexDirection: "column",
-                    //                 justifyContent: "space-between",
-                    //                 height: "100%",
-                    //                 background: "#757575",
-                    //             }}
-                    //             {...props}
-                    //         >
-                    //             <div
-                    //                 style={{ height: 20, background: "#ffffffb5", color: "black" }}
-                    //             >
-                    //                 {event.start.toLocaleTimeString("en-US", {
-                    //                     timeStyle: "short",
-                    //                 })}
-                    //             </div>
-                    //             <div>!!{event.title}!!</div>
-                    //             <div
-                    //                 style={{ height: 20, background: "#ffffffb5", color: "black" }}
-                    //             >
-                    //                 {event.end.toLocaleTimeString("en-US", { timeStyle: "short" })}
-                    //             </div>
-                    //         </div>
-                    //     );
-                    // }
-                    // return null;
-                  }}
-                  onEventClick={event => {
-                    console.log('Event data', event);
-                    dispatch(showSchedulePopupAction(true));
-                  }}
-                  onCellClick={(
-                    start: Date,
-                    end: Date,
-                    resourceKey?: string,
-                    resourceVal?: string
-                  ) => {
-                    console.log(moment(start).isBefore(moment()));
-                    if (!moment(start).isAfter(moment())) {
-                      dispatch(showScheduleErrorPopupAction(true));
-                    } else {
-                      console.log(moment(start).format('HH:mm'));
-                      dispatch(setSchedulePopupDoctorAction(resourceVal));
-                      dispatch(
-                        setScheduleDateAction(
-                          moment(start).format('YYYY-MM-DD')
-                        )
-                      );
-                      // dispatch(setScheduleTimeAction(moment(start).format('HH:mm')));
-                      dispatch(setScheduleTimeAction(start));
-                      dispatch(showSchedulePopupAction(true));
-                    }
-                  }}
-                  getRemoteEvents={fetchRemote}
-                  translations={{
-                    navigation: {
-                      month: msg.get('scheduler.month'),
-                      week: msg.get('scheduler.week'),
-                      day: msg.get('scheduler.day'),
-                      today: msg.get('scheduler.today'),
-                      agenda: msg.get('scheduler.agenda'),
-                    },
-                  }}
-                />
-              </>
-            )}
-          </div>
+    <AuthenticatedLayout header={<Head />}>
+      <Head title={'Scheduler'} />
+      <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+      <div style={{ width: '250px', padding: '10px', borderRight: '1px solid #ccc', background: '#f9f9f9' }}>
+        <h3 style={{ margin: '0 0 10px' }}>Filter Events</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          {rooms.map((room, index) => (
+            <button
+              key={`room_${index}`}
+              onClick={() => setFilter(room.id)}
+              style={{
+                padding: '8px',
+                background: filter === room.name ? '#007bff' : '#e0e0e0',
+                color: filter === room.id ? '#fff' : '#000',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              {room === 'all' ? 'All Cabinets' : room.name}
+            </button>
+          ))}
         </div>
       </div>
+      <div style={{ flex: 1, padding: '10px' }}>
+        <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {people.map((person) => (
+            <button
+              key={person.id}
+              onClick={() => setActivePerson(person.id)}
+              style={{
+                padding: '8px 16px',
+                marginRight: '5px',
+                background: activePerson === person.id ? '#007bff' : '#f0f0f0',
+                color: activePerson === person.id ? '#fff' : '#000',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: activePerson === person.id ? 'bold' : 'normal',
+              }}
+            >
+              {person.name}
+            </button>
+          ))}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <label>Date Range:</label>
+            <DatePicker
+              selectsRange
+              startDate={dateRange.start}
+              endDate={dateRange.end}
+              onChange={handleDateRangeChange}
+              dateFormat="MM/dd/yyyy"
+              placeholderText="Select date range"
+              className="date-picker"
+            />
+          </div>
+        </div>
+        <DnDCalendar
+          key={activePerson}
+          localizer={localizer}
+          events={events[activePerson] || []}
+          startAccessor="start"
+          endAccessor="end"
+          defaultView="week"
+          defaultDate={dateRange.start}
+          min={moment(dateRange.start).startOf('day').toDate()}
+          max={moment(dateRange.end || dateRange.start).endOf('day').toDate()}
+          style={{ height: '80vh', zIndex: 1 }}
+          onEventDrop={onEventDrop}
+          onEventResize={onEventResize}
+          onDropFromOutside={onDropFromOutside}
+          draggableAccessor={() => true}
+          dragFromOutsideItem={dragFromOutsideItem}
+          resizable
+          selectable
+          eventPropGetter={(event) => ({
+            style: {
+              backgroundColor: event.priority === 'high' ? '#ff4d4d' : '#007bff',
+              borderRadius: '5px',
+              color: 'white',
+              border: 'none',
+              padding: '5px',
+              zIndex: 10,
+            },
+          })}
+          onSelectEvent={(event) => alert(`Event: ${event.title}\nDescription: ${event.description}`)}
+        />
+      </div>
+    </div>
     </AuthenticatedLayout>
   );
 }
