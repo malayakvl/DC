@@ -1,4 +1,5 @@
 import { setSubDiagnosis } from '../Redux/Formula';
+import { excludeToothEffect } from '../Constants'
 
 export default function setupDiagnoze(
   toothNum,
@@ -13,15 +14,29 @@ export default function setupDiagnoze(
   zirconiaCrownColor,
   wsDefectColor
 ) {
-  if (diagnoze === 'paradont_health') {
+  if (excludeToothEffect.includes(diagnoze)) {
   } else {
     teethdiagnoze[`tooth${toothNum}`].show = true;
     teethdiagnoze[`tooth${toothNum}`].active = true;
   }
 
   if (diagnoze === 'paradont_health') {
+    teethdiagnoze[`tooth${toothNum}`].parodontit = false;
+    teethdiagnoze[`tooth${toothNum}`].parodontit_stage = '';
     teethdiagnoze[`tooth${toothNum}`].paradont_health =
       !teethdiagnoze[`tooth${toothNum}`].paradont_health;
+  } else if (diagnoze === 'inflamed_gums') {
+    teethdiagnoze[`tooth${toothNum}`].significantly_gums = false;
+    teethdiagnoze[`tooth${toothNum}`].inflamed_gums =
+      !teethdiagnoze[`tooth${toothNum}`].inflamed_gums;
+  } else if (diagnoze === 'no_inflammatory_process') {
+    teethdiagnoze[`tooth${toothNum}`].significantly_gums = false;
+    teethdiagnoze[`tooth${toothNum}`].inflamed_gums = false
+  }
+  else if (diagnoze === 'significantly_gums') {
+    teethdiagnoze[`tooth${toothNum}`].inflamed_gums = false;
+    teethdiagnoze[`tooth${toothNum}`].significantly_gums =
+      !teethdiagnoze[`tooth${toothNum}`].significantly_gums;
   } else if (diagnoze === 'change_color')
     teethdiagnoze[`tooth${toothNum}`].change_color =
       !teethdiagnoze[`tooth${toothNum}`].change_color;
@@ -108,23 +123,19 @@ export default function setupDiagnoze(
       teethdiagnoze[`tooth${toothNum}`].seal_cervical_color = '';
     }
   } else if (diagnoze === 'vinir') {
-    console.log('vinir', teethdiagnoze[`tooth${toothNum}`]);
     if (
       !teethdiagnoze[`tooth${toothNum}`].vinir &&
       (teethdiagnoze[`tooth${toothNum}`].vinir_color === '' ||
         teethdiagnoze[`tooth${toothNum}`].vinir_color === null)
     ) {
-      console.log(1);
       teethdiagnoze[`tooth${toothNum}`].vinir = true;
       teethdiagnoze[`tooth${toothNum}`].vinir_color = vinirColor;
     } else if (
       teethdiagnoze[`tooth${toothNum}`].vinir &&
       teethdiagnoze[`tooth${toothNum}`].vinir_color != vinirColor
     ) {
-      console.log(2);
       teethdiagnoze[`tooth${toothNum}`].vinir_color = vinirColor;
     } else {
-      console.log(3);
       teethdiagnoze[`tooth${toothNum}`].vinir = false;
       teethdiagnoze[`tooth${toothNum}`].vinir_color = '';
     }
@@ -234,6 +245,7 @@ export default function setupDiagnoze(
     teethdiagnoze[`tooth${toothNum}`].caries =
       !teethdiagnoze[`tooth${toothNum}`].caries;
   } else if (diagnoze === 'parodontit') {
+    teethdiagnoze[`tooth${toothNum}`].paradont_health = false;
     if (teethdiagnoze[`tooth${toothNum}`].parodontit) {
       if (teethdiagnoze[`tooth${toothNum}`].parodontit_stage === subdiagnoze) {
         teethdiagnoze[`tooth${toothNum}`].parodontit = false;

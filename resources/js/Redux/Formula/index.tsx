@@ -4959,6 +4959,7 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
 
       // seal vars
       seal: false,
@@ -5037,6 +5038,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5115,6 +5118,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5193,6 +5198,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5271,6 +5278,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5349,6 +5358,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5427,6 +5438,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5505,6 +5518,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5583,6 +5598,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5661,6 +5678,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5739,6 +5758,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5817,6 +5838,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5895,6 +5918,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -5973,6 +5998,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6051,6 +6078,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6129,6 +6158,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6207,6 +6238,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6285,6 +6318,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6363,6 +6398,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6441,6 +6478,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6519,6 +6558,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6597,6 +6638,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6675,6 +6718,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6753,6 +6798,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6831,6 +6878,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6909,6 +6958,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -6987,6 +7038,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7065,6 +7118,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7143,6 +7198,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7221,6 +7278,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7299,6 +7358,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7377,6 +7438,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7455,6 +7518,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7533,6 +7598,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7611,6 +7678,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7689,6 +7758,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7767,6 +7838,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7845,6 +7918,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -7923,6 +7998,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8001,6 +8078,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8079,6 +8158,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8157,6 +8238,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8235,6 +8318,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8313,6 +8398,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8391,6 +8478,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8469,6 +8558,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8547,6 +8638,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8625,6 +8718,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8703,6 +8798,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8781,6 +8878,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8859,6 +8958,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -8937,6 +9038,8 @@ const initialState = {
       periodontit_st2: false,
       periodontit_st3: false,
       periodontit_class: '',
+      inflamed_gums: false,
+      significantly_gums: false,
 
       // seal vars
       seal: false,
@@ -9810,6 +9913,7 @@ const ACTION_HANDLERS = {
       subdiagnosis: action.payload,
     }),
   },
+
   [setSealColor1.toString()]: {
     next: (state, action) => ({
       ...state,

@@ -240,8 +240,6 @@ export default function Tooth18() {
         id="TH-18"
         className={`f-tooth-init ${(teethDiagnozis.tooth18.show || allTeeth) && !teethDiagnozis.tooth18.absent ? 'f-tooth-active' : ''} adult`}
         onClick={() => {
-          console.log(1, excludeToothEffect.indexOf(diagnozis));
-
           if (excludeToothEffect.indexOf(diagnozis) < 0) {
             teethDiagnozis.tooth18.show = !teethDiagnozis.tooth18.show;
           }

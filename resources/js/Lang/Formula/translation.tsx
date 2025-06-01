@@ -80,6 +80,9 @@ const lngPatient = {
     seal_right: 'Пломба право',
     mceramic_crown: 'Коронка металокерамічна',
     cervical_caries: 'Пришийковий карієс',
+    inflamed_gums: 'Запалені ясна',
+    significantly_gums: 'Значно запалені ясна',
+    no_inflammatory_process: 'Відсутній запальний процес'
   },
 };
 export default lngPatient;

@@ -133,7 +133,7 @@ export const SchedulerStatuses = [
 export const excludeToothEffect = [
   'paradont_health',
   'paradont_all_health',
-  'paradontit',
+  'parodontit',
   'inflamed_gums',
   'significantly_gums',
   'no_inflammatory_process',
@@ -171,6 +171,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -249,6 +251,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -327,6 +331,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -405,6 +411,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -483,6 +491,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -561,6 +571,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -639,6 +651,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -717,6 +731,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -795,6 +811,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -873,6 +891,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -951,6 +971,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1029,6 +1051,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1107,6 +1131,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1185,6 +1211,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1263,6 +1291,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1341,6 +1371,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1419,6 +1451,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1497,6 +1531,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1575,6 +1611,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1653,6 +1691,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1731,6 +1771,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1809,6 +1851,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1887,6 +1931,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -1965,6 +2011,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2043,6 +2091,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2121,6 +2171,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2199,6 +2251,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2277,6 +2331,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2355,6 +2411,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2433,6 +2491,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2511,6 +2571,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2589,6 +2651,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2667,6 +2731,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2745,6 +2811,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2823,6 +2891,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2901,6 +2971,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -2979,6 +3051,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3057,6 +3131,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3135,6 +3211,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3213,6 +3291,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3291,6 +3371,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3369,6 +3451,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3447,6 +3531,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3525,6 +3611,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3603,6 +3691,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3681,6 +3771,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3759,6 +3851,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3837,6 +3931,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3915,6 +4011,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -3993,6 +4091,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -4071,6 +4171,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,
@@ -4149,6 +4251,8 @@ export const emptyFormula = {
     periodontit_st2: false,
     periodontit_st3: false,
     periodontit_class: '',
+    inflamed_gums: false,
+    significantly_gums: false,
 
     // seal vars
     seal: false,

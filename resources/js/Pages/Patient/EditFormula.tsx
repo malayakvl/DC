@@ -582,6 +582,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
                               <span
                                 className={`diagnoze-title w-[50%] flex-initial cursor-pointer whitespace-nowrap ${diagnozis === 'paradont_health' ? 'active' : ''}`}
                                 onClick={() => {
+                                  console.log(1)
                                   dispatch(setSubDiagnosis(''));
                                   dispatch(
                                     setDiagnosis(
@@ -791,39 +792,35 @@ export default function index({ patientData, treatmentData, clinicData }) {
                           <li style={{ clear: 'both' }} />
                           <li>
                             <span
-                              className={`diagnoze-title flex-initial cursor-pointer ${teethType === 'adultAAAA' ? 'active' : ''}`}
+                              onClick={() => {
+                                dispatch(setDiagnosis('no_inflammatory_process'));
+                              }}
+                              className={`diagnoze-title flex-initial cursor-pointer ${diagnozis === 'no_inflammatory_process' ? 'active' : ''}`}
                             >
-                              Відсутній запальний процес
+                              {msgFormula.get('formula.no_inflammatory_process')}
                             </span>
                           </li>
                           <li>
                             <span
-                              className={`diagnoze-title flex-initial cursor-pointer ${teethType === 'adultAAAA' ? 'active' : ''}`}
+                              onClick={() => {
+                                dispatch(setDiagnosis('inflamed_gums'));
+                              }}
+                              className={`diagnoze-title flex-initial cursor-pointer ${diagnozis === 'inflamed_gums' ? 'active' : ''}`}
                             >
-                              Запалені ясна
+                              {msgFormula.get('formula.inflamed_gums')}
                             </span>
                           </li>
                           <li>
                             <span
-                              className={`diagnoze-title flex-initial cursor-pointer ${teethType === 'adultAAAA' ? 'active' : ''}`}
+                              onClick={() => {
+                                dispatch(setDiagnosis('significantly_gums'));
+                              }}
+                              className={`diagnoze-title flex-initial cursor-pointer ${diagnozis === 'significantly_gums' ? 'active' : ''}`}
                             >
-                              Значно запалені ясна
+                              {msgFormula.get('formula.significantly_gums')}
                             </span>
                           </li>
                         </ul>
-
-                        {/* <ul className='inline-list formula-action'>
-                                                    <li
-                                                        className={`${diagnozis === 'tartar' ? 'active' : ''}`}
-                                                        onClick={() => dispatch(setDiagnosis(diagnozis === 'tartar' ? '' : 'tartar'))}
-                                                        >
-                                                        {msgFormula.get('formula.tartar')}
-                                                    </li>
-                                                    <li>
-                                                        <span className='mr-1'>1 ст</span>
-                                                        <span className='mr-1'>2 ст</span>
-                                                    </li>
-                                                </ul> */}
                       </div>
                     </div>
                     <div className="w-1/2 ml-4">

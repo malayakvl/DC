@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
-import Lang from 'lang.js';
-import lngMaterial from '../../../Lang/Material/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setChangeDia,
@@ -10,7 +7,6 @@ import {
 } from '../../../Redux/Formula';
 import {
   allTeethAdultSelector,
-  allTeethSelector,
   getActiveToothNumberSelector,
   getCeramicCrownColorSelector,
   getCeramicMCrownColorSelector,
@@ -27,13 +23,10 @@ import {
   teethTypeSelector,
 } from '../../../Redux/Formula/selectors';
 import setupDiagnoze from '../../../lib/tfunctions';
+import { excludeToothEffect } from '../../../Constants';
+
 
 export default function Bone18() {
-  // const appLang = useSelector(appLangSelector);
-  // const msg = new Lang({
-  //     messages: lngMaterial,
-  //     locale: appLang,
-  // });
   const dispatch = useDispatch<any>();
   const diagnozis = useSelector(getDiagnosisSelector);
   const subDiagnozis = useSelector(getSubDiagnosisSelector);
@@ -45,18 +38,10 @@ export default function Bone18() {
   const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
-  const teethType = useSelector(teethTypeSelector);
-  const selectedTooth = useSelector(getActiveToothNumberSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
-  const [stateChange, setStateChange] = useState(false);
 
-  useEffect(() => {
-    setStateChange(true);
-  }, [teethDiagnozis, subDiagnozis]);
-  console.log(teethDiagnozis);
   return (
     <g
-      id="bone_18"
       className="df-bone top"
       style={{ opacity: 1, transition: 'opacity 0.2s' }}
       onMouseOver={() => {
@@ -70,11 +55,13 @@ export default function Bone18() {
           document.getElementById('18').classList.remove('tooth-number-hover');
       }}
       onClick={() => {
-        if (diagnozis === 'paradont_health') {
+        if (excludeToothEffect.includes(diagnozis)) {
           dispatch(setSelectedToothNumber(18));
           dispatch(setChangeDia(Math.random()));
           if (diagnozis) {
-            console.log('aa');
+            // if (diagnozis === 'parodontit') {
+            //   teethDiagnozis.tooth18.paradont_health = false;
+            // }
             const tDiaData = setupDiagnoze(
               18,
               diagnozis,
@@ -91,25 +78,6 @@ export default function Bone18() {
             dispatch(setToothDiagnoze(tDiaData));
           }
         }
-        // if (diagnozis === 'parodontit') {
-        //     if (teethDiagnozis.tooth18.parodontit) {
-        //         if (teethDiagnozis.tooth18.parodontit_stage === subDiagnozis) {
-        //             teethDiagnozis.tooth18.parodontit = false;
-        //             teethDiagnozis.tooth18.parodontit_stage = '';
-        //             teethDiagnozis.tooth18.active = false;
-        //         } else {
-        //             teethDiagnozis.tooth18.parodontit = true;
-        //             teethDiagnozis.tooth18.parodontit_stage = subDiagnozis
-        //         }
-        //         setStateChange(!stateChange)
-        //     } else {
-        //         setStateChange(!stateChange)
-        //         teethDiagnozis.tooth18.parodontit = true;
-        //         teethDiagnozis.tooth18.parodontit_stage = subDiagnozis;
-        //         teethDiagnozis.tooth18.active = true;
-        //     }
-        // }
-        dispatch(setToothDiagnoze(teethDiagnozis));
       }}
     >
       <g
@@ -139,7 +107,8 @@ export default function Bone18() {
                     c-1-0.6-2-1.2-3.1-1.7c-0.5-0.3-1-0.5-1.5-0.8c-1-0.5-2.1-1-3.2-1.5c-4-1.8-8.1-3.2-12.3-4.2c-4.2-0.9-8.6-1.4-13.1-1.2
                     c-1,0-2,0.1-3,0.2c-12.3,1.1-18.6,2.6-28.7,7.2c-1.9,0.8-3.9,1.8-6.1,2.9c-7.3,3.6-10,6.1-18.8,8.3c-5.7,1.4-10-0.9-13.5-5.3
                     c-4.7-5.9-6.1-12.7-7.8-19.7c-2.1-8.7-4.7-17.6-8-26.1c-4.8-12.2-11.4-23.8-19.6-34.4"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth18Diagnozis.inflamed_gums ? 5 :
+              tooth18Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
       <g
@@ -165,7 +134,8 @@ export default function Bone18() {
           className="st43"
           d="M340.6,341.4c-9.1-1.2-15.4-22.7-59.5-27.9c-37.8-4.4-53,5.9-62.7,9.7
                     c-7.8,3.1-16.8,1.9-22.5-17.6c-5.2-18.2-9.2-40.7-29.5-60.3"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth18Diagnozis.inflamed_gums ? 5 :
+              tooth18Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
       <g
@@ -191,7 +161,8 @@ export default function Bone18() {
           className="st43"
           d="M345,318c-10.9-1.3-23.3-19.7-64.8-24.4c-38.5-3.6-53.5,9.8-65.2,12.3
                     c-8.1,1.7-14.2-5.9-20.3-26.9c-5.5-18.9-14.2-36.8-28.3-48.3"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth18Diagnozis.inflamed_gums ? 5 :
+              tooth18Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
       <g
@@ -217,7 +188,8 @@ export default function Bone18() {
           className="st43"
           d="M347.5,294.8c-0.2,0-0.3,0-0.5,0c-8.6-0.3-19-18.9-68.7-19.8
                     c-38.6-0.7-48.4,7.2-57.1,11.3c-13.8,6.4-16,2.8-20.6-15.1c-4.7-18-23.6-50.3-34.2-58.4"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth18Diagnozis.inflamed_gums ? 5 :
+              tooth18Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
     </g>
