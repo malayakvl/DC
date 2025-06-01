@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setChangeDia,
@@ -7,20 +7,15 @@ import {
 } from '../../../Redux/Formula';
 import {
   allTeethAdultSelector,
-  getActiveToothNumberSelector,
   getCeramicCrownColorSelector,
   getCeramicMCrownColorSelector,
   getDiagnosisSelector,
   getMetalicCrownColorSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
   getSealServicalColorSelector,
   getSubDiagnosisSelector,
   getTeethDiagnozisSelector,
   getVinirColorSelector,
   getZirconiaCrownColorSelector,
-  teethTypeSelector,
 } from '../../../Redux/Formula/selectors';
 import setupDiagnoze from '../../../lib/tfunctions';
 import { excludeToothEffect } from '../../../Constants';
@@ -59,9 +54,6 @@ export default function Bone18() {
           dispatch(setSelectedToothNumber(18));
           dispatch(setChangeDia(Math.random()));
           if (diagnozis) {
-            // if (diagnozis === 'parodontit') {
-            //   teethDiagnozis.tooth18.paradont_health = false;
-            // }
             const tDiaData = setupDiagnoze(
               18,
               diagnozis,

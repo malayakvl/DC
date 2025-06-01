@@ -1,25 +1,80 @@
 import React from 'react';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
-import Lang from 'lang.js';
-import lngMaterial from '../../../Lang/Material/translation';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  setChangeDia,
+  setSelectedToothNumber,
+  setToothDiagnoze,
+} from '../../../Redux/Formula';
+import {
+  allTeethAdultSelector,
+  getCeramicCrownColorSelector,
+  getCeramicMCrownColorSelector,
+  getDiagnosisSelector,
+  getMetalicCrownColorSelector,
+  getSealServicalColorSelector,
+  getSubDiagnosisSelector,
+  getTeethDiagnozisSelector,
+  getVinirColorSelector,
+  getZirconiaCrownColorSelector,
+} from '../../../Redux/Formula/selectors';
+import setupDiagnoze from '../../../lib/tfunctions';
+import { excludeToothEffect } from '../../../Constants';
 
-export default function Bone17({ className = '' }) {
-  const appLang = useSelector(appLangSelector);
-  const msg = new Lang({
-    messages: lngMaterial,
-    locale: appLang,
-  });
-  const dispatch = useDispatch();
+export default function Bone17() {
+  const dispatch = useDispatch<any>();
+  const diagnozis = useSelector(getDiagnosisSelector);
+  const subDiagnozis = useSelector(getSubDiagnosisSelector);
+  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
+  const tooth17Diagnozis = teethDiagnozis.tooth17;
+  const wsDefectColor = useSelector(getSealServicalColorSelector);
+  const vinirColor = useSelector(getVinirColorSelector);
+  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
+  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
+  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
+  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+  const allTeeth = useSelector(allTeethAdultSelector);
 
   return (
     <g
-      id="bone_17"
       className="df-bone top"
-      opacity="0"
-      style={{ opacity: 0, transition: 'opacity' }}
+      style={{ opacity: 1, transition: 'opacity 0.2s' }}
+      onMouseOver={() => {
+        !teethDiagnozis.tooth17.active &&
+        !allTeeth &&
+        document.getElementById('17').classList.add('tooth-number-hover');
+      }}
+      onMouseLeave={() => {
+        !teethDiagnozis.tooth17.active &&
+        !allTeeth &&
+        document.getElementById('17').classList.remove('tooth-number-hover');
+      }}
+      onClick={() => {
+        if (excludeToothEffect.includes(diagnozis)) {
+          dispatch(setSelectedToothNumber(17));
+          dispatch(setChangeDia(Math.random()));
+          if (diagnozis) {
+            const tDiaData = setupDiagnoze(
+              17,
+              diagnozis,
+              subDiagnozis,
+              teethDiagnozis,
+              dispatch,
+              vinirColor,
+              ceramicCrownColor,
+              mceramicCrownColor,
+              metalicCrownColor,
+              zirconiaCrownColor,
+              wsDefectColor
+            );
+            dispatch(setToothDiagnoze(tDiaData));
+          }
+        }
+      }}
     >
-      <g className="periodontal level" style={{ visibility: 'inherit' }}>
+      <g
+        className="periodontal level"
+        style={{ opacity: tooth17Diagnozis.paradont_health ? 1 : 0 }}
+      >
         <path
           className="st0"
           d="M478,324.8c-0.3,22.6-2.2,41.8-4.1,55.1c-0.5,0-0.9-0.1-1.4-0.2c-0.2,0-0.3-0.1-0.4-0.1
@@ -46,10 +101,21 @@ export default function Bone17({ className = '' }) {
                 c-2.4-0.5-4.8-0.9-7.3-1.2c-0.8-0.1-1.6-0.2-2.4-0.3c-1.6-0.2-3.3-0.3-4.9-0.5c-0.8-0.1-1.6-0.1-2.5-0.2c-1.7-0.1-3.3-0.2-5-0.2
                 c-1.8,0-3.5-0.1-5.3-0.1c-8.4,0-16.8,0.8-24.8,2.9c-4.1,1.1-8.1,2.5-11.9,4.2c-4.6,2.1-9.1,4.9-14.2,4.5c-0.2,0-0.5,0-0.7-0.1
                 c-0.2,0-0.4-0.1-0.6-0.1c0,0-0.1,0-0.2,0"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth17Diagnozis.inflamed_gums ? 5 :
+              tooth17Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
-      <g className="periodontal level" style={{ visibility: 'hidden' }}>
+      <g
+        className="periodontal level"
+        style={{
+          opacity:
+            (tooth17Diagnozis.parodontit &&
+              tooth17Diagnozis.parodontit_stage === 'pst1') ||
+            subDiagnozis === 'allst2'
+              ? 1
+              : 0,
+        }}
+      >
         <path
           className="st0"
           d="M478,324.8c-0.1,12.5-0.8,24-1.7,33.9c-0.1,0-0.1,0-0.2,0
@@ -66,10 +132,21 @@ export default function Bone17({ className = '' }) {
           className="st43"
           d="M476.3,358.7c-0.1,0-0.1,0-0.2,0c-14.6,0.7-10.6-21.3-62.2-27.1
                 c-42.7-4.9-62.9,10.9-73.2,9.8c-0.1,0-0.1,0-0.2,0"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth17Diagnozis.inflamed_gums ? 5 :
+              tooth17Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
-      <g className="periodontal level" style={{ visibility: 'hidden' }}>
+      <g
+        className="periodontal level"
+        style={{
+          opacity:
+            (tooth17Diagnozis.parodontit &&
+              tooth17Diagnozis.parodontit_stage === 'pst2') ||
+            subDiagnozis === 'allst2'
+              ? 1
+              : 0,
+        }}
+      >
         <path
           className="st0"
           d="M478,324.8c0,2.4-0.1,4.8-0.1,7.1c-8.7-2-16-18.5-61.6-24.4
@@ -86,10 +163,21 @@ export default function Bone17({ className = '' }) {
           className="st43"
           d="M477.8,331.8c-8.7-2-16-18.5-61.6-24.4c-53.1-5.7-58.3,11.9-70.9,10.6
                 c-0.1,0-0.2,0-0.2,0"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth17Diagnozis.inflamed_gums ? 5 :
+              tooth17Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
-      <g className="periodontal level" style={{ visibility: 'hidden' }}>
+      <g
+        className="periodontal level"
+        style={{
+          opacity:
+            (tooth17Diagnozis.parodontit &&
+              tooth17Diagnozis.parodontit_stage === 'pst3') ||
+            subDiagnozis === 'allst3'
+              ? 1
+              : 0,
+        }}
+      >
         <path
           className="st0"
           d="M477.7,300.3c-0.3,0-0.6,0-0.8,0c-9.3-0.1-17.9-17.8-67.1-18.6
@@ -105,7 +193,8 @@ export default function Bone17({ className = '' }) {
           className="st43"
           d="M477.7,299.3c0,0.4,0,0.7,0,1.1c-0.3,0-0.6,0-0.8,0c-9.3-0.1-17.9-17.8-67.1-18.6
                 c-42.4-0.7-50.3,13-62.3,13.1"
-          style={{ strokeWidth: 2 }}
+          style={{ strokeWidth: tooth17Diagnozis.inflamed_gums ? 5 :
+              tooth17Diagnozis.significantly_gums ? 9: 2 }}
         />
       </g>
     </g>
