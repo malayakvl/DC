@@ -261,8 +261,10 @@ export default function Tooth44() {
         id="TH-44"
         className={`f-tooth-init ${(teethDiagnozis.tooth44.show || allTeeth) && !teethDiagnozis.tooth44.absent ? 'f-tooth-active' : ''} ${teethType}`}
         onClick={() => {
-          teethDiagnozis.tooth44.show = !teethDiagnozis.tooth44.show;
-          teethDiagnozis.tooth84.show = false;
+          if (excludeToothEffect.indexOf(diagnozis) < 0) {
+            teethDiagnozis.tooth44.show = !teethDiagnozis.tooth44.show;
+            teethDiagnozis.tooth84.show = false;
+          }
           teethDiagnozis.tooth45.active = false;
           dispatch(setSelectedToothNumber(44));
           dispatch(setChangeDia(Math.random()));
