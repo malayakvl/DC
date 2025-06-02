@@ -49,6 +49,7 @@ export default function Bone45() {
         document.getElementById('45').classList.remove('tooth-number-hover');
       }}
       onClick={() => {
+        alert(45)
         if (excludeToothEffect.includes(diagnozis)) {
           dispatch(setSelectedToothNumber(45));
           dispatch(setChangeDia(Math.random()));

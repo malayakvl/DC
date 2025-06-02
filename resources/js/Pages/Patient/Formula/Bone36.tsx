@@ -33,7 +33,6 @@ export default function Bone36() {
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
-console.log(teethDiagnozis.tooth36)
   return (
     <g
       className="df-bone top"
