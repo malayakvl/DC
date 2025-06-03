@@ -72,11 +72,10 @@ export default function Bone26() {
       }}
     >
       <g
-        className="periodontal level"
         style={{ opacity: tooth26Diagnozis.paradont_health ? 1 : 0 }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M1624,379.9C1624,379.9,1624,379.9,1624,379.9c-0.3,0-0.5,0-0.8,0s-0.5,0-0.8,0
                 c-0.5,0-1-0.1-1.5-0.2c-0.3-0.1-0.6-0.2-0.9-0.2c-0.2-0.1-0.5-0.2-0.7-0.3c0,0-0.1,0-0.1,0c-0.2-0.1-0.5-0.2-0.7-0.3
                 c-0.3-0.1-0.5-0.2-0.8-0.4c-0.2-0.1-0.5-0.2-0.7-0.4c0,0-0.1-0.1-0.1-0.1c-0.2-0.1-0.5-0.3-0.7-0.4c-0.2-0.1-0.5-0.3-0.7-0.5
@@ -104,7 +103,7 @@ export default function Bone26() {
           style={{ strokeWidth: 2 }}
         ></path>
         <path
-          className="st43"
+          className="pdt"
           d="M1624,380.1C1624,380.1,1624,380.1,1624,380.1c-0.3,0-0.5,0-0.8,0s-0.5,0-0.8,0
                 c-0.5,0-1-0.1-1.5-0.2c-0.3-0.1-0.6-0.2-0.9-0.2c-0.2-0.1-0.5-0.2-0.7-0.3c0,0-0.1,0-0.1,0c-0.2-0.1-0.5-0.2-0.7-0.3
                 c-0.3-0.1-0.5-0.2-0.8-0.4c-0.2-0.1-0.5-0.2-0.7-0.4c0,0-0.1-0.1-0.1-0.1c-0.2-0.1-0.5-0.3-0.7-0.4c-0.2-0.1-0.5-0.3-0.7-0.5
@@ -125,18 +124,16 @@ export default function Bone26() {
         ></path>
       </g>
       <g
-        className="periodontal level"
         style={{
           opacity:
             (tooth26Diagnozis.parodontit &&
-              tooth26Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst1'
+              tooth26Diagnozis.parodontit_stage === 'pst1')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M1474.3,329.3c0.1,16.3,1.3,32.2,2.9,45.9c5.9-0.3,23.6-22.3,63-26
                 c66.9-6.5,66.2,10.9,81.4,11.8c-0.9-10-1.5-21.4-1.7-33.9c-0.1-7.5,0-14.7,0.2-21.4c0-1.4,0.1-2.8,0.1-4.1c0-1.1,0.1-2.1,0.1-3.1
                 c0-0.6,0-1.2,0.1-1.8c0.7-15.3,1.8-27.7,2.7-35.2c-0.4,0-0.9,0-1.3,0c-7.9-0.1-14.8-3.4-19-8.1c-4.1-4.5-7.5-10.3-14.9-9.7
@@ -149,25 +146,23 @@ export default function Bone26() {
           style={{ strokeWidth: 2 }}
         ></path>
         <path
-          className="st43"
+          className="pdt"
           d="M1477.2,374.1c5.9-0.3,23.6-21.3,63-25c66.9-6.5,66.2,9.9,81.4,10.8"
           style={{ strokeWidth: tooth26Diagnozis.inflamed_gums ? 5 :
               tooth26Diagnozis.significantly_gums ? 9: 2 }}
         ></path>
       </g>
       <g
-        className="periodontal level"
         style={{
           opacity:
             (tooth26Diagnozis.parodontit &&
-              tooth26Diagnozis.parodontit_stage === 'pst2') ||
-            subDiagnozis === 'allst2'
+              tooth26Diagnozis.parodontit_stage === 'pst2')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M1474.3,329.3c0,5.3,0.2,10.5,0.4,15.6c0.1,0,0.1,0,0.2,0
                 c7.3,0.1,22.6-20,66.4-23.4c52.6-4.1,68.1,13.3,77.5,12.8c0.4,0,0.9-0.1,1.3-0.2c-0.1-2.3-0.1-4.7-0.1-7.1
                 c-0.1-7.5,0-14.7,0.2-21.4c0-1.4,0.1-2.8,0.1-4.1c0-1.1,0.1-2.1,0.1-3.1c0-0.6,0-1.2,0.1-1.8c0.7-15.3,1.8-27.7,2.7-35.2
@@ -180,7 +175,7 @@ export default function Bone26() {
           style={{ strokeWidth: 2 }}
         ></path>
         <path
-          className="st43"
+          className="pdt"
           d="M1474.7,343.9c0.1,0,0.1,0,0.2,0c7.3,0.1,22.6-19,66.4-22.4
                 c52.6-4.1,68.1,12.3,77.5,11.8c0.4,0,0.9-0.1,1.3-0.2"
           style={{ strokeWidth: tooth26Diagnozis.inflamed_gums ? 5 :
@@ -188,18 +183,16 @@ export default function Bone26() {
         ></path>
       </g>
       <g
-        className="periodontal level"
         style={{
           opacity:
             (tooth26Diagnozis.parodontit &&
-              tooth26Diagnozis.parodontit_stage === 'pst3') ||
-            subDiagnozis === 'allst3'
+              tooth26Diagnozis.parodontit_stage === 'pst3')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M1474.6,307.2c0.3,0.1,0.6,0.1,0.8,0.1c8.3-0.1,28.6-19.5,76.2-20
                 c41.1-0.5,59.3,14.4,68.5,15.2c0-0.4,0-0.7,0-1.1c0-1.1,0.1-2.1,0.1-3.1c0-0.6,0-1.2,0.1-1.8c0.7-15.3,1.8-27.7,2.7-35.2
                 c-0.4,0-0.9,0-1.3,0c-7.9-0.1-14.8-3.4-19-8.1c-4.1-4.5-7.5-10.3-14.9-9.7c-7,0.5-9.5,6.9-10.3,12.7c-0.5,3.5-1.7,6.7-7.2,6.3
@@ -210,7 +203,7 @@ export default function Bone26() {
           style={{ strokeWidth: 2 }}
         ></path>
         <path
-          className="st43"
+          className="pdt"
           d="M1474.6,306.2c0.3,0.1,0.6,0.1,0.8,0.1c8.3-0.1,28.6-18.5,76.2-19
                 c41.1-0.5,59.3,13.4,68.5,14.2"
           style={{ strokeWidth: tooth26Diagnozis.inflamed_gums ? 5 :

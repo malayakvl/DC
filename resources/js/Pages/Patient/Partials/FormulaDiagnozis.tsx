@@ -65,6 +65,9 @@ export default function FormulaDiagnozis() {
     'mceramic_crown',
     'zirconia_crown',
     'vinir',
+    'inflamed_gums',
+    'significantly_gums',
+    'no_inflammatory_process'
   ];
   // const dMetalicCrownArray = [
   //     'metalic_crown',
@@ -73,8 +76,12 @@ export default function FormulaDiagnozis() {
   const displayedDia = _dArray.concat(dColoredArray);
 
   const disableDia = (num, key) => {
+    console.log('disableDia')
     const currentDiagnozis = teethDiagnozis;
     currentDiagnozis[`tooth${num}`][`${key}`] = false;
+    if (key === 'parodontit') {
+      currentDiagnozis[`tooth${num}`][`parodontit_stage`] = "";
+    }
     dispatch(setToothDiagnoze(currentDiagnozis));
     dispatch(setChangeDia(Math.random()));
   };
@@ -120,7 +127,6 @@ export default function FormulaDiagnozis() {
               <React.Fragment key={_k}>
                 {teethDiagnozis[`tooth${num}`][_v] && _dArray.includes(_v) ? (
                   <span className="d-badge" onClick={() => disableDia(num, _v)}>
-                    <i className="d-badge-close" />
                     {msgFormula.get(`formula.${_v}`)} {_v === 'parodontit' ? msgFormula.get(`formula.${teethDiagnozis[`tooth${num}`]['parodontit_stage']}`) : ''}
                   </span>
                 ) : (
@@ -132,7 +138,6 @@ export default function FormulaDiagnozis() {
                     className={`d-badge ${teethDiagnozis[`tooth${num}`][`${_v}_color`]}`}
                     onClick={() => disableColorDia(num, _v)}
                   >
-                    <i className="d-badge-close" />
                     {msgFormula.get(`formula.${_v}`)}
                   </span>
                 ) : (

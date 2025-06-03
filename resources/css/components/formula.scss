@@ -237,20 +237,24 @@
 .st42 {
     fill: #FF0000;
 }
-
+.pdtfill {
+    /* opacity: 0.5; */
+    /* fill: #FFEAA3; */
+    opacity: 1;
+    fill: #FEF4D1;
+}
+.pdt {
+    fill: none;
+    stroke: #E30613;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+}
 .st43 {
     fill: none;
     stroke: #E30613;
     stroke-width: 2;
     stroke-miterlimit: 10;
 }
-.st43b {
-    fill: none;
-    stroke: #063ae3;
-    stroke-width: 2;
-    stroke-miterlimit: 10;
-}
-
 .st44 {
     fill: #D5D5D5;
     stroke: #5E5E5E;

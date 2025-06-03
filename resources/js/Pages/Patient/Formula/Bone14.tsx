@@ -76,7 +76,7 @@ export default function Bone14() {
         style={{ opacity: tooth14Diagnozis.paradont_health ? 1 : 0 }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M776.5,407.9c-0.3,0-0.6-0.1-0.9-0.2c-1.2-0.4-2.2-1.5-3-2.5c-2.2-2.6-4.5-5.1-6.9-7.6
                 c-2.7-2.8-5.7-5.3-8.9-7.5c-2.7-1.8-5.5-3.4-8.6-4.6c-1.4-0.5-2.9-1-4.4-1.4c-2.7-0.6-5.5-0.9-8.4-0.7c-2.2,0.2-4.3,0.6-6.4,1.3
                 c-2.9,0.9-5.7,2.3-8.3,3.8c-3.4,2-6.7,4.5-9.7,7.2c0,0,0,0,0,0c-3.1,2.4-6,4.9-8.7,7.9c-0.8,0.9-1.7,1.8-2.9,2
@@ -87,7 +87,7 @@ export default function Bone14() {
           style={{ strokeWidth: 2 }}
         />
         <path
-          className="st43"
+          className="pdt"
           d="M777.5,408.9c-0.3,0-0.6-0.1-0.9-0.2c-1.2-0.4-3.2-2.5-4-3.5c-2.2-2.6-4.5-5.1-6.9-7.6
                 c-2.7-2.8-5.7-5.3-8.9-7.5c-2.7-1.8-5.5-3.4-8.6-4.6c-1.4-0.5-2.9-1-4.4-1.4c-2.7-0.6-5.5-0.9-8.4-0.7c-2.2,0.2-4.3,0.6-6.4,1.3
                 c-2.9,0.9-5.7,2.3-8.3,3.8c-3.4,2-6.7,4.5-9.7,7.2c0,0,0,0,0,0c-3.1,2.4-6,4.9-8.7,7.9c-0.8,0.9-1.7,1.8-2.9,2"
@@ -100,14 +100,13 @@ export default function Bone14() {
         style={{
           opacity:
             (tooth14Diagnozis.parodontit &&
-              tooth14Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst1'
+              tooth14Diagnozis.parodontit_stage === 'pst1')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M774.4,386.5c-6.9-2.6-11.5-19.8-36.9-21.2c-26-1.5-33.1,18.3-40.1,17.5
                 c-0.1,0-0.2,0-0.3,0c-0.9-11.3-2-25.2-3.3-38.3c-0.4-4.5-0.8-8.9-1.3-13.1c-2.4-20.1-4.3-36.5-5.8-49.9c-0.2-1.7-0.4-3.4-0.6-5
                 c-0.1-0.5-0.1-1-0.2-1.5c-0.8-7.5-1.5-13.9-2.1-19.2c4.2,0.7,8-1.1,10.5-5.7c1.3-2.5,2.2-6.4,2.2-9.5c0.1-3.2,0.4-6.5,1.4-9.8
@@ -116,7 +115,7 @@ export default function Bone14() {
           style={{ strokeWidth: 2 }}
         />
         <path
-          className="st43"
+          className="pdt"
           d="M774.4,386.5c-6.9-2.6-11.5-19.8-36.9-21.2c-26-1.5-33.1,18.3-40.1,17.5
                 c-0.1,0-0.2,0-0.3,0"
           style={{ strokeWidth: tooth14Diagnozis.inflamed_gums ? 5 :
@@ -128,14 +127,13 @@ export default function Bone14() {
         style={{
           opacity:
             (tooth14Diagnozis.parodontit &&
-              tooth14Diagnozis.parodontit_stage === 'pst2') ||
-            subDiagnozis === 'allst2'
+              tooth14Diagnozis.parodontit_stage === 'pst2')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M770.9,350.8c-5,0-8.1-17.2-36.1-18.5c-27.2-0.4-31.8,14.2-39.7,13.7
                 c-0.5,0-0.9-0.1-1.4-0.3c0-0.4-0.1-0.8-0.1-1.2c-0.4-4.5-0.8-8.9-1.3-13.1c-2.4-20.1-4.3-36.5-5.8-49.9c-0.2-1.7-0.4-3.4-0.6-5
                 c-0.1-0.5-0.1-1-0.2-1.5c-0.8-7.5-1.5-13.9-2.1-19.2c4.2,0.7,8-1.1,10.5-5.7c1.3-2.5,2.2-6.4,2.2-9.5c0.1-3.2,0.4-6.5,1.4-9.8
@@ -144,7 +142,7 @@ export default function Bone14() {
           style={{ strokeWidth: 2 }}
         />
         <path
-          className="st43"
+          className="pdt"
           d="M770.9,350.8c-5,0-8.1-17.2-36.1-18.5c-27.2-0.4-31.8,14.2-39.7,13.7
                 c-0.5,0-0.9-0.1-1.4-0.3"
           style={{ strokeWidth: tooth14Diagnozis.inflamed_gums ? 5 :
@@ -156,14 +154,13 @@ export default function Bone14() {
         style={{
           opacity:
             (tooth14Diagnozis.parodontit &&
-              tooth14Diagnozis.parodontit_stage === 'pst3') ||
-            subDiagnozis === 'allst3'
+              tooth14Diagnozis.parodontit_stage === 'pst3')
               ? 1
               : 0,
         }}
       >
         <path
-          className="st0"
+          className="pdtfill"
           d="M766.8,309.9c-0.5,0.4-1,0.6-1.5,0.7c-6.3,0.5-11.8-18.1-37.4-17.5
                 c-25.7,0.6-34.2,16.2-37.8,16.1c-0.1,0-0.3,0-0.5-0.1c-1.2-10.3-2.3-19.5-3.2-27.5c-0.2-1.7-0.4-3.4-0.6-5c-0.1-0.5-0.1-1-0.2-1.5
                 c-0.8-7.5-1.5-13.9-2.1-19.2c4.2,0.7,8-1.1,10.5-5.7c1.3-2.5,2.2-6.4,2.2-9.5c0.1-3.2,0.4-6.5,1.4-9.8c1.1-3.6,4.7-7.1,9.5-8.4
@@ -172,7 +169,7 @@ export default function Bone14() {
           style={{ strokeWidth: 2 }}
         />
         <path
-          className="st43"
+          className="pdt"
           d="M766.8,309.9c-0.5,0.4-1,0.6-1.5,0.7c-6.3,0.5-11.8-18.1-37.4-17.5
                 c-25.7,0.6-34.2,16.2-37.8,16.1c-0.1,0-0.3,0-0.5-0.1"
           style={{ strokeWidth: tooth14Diagnozis.inflamed_gums ? 5 :
