@@ -82,7 +82,10 @@ const lngPatient = {
     cervical_caries: 'Пришийковий карієс',
     inflamed_gums: 'Запалені ясна',
     significantly_gums: 'Значно запалені ясна',
-    no_inflammatory_process: 'Відсутній запальний процес'
+    no_inflammatory_process: 'Відсутній запальний процес',
+    pst1: '1 ст',
+    pst2: '2 ст',
+    pst3: '3 ст'
   },
 };
 export default lngPatient;

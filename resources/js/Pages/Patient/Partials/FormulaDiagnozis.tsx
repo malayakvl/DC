@@ -121,7 +121,7 @@ export default function FormulaDiagnozis() {
                 {teethDiagnozis[`tooth${num}`][_v] && _dArray.includes(_v) ? (
                   <span className="d-badge" onClick={() => disableDia(num, _v)}>
                     <i className="d-badge-close" />
-                    {msgFormula.get(`formula.${_v}`)}
+                    {msgFormula.get(`formula.${_v}`)} {_v === 'parodontit' ? msgFormula.get(`formula.${teethDiagnozis[`tooth${num}`]['parodontit_stage']}`) : ''}
                   </span>
                 ) : (
                   ''
