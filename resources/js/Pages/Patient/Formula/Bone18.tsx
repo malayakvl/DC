@@ -34,7 +34,7 @@ export default function Bone18() {
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
-
+console.log(tooth18Diagnozis.parodontit_stage);
   return (
     <g
       className="df-bone top"
@@ -74,7 +74,7 @@ export default function Bone18() {
     >
       <g
         className="periodontal level"
-        style={{ opacity: tooth18Diagnozis.paradont_health ? 1 : 0 }}
+        style={{ opacity: tooth18Diagnozis.paradont_health  ? 1 : 0 }}
       >
         <path
           className="st0"
@@ -100,7 +100,7 @@ export default function Bone18() {
                     c-1,0-2,0.1-3,0.2c-12.3,1.1-18.6,2.6-28.7,7.2c-1.9,0.8-3.9,1.8-6.1,2.9c-7.3,3.6-10,6.1-18.8,8.3c-5.7,1.4-10-0.9-13.5-5.3
                     c-4.7-5.9-6.1-12.7-7.8-19.7c-2.1-8.7-4.7-17.6-8-26.1c-4.8-12.2-11.4-23.8-19.6-34.4"
           style={{ strokeWidth: tooth18Diagnozis.inflamed_gums ? 5 :
-              tooth18Diagnozis.significantly_gums ? 9: 2 }}
+              tooth18Diagnozis.significantly_gums ? 9: 0 }}
         />
       </g>
       <g
@@ -109,7 +109,7 @@ export default function Bone18() {
           opacity:
             (tooth18Diagnozis.parodontit &&
               tooth18Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}

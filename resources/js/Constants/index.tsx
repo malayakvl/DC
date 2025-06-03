@@ -164,15 +164,19 @@ export const emptyFormula = {
     channel_top_sealed: false,
     channel_part_sealed: false,
     channel_class: '',
-    // periodontit
-    periodontit: false,
-    periodontit_stage: '',
-    periodontit_st1: false,
-    periodontit_st2: false,
-    periodontit_st3: false,
-    periodontit_class: '',
+    // gums process
+    paradont_health: false,
+    paradont_all_health: false,
+    paradontit: false,
+    paradontit_st1: false,
+    paradontit_st2: false,
+    paradontit_st3: false,
+    paradontit_all_st1: false,
+    paradontit_all_st2: false,
+    paradontit_all_st3: false,
     inflamed_gums: false,
     significantly_gums: false,
+    no_inflammatory_process: false,
 
     // seal vars
     seal: false,

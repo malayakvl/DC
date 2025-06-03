@@ -71,7 +71,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   //   dispatch(setChangeDia(Math.random()));
   //   dispatch(setToothDiagnoze(emptyFormula));
   // }
-  const tData = treatmentData.formula
+  let tData = treatmentData.formula
     ? JSON.parse(treatmentData.formula)
     : null;
 
@@ -194,6 +194,216 @@ export default function index({ patientData, treatmentData, clinicData }) {
     }
   };
 
+  const paradontAllHealthTeeth = () => {
+    if (!tData) {
+      tData = emptyFormula;
+    }
+    if (teethType === 'adult') {
+      // dispatch(showAllAdult(true));
+      for (let i = 11; i <= 18; i++) {
+        tData[`tooth${i}`].paradont_health = true;
+        // tData[`tooth${i}`].paradont_health = true;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 41; i <= 48; i++) {
+        tData[`tooth${i}`].paradont_health = true;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 21; i <= 28; i++) {
+        tData[`tooth${i}`].paradont_health = true;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 31; i <= 38; i++) {
+        tData[`tooth${i}`].paradont_health = true;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+
+      // for (let i = 51; i <= 55; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 61; i <= 65; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 81; i <= 85; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 71; i <= 75; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      dispatch(setDataDiagnozes(tData));
+    } else {
+      // dispatch(showAllAdult(false));
+      // dispatch(showAllChild(true));
+      // for (let i = 11; i <= 18; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 41; i <= 48; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 21; i <= 28; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 31; i <= 38; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      //
+      // for (let i = 51; i <= 55; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 61; i <= 65; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 81; i <= 85; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 71; i <= 75; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // dispatch(setToothDiagnoze(tData));
+    }
+  };
+
+  const paradontAllStageTeeth = (stage) => {
+    if (!tData) {
+      tData = emptyFormula;
+    }
+    if (teethType === 'adult') {
+      // dispatch(showAllAdult(true));
+      for (let i = 11; i <= 18; i++) {
+        tData[`tooth${i}`].paradont_health = false;
+        tData[`tooth${i}`].parodontit = true;
+        tData[`tooth${i}`].parodontit_stage = stage;
+        // tData[`tooth${i}`].paradont_health = true;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 41; i <= 48; i++) {
+        tData[`tooth${i}`].paradont_health = false;
+        tData[`tooth${i}`].parodontit = true;
+        tData[`tooth${i}`].parodontit_stage = stage;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 21; i <= 28; i++) {
+        tData[`tooth${i}`].paradont_health = false;
+        tData[`tooth${i}`].parodontit = true;
+        tData[`tooth${i}`].parodontit_stage = stage;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+      for (let i = 31; i <= 38; i++) {
+        tData[`tooth${i}`].paradont_health = false;
+        tData[`tooth${i}`].parodontit = true;
+        tData[`tooth${i}`].parodontit_stage = stage;
+        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+        //   tData[`tooth${i}`].show = true;
+        // }
+      }
+console.log(tData);
+      // for (let i = 51; i <= 55; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 61; i <= 65; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 81; i <= 85; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 71; i <= 75; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      dispatch(setDataDiagnozes(tData));
+    } else {
+      // dispatch(showAllAdult(false));
+      // dispatch(showAllChild(true));
+      // for (let i = 11; i <= 18; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 41; i <= 48; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 21; i <= 28; i++) {
+      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      // for (let i = 31; i <= 38; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = false;
+      //   }
+      // }
+      //
+      // for (let i = 51; i <= 55; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 61; i <= 65; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 81; i <= 85; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // for (let i = 71; i <= 75; i++) {
+      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
+      //     tData[`tooth${i}`].show = true;
+      //   }
+      // }
+      // dispatch(setToothDiagnoze(tData));
+    }
+  };
+
   const submit = e => {
     e.preventDefault();
     values['treatmentData'] = tData;
@@ -284,8 +494,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
                     action={'edit'}
                     formulaData={JSON.parse(treatmentData.formula)}
                   />
-                  {/* {teethType === 'adult' && <Formula />}
-                                    {teethType !== 'adult' && <FormulaMilk />} */}
                 </div>
                 <div className="w-1/2">
                   <div className="flex p-2">
@@ -582,7 +790,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
                               <span
                                 className={`diagnoze-title w-[50%] flex-initial cursor-pointer whitespace-nowrap ${diagnozis === 'paradont_health' ? 'active' : ''}`}
                                 onClick={() => {
-                                  console.log(1)
                                   dispatch(setSubDiagnosis(''));
                                   dispatch(
                                     setDiagnosis(
@@ -608,6 +815,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
                                         : 'paradont_all_health'
                                     )
                                   );
+                                  paradontAllHealthTeeth();
                                 }}
                               >
                                 {msgFormula.get(
@@ -718,24 +926,28 @@ export default function index({ patientData, treatmentData, clinicData }) {
                             <div>
                               <span
                                 onClick={() => {
-                                  if (diagnozis !== 'parodontit') {
-                                    dispatch(setDiagnosis('parodontit'));
-                                    dispatch(
-                                      setSubDiagnosis(
-                                        subdiagnozis === 'allst1'
-                                          ? ''
-                                          : 'allst1'
-                                      )
-                                    );
-                                  } else if (
-                                    diagnozis === 'parodontit' &&
-                                    subdiagnozis !== 'allst1'
-                                  ) {
-                                    dispatch(setSubDiagnosis('allst1'));
-                                  } else {
-                                    dispatch(setDiagnosis(''));
-                                    dispatch(setSubDiagnosis(''));
-                                  }
+                                  paradontAllStageTeeth('pst1');
+                                  dispatch(setChangeDia(Math.random()));
+                                  dispatch(setSubDiagnosis('allst1'));
+                                  // if (diagnozis !== 'parodontit') {
+                                  //   dispatch(setDiagnosis('parodontit'));
+                                  //   paradontAllStageTeeth();
+                                  //   dispatch(
+                                  //     setSubDiagnosis(
+                                  //       subdiagnozis === 'allst1'
+                                  //         ? ''
+                                  //         : 'allst1'
+                                  //     )
+                                  //   );
+                                  // } else if (
+                                  //   diagnozis === 'parodontit' &&
+                                  //   subdiagnozis !== 'allst1'
+                                  // ) {
+                                  //   dispatch(setSubDiagnosis('allst1'));
+                                  // } else {
+                                  //   dispatch(setDiagnosis(''));
+                                  //   dispatch(setSubDiagnosis(''));
+                                  // }
                                 }}
                                 className={`diagnoze-title ${subdiagnozis === 'allst1' ? 'active' : ''} cursor-pointer`}
                               >
@@ -743,17 +955,20 @@ export default function index({ patientData, treatmentData, clinicData }) {
                               </span>
                               <span
                                 onClick={() => {
-                                  if (diagnozis !== 'parodontit') {
-                                    dispatch(setDiagnosis('parodontit'));
-                                  } else if (
-                                    diagnozis === 'parodontit' &&
-                                    subdiagnozis !== 'allst2'
-                                  ) {
-                                    dispatch(setSubDiagnosis('allst2'));
-                                  } else {
-                                    dispatch(setDiagnosis(''));
-                                    dispatch(setSubDiagnosis(''));
-                                  }
+                                  dispatch(setChangeDia(Math.random()));
+                                  paradontAllStageTeeth('pst2');
+                                  dispatch(setChangeDia(Math.random()));
+                                  // if (diagnozis !== 'parodontit') {
+                                  //   dispatch(setDiagnosis('parodontit'));
+                                  // } else if (
+                                  //   diagnozis === 'parodontit' &&
+                                  //   subdiagnozis !== 'allst2'
+                                  // ) {
+                                  //   dispatch(setSubDiagnosis('allst2'));
+                                  // } else {
+                                  //   dispatch(setDiagnosis(''));
+                                  //   dispatch(setSubDiagnosis(''));
+                                  // }
                                   dispatch(
                                     setSubDiagnosis(
                                       subdiagnozis === 'allst2' ? '' : 'allst2'
@@ -766,17 +981,19 @@ export default function index({ patientData, treatmentData, clinicData }) {
                               </span>
                               <span
                                 onClick={() => {
-                                  if (diagnozis !== 'parodontit') {
-                                    dispatch(setDiagnosis('parodontit'));
-                                  } else if (
-                                    diagnozis === 'parodontit' &&
-                                    subdiagnozis !== 'allst3'
-                                  ) {
-                                    dispatch(setSubDiagnosis('allst3'));
-                                  } else {
-                                    dispatch(setDiagnosis(''));
-                                    dispatch(setSubDiagnosis(''));
-                                  }
+                                  paradontAllStageTeeth('pst3');
+                                  dispatch(setChangeDia(Math.random()));
+                                  // if (diagnozis !== 'parodontit') {
+                                  //   dispatch(setDiagnosis('parodontit'));
+                                  // } else if (
+                                  //   diagnozis === 'parodontit' &&
+                                  //   subdiagnozis !== 'allst3'
+                                  // ) {
+                                  //   dispatch(setSubDiagnosis('allst3'));
+                                  // } else {
+                                  //   dispatch(setDiagnosis(''));
+                                  //   dispatch(setSubDiagnosis(''));
+                                  // }
                                   dispatch(
                                     setSubDiagnosis(
                                       subdiagnozis === 'allst3' ? '' : 'allst3'

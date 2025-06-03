@@ -111,7 +111,7 @@ export default function Bone27() {
           opacity:
             (tooth27Diagnozis.parodontit &&
               tooth27Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}

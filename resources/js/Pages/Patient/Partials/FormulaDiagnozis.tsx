@@ -102,7 +102,6 @@ export default function FormulaDiagnozis() {
           teethDiagnozis[`tooth${num}`][key] &&
           displayedDia.indexOf(key) >= 0
         ) {
-          console.log(`tooth${num}`, key);
           _diagnozisStr = true;
         }
       });

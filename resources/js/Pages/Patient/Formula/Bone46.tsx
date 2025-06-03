@@ -33,9 +33,7 @@ export default function Bone46() {
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
-  console.log(46)
 
-console.log('Dia', tooth46Diagnozis)
   return (
     <g
       className="df-bone top"
@@ -99,7 +97,7 @@ console.log('Dia', tooth46Diagnozis)
           opacity:
             (tooth46Diagnozis.parodontit &&
               tooth46Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}

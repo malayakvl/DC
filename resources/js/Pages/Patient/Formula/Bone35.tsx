@@ -97,7 +97,7 @@ export default function Bone35() {
           opacity:
             (tooth35Diagnozis.parodontit &&
               tooth35Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst'
               ? 1
               : 0,
         }}
@@ -123,7 +123,7 @@ export default function Bone35() {
           opacity:
             (tooth35Diagnozis.parodontit &&
               tooth35Diagnozis.parodontit_stage === 'pst2') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}

@@ -98,7 +98,7 @@ export default function Bone23() {
           opacity:
             (tooth23Diagnozis.parodontit &&
               tooth23Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}

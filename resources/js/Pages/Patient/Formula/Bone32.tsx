@@ -98,7 +98,7 @@ export default function Bone32() {
           opacity:
             (tooth32Diagnozis.parodontit &&
               tooth32Diagnozis.parodontit_stage === 'pst1') ||
-            subDiagnozis === 'allst2'
+            subDiagnozis === 'allst1'
               ? 1
               : 0,
         }}
