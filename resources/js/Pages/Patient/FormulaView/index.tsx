@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import MaxilaryLeft from './MaxilaryLeft';
 import MaxilaryRight from './MaxilaryRight';
 import Bone31 from './Bone31';
@@ -317,9 +316,10 @@ export default function FormulaView({ formulaData, id }) {
           </g>
         </svg>
       </section>
-      <section className="selected-diagnozis">
-        {/* <FormulaDiagnozis /> */}
-      </section>
+
+      {/*<section className="selected-diagnozis">*/}
+      {/*   <FormulaDiagnozisView tData={formulaData} />*/}
+      {/*</section>*/}
     </>
   );
 }

@@ -4,24 +4,18 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
 import {
-  getTeethDiagnozisSelector,
   getRemoveDiaSelector,
 } from '../../../Redux/Formula/selectors';
-import {
-  setToothDiagnoze,
-  setRemoveDia,
-  setChangeDia,
-} from '../../../Redux/Formula';
 
-export default function FormulaDiagnozis() {
-  const dispatch = useDispatch<any>();
+export default function ViewFormulaDiagnozis({ formulaData }) {
   const appLang = useSelector(appLangSelector);
-  const removeDia = useSelector(getRemoveDiaSelector); //important for update state do not remove
+  console.log('Income data', formulaData);
+  const tData = formulaData;
   const msgFormula = new Lang({
     messages: lngFormula,
     locale: appLang,
   });
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
+  const teethDiagnozis = tData;
   const _dArray = [
     'absent',
     'abutment',
@@ -64,37 +58,8 @@ export default function FormulaDiagnozis() {
     'significantly_gums',
     'no_inflammatory_process'
   ];
-  // const dMetalicCrownArray = [
-  //     'metalic_crown',
-  // ];
 
   const displayedDia = _dArray.concat(dColoredArray);
-
-  const disableDia = (num, key) => {
-    console.log('disableDia')
-    const currentDiagnozis = teethDiagnozis;
-    currentDiagnozis[`tooth${num}`][`${key}`] = false;
-    if (key === 'parodontit') {
-      currentDiagnozis[`tooth${num}`][`parodontit_stage`] = "";
-    }
-    dispatch(setToothDiagnoze(currentDiagnozis));
-    dispatch(setChangeDia(Math.random()));
-  };
-  const disableColorDia = (num, key) => {
-    const currentDiagnozis = teethDiagnozis;
-    currentDiagnozis[`tooth${num}`][`${key}`] = false;
-    currentDiagnozis[`tooth${num}`][`${key}_color`] = null;
-    if (
-      key === 'pulpit' ||
-      key === 'channel_not_sealed' ||
-      key === 'channel_part_sealed' ||
-      key === 'channel_top_sealed'
-    ) {
-      currentDiagnozis[`tooth${num}`][`channel_class`] = null;
-    }
-    dispatch(setToothDiagnoze(currentDiagnozis));
-    dispatch(setChangeDia(Math.random()));
-  };
 
   const renderDiagnoze = num => {
     let _diagnozisStr = false;
@@ -121,7 +86,7 @@ export default function FormulaDiagnozis() {
             {Object.keys(teethDiagnozis[`tooth${num}`]).map((_v, _k) => (
               <React.Fragment key={_k}>
                 {teethDiagnozis[`tooth${num}`][_v] && _dArray.includes(_v) ? (
-                  <span className="d-badge" onClick={() => disableDia(num, _v)}>
+                  <span className="d-badge-view">
                     {msgFormula.get(`formula.${_v}`)} {_v === 'parodontit' ? msgFormula.get(`formula.${teethDiagnozis[`tooth${num}`]['parodontit_stage']}`) : ''}
                   </span>
                 ) : (
@@ -130,9 +95,8 @@ export default function FormulaDiagnozis() {
                 {teethDiagnozis[`tooth${num}`][_v] &&
                 dColoredArray.includes(_v) ? (
                   <span
-                    className={`d-badge ${teethDiagnozis[`tooth${num}`][`${_v}_color`]}`}
-                    onClick={() => disableColorDia(num, _v)}
-                  >
+                    className={`d-badge-view ${teethDiagnozis[`tooth${num}`][`${_v}_color`]}`}
+                    >
                     {msgFormula.get(`formula.${_v}`)}
                   </span>
                 ) : (

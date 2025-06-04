@@ -23,10 +23,12 @@ import moment from 'moment';
 import {
   setChangeDia,
   setClearFormula,
-  setDataDiagnozes,
   setSelectedToothNumber,
 } from '../../Redux/Formula';
 import { emptyFormula } from '../../Constants';
+import ViewFormulaDiagnozis from './Partials/ViewFormulaDiagnozis';
+import ViewDiagnoze from './ViewDiagnoze';
+
 
 export default function index({ patientData, type, treatmentData }) {
   const dispatch = useDispatch();
@@ -284,8 +286,9 @@ export default function index({ patientData, type, treatmentData }) {
                         </span>
                       </li>
                     </ul>
-                    <div className={`tabs-content`} id={`up-t-content`} style={{display: tab === 'up' ? 'block' : 'none'}}>
-                      Up teeth diagnozis
+                    <div className={`tabs-content w-full bg-white border mt-10 patient-stage flex`} id={`up-t-content`} >
+                      <ViewDiagnoze formulaData={element} />
+
                     </div>
                     <div className={`tabs-content`} id={`bottom-t-content`} style={{display: tab === 'down' ? 'block' : 'none'}}></div>
                     <div className={`tabs-content`} id={`occlusion-content`} style={{display: tab === 'occlusion' ? 'block' : 'none'}}></div>

@@ -186,6 +186,19 @@
     line-height:10px;
     cursor:pointer;
 }
+.d-badge-view {
+    @apply inline-flex items-center rounded-md text-xs font-medium
+    text-black ring-1 ring-inset mr-4 relative;
+    padding: 3px 20px 4px 10px;
+    font-size: 11px;
+    height: 25px;
+    margin-bottom: 10px;
+    border-color: rgb(106, 19, 44);
+    box-shadow: none !important;
+    background-color: rgba(234, 187, 147, 0.3);
+    line-height:10px;
+    cursor:pointer;
+}
 .d-badge-close {
     @apply absolute top-[3px] right-[5px] cursor-pointer;
     font-style: normal;
