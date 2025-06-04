@@ -68,8 +68,8 @@ export default function index({ patientData, type, treatmentData }) {
             >
               <div className="flex justify-between">
                 <h2 className="text-left text-[14px] font-bold">
-                  {element.stage_name}{' '}
-                  {moment.utc(element.created_at).format('D.MM.YY')}
+                  <span className="f-date">{moment.utc(element.created_at).format('DD.MM.YY')}</span>
+                  {' - '}{element.stage_name}
                 </h2>
                 <div className="icon-block actions-block">
                   <ul>
