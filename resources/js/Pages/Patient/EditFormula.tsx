@@ -26,7 +26,7 @@ import {
   getCeramicCrownColorSelector,
   getCeramicMCrownColorSelector,
   getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
+  getZirconiaCrownColorSelector, getTeethDiagnozisSelector,
 } from '../../Redux/Formula/selectors';
 import {
   setTeethType,
@@ -67,10 +67,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const dispatch = useDispatch<any>();
   const teethType = useSelector(teethTypeSelector);
 
-  // if (!treatmentData.formula) {
-  //   dispatch(setChangeDia(Math.random()));
-  //   dispatch(setToothDiagnoze(emptyFormula));
-  // }
   let tData = treatmentData.formula
     ? JSON.parse(treatmentData.formula)
     : null;
@@ -86,11 +82,12 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
-
+  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
+console.log('Dia', teethDiagnozis);
   const [values, setValues] = useState({
     clinic_id: clinicData.id,
     patientData: patientData,
-    treatmentData: treatmentData,
+    treatmentData: teethDiagnozis,
     formula_type: teethType,
   });
 
@@ -102,6 +99,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   }, [treatmentData]);
 
   const showAllTeeth = () => {
+    tData = teethDiagnozis;
     if (teethType === 'adult') {
       dispatch(showAllAdult(true));
       for (let i = 11; i <= 18; i++) {
@@ -145,6 +143,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
           tData[`tooth${i}`].show = false;
         }
       }
+      console.log('Show all', tData);
       dispatch(setToothDiagnoze(tData));
     } else {
       dispatch(showAllAdult(false));
@@ -406,7 +405,7 @@ console.log(tData);
 
   const submit = e => {
     e.preventDefault();
-    values['treatmentData'] = tData;
+    values['treatmentData'] = teethDiagnozis;
     values['teethType'] = teethType;
 
     // clear selector
@@ -929,25 +928,6 @@ console.log(tData);
                                   paradontAllStageTeeth('pst1');
                                   dispatch(setChangeDia(Math.random()));
                                   dispatch(setSubDiagnosis('allst1'));
-                                  // if (diagnozis !== 'parodontit') {
-                                  //   dispatch(setDiagnosis('parodontit'));
-                                  //   paradontAllStageTeeth();
-                                  //   dispatch(
-                                  //     setSubDiagnosis(
-                                  //       subdiagnozis === 'allst1'
-                                  //         ? ''
-                                  //         : 'allst1'
-                                  //     )
-                                  //   );
-                                  // } else if (
-                                  //   diagnozis === 'parodontit' &&
-                                  //   subdiagnozis !== 'allst1'
-                                  // ) {
-                                  //   dispatch(setSubDiagnosis('allst1'));
-                                  // } else {
-                                  //   dispatch(setDiagnosis(''));
-                                  //   dispatch(setSubDiagnosis(''));
-                                  // }
                                 }}
                                 className={`diagnoze-title ${subdiagnozis === 'allst1' ? 'active' : ''} cursor-pointer`}
                               >
@@ -958,17 +938,6 @@ console.log(tData);
                                   dispatch(setChangeDia(Math.random()));
                                   paradontAllStageTeeth('pst2');
                                   dispatch(setChangeDia(Math.random()));
-                                  // if (diagnozis !== 'parodontit') {
-                                  //   dispatch(setDiagnosis('parodontit'));
-                                  // } else if (
-                                  //   diagnozis === 'parodontit' &&
-                                  //   subdiagnozis !== 'allst2'
-                                  // ) {
-                                  //   dispatch(setSubDiagnosis('allst2'));
-                                  // } else {
-                                  //   dispatch(setDiagnosis(''));
-                                  //   dispatch(setSubDiagnosis(''));
-                                  // }
                                   dispatch(
                                     setSubDiagnosis(
                                       subdiagnozis === 'allst2' ? '' : 'allst2'
@@ -983,17 +952,6 @@ console.log(tData);
                                 onClick={() => {
                                   paradontAllStageTeeth('pst3');
                                   dispatch(setChangeDia(Math.random()));
-                                  // if (diagnozis !== 'parodontit') {
-                                  //   dispatch(setDiagnosis('parodontit'));
-                                  // } else if (
-                                  //   diagnozis === 'parodontit' &&
-                                  //   subdiagnozis !== 'allst3'
-                                  // ) {
-                                  //   dispatch(setSubDiagnosis('allst3'));
-                                  // } else {
-                                  //   dispatch(setDiagnosis(''));
-                                  //   dispatch(setSubDiagnosis(''));
-                                  // }
                                   dispatch(
                                     setSubDiagnosis(
                                       subdiagnozis === 'allst3' ? '' : 'allst3'
@@ -1168,14 +1126,6 @@ console.log(tData);
                                       dispatch(setSubDiagnosis(''));
                                       dispatch(setDiagnosis(''));
                                     }
-                                    // if (diagnozis !== 'periodontit' ) {
-                                    //     dispatch(setDiagnosis('periodontit'));
-                                    // } else if (subdiagnozis !== 'st1') {
-                                    //     dispatch(setDiagnosis('st1'));
-                                    // } else {
-                                    //     dispatch(setDiagnosis(''));
-                                    // }
-                                    // dispatch(setSubDiagnosis(subdiagnozis === 'st1' ? '' : 'st1'))
                                   }}
                                   className={`diagnoze-title ${subdiagnozis === 'st1' ? 'active' : ''} mr-1 cursor-pointer`}
                                 >
@@ -1199,12 +1149,6 @@ console.log(tData);
                                       dispatch(setSubDiagnosis(''));
                                       dispatch(setDiagnosis(''));
                                     }
-                                    // if (diagnozis !== 'periodontit') {
-                                    //     dispatch(setDiagnosis('periodontit'));
-                                    // } else {
-                                    //     dispatch(setDiagnosis(''));
-                                    // }
-                                    // dispatch(setSubDiagnosis(subdiagnozis === 'st2' ? '' : 'st2'))
                                   }}
                                   className={`diagnoze-title ${subdiagnozis === 'st2' ? 'active' : ''} mr-1 cursor-pointer`}
                                 >
@@ -1693,7 +1637,6 @@ console.log(tData);
                               />
                               <span
                                 onClick={() => {
-                                  console.log(diagnozis, ceramicCrownColor);
                                   if (diagnozis !== 'metalic_crown') {
                                     dispatch(setDiagnosis('metalic_crown'));
                                     dispatch(setMetalicCrownColor('yellow'));
