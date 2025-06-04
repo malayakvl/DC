@@ -1,75 +1,12 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setChangeDia,
-  setSelectedToothNumber,
-  setToothDiagnoze,
-} from '../../../Redux/Formula';
-import {
-  allTeethAdultSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getDiagnosisSelector,
-  getMetalicCrownColorSelector,
-  getSealServicalColorSelector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getVinirColorSelector,
-  getZirconiaCrownColorSelector,
-} from '../../../Redux/Formula/selectors';
-import setupDiagnoze from '../../../lib/tfunctions';
-import { excludeToothEffect } from '../../../Constants';
 
-export default function Bone47() {
-  const dispatch = useDispatch<any>();
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth47Diagnozis = teethDiagnozis.tooth47;
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
-  const allTeeth = useSelector(allTeethAdultSelector);
+export default function Bone47({ formulaToothData }) {
+  const tooth47Diagnozis = formulaToothData;
 
   return (
     <g
       className="df-bone top"
       style={{ opacity: 1, transition: 'opacity 0.2s' }}
-      onMouseOver={() => {
-        !teethDiagnozis.tooth47.active &&
-        !allTeeth &&
-        document.getElementById('47').classList.add('tooth-number-hover');
-      }}
-      onMouseLeave={() => {
-        !teethDiagnozis.tooth47.active &&
-        !allTeeth &&
-        document.getElementById('47').classList.remove('tooth-number-hover');
-      }}
-      onClick={() => {
-        if (excludeToothEffect.includes(diagnozis)) {
-          dispatch(setSelectedToothNumber(47));
-          dispatch(setChangeDia(Math.random()));
-          if (diagnozis) {
-            const tDiaData = setupDiagnoze(
-              47,
-              diagnozis,
-              subDiagnozis,
-              teethDiagnozis,
-              dispatch,
-              vinirColor,
-              ceramicCrownColor,
-              mceramicCrownColor,
-              metalicCrownColor,
-              zirconiaCrownColor,
-              wsDefectColor
-            );
-            dispatch(setToothDiagnoze(tDiaData));
-          }
-        }
-      }}
     >
       <g
         style={{ opacity: tooth47Diagnozis.paradont_health ? 1 : 0 }}

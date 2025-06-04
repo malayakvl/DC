@@ -115,42 +115,42 @@ export default function FormulaView({ formulaData, id }) {
             />
           </g>
           <g className="lower" id={`lowerB_${id}`}>
-            <Bone31 />
-            <Bone32 />
-            <Bone33 />
-            <Bone34 />
-            <Bone35 />
-            <Bone36 />
-            <Bone37 />
-            <Bone38 />
-            <Bone41 />
-            <Bone42 />
-            <Bone43 />
-            <Bone44 />
-            <Bone45 />
-            <Bone46 />
-            <Bone47 />
-            <Bone48 />
+            <Bone31 formulaToothData={formulaData.tooth31} />
+            <Bone32 formulaToothData={formulaData.tooth32} />
+            <Bone33 formulaToothData={formulaData.tooth33} />
+            <Bone34 formulaToothData={formulaData.tooth34} />
+            <Bone35 formulaToothData={formulaData.tooth35} />
+            <Bone36 formulaToothData={formulaData.tooth36} />
+            <Bone37 formulaToothData={formulaData.tooth37} />
+            <Bone38 formulaToothData={formulaData.tooth38} />
+            <Bone41 formulaToothData={formulaData.tooth41} />
+            <Bone42 formulaToothData={formulaData.tooth42} />
+            <Bone43 formulaToothData={formulaData.tooth43} />
+            <Bone44 formulaToothData={formulaData.tooth44} />
+            <Bone45 formulaToothData={formulaData.tooth45} />
+            <Bone46 formulaToothData={formulaData.tooth46} />
+            <Bone47 formulaToothData={formulaData.tooth47} />
+            <Bone48 formulaToothData={formulaData.tooth48} />
           </g>
           <BoneR />
           <BoneL />
           <g className="upper" id={`upperB_${id}`}>
-            <Bone18 />
-            <Bone17 />
-            <Bone16 />
-            <Bone15 />
-            <Bone14 />
-            <Bone13 />
-            <Bone12 />
-            <Bone11 />
-            <Bone21 />
-            <Bone22 />
-            <Bone23 />
-            <Bone24 />
-            <Bone25 />
-            <Bone26 />
-            <Bone27 />
-            <Bone28 />
+            <Bone18 formulaToothData={formulaData.tooth18}/>
+            <Bone17 formulaToothData={formulaData.tooth17}/>
+            <Bone16 formulaToothData={formulaData.tooth16}/>
+            <Bone15 formulaToothData={formulaData.tooth15}/>
+            <Bone14 formulaToothData={formulaData.tooth14}/>
+            <Bone13 formulaToothData={formulaData.tooth13}/>
+            <Bone12 formulaToothData={formulaData.tooth12}/>
+            <Bone11 formulaToothData={formulaData.tooth11}/>
+            <Bone21 formulaToothData={formulaData.tooth21}/>
+            <Bone22 formulaToothData={formulaData.tooth22}/>
+            <Bone23 formulaToothData={formulaData.tooth23}/>
+            <Bone24 formulaToothData={formulaData.tooth24}/>
+            <Bone25 formulaToothData={formulaData.tooth25}/>
+            <Bone26 formulaToothData={formulaData.tooth26}/>
+            <Bone27 formulaToothData={formulaData.tooth27}/>
+            <Bone28 formulaToothData={formulaData.tooth28}/>
           </g>
           <BoneLL />
           <BoneRR />
