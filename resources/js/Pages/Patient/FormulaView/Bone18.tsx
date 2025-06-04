@@ -6,6 +6,7 @@ export default function Bone18({ formulaToothData }) {
 
   return (
     <g
+      id={'B-18'}
       className="df-bone top"
       style={{ opacity: 1, transition: 'opacity 0.2s' }}
     >

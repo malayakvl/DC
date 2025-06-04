@@ -114,7 +114,7 @@ export default function FormulaView({ formulaData, id }) {
                             1047.9,757.4 1047.9,1516.5 1050,1516.5 1050,757.4 2045.7,757.4"
             />
           </g>
-          <g className="lower" id={`lowerB_${id}`}>
+          <g className="lower" id={`lB_${id}`}>
             <Bone31 formulaToothData={formulaData.tooth31} />
             <Bone32 formulaToothData={formulaData.tooth32} />
             <Bone33 formulaToothData={formulaData.tooth33} />
@@ -134,7 +134,7 @@ export default function FormulaView({ formulaData, id }) {
           </g>
           <BoneR />
           <BoneL />
-          <g className="upper" id={`upperB_${id}`}>
+          <g className="upper" id={`uB_${id}`}>
             <Bone18 formulaToothData={formulaData.tooth18}/>
             <Bone17 formulaToothData={formulaData.tooth17}/>
             <Bone16 formulaToothData={formulaData.tooth16}/>

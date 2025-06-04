@@ -130,6 +130,14 @@ export default function index({ patientData, type, treatmentData }) {
                               document
                                 .getElementById(`upper_${element.id}`)
                                 .classList.add('hide-teeth');
+                              for (let i = 18; i >= 11; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
+                              }
+                              for (let i = 28; i >= 21; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
+                              }
+                              document.getElementById(`uB_${element.id}`).classList.add('hide-bone');
+                              document.getElementById(`lB_${element.id}`).classList.add('move-down-bone');
                             } else {
                               setDisableTeethTab('');
                               document
@@ -147,6 +155,15 @@ export default function index({ patientData, type, treatmentData }) {
                               document
                                 .getElementById(`upper_${element.id}`)
                                 .classList.add('show-up-teeth');
+                              for (let i = 18; i >= 11; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
+                              }
+                              for (let i = 28; i >= 21; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
+                              }
+                              document.getElementById(`uB_${element.id}`).classList.remove('hide-bone');
+                              document.getElementById(`lB_${element.id}`).classList.remove('move-down-bone');
+
                             }
                           }}
                         >
@@ -174,7 +191,12 @@ export default function index({ patientData, type, treatmentData }) {
                               document
                                 .getElementById(`lower_${element.id}`)
                                 .classList.add('hide-teeth');
-                              // document.getElementById(`upper_${element.id}`).classList.add('hide-teeth');
+                              for (let i = 38; i >= 31; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
+                              }
+                              for (let i = 48; i >= 41; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
+                              }
                             } else {
                               setDisableTeethTab('');
                               document
@@ -183,9 +205,12 @@ export default function index({ patientData, type, treatmentData }) {
                               document
                                 .getElementById(`lower_${element.id}`)
                                 .classList.remove('hide-teeth');
-                              // document.getElementById(`upper_${element.id}`).classList.remove('hide-teeth');
-                              // document.getElementById(`lower_${element.id}`).classList.add('show-up-teeth');
-                              // document.getElementById(`upper_${element.id}`).classList.add('show-up-teeth');
+                              for (let i = 38; i >= 31; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
+                              }
+                              for (let i = 48; i >= 41; i--) {
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
+                              }
                             }
                           }}
                         >
@@ -202,46 +227,54 @@ export default function index({ patientData, type, treatmentData }) {
                             ) {
                               document.getElementById(`occlusion-${element.id}`).classList.remove('active');
                               document.getElementById(`axis_${element.id}`).classList.add('hide-axis');
-                              document.getElementById(`lowerB_${element.id}`).classList.add('opclusion');
+                              document.getElementById(`lB_${element.id}`).classList.add('opclusion');
                               document.getElementById(`lower_${element.id}`).classList.add('opclusion');
                               // hide teeth top view
                               for (let i = 18; i >= 11; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
                                 document.getElementById(`${i}`).style.visibility = 'hidden';
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
                               }
                               for (let i = 28; i >= 21; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
                                 document.getElementById(`${i}`).style.visibility = 'hidden';
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
                               }
                               for (let i = 48; i >= 41; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
                                 document.getElementById(`${i}`).style.visibility = 'hidden';
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
                               }
                               for (let i = 38; i >= 31; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
                                 document.getElementById(`${i}`).style.visibility = 'hidden';
+                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
                               }
                             } else {
                               document.getElementById(`occlusion-${element.id}`).classList.add('active');
                               document.getElementById(`axis_${element.id}`).classList.remove('hide-axis');
-                              document.getElementById(`lowerB_${element.id}`).classList.remove('opclusion');
+                              document.getElementById(`lB_${element.id}`).classList.remove('opclusion');
                               document.getElementById(`lower_${element.id}`).classList.remove('opclusion');
                               // hide teeth top view
                               for (let i = 18; i >= 11; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
                                 document.getElementById(`${i}`).style.visibility = 'inherit';
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
                               }
                               for (let i = 28; i >= 21; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
                                 document.getElementById(`${i}`).style.visibility = 'inherit';
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
                               }
                               for (let i = 48; i >= 41; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
                                 document.getElementById(`${i}`).style.visibility = 'inherit';
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
                               }
                               for (let i = 38; i >= 31; i--) {
                                 document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
                                 document.getElementById(`${i}`).style.visibility = 'inherit';
+                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
                               }
                             }
                             setDisableTeethTab('occlusion');

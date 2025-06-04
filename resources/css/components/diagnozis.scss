@@ -261,3 +261,12 @@
 .hide-axis {
     display:none;
 }
+.move-down-bone {
+    transform: matrix(1, 0, 0, 1, 0, -550);
+    transition: transform 1s;
+}
+.hide-bone {
+    transform: matrix(1, 0, 0, 1, 0, -700);
+    transition: transform 1s;
+    display: inline-block;
+}
