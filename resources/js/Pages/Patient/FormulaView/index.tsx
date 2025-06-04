@@ -92,6 +92,7 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 
 export default function FormulaView({ formulaData, id }) {
+
   return (
     <>
       <section>
@@ -106,15 +107,14 @@ export default function FormulaView({ formulaData, id }) {
         >
           <MaxilaryLeft />
           <MaxilaryRight />
-          <g id="line">
+          <g id={`axis_${id}`}>
             <polygon
-              id="line_1_"
-              className="st37"
+              className="axis"
               points="2045.7,755.2 1050,755.2 1050,127 1047.9,127 1047.9,755.2 47.9,755.2 47.9,757.4
                             1047.9,757.4 1047.9,1516.5 1050,1516.5 1050,757.4 2045.7,757.4"
             />
           </g>
-          <g className="lower">
+          <g className="lower" id={`lowerB_${id}`}>
             <Bone31 />
             <Bone32 />
             <Bone33 />
@@ -134,7 +134,7 @@ export default function FormulaView({ formulaData, id }) {
           </g>
           <BoneR />
           <BoneL />
-          <g className="upper">
+          <g className="upper" id={`upperB_${id}`}>
             <Bone18 />
             <Bone17 />
             <Bone16 />

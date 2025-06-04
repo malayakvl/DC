@@ -31,6 +31,7 @@ import { emptyFormula } from '../../Constants';
 export default function index({ patientData, type, treatmentData }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type ? type : 'history');
+  const [disableTeethTab, setDisableTeethTab] = useState('');
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
@@ -105,7 +106,7 @@ export default function index({ patientData, type, treatmentData }) {
                   </div>
                   <div className="w-1/2">
                     <ul className="tabs">
-                      <li className={'active'} id={`up-t`}>
+                      <li className={'active'} id={`up-t-${element.id}`}>
                         <span
                           onClick={() => {
                             if (
@@ -113,8 +114,9 @@ export default function index({ patientData, type, treatmentData }) {
                                 .getElementById(`lower_${element.id}`)
                                 .classList.contains('hide-up-teeth')
                             ) {
+                              setDisableTeethTab('up');
                               document
-                                .getElementById('up-t')
+                                .getElementById(`up-t-${element.id}`)
                                 .classList.remove('active');
                               document
                                 .getElementById(`lower_${element.id}`)
@@ -129,8 +131,9 @@ export default function index({ patientData, type, treatmentData }) {
                                 .getElementById(`upper_${element.id}`)
                                 .classList.add('hide-teeth');
                             } else {
+                              setDisableTeethTab('');
                               document
-                                .getElementById('up-t')
+                                .getElementById(`up-t-${element.id}`)
                                 .classList.add('active');
                               document
                                 .getElementById(`lower_${element.id}`)
@@ -150,7 +153,7 @@ export default function index({ patientData, type, treatmentData }) {
                           {msgFormula.get('formula.maxilla')}
                         </span>
                       </li>
-                      <li className={'active'} id={`bottom-t`}>
+                      <li className={'active'} id={`bottom-t-${element.id}`}>
                         <span
                           onClick={() => {
                             if (
@@ -158,8 +161,9 @@ export default function index({ patientData, type, treatmentData }) {
                                 .getElementById(`lower_${element.id}`)
                                 .classList.contains('hide-teeth')
                             ) {
+                              setDisableTeethTab('down');
                               document
-                                .getElementById('bottom-t')
+                                .getElementById(`bottom-t-${element.id}`)
                                 .classList.remove('active');
                               document
                                 .getElementById(`lower_${element.id}`)
@@ -172,8 +176,9 @@ export default function index({ patientData, type, treatmentData }) {
                                 .classList.add('hide-teeth');
                               // document.getElementById(`upper_${element.id}`).classList.add('hide-teeth');
                             } else {
+                              setDisableTeethTab('');
                               document
-                                .getElementById('bottom-t')
+                                .getElementById(`bottom-t-${element.id}`)
                                 .classList.add('active');
                               document
                                 .getElementById(`lower_${element.id}`)
@@ -187,17 +192,70 @@ export default function index({ patientData, type, treatmentData }) {
                           {msgFormula.get('formula.mandible')}
                         </span>
                       </li>
-                      <li className={'active'}>
-                        <Link
-                          href={`#`}
+                      <li className={'active'} id={`occlusion-${element.id}`}>
+                        <span
                           onClick={() => {
-                            alert('formula.occlusion');
+                            if (
+                              document
+                                .getElementById(`occlusion-${element.id}`)
+                                .classList.contains('active')
+                            ) {
+                              document.getElementById(`occlusion-${element.id}`).classList.remove('active');
+                              document.getElementById(`axis_${element.id}`).classList.add('hide-axis');
+                              document.getElementById(`lowerB_${element.id}`).classList.add('opclusion');
+                              document.getElementById(`lower_${element.id}`).classList.add('opclusion');
+                              // hide teeth top view
+                              for (let i = 18; i >= 11; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
+                                document.getElementById(`${i}`).style.visibility = 'hidden';
+                              }
+                              for (let i = 28; i >= 21; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
+                                document.getElementById(`${i}`).style.visibility = 'hidden';
+                              }
+                              for (let i = 48; i >= 41; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
+                                document.getElementById(`${i}`).style.visibility = 'hidden';
+                              }
+                              for (let i = 38; i >= 31; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
+                                document.getElementById(`${i}`).style.visibility = 'hidden';
+                              }
+                            } else {
+                              document.getElementById(`occlusion-${element.id}`).classList.add('active');
+                              document.getElementById(`axis_${element.id}`).classList.remove('hide-axis');
+                              document.getElementById(`lowerB_${element.id}`).classList.remove('opclusion');
+                              document.getElementById(`lower_${element.id}`).classList.remove('opclusion');
+                              // hide teeth top view
+                              for (let i = 18; i >= 11; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
+                                document.getElementById(`${i}`).style.visibility = 'inherit';
+                              }
+                              for (let i = 28; i >= 21; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
+                                document.getElementById(`${i}`).style.visibility = 'inherit';
+                              }
+                              for (let i = 48; i >= 41; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
+                                document.getElementById(`${i}`).style.visibility = 'inherit';
+                              }
+                              for (let i = 38; i >= 31; i--) {
+                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
+                                document.getElementById(`${i}`).style.visibility = 'inherit';
+                              }
+                            }
+                            setDisableTeethTab('occlusion');
                           }}
                         >
                           {msgFormula.get('formula.occlusion')}
-                        </Link>
+                        </span>
                       </li>
                     </ul>
+                    <div className={`tabs-content`} id={`up-t-content`} style={{display: tab === 'up' ? 'block' : 'none'}}>
+                      Up teeth diagnozis
+                    </div>
+                    <div className={`tabs-content`} id={`bottom-t-content`} style={{display: tab === 'down' ? 'block' : 'none'}}></div>
+                    <div className={`tabs-content`} id={`occlusion-content`} style={{display: tab === 'occlusion' ? 'block' : 'none'}}></div>
                   </div>
                 </div>
               )}

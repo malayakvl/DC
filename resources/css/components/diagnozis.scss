@@ -251,7 +251,13 @@
     transition: transform 1s;
     display: inline-block;
 }
-
+.opclusion {
+    transform: matrix(1, 0, 0, 1, 0, -550);
+    transition: transform 1s;
+}
 .hide-teeth {
+    display:none;
+}
+.hide-axis {
     display:none;
 }

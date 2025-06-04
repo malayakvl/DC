@@ -1,7 +1,7 @@
 import React from 'react';
 import PeriodontitStage38 from './periodontit38';
 
-export default function Tooth38(formulaToothData) {
+export default function Tooth38({formulaToothData}) {
   const tooth38Diagnozis = formulaToothData;
 
   return (

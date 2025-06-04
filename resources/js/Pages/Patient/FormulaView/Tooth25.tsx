@@ -6,7 +6,7 @@ export default function Tooth25({ formulaToothData }) {
 
   return (
     <>
-      <g
+      <g id="25"
         className={`tooth-number-active ${!tooth25Diagnozis.show ? 'hide-number' : ''}`}
       >
         <text
