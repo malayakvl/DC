@@ -26,14 +26,14 @@ import {
   setSelectedToothNumber,
 } from '../../Redux/Formula';
 import { emptyFormula } from '../../Constants';
-import ViewFormulaDiagnozis from './Partials/ViewFormulaDiagnozis';
 import ViewDiagnoze from './ViewDiagnoze';
 
 
 export default function index({ patientData, type, treatmentData }) {
   const dispatch = useDispatch();
-  const [tab, setTab] = useState(type ? type : 'history');
-  const [disableTeethTab, setDisableTeethTab] = useState('');
+  const [tab, setTab] = useState<string>(type ? type : 'history');
+  const [_, setDisableTeethTab] = useState<string>('');
+  const [trType, setTrType] = useState<string>('');
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
@@ -44,16 +44,18 @@ export default function index({ patientData, type, treatmentData }) {
     locale: appLang,
   });
   const [stageName, setStageName] = useState('');
+
   const handleTabClick = tabName => {
     setTab(tabName);
   };
+
 
   const submit = e => {
     e.preventDefault();
     router.post(`/patient/create-treatment`, {
       user_id: patientData.id,
       stage_name: stageName,
-      type: tab,
+      type: trType,
     });
   };
 
@@ -411,7 +413,7 @@ export default function index({ patientData, type, treatmentData }) {
                           dispatch(setChangeDia(Math.random()));
                           dispatch(setSelectedToothNumber(''));
                           dispatch(setClearFormula(emptyFormula));
-                          setTab('formula');
+                          setTrType('formula');
                         }}
                       >
                         <i className="icon-formula" />
@@ -421,7 +423,7 @@ export default function index({ patientData, type, treatmentData }) {
                       </button>
                     </li>
                     <li className="relative">
-                      <button type="submit" onClick={() => setTab('perio')}>
+                      <button type="submit" onClick={() => setTrType('perio')}>
                         <i className="icon-perio" />
                         <span className="inline-block ml-[35px]">
                           {msg.get('patient.tab.perio')}
@@ -429,7 +431,7 @@ export default function index({ patientData, type, treatmentData }) {
                       </button>
                     </li>
                     <li className="relative">
-                      <button type="submit" onClick={() => setTab('psr')}>
+                      <button type="submit" onClick={() => setTrType('psr')}>
                         <i className="icon-psr" />
                         <span className="inline-block ml-[35px]">
                           {msg.get('patient.tab.test')}

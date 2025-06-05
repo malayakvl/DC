@@ -3,13 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
-import {
-  getRemoveDiaSelector,
-} from '../../../Redux/Formula/selectors';
 
 export default function ViewFormulaDiagnozis({ formulaData }) {
   const appLang = useSelector(appLangSelector);
-  console.log('Income data', formulaData);
   const tData = formulaData;
   const msgFormula = new Lang({
     messages: lngFormula,
