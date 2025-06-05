@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+// import React, { useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getPerioZ1828VDataSelector,
@@ -19,7 +20,8 @@ import {
   setPerioYK1828OralData,
 } from '../../../Redux/Formula';
 
-export default function YasenKray1828({ type = 'vest', idx = 0 }) {
+const YasenKray1828 = forwardRef(({ type, idx, onEnter }, ref) => {
+// export default function YasenKray1828({ type = 'vest', idx = 0, ref = null, onEnter }) {
   const dispatch = useDispatch<any>();
 
   const zv1828Data = useSelector(getPerioZ1828VDataSelector);
@@ -27,13 +29,22 @@ export default function YasenKray1828({ type = 'vest', idx = 0 }) {
   const zo1828Data = useSelector(getPerioZ1828ODataSelector);
   const yko1828Data = useSelector(getPerioYK1828ODataSelector);
 
-  const [value, setValue] = useState(
+  const [value, setValue] = useState<number | ''>(
     type === 'vest' ? ykv1828Data[idx] : yko1828Data[idx]
   );
 
   const inputStyle = {
     color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green', // если больше 5 — красный, иначе черный
   };
+
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === 'Enter') {
+        onEnter(idx); // Trigger focus on the next input
+      }
+    },
+    [idx, onEnter]
+  );
 
   const recalcSlice = type => {
     let arrYasen = ykv1828Data;
@@ -125,17 +136,27 @@ export default function YasenKray1828({ type = 'vest', idx = 0 }) {
 
   return (
     <input
+      ref={ref}
+      onKeyPress={handleKeyPress}
       onChange={e => {
         if (type === 'vest') {
+          const inputValue = e.target.value;
+          // Allow empty input or valid numbers; otherwise, set to '0'
+          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
           const _pZData = ykv1828Data;
-          _pZData[idx] = parseInt(e.target.value);
-          setValue(parseInt(e.target.value));
+          _pZData[idx] = parseInt(newValue);
+          setValue(parseInt(newValue));
           dispatch(setPerioYK1828VestData(_pZData));
+          onEnter(idx);
         } else {
+          const inputValue = e.target.value;
+          // Allow empty input or valid numbers; otherwise, set to '0'
+          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
           const _pZData = yko1828Data;
-          _pZData[idx] = parseInt(e.target.value);
-          setValue(parseInt(e.target.value));
+          _pZData[idx] = parseInt(newValue);
+          setValue(parseInt(newValue));
           dispatch(setPerioYK1828OralData(_pZData));
+          onEnter(idx);
         }
         e.target.style.color =
           Number(e.target.value) > 5
@@ -146,9 +167,10 @@ export default function YasenKray1828({ type = 'vest', idx = 0 }) {
         recalcSlice(type);
       }}
       className="psr-input bottom focus:outline-hidden"
-      value={isNaN(value) ? '' : value}
-      maxLength={1}
+      value={value}
+      step={1} // Ensure whole numbers
       type="text"
     />
   );
-}
+});
+export default YasenKray1828;

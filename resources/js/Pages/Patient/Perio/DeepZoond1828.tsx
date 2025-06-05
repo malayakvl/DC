@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getPerioZ1828VDataSelector,
   getPerioYK1828VDataSelector,
-  chartKrayUpSelector,
   getPerioZ1828ODataSelector,
   getPerioYK1828ODataSelector,
 } from '../../../Redux/Formula/selectors';
@@ -18,18 +17,17 @@ import {
   setPerioZ1828VestData,
   setPKrayChart1828Down,
   setPKrayChart1828Up,
-} from '@/Redux/Formula/actions';
+} from '../../../Redux/Formula';
 
-export default function DeepZond1828({ type = 'vest', idx = 0 }) {
+const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
   const dispatch = useDispatch<any>();
-  const yasen1828VestData = useSelector(chartKrayUpSelector);
 
   const zv1828Data = useSelector(getPerioZ1828VDataSelector);
   const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
   const zo1828Data = useSelector(getPerioZ1828ODataSelector);
   const yko1828Data = useSelector(getPerioYK1828ODataSelector);
 
-  const [value, setValue] = useState(
+  const [value, setValue] = useState<number | ''>(
     type === 'vest' ? zv1828Data[idx] : zo1828Data[idx]
   );
 
@@ -52,6 +50,8 @@ export default function DeepZond1828({ type = 'vest', idx = 0 }) {
         resNewZond.push(-1 * (yasnVal - zondVal));
       }
     } else {
+      console.log(arrYasenOral);
+      console.log(arrZondOral);
       for (let i = 0; i < arrYasenOral.length; i++) {
         const zondVal = !isNaN(parseInt(arrZondOral[i]))
           ? parseInt(arrZondOral[i])
@@ -103,29 +103,57 @@ export default function DeepZond1828({ type = 'vest', idx = 0 }) {
     }
   };
 
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === 'Enter') {
+        onEnter(idx); // Trigger focus on the next input
+      }
+    },
+    [idx, onEnter]
+  );
+
   return (
     <input
+      ref={ref}
+      onKeyPress={handleKeyPress}
       onChange={e => {
         if (type === 'vest') {
+          const inputValue = e.target.value;
+          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
           const _pZData = zv1828Data;
-          _pZData[idx] = parseInt(e.target.value);
-          setValue(parseInt(e.target.value));
+          _pZData[idx] = parseInt(newValue);
+          setValue(parseInt(newValue));
+
+          const tabValues = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+          if (newValue !== '' && tabValues.includes(parseInt(newValue))) {
+            // Move focus to the next input if it exists
+            onEnter(idx);
+          }
+
           e.target.style.color =
-            Number(e.target.value) > 5
+            Number(inputValue) > 5
               ? 'red'
-              : Number(e.target.value) === 5
+              : Number(inputValue) === 5
                 ? 'blue'
                 : 'green';
           dispatch(setPerioZ1828VestData(_pZData));
         } else {
+          const inputValue = e.target.value;
+          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
           const _pZData = zo1828Data;
+          _pZData[idx] = parseInt(newValue);
+          setValue(parseInt(newValue));
 
-          _pZData[idx] = parseInt(e.target.value);
-          setValue(parseInt(e.target.value));
+          const tabValues = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+          if (newValue !== '' && tabValues.includes(parseInt(newValue))) {
+            // Move focus to the next input if it exists
+            onEnter(idx);
+          }
+
           e.target.style.color =
-            Number(e.target.value) > 5
+            Number(newValue) > 5
               ? 'red'
-              : Number(e.target.value) === 5
+              : Number(newValue) === 5
                 ? 'blue'
                 : 'green';
           dispatch(setPerioZ1828OralData(_pZData));
@@ -136,9 +164,11 @@ export default function DeepZond1828({ type = 'vest', idx = 0 }) {
       className="psr-input bottom focus:outline-hidden"
       value={value}
       maxLength={2}
+      step={1} // Ensure whole numbers
       max={19}
       min={0}
       type="text"
     />
   );
-}
+});
+export default DeepZond1828;

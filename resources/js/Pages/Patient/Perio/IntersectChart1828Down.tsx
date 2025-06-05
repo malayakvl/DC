@@ -174,16 +174,16 @@ export default function IntersectChart1828Down() {
         borderColor: 'blue',
         fill: '-1', // заполняет между этой и предыдущей линией
       },
-      {
-        type: 'bar',
-        options: {
-          barPercentage: 1,
-        },
-        backgroundColor: 'green',
-        barThickness: 1,
-        with: 2,
-        data: bar1828VestData,
-      },
+      // {
+      //   type: 'bar',
+      //   options: {
+      //     barPercentage: 1,
+      //   },
+      //   backgroundColor: 'green',
+      //   barThickness: 1,
+      //   with: 2,
+      //   data: bar1828VestData,
+      // },
     ],
   };
 

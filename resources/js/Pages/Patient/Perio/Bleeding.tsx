@@ -37,12 +37,12 @@ export default function Bleeding({ toothNum, type }) {
           }}
           fill={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgb(225, 36, 36)'
+              ? 'rgb(250, 107, 107)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgba(225, 36, 36, 0.9)'
+              ? 'rgba(224, 11, 11, 0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }
           strokeWidth="7px"
@@ -56,12 +56,12 @@ export default function Bleeding({ toothNum, type }) {
           }}
           fill={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgb(225, 36, 36)'
+              ? 'rgb(250, 107, 107)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgba(225, 36, 36, 0.9)'
+              ? 'rgba(224, 11, 11, 0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }
           strokeWidth="7px"
@@ -75,12 +75,12 @@ export default function Bleeding({ toothNum, type }) {
           }}
           fill={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgb(225, 36, 36)'
+              ? 'rgb(250, 107, 107)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
             perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgba(225, 36, 36, 0.9)'
+              ? 'rgba(224, 11, 11, 0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }
           strokeWidth="7px"

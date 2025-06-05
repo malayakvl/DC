@@ -1,10 +1,20 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import { setPerioDiagnoze } from '../../../Redux/Formula';
 
-export default function Fertilizer({ toothNum }) {
-  // const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  // const tooth11Diagnozis = teethDiagnozis.tooth11;
+export default function Fertilizer({ toothNum, type }) {
+  const dispatch = useDispatch<any>();
+  const perioDiagnozis = useSelector(perioDiagnozisSelector);
+  const [changeState, setChangeState] = useState(false);
+
+  const setDiagnozis = stage => {
+    perioDiagnozis[`tooth${toothNum}`][`fertilizer_${type}_st${stage}`] =
+      !perioDiagnozis[`tooth${toothNum}`][`fertilizer_${type}_st${stage}`];
+    dispatch(setPerioDiagnoze(perioDiagnozis));
+    setChangeState(!changeState);
+  };
+  useEffect(() => {}, [changeState]);
 
   return (
     <>
@@ -25,8 +35,19 @@ export default function Fertilizer({ toothNum }) {
           cx="50"
           cy="50"
           r="25"
-          fill="rgba(255, 255, 255, 0)"
-          stroke="rgba(200, 200, 200, 0.9)"
+          onClick={() => {
+            setDiagnozis(1);
+          }}
+          fill={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st1`]
+              ? 'rgb(253, 222, 136)'
+              : 'rgba(255, 255, 255, 0)'
+          }
+          stroke={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st1`]
+              ? 'rgba(245, 185, 20,0.9)'
+              : 'rgba(200, 200, 200, 0.9)'
+          }
           strokeWidth="7px"
         ></circle>
         <circle
@@ -36,8 +57,19 @@ export default function Fertilizer({ toothNum }) {
           cx="150"
           cy="50"
           r="25"
-          fill="rgba(255, 255, 255, 0)"
-          stroke="rgba(200, 200, 200, 0.9)"
+          onClick={() => {
+            setDiagnozis(2);
+          }}
+          fill={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st2`]
+              ? 'rgb(253, 222, 136)'
+              : 'rgba(255, 255, 255, 0)'
+          }
+          stroke={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st2`]
+              ? 'rgba(245, 185, 20,0.9)'
+              : 'rgba(200, 200, 200, 0.9)'
+          }
           strokeWidth="7px"
         ></circle>
         <circle
@@ -47,8 +79,19 @@ export default function Fertilizer({ toothNum }) {
           cx="250"
           cy="50"
           r="25"
-          fill="rgba(255, 255, 255, 0)"
-          stroke="rgba(200, 200, 200, 0.9)"
+          onClick={() => {
+            setDiagnozis(3);
+          }}
+          fill={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st3`]
+              ? 'rgb(253, 222, 136)'
+              : 'rgba(255, 255, 255, 0)'
+          }
+          stroke={
+            perioDiagnozis[`tooth${toothNum}`]?.[`fertilizer_${type}_st3`]
+              ? 'rgba(245, 185, 20,0.9)'
+              : 'rgba(200, 200, 200, 0.9)'
+          }
           strokeWidth="7px"
         ></circle>
       </svg>
