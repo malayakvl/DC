@@ -85,7 +85,8 @@ const lngPatient = {
     no_inflammatory_process: 'Відсутній запальний процес',
     pst1: '1 ст',
     pst2: '2 ст',
-    pst3: '3 ст'
+    pst3: '3 ст',
+    vest_oral: 'Вестибулярно/Орально'
   },
 };
 export default lngPatient;

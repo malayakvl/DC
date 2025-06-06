@@ -173,23 +173,23 @@ export default function IntersectChart4838Up() {
         borderColor: 'blue',
         fill: '-1', // заполняет между этой и предыдущей линией
       },
-      {
-        type: 'bar',
-        options: {
-          barPercentage: 1,
-        },
-        backgroundColor: 'green',
-        barThickness: 1,
-        with: 2,
-        data: bar1828VestData,
-      },
+      // {
+      //   type: 'bar',
+      //   options: {
+      //     barPercentage: 1,
+      //   },
+      //   backgroundColor: 'green',
+      //   barThickness: 1,
+      //   with: 2,
+      //   data: bar1828VestData,
+      // },
     ],
   };
 
   return (
     <>
       <div
-        style={{ width: '1215px', height: '100px' }}
+        style={{ width: '1160px', height: '100px' }}
         className="chart-intersect-up"
       >
         <Line data={data} options={options} height={100} />

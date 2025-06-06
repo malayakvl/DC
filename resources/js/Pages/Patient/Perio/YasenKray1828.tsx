@@ -1,4 +1,3 @@
-// import React, { useRef, useState } from 'react';
 import React, { forwardRef, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,163 +13,115 @@ import {
   setPKrayChart1828Down,
   setPZondChart1828Down,
   setPBarChart1828Down,
-  setPerioZ1828VestData,
-  setPerioZ1828OralData,
   setPerioYK1828VestData,
   setPerioYK1828OralData,
 } from '../../../Redux/Formula';
 
-const YasenKray1828 = forwardRef(({ type, idx, onEnter }, ref) => {
-// export default function YasenKray1828({ type = 'vest', idx = 0, ref = null, onEnter }) {
-  const dispatch = useDispatch<any>();
+interface YasenKray1828Props {
+  type: 'vest' | 'oral';
+  idx: number;
+  onEnter: (idx: number) => void;
+}
 
-  const zv1828Data = useSelector(getPerioZ1828VDataSelector);
+const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, idx, onEnter }, ref) => {
+  const dispatch = useDispatch();
   const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
-  const zo1828Data = useSelector(getPerioZ1828ODataSelector);
   const yko1828Data = useSelector(getPerioYK1828ODataSelector);
+  const zv1828Data = useSelector(getPerioZ1828VDataSelector);
+  const zo1828Data = useSelector(getPerioZ1828ODataSelector);
 
   const [value, setValue] = useState<number | ''>(
     type === 'vest' ? ykv1828Data[idx] : yko1828Data[idx]
   );
 
   const inputStyle = {
-    color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green', // если больше 5 — красный, иначе черный
+    color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green',
   };
 
   const handleKeyPress = useCallback(
-    (event) => {
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
-        onEnter(idx); // Trigger focus on the next input
+        onEnter(idx);
       }
     },
     [idx, onEnter]
   );
 
-  const recalcSlice = type => {
-    let arrYasen = ykv1828Data;
-    let arrZond = zv1828Data;
-    let arrYasenOral = yko1828Data;
-    let arrZondOral = zo1828Data;
-    const resNewYasn = [];
-    const resNewZond = [];
-    const chartnNewYasn = [];
-    const chartNewZond = [];
-    let sumZond = 0;
-    if (type === 'vest') {
-      arrZond.forEach(num => {
-        sumZond += !isNaN(parseInt(num)) ? parseInt(num) : 0;
-      });
-      for (let i = 0; i < arrYasen.length; i++) {
-        const zondVal = !isNaN(parseInt(arrZond[i])) ? parseInt(arrZond[i]) : 0;
-        const yasnVal = !isNaN(parseInt(arrYasen[i]))
-          ? parseInt(arrYasen[i])
-          : 0;
-        resNewYasn.push(-1 * yasnVal);
-        if (sumZond == 0) {
-          resNewZond.push(0);
-        } else {
-          resNewZond.push(-1 * (yasnVal - zondVal));
-        }
-      }
-    } else {
-      arrZondOral.forEach(num => {
-        sumZond += !isNaN(parseInt(num)) ? parseInt(num) : 0;
-      });
-      for (let i = 0; i < arrYasenOral.length; i++) {
-        const zondVal = !isNaN(parseInt(arrZondOral[i]))
-          ? parseInt(arrZondOral[i])
-          : 0;
-        const yasnVal = !isNaN(parseInt(arrYasenOral[i]))
-          ? parseInt(arrYasenOral[i])
-          : 0;
-        resNewYasn.push(yasnVal);
-        if (sumZond == 0) {
-          resNewZond.push(0);
-        } else {
-          resNewZond.push(yasnVal - zondVal);
-        }
+  const recalcSlice = useCallback(() => {
+    const isVest = type === 'vest';
+    const arrYasen = isVest ? ykv1828Data : yko1828Data;
+    const arrZond = isVest ? zv1828Data : zo1828Data;
+
+    const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
+    const resNewYasn: number[] = [];
+    const resNewZond: number[] = [];
+    const chartBar: [number, number][] = [];
+
+    for (let i = 0; i < arrYasen.length; i++) {
+      const zondVal = parseInt(arrZond[i]) || 0;
+      const yasnVal = parseInt(arrYasen[i]) || 0;
+      const yasnResult = isVest ? -yasnVal : yasnVal;
+      const zondResult = sumZond === 0 ? 0 : isVest ? -(yasnVal - zondVal) : yasnVal - zondVal;
+
+      resNewYasn.push(yasnResult);
+      resNewZond.push(zondResult);
+      chartBar.push([zondResult, yasnResult]);
+
+      if ((i + 1) % 3 === 0 && i + 1 < arrYasen.length) {
+        resNewYasn.push((resNewYasn[i] + (parseInt(arrYasen[i + 1]) || 0) * (isVest ? -1 : 1)) / 2);
+        resNewZond.push((resNewZond[i] + (sumZond === 0 ? 0 : (parseInt(arrYasen[i + 1]) || 0) - (parseInt(arrZond[i + 1]) || 0) * (isVest ? -1 : 1))) / 2);
       }
     }
-    // calculate values for zond/yasen chart
-    const chartBar = [];
-    for (let i = 0; i < resNewZond.length; i++) {
-      chartNewZond.push(
-        !isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0
-      );
-      chartnNewYasn.push(
-        !isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0
-      );
-      if (sumZond != 0) {
-        chartBar.push([
-          !isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0,
-          !isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0,
-        ]);
-      } else {
-        chartBar.push([0, 0]);
-      }
-      // После каждого третьего элемента (индекс 2, 5, 8, ...)
-      if ((i + 1) % 3 === 0 && i + 1 < resNewZond.length) {
-        let avgZond = (resNewZond[i] + resNewZond[i + 1]) / 2;
-        chartNewZond.push(avgZond);
-        let avgYasn = (resNewYasn[i] + resNewYasn[i + 1]) / 2;
-        chartnNewYasn.push(avgYasn);
-      }
-    }
-    chartNewZond.unshift(0);
-    chartNewZond.push(0);
-    chartnNewYasn.unshift(0);
-    chartnNewYasn.push(0);
-    chartBar.unshift(0);
+
+    resNewYasn.unshift(0);
+    resNewYasn.push(0);
+    resNewZond.unshift(0);
+    resNewZond.push(0);
+    chartBar.unshift([0, 0]);
     chartBar.push([0, 0]);
 
-    if (type === 'vest') {
-      dispatch(setPKrayChart1828Up(chartnNewYasn));
-      dispatch(setPZondChart1828Up(chartNewZond));
-      dispatch(setPBarChart1828Up(chartBar));
-    } else {
-      dispatch(setPKrayChart1828Down(chartnNewYasn));
-      dispatch(setPZondChart1828Down(chartNewZond));
-      dispatch(setPBarChart1828Down(chartBar));
-    }
-  };
+    const actions = isVest
+      ? [setPKrayChart1828Up, setPZondChart1828Up, setPBarChart1828Up]
+      : [setPKrayChart1828Down, setPZondChart1828Down, setPBarChart1828Down];
+
+    dispatch(actions[0](resNewYasn));
+    dispatch(actions[1](resNewZond));
+    dispatch(actions[2](chartBar));
+  }, [dispatch, type, ykv1828Data, yko1828Data, zv1828Data, zo1828Data]);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = e.target.value;
+      const lastChar = inputValue.slice(-1);
+      const newValue = lastChar === '' || /^[0-9]$/.test(lastChar) ? lastChar : '0';
+      const parsedValue = parseInt(newValue) || 0;
+
+      setValue(parsedValue);
+
+      const updatedData = type === 'vest' ? [...ykv1828Data] : [...yko1828Data];
+      updatedData[idx] = parsedValue;
+      dispatch(type === 'vest'
+        ? setPerioYK1828VestData(updatedData)
+        : setPerioYK1828OralData(updatedData)
+      );
+
+      onEnter(idx);
+      recalcSlice();
+    },
+    [dispatch, idx, onEnter, recalcSlice, type, ykv1828Data, yko1828Data]
+  );
 
   return (
     <input
       ref={ref}
       onKeyPress={handleKeyPress}
-      onChange={e => {
-        if (type === 'vest') {
-          const inputValue = e.target.value;
-          // Allow empty input or valid numbers; otherwise, set to '0'
-          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
-          const _pZData = ykv1828Data;
-          _pZData[idx] = parseInt(newValue);
-          setValue(parseInt(newValue));
-          dispatch(setPerioYK1828VestData(_pZData));
-          onEnter(idx);
-        } else {
-          const inputValue = e.target.value;
-          // Allow empty input or valid numbers; otherwise, set to '0'
-          const newValue = inputValue === '' || /^\d*$/.test(inputValue) ? inputValue : '0';
-          const _pZData = yko1828Data;
-          _pZData[idx] = parseInt(newValue);
-          setValue(parseInt(newValue));
-          dispatch(setPerioYK1828OralData(_pZData));
-          onEnter(idx);
-        }
-        e.target.style.color =
-          Number(e.target.value) > 5
-            ? 'red'
-            : Number(e.target.value) === 5
-              ? 'blue'
-              : 'green';
-        recalcSlice(type);
-      }}
-      className="psr-input bottom focus:outline-hidden"
+      onChange={handleChange}
+      className="psr-input bottom focus:outline-none"
       value={value}
-      step={1} // Ensure whole numbers
       type="text"
+      style={inputStyle}
     />
   );
 });
+
 export default YasenKray1828;

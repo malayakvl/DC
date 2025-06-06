@@ -14,6 +14,7 @@ export default function Bleeding({ toothNum, type }) {
     dispatch(setPerioDiagnoze(perioDiagnozis));
     setChangeState(!changeState);
   };
+
   useEffect(() => {}, [changeState]);
 
   return (

@@ -32,59 +32,108 @@ export default function Index() {
     locale: appLang,
   });
   // Create an array of refs for YasenKray1828 inputs (vest and oral combined)
-  const inputVestYasenRefs = useRef(new Array(48).fill(null)); // 48 for vest
-  const inputOralYasenRefs = useRef(new Array(48).fill(null)); // 48 for vest
-  const inputVestZondRefs = useRef(new Array(48).fill(null)); // 48 for vest
-  const inputOralZondRefs = useRef(new Array(48).fill(null)); // 48 for vest
-  const inputRefs = useRef(new Array(48).fill(null)); // 48 for vest + 48 for oral
+  const inputUp1828YasenRefs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputUpZond1828Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputDownYasen1828Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputDownZond1828Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+
+  const inputUp4838YasenRefs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputUpZond4838Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputDownYasen4838Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
+  const inputDownZond4838Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
 
   useEffect(() => {
     dispatch(checkAction());
   });
 
-  // Function to focus the next input
-  const focusNextVestYasenInput = (currentIdx) => {
+  // *******************************
+  // ******* move cursor to other input 18-28
+  // *******************************
+  const focusNextUp1828YasenInput = (currentIdx) => {
     const nextIdx = currentIdx + 1;
-    if (inputVestYasenRefs.current[nextIdx]) {
-      inputVestYasenRefs.current[nextIdx].focus();
+    if (inputUp1828YasenRefs.current[nextIdx]) {
+      inputUp1828YasenRefs.current[nextIdx].focus();
+    } else {
+      // переходим в конец нижнего яс края
+      inputDownYasen1828Refs.current[currentIdx].focus();
     }
   };
-  const focusNextOralYasenInput = (currentIdx) => {
+  const focusNextUp1828ZondInput = (currentIdx) => {
     const nextIdx = currentIdx + 1;
-    if (inputOralYasenRefs.current[nextIdx]) {
-      inputOralYasenRefs.current[nextIdx].focus();
+    if (inputUpZond1828Refs.current[nextIdx]) {
+      inputUpZond1828Refs.current[nextIdx].focus();
+    } else {
+      // переходим в конец нижнего яс края
+      inputDownZond1828Refs.current[currentIdx].focus();
     }
   };
-  const focusNextVestZondInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputVestZondRefs.current[nextIdx]) {
-      inputVestZondRefs.current[nextIdx].focus();
+  const focusNextDown1828YasenInput = (currentIdx) => {
+    const nextIdx = currentIdx - 1;
+    if (inputDownYasen1828Refs.current[nextIdx]) {
+      inputDownYasen1828Refs.current[nextIdx].focus();
+    } else {
+      inputUp1828YasenRefs.current[0].focus();
     }
   };
-  const focusNextOralZondInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputOralZondRefs.current[nextIdx]) {
-      inputOralZondRefs.current[nextIdx].focus();
+  const focusNextDown1828ZondInput = (currentIdx) => {
+    const nextIdx = currentIdx - 1;
+    if (inputDownZond1828Refs.current[nextIdx]) {
+      inputDownZond1828Refs.current[nextIdx].focus();
+    } else {
+      inputUpZond1828Refs.current[0].focus();
     }
   };
 
-  const focusNextInput = (currentIdx) => {
+  // *******************************
+  // ******* move cursor to other input 48-38
+  // *******************************
+  const focusNextUp4838YasenInput = (currentIdx) => {
     const nextIdx = currentIdx + 1;
-    if (inputOralZondRefs.current[nextIdx]) {
-      inputOralZondRefs.current[nextIdx].focus();
+    if (inputUp4838YasenRefs.current[nextIdx]) {
+      inputUp4838YasenRefs.current[nextIdx].focus();
+    } else {
+      // переходим в конец нижнего яс края
+      inputDownYasen4838Refs.current[currentIdx].focus();
+    }
+  };
+  const focusNextUp4838ZondInput = (currentIdx) => {
+    const nextIdx = currentIdx + 1;
+    if (inputUpZond4838Refs.current[nextIdx]) {
+      inputUpZond4838Refs.current[nextIdx].focus();
+    } else {
+      // переходим в конец нижнего яс края
+      inputDownZond4838Refs.current[currentIdx].focus();
+    }
+  };
+  const focusNextDown4838YasenInput = (currentIdx) => {
+    const nextIdx = currentIdx - 1;
+    if (inputDownYasen4838Refs.current[nextIdx]) {
+      inputDownYasen4838Refs.current[nextIdx].focus();
+    } else {
+      inputUp4838YasenRefs.current[0].focus();
+    }
+  };
+  const focusNextDown4838ZondInput = (currentIdx) => {
+    const nextIdx = currentIdx - 1;
+    if (inputDownZond4838Refs.current[nextIdx]) {
+      inputDownZond4838Refs.current[nextIdx].focus();
+    } else {
+      inputUpZond4838Refs.current[0].focus();
     }
   };
 
   // Define tooth numbers and indices for mapping
+  const toothNumbersUp = [
+    18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28,
+  ];
+  const toothNumbersDown = [
+    48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
+  ];
   const toothNumbers = [
     48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
   ];
-  const yasenKrayVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
-  const deepZondVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
-  const yasenKrayOralIndices = Array.from({ length: 16 }, (_, i) => 48 + i * 3); // Start indices for oral (48, 51, 54, ..., 93)
-  const deepZondOralIndices = Array.from({ length: 16 }, (_, i) => 48 + i * 3); // Start indices for oral (48, 51, 54, ..., 93)
-
-
+  const yasenUpKrayVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
+  const deepUpZondVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
 
   return (
     <div className="w-full scroll-x">
@@ -255,10 +304,10 @@ export default function Index() {
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.moving')}</td>
-            {toothNumbers.map((tooth) => (
+            {toothNumbersUp.map((tooth) => (
               <td
                 key={`moving-${tooth}`}
-                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
                 <Moving toothNum={tooth} />
               </td>
@@ -266,23 +315,23 @@ export default function Index() {
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.furkacia')}</td>
-            {toothNumbers.map((tooth) => (
+            {toothNumbersUp.map((tooth) => (
               <td
                 key={`furkacia-${tooth}`}
-                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
-                {(tooth >= 46 && tooth <= 48) || (tooth >= 36 && tooth <= 38) ? (
-                  <Furkacia toothNum={tooth} />
+                {(tooth >= 16 && tooth <= 18) || (tooth >= 26 && tooth <= 28) ? (
+                  <Furkacia toothNum={tooth} type="vest" />
                 ) : null}
               </td>
             ))}
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.bleeding')}</td>
-            {toothNumbers.map((tooth) => (
+            {toothNumbersUp.map((tooth) => (
               <td
                 key={`bleeding-${tooth}`}
-                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
                 <Bleeding toothNum={tooth} type="vest" />
               </td>
@@ -290,29 +339,30 @@ export default function Index() {
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.fertilizer')}</td>
-            {toothNumbers.map((tooth) => (
+            {toothNumbersUp.map((tooth) => (
               <td
                 key={`fertilizer-${tooth}`}
-                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
-                <Fertilizer toothNum={tooth} />
+                <Fertilizer toothNum={tooth} type={'vest'} />
               </td>
             ))}
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.depozit')}</td>
-            {toothNumbers.map((tooth) => (
+            {toothNumbersUp.map((tooth) => (
               <td
                 key={`deposits-${tooth}`}
-                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
-                <DentalDeposits toothNum={tooth} />
+                <DentalDeposits toothNum={tooth} type={'vest'} />
               </td>
             ))}
           </tr>
+          {/*YASEN AND ZOND UP 18-28*/}
           <tr>
             <td className="title">{msgFormula.get('formula.yasn')}</td>
-            {yasenKrayVestIndices.map((startIdx, i) => (
+            {yasenUpKrayVestIndices.map((sIndx0, i) => (
               <td
                 key={`yasen-vest-${toothNumbers[i]}`}
                 style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
@@ -320,21 +370,21 @@ export default function Index() {
                 <div className="col-xs-12 action-zone-v">
                   <YasenKray1828
                     type="vest"
-                    idx={startIdx}
-                    ref={(el) => (inputVestYasenRefs.current[startIdx] = el)}
-                    onEnter={focusNextVestYasenInput}
+                    idx={sIndx0}
+                    ref={(el) => (inputUp1828YasenRefs.current[sIndx0] = el)}
+                    onEnter={focusNextUp1828YasenInput}
                   />
                   <YasenKray1828
                     type="vest"
-                    idx={startIdx + 1}
-                    ref={(el) => (inputVestYasenRefs.current[startIdx + 1] = el)}
-                    onEnter={focusNextVestYasenInput}
+                    idx={sIndx0 + 1}
+                    ref={(el) => (inputUp1828YasenRefs.current[sIndx0 + 1] = el)}
+                    onEnter={focusNextUp1828YasenInput}
                   />
                   <YasenKray1828
                     type="vest"
-                    idx={startIdx + 2}
-                    ref={(el) => (inputVestYasenRefs.current[startIdx + 2] = el)}
-                    onEnter={focusNextVestYasenInput}
+                    idx={sIndx0 + 2}
+                    ref={(el) => (inputUp1828YasenRefs.current[sIndx0 + 2] = el)}
+                    onEnter={focusNextUp1828YasenInput}
                   />
                 </div>
               </td>
@@ -342,29 +392,29 @@ export default function Index() {
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.zond')}</td>
-            {deepZondVestIndices.map((startZIdx, i) => (
+            {deepUpZondVestIndices.map((sIndx1, i) => (
               <td
-                key={`deep-zond-${toothNumbers[i]}`}
+                key={`deep-zond-${toothNumbersUp[i]}`}
                 style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
                 <div className="col-xs-12 action-zone-v">
                   <DeepZond1828
                     type="vest"
-                    idx={startZIdx}
-                    ref={(el) => (inputVestZondRefs.current[startZIdx] = el)}
-                    onEnter={focusNextVestZondInput}
+                    idx={sIndx1}
+                    ref={(el) => (inputUpZond1828Refs.current[sIndx1] = el)}
+                    onEnter={focusNextUp1828ZondInput}
                   />
                   <DeepZond1828
                     type="vest"
-                    idx={startZIdx + 1}
-                    ref={(el) => (inputVestZondRefs.current[startZIdx + 1] = el)}
-                    onEnter={focusNextVestZondInput}
+                    idx={sIndx1 + 1}
+                    ref={(el) => (inputUpZond1828Refs.current[sIndx1 + 1] = el)}
+                    onEnter={focusNextUp1828ZondInput}
                   />
                   <DeepZond1828
                     type="vest"
-                    idx={startZIdx + 2}
-                    ref={(el) => (inputVestZondRefs.current[startZIdx + 2] = el)}
-                    onEnter={focusNextVestZondInput}
+                    idx={sIndx1 + 2}
+                    ref={(el) => (inputUpZond1828Refs.current[sIndx1 + 2] = el)}
+                    onEnter={focusNextUp1828ZondInput}
                   />
                 </div>
               </td>
@@ -373,7 +423,7 @@ export default function Index() {
           <tr>
             <td className="title" style={{ backgroundColor: 'none' }}>
               <span style={{ display: 'block', marginTop: '50px' }}>
-                Вестибулярно/Орально
+                {msgFormula.get('formula.vest_oral')}
               </span>
             </td>
             <td
@@ -397,10 +447,10 @@ export default function Index() {
           <tr>
             <td colSpan={17} style={{ height: '40px' }}></td>
           </tr>
-
+          {/*YASEN AND ZOND DOWN 18-28*/}
           <tr>
             <td className="title">{msgFormula.get('formula.zond')}</td>
-            {deepZondVestIndices.map((startZIdx, i) => (
+            {deepUpZondVestIndices.map((sIndx2, i) => (
               <td
                 key={`yasen-oral-${toothNumbers[i]}`}
                 style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
@@ -408,21 +458,21 @@ export default function Index() {
                 <div className="col-xs-12 action-zone-v">
                   <DeepZond1828
                     type="oral"
-                    idx={startZIdx}
-                    ref={(el) => (inputOralZondRefs.current[startZIdx] = el)}
-                    onEnter={focusNextOralZondInput}
+                    idx={sIndx2}
+                    ref={(el) => (inputDownZond1828Refs.current[sIndx2] = el)}
+                    onEnter={focusNextDown1828ZondInput}
                   />
                   <DeepZond1828
                     type="oral"
-                    idx={startZIdx + 1}
-                    ref={(el) => (inputOralZondRefs.current[startZIdx + 1] = el)}
-                    onEnter={focusNextOralZondInput}
+                    idx={sIndx2 + 1}
+                    ref={(el) => (inputDownZond1828Refs.current[sIndx2 + 1] = el)}
+                    onEnter={focusNextDown1828ZondInput}
                   />
                   <DeepZond1828
                     type="oral"
-                    idx={startZIdx + 2}
-                    ref={(el) => (inputOralZondRefs.current[startZIdx + 2] = el)}
-                    onEnter={focusNextOralZondInput}
+                    idx={sIndx2 + 2}
+                    ref={(el) => (inputDownZond1828Refs.current[sIndx2 + 2] = el)}
+                    onEnter={focusNextDown1828ZondInput}
                   />
                 </div>
               </td>
@@ -430,7 +480,7 @@ export default function Index() {
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.yasn')}</td>
-            {yasenKrayVestIndices.map((startIdx, i) => (
+            {yasenUpKrayVestIndices.map((sIndx3, i) => (
               <td
                 key={`yasen-oral-${toothNumbers[i]}`}
                 style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
@@ -438,212 +488,73 @@ export default function Index() {
                 <div className="col-xs-12 action-zone-v">
                   <YasenKray1828
                     type="oral"
-                    idx={startIdx}
-                    ref={(el) => (inputOralYasenRefs.current[startIdx] = el)}
-                    onEnter={focusNextOralYasenInput}
+                    idx={sIndx3}
+                    ref={(el) => (inputDownYasen1828Refs.current[sIndx3] = el)}
+                    onEnter={focusNextDown1828YasenInput}
                   />
                   <YasenKray1828
                     type="oral"
-                    idx={startIdx + 1}
-                    ref={(el) => (inputOralYasenRefs.current[startIdx + 1] = el)}
-                    onEnter={focusNextOralYasenInput}
+                    idx={sIndx3 + 1}
+                    ref={(el) => (inputDownYasen1828Refs.current[sIndx3 + 1] = el)}
+                    onEnter={focusNextDown1828YasenInput}
                   />
                   <YasenKray1828
                     type="oral"
-                    idx={startIdx + 2}
-                    ref={(el) => (inputOralYasenRefs.current[startIdx + 2] = el)}
-                    onEnter={focusNextOralYasenInput}
+                    idx={sIndx3 + 2}
+                    ref={(el) => (inputDownYasen1828Refs.current[sIndx3 + 2] = el)}
+                    onEnter={focusNextDown1828YasenInput}
                   />
                 </div>
               </td>
             ))}
           </tr>
+          <tr>
+            <td className="title">{msgFormula.get('formula.depozit')}</td>
+            {toothNumbersUp.map((tooth) => (
+              <td
+                key={`deposits-${tooth}`}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <DentalDeposits toothNum={tooth} type={'oral'} />
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td className="title">{msgFormula.get('formula.fertilizer')}</td>
+            {toothNumbersUp.map((tooth) => (
+              <td
+                key={`fertilizer-${tooth}`}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <Fertilizer toothNum={tooth} type={'oral'} />
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td className="title">{msgFormula.get('formula.bleeding')}</td>
+            {toothNumbersUp.map((tooth) => (
+              <td
+                key={`bleeding-${tooth}`}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <Bleeding toothNum={tooth} type="oral" />
+              </td>
+            ))}
+          </tr>
+          <tr>
+            <td className="title">{msgFormula.get('formula.furkacia')}</td>
+            {toothNumbersUp.map((tooth) => (
+              <td
+                key={`furkacia-${tooth}`}
+                style={tooth === 18 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                {(tooth >= 16 && tooth <= 18) || (tooth >= 26 && tooth <= 28) ? (
+                  <Furkacia toothNum={tooth} type="oral" qty={2} />
+                ) : null}
+              </td>
+            ))}
+          </tr>
 
-
-          <tr>
-            <td className="title">Зубні відкладення</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <DentalDeposits toothNum={48} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={47} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={46} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={45} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={44} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={43} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={42} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={41} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={31} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={32} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={33} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={34} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={35} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={36} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={37} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={38} />
-            </td>
-          </tr>
-          <tr>
-            <td className="title">Гноєтеча</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <Fertilizer toothNum={48} />
-            </td>
-            <td>
-              <Fertilizer toothNum={47} />
-            </td>
-            <td>
-              <Fertilizer toothNum={46} />
-            </td>
-            <td>
-              <Fertilizer toothNum={45} />
-            </td>
-            <td>
-              <Fertilizer toothNum={44} />
-            </td>
-            <td>
-              <Fertilizer toothNum={43} />
-            </td>
-            <td>
-              <Fertilizer toothNum={42} />
-            </td>
-            <td>
-              <Fertilizer toothNum={41} />
-            </td>
-            <td>
-              <Fertilizer toothNum={31} />
-            </td>
-            <td>
-              <Fertilizer toothNum={32} />
-            </td>
-            <td>
-              <Fertilizer toothNum={33} />
-            </td>
-            <td>
-              <Fertilizer toothNum={34} />
-            </td>
-            <td>
-              <Fertilizer toothNum={35} />
-            </td>
-            <td>
-              <Fertilizer toothNum={36} />
-            </td>
-            <td>
-              <Fertilizer toothNum={37} />
-            </td>
-            <td>
-              <Fertilizer toothNum={38} />
-            </td>
-          </tr>
-          <tr>
-            <td className="title">Кровоточивість</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <Bleeding toothNum={48} />
-            </td>
-            <td>
-              <Bleeding toothNum={47} />
-            </td>
-            <td>
-              <Bleeding toothNum={46} />
-            </td>
-            <td>
-              <Bleeding toothNum={45} />
-            </td>
-            <td>
-              <Bleeding toothNum={44} />
-            </td>
-            <td>
-              <Bleeding toothNum={43} />
-            </td>
-            <td>
-              <Bleeding toothNum={42} />
-            </td>
-            <td>
-              <Bleeding toothNum={41} />
-            </td>
-            <td>
-              <Bleeding toothNum={31} />
-            </td>
-            <td>
-              <Bleeding toothNum={32} />
-            </td>
-            <td>
-              <Bleeding toothNum={33} />
-            </td>
-            <td>
-              <Bleeding toothNum={34} />
-            </td>
-            <td>
-              <Bleeding toothNum={35} />
-            </td>
-            <td>
-              <Bleeding toothNum={36} />
-            </td>
-            <td>
-              <Bleeding toothNum={37} />
-            </td>
-            <td>
-              <Bleeding toothNum={38} />
-            </td>
-          </tr>
-          <tr>
-            <td className="title">Фуркація</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Furkacia toothNum={48} />
-            </td>
-            <td>
-              <Furkacia toothNum={47} />
-            </td>
-            <td>
-              <Furkacia toothNum={46} />
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
-          </tr>
           <tr>
             <td
               colSpan={17}
@@ -676,360 +587,185 @@ export default function Index() {
               }}
             ></td>
           </tr>
+
+
+          {/*************************/}
+          {/*************************/}
+          {/*TOOTH 48-38*/}
+          {/*************************/}
+          {/*************************/}
           <tr>
-            <td className="title">Фуркація</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Furkacia toothNum={48} />
-            </td>
-            <td>
-              <Furkacia toothNum={47} />
-            </td>
-            <td>
-              <Furkacia toothNum={46} />
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
-            <td>
-              <Furkacia toothNum={38} />
-            </td>
+            <td className="title">{msgFormula.get('formula.furkacia')}</td>
+            {toothNumbersDown.map((tooth) => (
+              <td
+                key={`furkacia-${tooth}`}
+                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                {(tooth >= 46 && tooth <= 48) || (tooth >= 46 && tooth <= 48) ? (
+                  <Furkacia toothNum={tooth} type="vest" />
+                ) : null}
+              </td>
+            ))}
           </tr>
           <tr>
-            <td className="title">Кровоточивість</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Bleeding toothNum={48} />
-            </td>
-            <td>
-              <Bleeding toothNum={47} />
-            </td>
-            <td>
-              <Bleeding toothNum={46} />
-            </td>
-            <td>
-              <Bleeding toothNum={45} />
-            </td>
-            <td>
-              <Bleeding toothNum={44} />
-            </td>
-            <td>
-              <Bleeding toothNum={43} />
-            </td>
-            <td>
-              <Bleeding toothNum={42} />
-            </td>
-            <td>
-              <Bleeding toothNum={41} />
-            </td>
-            <td>
-              <Bleeding toothNum={31} />
-            </td>
-            <td>
-              <Bleeding toothNum={32} />
-            </td>
-            <td>
-              <Bleeding toothNum={33} />
-            </td>
-            <td>
-              <Bleeding toothNum={34} />
-            </td>
-            <td>
-              <Bleeding toothNum={35} />
-            </td>
-            <td>
-              <Bleeding toothNum={36} />
-            </td>
-            <td>
-              <Bleeding toothNum={37} />
-            </td>
-            <td>
-              <Bleeding toothNum={38} />
-            </td>
+            <td className="title">{msgFormula.get('formula.bleeding')}</td>
+            {toothNumbersDown.map((tooth) => (
+              <td
+                key={`bleeding-${tooth}`}
+                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <Bleeding toothNum={tooth} type="vest" />
+              </td>
+            ))}
           </tr>
           <tr>
-            <td className="title">Гноєтеча</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Fertilizer toothNum={48} />
-            </td>
-            <td>
-              <Fertilizer toothNum={47} />
-            </td>
-            <td>
-              <Fertilizer toothNum={46} />
-            </td>
-            <td>
-              <Fertilizer toothNum={45} />
-            </td>
-            <td>
-              <Fertilizer toothNum={44} />
-            </td>
-            <td>
-              <Fertilizer toothNum={43} />
-            </td>
-            <td>
-              <Fertilizer toothNum={42} />
-            </td>
-            <td>
-              <Fertilizer toothNum={41} />
-            </td>
-            <td>
-              <Fertilizer toothNum={31} />
-            </td>
-            <td>
-              <Fertilizer toothNum={32} />
-            </td>
-            <td>
-              <Fertilizer toothNum={33} />
-            </td>
-            <td>
-              <Fertilizer toothNum={34} />
-            </td>
-            <td>
-              <Fertilizer toothNum={35} />
-            </td>
-            <td>
-              <Fertilizer toothNum={36} />
-            </td>
-            <td>
-              <Fertilizer toothNum={37} />
-            </td>
-            <td>
-              <Fertilizer toothNum={38} />
-            </td>
+            <td className="title">{msgFormula.get('formula.fertilizer')}</td>
+            {toothNumbersDown.map((tooth) => (
+              <td
+                key={`fertilizer-${tooth}`}
+                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <Fertilizer toothNum={tooth} type={'vest'} />
+              </td>
+            ))}
           </tr>
           <tr>
-            <td className="title">Зубні відкладення</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <DentalDeposits toothNum={48} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={47} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={46} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={45} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={44} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={43} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={42} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={41} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={31} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={32} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={33} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={34} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={35} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={36} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={37} />
-            </td>
-            <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={38} />
-            </td>
+            <td className="title">{msgFormula.get('formula.depozit')}</td>
+            {toothNumbersDown.map((tooth) => (
+              <td
+                key={`deposits-${tooth}`}
+                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <DentalDeposits toothNum={tooth} type={'vest'} />
+              </td>
+            ))}
+          </tr>
+          {/*YASEN AND ZOND UP 48-38*/}
+          <tr>
+            <td className="title">{msgFormula.get('formula.yasn')}</td>
+            {yasenUpKrayVestIndices.map((bIndx0, i) => (
+              <td
+                key={`yasen-vest-${toothNumbers[i]}`}
+                style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <div className="col-xs-12 action-zone-v">
+                  <YasenKray4838
+                    type="vest"
+                    idx={bIndx0}
+                    ref={(el) => (inputUp4838YasenRefs.current[bIndx0] = el)}
+                    onEnter={focusNextUp4838YasenInput}
+                  />
+                  <YasenKray4838
+                    type="vest"
+                    idx={bIndx0 + 1}
+                    ref={(el) => (inputUp4838YasenRefs.current[bIndx0 + 1] = el)}
+                    onEnter={focusNextUp4838YasenInput}
+                  />
+                  <YasenKray4838
+                    type="vest"
+                    idx={bIndx0 + 2}
+                    ref={(el) => (inputUp4838YasenRefs.current[bIndx0 + 2] = el)}
+                    onEnter={focusNextUp4838YasenInput}
+                  />
+                </div>
+              </td>
+            ))}
           </tr>
           <tr>
-            <td className="title">Ясений край</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <YasenKray4838 type={'vest'} idx={0} />
-              <YasenKray4838 type={'vest'} idx={1} />
-              <YasenKray4838 type={'vest'} idx={2} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={3} />
-              <YasenKray4838 type={'vest'} idx={4} />
-              <YasenKray4838 type={'vest'} idx={5} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={6} />
-              <YasenKray4838 type={'vest'} idx={7} />
-              <YasenKray4838 type={'vest'} idx={8} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={9} />
-              <YasenKray4838 type={'vest'} idx={10} />
-              <YasenKray4838 type={'vest'} idx={11} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={12} />
-              <YasenKray4838 type={'vest'} idx={13} />
-              <YasenKray4838 type={'vest'} idx={14} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={15} />
-              <YasenKray4838 type={'vest'} idx={16} />
-              <YasenKray4838 type={'vest'} idx={17} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={18} />
-              <YasenKray4838 type={'vest'} idx={19} />
-              <YasenKray4838 type={'vest'} idx={20} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={21} />
-              <YasenKray4838 type={'vest'} idx={22} />
-              <YasenKray4838 type={'vest'} idx={23} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={24} />
-              <YasenKray4838 type={'vest'} idx={25} />
-              <YasenKray4838 type={'vest'} idx={26} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={27} />
-              <YasenKray4838 type={'vest'} idx={28} />
-              <YasenKray4838 type={'vest'} idx={29} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={30} />
-              <YasenKray4838 type={'vest'} idx={31} />
-              <YasenKray4838 type={'vest'} idx={32} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={33} />
-              <YasenKray4838 type={'vest'} idx={34} />
-              <YasenKray4838 type={'vest'} idx={35} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={36} />
-              <YasenKray4838 type={'vest'} idx={37} />
-              <YasenKray4838 type={'vest'} idx={38} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={39} />
-              <YasenKray4838 type={'vest'} idx={40} />
-              <YasenKray4838 type={'vest'} idx={41} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={42} />
-              <YasenKray4838 type={'vest'} idx={43} />
-              <YasenKray4838 type={'vest'} idx={44} />
-            </td>
-            <td>
-              <YasenKray4838 type={'vest'} idx={45} />
-              <YasenKray4838 type={'vest'} idx={46} />
-              <YasenKray4838 type={'vest'} idx={47} />
-            </td>
+            <td className="title">{msgFormula.get('formula.zond')}</td>
+            {deepUpZondVestIndices.map((bIndx1, i) => (
+              <td
+                key={`deep-zond-${toothNumbersUp[i]}`}
+                style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <div className="col-xs-12 action-zone-v">
+                  <DeepZond4838
+                    type="vest"
+                    idx={bIndx1}
+                    ref={(el) => (inputUpZond4838Refs.current[bIndx1] = el)}
+                    onEnter={focusNextUp4838ZondInput}
+                  />
+                  <DeepZond4838
+                    type="vest"
+                    idx={bIndx1 + 1}
+                    ref={(el) => (inputUpZond4838Refs.current[bIndx1 + 1] = el)}
+                    onEnter={focusNextUp4838ZondInput}
+                  />
+                  <DeepZond4838
+                    type="vest"
+                    idx={bIndx1 + 2}
+                    ref={(el) => (inputUpZond4838Refs.current[bIndx1 + 2] = el)}
+                    onEnter={focusNextUp4838ZondInput}
+                  />
+                </div>
+              </td>
+            ))}
           </tr>
-          <tr>
-            <td className="title">Глибина зондування</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <DeepZond4838 type={'vest'} idx={0} />
-              <DeepZond4838 type={'vest'} idx={1} />
-              <DeepZond4838 type={'vest'} idx={2} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={3} />
-              <DeepZond4838 type={'vest'} idx={4} />
-              <DeepZond4838 type={'vest'} idx={5} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={6} />
-              <DeepZond4838 type={'vest'} idx={7} />
-              <DeepZond4838 type={'vest'} idx={8} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={9} />
-              <DeepZond4838 type={'vest'} idx={10} />
-              <DeepZond4838 type={'vest'} idx={11} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={12} />
-              <DeepZond4838 type={'vest'} idx={13} />
-              <DeepZond4838 type={'vest'} idx={14} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={15} />
-              <DeepZond4838 type={'vest'} idx={16} />
-              <DeepZond4838 type={'vest'} idx={17} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={18} />
-              <DeepZond4838 type={'vest'} idx={19} />
-              <DeepZond4838 type={'vest'} idx={20} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={21} />
-              <DeepZond4838 type={'vest'} idx={22} />
-              <DeepZond4838 type={'vest'} idx={23} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={24} />
-              <DeepZond4838 type={'vest'} idx={25} />
-              <DeepZond4838 type={'vest'} idx={26} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={27} />
-              <DeepZond4838 type={'vest'} idx={28} />
-              <DeepZond4838 type={'vest'} idx={29} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={30} />
-              <DeepZond4838 type={'vest'} idx={31} />
-              <DeepZond4838 type={'vest'} idx={32} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={33} />
-              <DeepZond4838 type={'vest'} idx={34} />
-              <DeepZond4838 type={'vest'} idx={35} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={36} />
-              <DeepZond4838 type={'vest'} idx={37} />
-              <DeepZond4838 type={'vest'} idx={38} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={39} />
-              <DeepZond4838 type={'vest'} idx={40} />
-              <DeepZond4838 type={'vest'} idx={41} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={42} />
-              <DeepZond4838 type={'vest'} idx={43} />
-              <DeepZond4838 type={'vest'} idx={44} />
-            </td>
-            <td>
-              <DeepZond4838 type={'vest'} idx={45} />
-              <DeepZond4838 type={'vest'} idx={46} />
-              <DeepZond4838 type={'vest'} idx={47} />
-            </td>
-          </tr>
+          {/*<tr>*/}
+          {/*  <td className="title">{msgFormula.get('formula.yasn')}</td>*/}
+          {/*  {yasenUpKrayVestIndices.map((sIndx4, i) => (*/}
+          {/*    <td*/}
+          {/*      key={`yasen-vest-${toothNumbers[i]}`}*/}
+          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
+          {/*    >*/}
+          {/*      <div className="col-xs-12 action-zone-v">*/}
+          {/*        <YasenKray4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx4}*/}
+          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4] = el)}*/}
+          {/*          onEnter={focusNextUp4838YasenInput}*/}
+          {/*        />*/}
+          {/*        <YasenKray4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx4 + 1}*/}
+          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 1] = el)}*/}
+          {/*          onEnter={focusNextUp4838YasenInput}*/}
+          {/*        />*/}
+          {/*        <YasenKray4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx4 + 2}*/}
+          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 2] = el)}*/}
+          {/*          onEnter={focusNextUp4838YasenInput}*/}
+          {/*        />*/}
+          {/*      </div>*/}
+          {/*    </td>*/}
+          {/*  ))}*/}
+          {/*</tr>*/}
+          {/*<tr>*/}
+          {/*  <td className="title">{msgFormula.get('formula.zond')}</td>*/}
+          {/*  {deepUpZondVestIndices.map((sIndx5, i) => (*/}
+          {/*    <td*/}
+          {/*      key={`deep-zond-${toothNumbersUp[i]}`}*/}
+          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
+          {/*    >*/}
+          {/*      <div className="col-xs-12 action-zone-v">*/}
+          {/*        <DeepZond4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx5}*/}
+          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5] = el)}*/}
+          {/*          onEnter={focusNextUp4838ZondInput}*/}
+          {/*        />*/}
+          {/*        <DeepZond4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx5 + 1}*/}
+          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 1] = el)}*/}
+          {/*          onEnter={focusNextUp4838ZondInput}*/}
+          {/*        />*/}
+          {/*        <DeepZond4838*/}
+          {/*          type="vest"*/}
+          {/*          idx={sIndx5 + 2}*/}
+          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 2] = el)}*/}
+          {/*          onEnter={focusNextUp4838ZondInput}*/}
+          {/*        />*/}
+          {/*      </div>*/}
+          {/*    </td>*/}
+          {/*  ))}*/}
+          {/*</tr>*/}
+
           <tr>
             <td className="title" style={{ backgroundColor: 'none' }}>
               <span style={{ display: 'block', marginTop: '50px' }}>
-                Вестибулярно/Орально
+                {msgFormula.get('formula.vest_oral')}
               </span>
             </td>
             <td
@@ -1060,174 +796,70 @@ export default function Index() {
               }}
             ></td>
           </tr>
+
           <tr>
-            <td className="title">Глибина зондування</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <DeepZond4838 type={'oral'} idx={0} />
-              <DeepZond4838 type={'oral'} idx={1} />
-              <DeepZond4838 type={'oral'} idx={2} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={3} />
-              <DeepZond4838 type={'oral'} idx={4} />
-              <DeepZond4838 type={'oral'} idx={5} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={6} />
-              <DeepZond4838 type={'oral'} idx={7} />
-              <DeepZond4838 type={'oral'} idx={8} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={9} />
-              <DeepZond4838 type={'oral'} idx={10} />
-              <DeepZond4838 type={'oral'} idx={11} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={12} />
-              <DeepZond4838 type={'oral'} idx={13} />
-              <DeepZond4838 type={'oral'} idx={14} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={15} />
-              <DeepZond4838 type={'oral'} idx={16} />
-              <DeepZond4838 type={'oral'} idx={17} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={18} />
-              <DeepZond4838 type={'oral'} idx={19} />
-              <DeepZond4838 type={'oral'} idx={20} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={21} />
-              <DeepZond4838 type={'oral'} idx={22} />
-              <DeepZond4838 type={'oral'} idx={23} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={24} />
-              <DeepZond4838 type={'oral'} idx={25} />
-              <DeepZond4838 type={'oral'} idx={26} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={27} />
-              <DeepZond4838 type={'oral'} idx={28} />
-              <DeepZond4838 type={'oral'} idx={29} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={30} />
-              <DeepZond4838 type={'oral'} idx={31} />
-              <DeepZond4838 type={'oral'} idx={32} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={33} />
-              <DeepZond4838 type={'oral'} idx={34} />
-              <DeepZond4838 type={'oral'} idx={35} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={36} />
-              <DeepZond4838 type={'oral'} idx={37} />
-              <DeepZond4838 type={'oral'} idx={38} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={39} />
-              <DeepZond4838 type={'oral'} idx={40} />
-              <DeepZond4838 type={'oral'} idx={41} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={42} />
-              <DeepZond4838 type={'oral'} idx={43} />
-              <DeepZond4838 type={'oral'} idx={44} />
-            </td>
-            <td>
-              <DeepZond4838 type={'oral'} idx={45} />
-              <DeepZond4838 type={'oral'} idx={46} />
-              <DeepZond4838 type={'oral'} idx={47} />
-            </td>
+            <td className="title">{msgFormula.get('formula.zond')}</td>
+            {deepUpZondVestIndices.map((bIndx2, i) => (
+              <td
+                key={`yasen-oral-${toothNumbers[i]}`}
+                style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <div className="col-xs-12 action-zone-v">
+                  <DeepZond4838
+                    type="oral"
+                    idx={bIndx2}
+                    ref={(el) => (inputDownZond4838Refs.current[bIndx2] = el)}
+                    onEnter={focusNextDown4838ZondInput}
+                  />
+                  <DeepZond4838
+                    type="oral"
+                    idx={bIndx2 + 1}
+                    ref={(el) => (inputDownZond4838Refs.current[bIndx2 + 1] = el)}
+                    onEnter={focusNextDown4838ZondInput}
+                  />
+                  <DeepZond4838
+                    type="oral"
+                    idx={bIndx2 + 2}
+                    ref={(el) => (inputDownZond4838Refs.current[bIndx2 + 2] = el)}
+                    onEnter={focusNextDown4838ZondInput}
+                  />
+                </div>
+              </td>
+            ))}
           </tr>
           <tr>
-            <td className="title">Ясений край</td>
-            <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <YasenKray4838 type={'oral'} idx={0} />
-              <YasenKray4838 type={'oral'} idx={1} />
-              <YasenKray4838 type={'oral'} idx={2} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={3} />
-              <YasenKray4838 type={'oral'} idx={4} />
-              <YasenKray4838 type={'oral'} idx={5} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={6} />
-              <YasenKray4838 type={'oral'} idx={7} />
-              <YasenKray4838 type={'oral'} idx={8} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={9} />
-              <YasenKray4838 type={'oral'} idx={10} />
-              <YasenKray4838 type={'oral'} idx={11} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={12} />
-              <YasenKray4838 type={'oral'} idx={13} />
-              <YasenKray4838 type={'oral'} idx={14} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={15} />
-              <YasenKray4838 type={'oral'} idx={16} />
-              <YasenKray4838 type={'oral'} idx={17} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={18} />
-              <YasenKray4838 type={'oral'} idx={19} />
-              <YasenKray4838 type={'oral'} idx={20} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={21} />
-              <YasenKray4838 type={'oral'} idx={22} />
-              <YasenKray4838 type={'oral'} idx={23} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={24} />
-              <YasenKray4838 type={'oral'} idx={25} />
-              <YasenKray4838 type={'oral'} idx={26} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={27} />
-              <YasenKray4838 type={'oral'} idx={28} />
-              <YasenKray4838 type={'oral'} idx={29} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={30} />
-              <YasenKray4838 type={'oral'} idx={31} />
-              <YasenKray4838 type={'oral'} idx={32} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={33} />
-              <YasenKray4838 type={'oral'} idx={34} />
-              <YasenKray4838 type={'oral'} idx={35} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={36} />
-              <YasenKray4838 type={'oral'} idx={37} />
-              <YasenKray4838 type={'oral'} idx={38} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={39} />
-              <YasenKray4838 type={'oral'} idx={40} />
-              <YasenKray4838 type={'oral'} idx={41} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={42} />
-              <YasenKray4838 type={'oral'} idx={43} />
-              <YasenKray4838 type={'oral'} idx={44} />
-            </td>
-            <td>
-              <YasenKray4838 type={'oral'} idx={45} />
-              <YasenKray4838 type={'oral'} idx={46} />
-              <YasenKray4838 type={'oral'} idx={47} />
-            </td>
+            <td className="title">{msgFormula.get('formula.yasn')}</td>
+            {yasenUpKrayVestIndices.map((bIndx3, i) => (
+              <td
+                key={`yasen-oral-${toothNumbers[i]}`}
+                style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <div className="col-xs-12 action-zone-v">
+                  <YasenKray4838
+                    type="oral"
+                    idx={bIndx3}
+                    ref={(el) => (inputDownYasen4838Refs.current[bIndx3] = el)}
+                    onEnter={focusNextDown4838YasenInput}
+                  />
+                  <YasenKray4838
+                    type="oral"
+                    idx={bIndx3 + 1}
+                    ref={(el) => (inputDownYasen4838Refs.current[bIndx3 + 1] = el)}
+                    onEnter={focusNextDown4838YasenInput}
+                  />
+                  <YasenKray4838
+                    type="oral"
+                    idx={bIndx3 + 2}
+                    ref={(el) => (inputDownYasen4838Refs.current[bIndx3 + 2] = el)}
+                    onEnter={focusNextDown4838YasenInput}
+                  />
+                </div>
+              </td>
+            ))}
           </tr>
+
           <tr>
-            <td className="title">Зубні відкладення</td>
+            <td className="title">{msgFormula.get('formula.depozit')}</td>
             <td style={{ borderLeft: 'none', borderRight: 'none' }}>
               <DentalDeposits toothNum={48} />
             </td>
@@ -1278,7 +910,7 @@ export default function Index() {
             </td>
           </tr>
           <tr>
-            <td className="title">Гноєтеча</td>
+            <td className="title">{msgFormula.get('formula.fertilizer')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
               <Fertilizer toothNum={48} />
             </td>
@@ -1329,59 +961,7 @@ export default function Index() {
             </td>
           </tr>
           <tr>
-            <td className="title">Гноєтеча</td>
-            <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Bleeding toothNum={48} />
-            </td>
-            <td>
-              <Bleeding toothNum={47} />
-            </td>
-            <td>
-              <Bleeding toothNum={46} />
-            </td>
-            <td>
-              <Bleeding toothNum={45} />
-            </td>
-            <td>
-              <Bleeding toothNum={44} />
-            </td>
-            <td>
-              <Bleeding toothNum={43} />
-            </td>
-            <td>
-              <Bleeding toothNum={42} />
-            </td>
-            <td>
-              <Bleeding toothNum={41} />
-            </td>
-            <td>
-              <Bleeding toothNum={31} />
-            </td>
-            <td>
-              <Bleeding toothNum={32} />
-            </td>
-            <td>
-              <Bleeding toothNum={33} />
-            </td>
-            <td>
-              <Bleeding toothNum={34} />
-            </td>
-            <td>
-              <Bleeding toothNum={35} />
-            </td>
-            <td>
-              <Bleeding toothNum={36} />
-            </td>
-            <td>
-              <Bleeding toothNum={37} />
-            </td>
-            <td>
-              <Bleeding toothNum={38} />
-            </td>
-          </tr>
-
-          <tr>
-            <td className="title">Фуркація</td>
+            <td className="title">{msgFormula.get('formula.furkacia')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
               <Furkacia toothNum={48} />
             </td>
@@ -1412,7 +992,7 @@ export default function Index() {
             </td>
           </tr>
           <tr>
-            <td className="title">Рухомість</td>
+            <td className="title">{msgFormula.get('formula.moving')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
               <Moving toothNum={48} />
             </td>
@@ -1463,7 +1043,7 @@ export default function Index() {
             </td>
           </tr>
           <tr>
-            <td className="title">Статус зуба</td>
+            <td className="title">{msgFormula.get('formula.teeth.status')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
               <select className="perio-select" data-tooth="18">
                 <option value="other">Інший</option>

@@ -190,7 +190,7 @@ export default function IntersectChart1828Down() {
   return (
     <>
       <div
-        style={{ width: '1215px', height: '100px' }}
+        style={{ width: '1160px', height: '100px' }}
         className="chart-intersect-down"
       >
         <Line data={data} options={options} height={100} />
