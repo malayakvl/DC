@@ -17,7 +17,7 @@ import {
   getVinirColorSelector,
   getZirconiaCrownColorSelector,
 } from '../../../Redux/Formula/selectors';
-import setupDiagnoze from '../../../lib/tfunctions';
+import setupDiagnoze from '../../../lib/tFunctions';
 import { excludeToothEffect } from '../../../Constants';
 
 export default function Bone31() {

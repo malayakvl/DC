@@ -22,7 +22,7 @@ import {
   getActiveToothNumberSelector,
   allTeethChildSelector,
 } from '../../../Redux/Formula/selectors';
-import setupDiagnoze from '../../../lib/tfunctions';
+import setupDiagnoze from '../../../lib/tFunctions';
 import PeriodontitStage84 from './periodontit84';
 import { excludeToothEffect } from '../../../Constants';
 

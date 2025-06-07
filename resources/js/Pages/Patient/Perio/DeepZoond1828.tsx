@@ -38,13 +38,18 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
 
   const recalcSlice = useCallback(
     (type) => {
+      console.log('type', type)
+      console.log(zv1828Data);
       let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;
       let arrZond = type === 'vest' ? zv1828Data : zo1828Data;
+      console.log('zond', arrZond)
+      console.log('yasn', arrYasen)
       const resNewYasn = [];
       const resNewZond = [];
       const chartNewYasn = [];
       const chartNewZond = [];
       const chartBar = [];
+      const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
 
       for (let i = 0; i < arrYasen.length; i++) {
         const zondVal = !isNaN(parseInt(arrZond[i])) ? parseInt(arrZond[i]) : 0;

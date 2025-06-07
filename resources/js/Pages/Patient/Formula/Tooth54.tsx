@@ -23,7 +23,7 @@ import {
   allTeethChildSelector,
 } from '../../../Redux/Formula/selectors';
 import PeriodontitStage54 from './periodontit54';
-import setupDiagnoze from '../../../lib/tfunctions';
+import setupDiagnoze from '../../../lib/tFunctions';
 import { excludeToothEffect } from '../../../Constants';
 
 export default function Tooth54() {

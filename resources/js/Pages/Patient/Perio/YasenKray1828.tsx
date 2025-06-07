@@ -25,11 +25,10 @@ interface YasenKray1828Props {
 
 const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, idx, onEnter }, ref) => {
   const dispatch = useDispatch();
-  const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
-  const yko1828Data = useSelector(getPerioYK1828ODataSelector);
   const zv1828Data = useSelector(getPerioZ1828VDataSelector);
+  const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
   const zo1828Data = useSelector(getPerioZ1828ODataSelector);
-
+  const yko1828Data = useSelector(getPerioYK1828ODataSelector);
   const [value, setValue] = useState<number | ''>(
     type === 'vest' ? ykv1828Data[idx] : yko1828Data[idx]
   );
@@ -47,47 +46,72 @@ const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, 
     [idx, onEnter]
   );
 
-  const recalcSlice = useCallback(() => {
-    const isVest = type === 'vest';
-    const arrYasen = isVest ? ykv1828Data : yko1828Data;
-    const arrZond = isVest ? zv1828Data : zo1828Data;
+  const recalcSlice = useCallback(
+    (type) => {
 
-    const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
-    const resNewYasn: number[] = [];
-    const resNewZond: number[] = [];
-    const chartBar: [number, number][] = [];
+      console.log('type', type)
+      console.log(zv1828Data);
+      let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;
+      let arrZond = type === 'vest' ? zv1828Data : zo1828Data;
+      console.log('zond', arrZond)
+      console.log('yasn', arrYasen)
 
-    for (let i = 0; i < arrYasen.length; i++) {
-      const zondVal = parseInt(arrZond[i]) || 0;
-      const yasnVal = parseInt(arrYasen[i]) || 0;
-      const yasnResult = isVest ? -yasnVal : yasnVal;
-      const zondResult = sumZond === 0 ? 0 : isVest ? -(yasnVal - zondVal) : yasnVal - zondVal;
-
-      resNewYasn.push(yasnResult);
-      resNewZond.push(zondResult);
-      chartBar.push([zondResult, yasnResult]);
-
-      if ((i + 1) % 3 === 0 && i + 1 < arrYasen.length) {
-        resNewYasn.push((resNewYasn[i] + (parseInt(arrYasen[i + 1]) || 0) * (isVest ? -1 : 1)) / 2);
-        resNewZond.push((resNewZond[i] + (sumZond === 0 ? 0 : (parseInt(arrYasen[i + 1]) || 0) - (parseInt(arrZond[i + 1]) || 0) * (isVest ? -1 : 1))) / 2);
+      const resNewYasn = [];
+      const resNewZond = [];
+      const chartNewYasn = [];
+      const chartNewZond = [];
+      const chartBar = [];
+      const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
+      for (let i = 0; i < arrYasen.length; i++) {
+        const zondVal = !isNaN(parseInt(arrZond[i])) ? parseInt(arrZond[i]) : 0;
+        const yasnVal = !isNaN(parseInt(arrYasen[i])) ? parseInt(arrYasen[i]) : 0;
+        if (type === 'vest') {
+          resNewYasn.push(-1 * yasnVal);
+          resNewZond.push(-1 * (yasnVal - zondVal));
+        } else {
+          resNewYasn.push(yasnVal);
+          resNewZond.push(yasnVal - zondVal);
+        }
       }
-    }
 
-    resNewYasn.unshift(0);
-    resNewYasn.push(0);
-    resNewZond.unshift(0);
-    resNewZond.push(0);
-    chartBar.unshift([0, 0]);
-    chartBar.push([0, 0]);
+      for (let i = 0; i < resNewZond.length; i++) {
+        chartNewZond.push(!isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0);
+        chartNewYasn.push(!isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0);
+        chartBar.push([
+          !isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0,
+          !isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0,
+        ]);
 
-    const actions = isVest
-      ? [setPKrayChart1828Up, setPZondChart1828Up, setPBarChart1828Up]
-      : [setPKrayChart1828Down, setPZondChart1828Down, setPBarChart1828Down];
+        if ((i + 1) % 3 === 0 && i + 1 < resNewZond.length) {
+          const avgZond = (resNewZond[i] + resNewZond[i + 1]) / 2;
+          chartNewZond.push(avgZond);
+          const avgYasn = (resNewYasn[i] + resNewYasn[i + 1]) / 2;
+          chartNewYasn.push(avgYasn);
+          chartBar.push([0, 0]);
+        }
+      }
 
-    dispatch(actions[0](resNewYasn));
-    dispatch(actions[1](resNewZond));
-    dispatch(actions[2](chartBar));
-  }, [dispatch, type, ykv1828Data, yko1828Data, zv1828Data, zo1828Data]);
+      chartNewZond.unshift(0);
+      chartNewZond.push(0);
+      chartNewYasn.unshift(0);
+      chartNewYasn.push(0);
+      chartBar.unshift([0, 0]);
+      chartBar.push([0, 0]);
+
+      if (type === 'vest') {
+        dispatch(setPKrayChart1828Up(chartNewYasn));
+        dispatch(setPZondChart1828Up(chartNewZond));
+        dispatch(setPBarChart1828Up(chartBar));
+      } else {
+        dispatch(setPKrayChart1828Down(chartNewYasn));
+        dispatch(setPZondChart1828Down(chartNewZond));
+        dispatch(setPBarChart1828Down(chartBar));
+      }
+      console.log('YK')
+
+    },
+    [dispatch, ykv1828Data, yko1828Data, zv1828Data, zo1828Data]
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +130,7 @@ const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, 
       );
 
       onEnter(idx);
-      recalcSlice();
+      recalcSlice(type);
     },
     [dispatch, idx, onEnter, recalcSlice, type, ykv1828Data, yko1828Data]
   );

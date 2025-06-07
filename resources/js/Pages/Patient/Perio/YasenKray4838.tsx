@@ -47,47 +47,64 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
     [idx, onEnter]
   );
 
-  const recalcSlice = useCallback(() => {
-    const isVest = type === 'vest';
-    const arrYasen = isVest ? ykv4838Data : yko4838Data;
-    const arrZond = isVest ? zv4838Data : zo4838Data;
+  const recalcSlice = useCallback(
+    (type) => {
+      let arrYasen = type === 'vest' ? ykv4838Data : yko4838Data;
+      let arrZond = type === 'vest' ? zv4838Data : zo4838Data;
+      const resNewYasn = [];
+      const resNewZond = [];
+      const chartNewYasn = [];
+      const chartNewZond = [];
+      const chartBar = [];
 
-    const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
-    const resNewYasn: number[] = [];
-    const resNewZond: number[] = [];
-    const chartBar: [number, number][] = [];
-
-    for (let i = 0; i < arrYasen.length; i++) {
-      const zondVal = parseInt(arrZond[i]) || 0;
-      const yasnVal = parseInt(arrYasen[i]) || 0;
-      const yasnResult = isVest ? -yasnVal : yasnVal;
-      const zondResult = sumZond === 0 ? 0 : isVest ? -(yasnVal - zondVal) : yasnVal - zondVal;
-
-      resNewYasn.push(yasnResult);
-      resNewZond.push(zondResult);
-      chartBar.push([zondResult, yasnResult]);
-
-      if ((i + 1) % 3 === 0 && i + 1 < arrYasen.length) {
-        resNewYasn.push((resNewYasn[i] + (parseInt(arrYasen[i + 1]) || 0) * (isVest ? -1 : 1)) / 2);
-        resNewZond.push((resNewZond[i] + (sumZond === 0 ? 0 : (parseInt(arrYasen[i + 1]) || 0) - (parseInt(arrZond[i + 1]) || 0) * (isVest ? -1 : 1))) / 2);
+      for (let i = 0; i < arrYasen.length; i++) {
+        const zondVal = !isNaN(parseInt(arrZond[i])) ? parseInt(arrZond[i]) : 0;
+        const yasnVal = !isNaN(parseInt(arrYasen[i])) ? parseInt(arrYasen[i]) : 0;
+        if (type === 'vest') {
+          resNewYasn.push(-1 * yasnVal);
+          resNewZond.push(-1 * (yasnVal - zondVal));
+        } else {
+          resNewYasn.push(yasnVal);
+          resNewZond.push(yasnVal - zondVal);
+        }
       }
-    }
 
-    resNewYasn.unshift(0);
-    resNewYasn.push(0);
-    resNewZond.unshift(0);
-    resNewZond.push(0);
-    chartBar.unshift([0, 0]);
-    chartBar.push([0, 0]);
+      for (let i = 0; i < resNewZond.length; i++) {
+        chartNewZond.push(!isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0);
+        chartNewYasn.push(!isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0);
+        chartBar.push([
+          !isNaN(parseInt(resNewZond[i])) ? parseInt(resNewZond[i]) : 0,
+          !isNaN(parseInt(resNewYasn[i])) ? parseInt(resNewYasn[i]) : 0,
+        ]);
 
-    const actions = isVest
-      ? [setPKrayChart4838Up, setPZondChart4838Up, setPBarChart4838Up]
-      : [setPKrayChart4838Down, setPZondChart4838Down, setPBarChart4838Down];
+        if ((i + 1) % 3 === 0 && i + 1 < resNewZond.length) {
+          const avgZond = (resNewZond[i] + resNewZond[i + 1]) / 2;
+          chartNewZond.push(avgZond);
+          const avgYasn = (resNewYasn[i] + resNewYasn[i + 1]) / 2;
+          chartNewYasn.push(avgYasn);
+          chartBar.push([0, 0]);
+        }
+      }
 
-    dispatch(actions[0](resNewYasn));
-    dispatch(actions[1](resNewZond));
-    dispatch(actions[2](chartBar));
-  }, [dispatch, type, ykv4838Data, yko4838Data, zv4838Data, zo4838Data]);
+      chartNewZond.unshift(0);
+      chartNewZond.push(0);
+      chartNewYasn.unshift(0);
+      chartNewYasn.push(0);
+      chartBar.unshift([0, 0]);
+      chartBar.push([0, 0]);
+
+      if (type === 'vest') {
+        dispatch(setPKrayChart4838Up(chartNewYasn));
+        dispatch(setPZondChart4838Up(chartNewZond));
+        dispatch(setPBarChart4838Up(chartBar));
+      } else {
+        dispatch(setPKrayChart4838Down(chartNewYasn));
+        dispatch(setPZondChart4838Down(chartNewZond));
+        dispatch(setPBarChart4838Down(chartBar));
+      }
+    },
+    [dispatch, ykv4838Data, yko4838Data, zv4838Data, zo4838Data]
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +123,7 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
       );
 
       onEnter(idx);
-      recalcSlice();
+      recalcSlice(type);
     },
     [dispatch, idx, onEnter, recalcSlice, type, ykv4838Data, yko4838Data]
   );

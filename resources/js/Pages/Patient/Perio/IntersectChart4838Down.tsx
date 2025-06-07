@@ -157,7 +157,7 @@ export default function IntersectChart4838Down() {
     datasets: [
       {
         label: 'Глибина зондування',
-        pointRadius: 1,
+        pointRadius: 0,
         borderWidth: 2,
         data: zond1828VestData,
         borderColor: 'red',
@@ -165,29 +165,29 @@ export default function IntersectChart4838Down() {
       },
       {
         label: 'Ясений край',
-        pointRadius: 1,
+        pointRadius: 0,
         borderWidth: 2,
         data: yasen1828VestData,
         borderColor: 'blue',
         fill: '-1', // заполняет между этой и предыдущей линией
       },
-      // {
-      //   type: 'bar',
-      //   options: {
-      //     barPercentage: 1,
-      //   },
-      //   backgroundColor: 'green',
-      //   barThickness: 1,
-      //   with: 2,
-      //   data: bar1828VestData,
-      // },
+      {
+        type: 'bar',
+        options: {
+          barPercentage: 1,
+        },
+        backgroundColor: 'green',
+        barThickness: 1,
+        with: 2,
+        data: bar1828VestData,
+      },
     ],
   };
 
   return (
     <>
       <div
-        style={{ width: '1160px', height: '100px' }}
+        style={{ width: '1200px', height: '100px' }}
         className="chart-intersect-down"
       >
         <Line data={data} options={options} height={100} />

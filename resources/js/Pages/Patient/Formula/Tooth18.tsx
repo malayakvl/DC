@@ -23,7 +23,7 @@ import {
   getActiveToothNumberSelector,
   getRemoveDiaSelector,
 } from '../../../Redux/Formula/selectors';
-import setupDiagnoze from '../../../lib/tfunctions';
+import setupDiagnoze from '../../../lib/tFunctions';
 import PeriodontitStage18 from './periodontit18';
 import { excludeToothEffect } from '../../../Constants';
 

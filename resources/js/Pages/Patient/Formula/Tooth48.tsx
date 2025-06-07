@@ -25,7 +25,7 @@ import {
   getRemoveDiaSelector,
   changeDiaSelector,
 } from '../../../Redux/Formula/selectors';
-import setupDiagnoze from '../../../lib/tfunctions';
+import setupDiagnoze from '../../../lib/tFunctions';
 import PeriodontitStage48 from './periodontit48';
 import { excludeToothEffect } from '../../../Constants';
 
