@@ -31,26 +31,27 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
   );
 
   // Sync local state with Redux state if it changes externally
-  useEffect(() => {
-    const newValue = type === 'vest' ? zv1828Data[idx] ?? '' : zo1828Data[idx] ?? '';
-    setValue(newValue);
-  }, [zv1828Data, zo1828Data, type, idx]);
+  // useEffect(() => {
+  //   const newValue = type === 'vest' ? zv1828Data[idx] ?? '' : zo1828Data[idx] ?? '';
+  //   setValue(newValue);
+  // }, [zv1828Data, zo1828Data, type, idx]);
+
+  // useEffect(() => {
+  //   recalcSlice(type)
+  // });
 
   const recalcSlice = useCallback(
-    (type) => {
-      console.log('type', type)
-      console.log(zv1828Data);
+    (type, updData = []) => {
       let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;
-      let arrZond = type === 'vest' ? zv1828Data : zo1828Data;
-      console.log('zond', arrZond)
-      console.log('yasn', arrYasen)
+      // let arrZond = type === 'vest' ? zv1828Data : zo1828Data;
+      let arrZond = updData;
+
       const resNewYasn = [];
       const resNewZond = [];
       const chartNewYasn = [];
       const chartNewZond = [];
       const chartBar = [];
       const sumZond = arrZond.reduce((sum, num) => sum + (parseInt(num) || 0), 0);
-
       for (let i = 0; i < arrYasen.length; i++) {
         const zondVal = !isNaN(parseInt(arrZond[i])) ? parseInt(arrZond[i]) : 0;
         const yasnVal = !isNaN(parseInt(arrYasen[i])) ? parseInt(arrYasen[i]) : 0;
@@ -123,8 +124,8 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
         // Replace non-numeric input with 0
         newValue = 0;
       }
-
       setValue(newValue);
+
 
       // Update Redux state
       const updatedData = type === 'vest' ? [...zv1828Data] : [...zo1828Data];
@@ -134,7 +135,12 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
           ? setPerioZ1828VestData(updatedData)
           : setPerioZ1828OralData(updatedData)
       );
-
+      // if (idx === 47) {
+      //   setTimeout(() => {
+      //     alert(1)
+      //     recalcSlice(type)
+      //   }, 2000);
+      // }
       // Update input color based on value
       e.target.style.color =
         newValue !== '' && Number(newValue) > 5
@@ -143,14 +149,14 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
             ? 'blue'
             : 'green';
 
+      // Recalculate charts
+      recalcSlice(type, updatedData);
+
       // Auto-focus next input for specific values
       const tabValues = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
       if (inputValue !== '' && !isNaN(Number(inputValue)) && (tabValues.includes(Number(inputValue)) || Number(inputValue) >= 19)) {
         onEnter(idx);
       }
-
-      // Recalculate charts
-      recalcSlice(type);
     },
     [dispatch, idx, onEnter, recalcSlice, type, zv1828Data, zo1828Data]
   );

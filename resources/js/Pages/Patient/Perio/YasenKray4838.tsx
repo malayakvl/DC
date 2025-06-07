@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getPerioZ4838VDataSelector,
@@ -38,6 +38,10 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
     color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green',
   };
 
+  // useEffect(() => {
+  //   recalcSlice(type)
+  // });
+
   const handleKeyPress = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
@@ -48,8 +52,9 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
   );
 
   const recalcSlice = useCallback(
-    (type) => {
-      let arrYasen = type === 'vest' ? ykv4838Data : yko4838Data;
+    (type, updData) => {
+      // let arrYasen = type === 'vest' ? ykv4838Data : yko4838Data;
+      let arrYasen = updData;
       let arrZond = type === 'vest' ? zv4838Data : zo4838Data;
       const resNewYasn = [];
       const resNewZond = [];
@@ -122,8 +127,9 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
         : setPerioYK4838OralData(updatedData)
       );
 
+      recalcSlice(type, updatedData);
       onEnter(idx);
-      recalcSlice(type);
+
     },
     [dispatch, idx, onEnter, recalcSlice, type, ykv4838Data, yko4838Data]
   );

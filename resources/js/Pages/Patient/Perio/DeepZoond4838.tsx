@@ -30,16 +30,11 @@ const DeepZond4838 = forwardRef(({ type, idx, onEnter }, ref) => {
     type === 'vest' ? zv4838Data[idx] ?? '' : zo4838Data[idx] ?? ''
   );
 
-  // Sync local state with Redux state if it changes externally
-  useEffect(() => {
-    const newValue = type === 'vest' ? zv4838Data[idx] ?? '' : zo4838Data[idx] ?? '';
-    setValue(newValue);
-  }, [zv4838Data, zo4838Data, type, idx]);
-
   const recalcSlice = useCallback(
-    (type) => {
+    (type, updData) => {
       let arrYasen = type === 'vest' ? ykv4838Data : yko4838Data;
-      let arrZond = type === 'vest' ? zv4838Data : zo4838Data;
+      // let arrZond = type === 'vest' ? zv4838Data : zo4838Data;
+      let arrZond = updData;
       const resNewYasn = [];
       const resNewZond = [];
       const chartNewYasn = [];
@@ -143,9 +138,8 @@ const DeepZond4838 = forwardRef(({ type, idx, onEnter }, ref) => {
       if (inputValue !== '' && !isNaN(Number(inputValue)) && (tabValues.includes(Number(inputValue)) || Number(inputValue) >= 19)) {
         onEnter(idx);
       }
-
       // Recalculate charts
-      recalcSlice(type);
+      recalcSlice(type, updatedData);
     },
     [dispatch, idx, onEnter, recalcSlice, type, zv4838Data, zo4838Data]
   );

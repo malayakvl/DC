@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getPerioZ1828VDataSelector,
@@ -47,14 +47,10 @@ const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, 
   );
 
   const recalcSlice = useCallback(
-    (type) => {
-
-      console.log('type', type)
-      console.log(zv1828Data);
-      let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;
+    (type, updData) => {
+      // let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;
+      let arrYasen = updData;
       let arrZond = type === 'vest' ? zv1828Data : zo1828Data;
-      console.log('zond', arrZond)
-      console.log('yasn', arrYasen)
 
       const resNewYasn = [];
       const resNewZond = [];
@@ -107,8 +103,6 @@ const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, 
         dispatch(setPZondChart1828Down(chartNewZond));
         dispatch(setPBarChart1828Down(chartBar));
       }
-      console.log('YK')
-
     },
     [dispatch, ykv1828Data, yko1828Data, zv1828Data, zo1828Data]
   );
@@ -128,9 +122,9 @@ const YasenKray1828 = forwardRef<HTMLInputElement, YasenKray1828Props>(({ type, 
         ? setPerioYK1828VestData(updatedData)
         : setPerioYK1828OralData(updatedData)
       );
+      recalcSlice(type, updatedData);
 
       onEnter(idx);
-      recalcSlice(type);
     },
     [dispatch, idx, onEnter, recalcSlice, type, ykv1828Data, yko1828Data]
   );
