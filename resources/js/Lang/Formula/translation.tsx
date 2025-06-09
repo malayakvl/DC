@@ -86,7 +86,13 @@ const lngPatient = {
     pst1: '1 ст',
     pst2: '2 ст',
     pst3: '3 ст',
-    vest_oral: 'Вестибулярно/Орально'
+    vest_oral: 'Вестибулярно/Орально',
+    perio_other: 'Інший',
+    perio_exist: 'Наявний',
+    perio_absent: 'Відсутній',
+    perio_implant: 'Імплант',
+    perio_crown: 'Коронка',
+    perio_middlepart: 'Проміжна частина'
   },
 };
 export default lngPatient;

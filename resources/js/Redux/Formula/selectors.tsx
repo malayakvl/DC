@@ -69,3 +69,4 @@ export const allTeethAdultSelector = state => state.formula.allTeethAdult;
 export const allTeethChildSelector = state => state.formula.allTeethChild;
 export const changeDiaSelector = state => state.formula.changeDia;
 export const getRemoveDiaSelector = state => state.formula.removeDia;
+export const getPerioStatusChangeSelector = state => state.formula.perioStatusChange;

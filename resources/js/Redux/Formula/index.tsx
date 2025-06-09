@@ -56,6 +56,7 @@ import {
   setStateFormula,
   setClearFormula,
   setRemoveDia,
+  setPerioStatusChange
 } from './actions';
 
 const initialState = {
@@ -9106,6 +9107,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth17: {
       moving_st: 0,
@@ -9122,6 +9124,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth16: {
       moving_st: 0,
@@ -9138,6 +9141,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth15: {
       moving_st: 0,
@@ -9154,6 +9158,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth14: {
       moving_st: 0,
@@ -9170,6 +9175,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth13: {
       moving_st: 0,
@@ -9186,6 +9192,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth12: {
       moving_st: 0,
@@ -9202,6 +9209,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth11: {
       moving_st: 0,
@@ -9218,6 +9226,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth21: {
       moving_st: 0,
@@ -9234,6 +9243,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth22: {
       moving_st: 0,
@@ -9250,6 +9260,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth23: {
       moving_st: 0,
@@ -9266,6 +9277,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth24: {
       moving_st: 0,
@@ -9282,6 +9294,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth25: {
       moving_st: 0,
@@ -9298,6 +9311,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth26: {
       moving_st: 0,
@@ -9314,6 +9328,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth27: {
       moving_st: 0,
@@ -9330,6 +9345,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth28: {
       moving_st: 0,
@@ -9346,6 +9362,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth48: {
       moving_st: 0,
@@ -9362,6 +9379,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth47: {
       moving_st: 0,
@@ -9378,6 +9396,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth46: {
       moving_st: 0,
@@ -9394,6 +9413,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth45: {
       moving_st: 0,
@@ -9410,6 +9430,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth44: {
       moving_st: 0,
@@ -9426,6 +9447,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth43: {
       moving_st: 0,
@@ -9442,6 +9464,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth42: {
       moving_st: 0,
@@ -9458,6 +9481,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth41: {
       moving_st: 0,
@@ -9474,6 +9498,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth31: {
       moving_st: 0,
@@ -9490,6 +9515,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth32: {
       moving_st: 0,
@@ -9506,6 +9532,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth33: {
       moving_st: 0,
@@ -9522,6 +9549,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth34: {
       moving_st: 0,
@@ -9538,6 +9566,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth35: {
       moving_st: 0,
@@ -9554,6 +9583,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth36: {
       moving_st: 0,
@@ -9570,6 +9600,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth37: {
       moving_st: 0,
@@ -9586,6 +9617,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
     tooth38: {
       moving_st: 0,
@@ -9602,6 +9634,7 @@ const initialState = {
       bleeding_oral_st2: false,
       bleeding_oral_st3: false,
       depozit: '',
+      status: 'exist'
     },
   },
   // perio chart vest 1828
@@ -10351,6 +10384,7 @@ const initialState = {
   ],
 
   stateFormula: '',
+  perioStatusChange: false,
   removeDia: false,
 };
 
@@ -10358,6 +10392,12 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [setPerioStatusChange.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      perioStatusChange: action.payload,
+    }),
+  },
   [setRemoveDia.toString()]: {
     next: (state, action) => ({
       ...state,
@@ -14831,6 +14871,7 @@ export {
   setStateFormula,
   setClearFormula,
   setRemoveDia,
+  setPerioStatusChange
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

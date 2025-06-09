@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import {
+  getPerioSelector,
+  getPerioStatusChangeSelector,
+  perioDiagnozisSelector,
+} from '../../../Redux/Formula/selectors';
 import Furkacia from './Furkacia';
 import FormulaPerio1828 from './FormulaPerio1828';
 import FormulaPerio3848 from './FormulaPerio3848';
@@ -8,6 +12,7 @@ import DentalDeposits from './DentalDeposits';
 import Fertilizer from './Fertilizer';
 import Bleeding from './Bleeding';
 import Moving from './Moving';
+import Statuses from './Statuses';
 import DeepZond1828 from './DeepZoond1828';
 import YasenKray1828 from './YasenKray1828';
 import DeepZond4838 from './DeepZoond4838';
@@ -27,6 +32,7 @@ export default function Index() {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
+  // const statusChange = useSelector(getPerioStatusChangeSelector);
   const msgFormula = new Lang({
     messages: lngFormula,
     locale: appLang,
@@ -142,164 +148,52 @@ export default function Index() {
           <tr>
             <td className="title">{msgFormula.get('formula.teeth.status')}</td>
             <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={18} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={17} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={16} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={15} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={14} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={13} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={12} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={11} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={21} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={22} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={23} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={24} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={25} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={26} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={27} />
             </td>
             <td>
-              <select className="perio-select" data-tooth="18">
-                <option value="other">Інший</option>
-                <option value="intact">Наявний</option>
-                <option value="empty">Відсутній</option>
-                <option value="implant">Імплант</option>
-                <option value="crown">Коронка</option>
-                <option value="pontic">Проміжна частина</option>
-              </select>
+              <Statuses type={'vest'} toothNum={28} />
             </td>
           </tr>
           <tr>
