@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import React from 'react';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
@@ -19,49 +19,106 @@ import {
 import { useState } from 'react';
 import Perio from './Perio/index';
 import {
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
+  chartBarDown2Selector,
+  chartBarDownSelector,
+  chartKrayDown2Selector,
+  chartKrayDownSelector,
+  chartZondDown2Selector,
+  chartZondDownSelector,
+  getPerioYK1828ODataSelector, getPerioYK1828VDataSelector, getPerioYK4838ODataSelector,
+  getPerioYK4838VDataSelector,
+  getPerioZ1828ODataSelector,
+  getPerioZ1828VDataSelector, getPerioZ4838ODataSelector, getPerioZ4838VDataSelector,
+  getTeethDiagnozisSelector,
+  perioDiagnozisSelector,
   teethTypeSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
 } from '../../Redux/Formula/selectors';
 import Details from './Partials/Details';
+import PrimaryButton from '../../Components/Form/PrimaryButton';
+import { setClearFormula } from '../../Redux/Formula';
 
 export default function index({ patientData, treatmentData, clinicData }) {
   const [tab, setTab] = useState('history');
   const appLang = useSelector(appLangSelector);
+  const teethDiagnozis = useSelector(perioDiagnozisSelector);
+
+  const yasen1828VestData = useSelector(getPerioYK1828VDataSelector);
+  const yasen1828OralData = useSelector(getPerioYK1828ODataSelector);
+  const yasen4838VestData = useSelector(getPerioYK4838VDataSelector);
+  const yasen4838OralData = useSelector(getPerioYK4838ODataSelector);
+
+  const zond1828VestData = useSelector(getPerioZ1828VDataSelector);
+  const zond1828OralData = useSelector(getPerioZ1828ODataSelector);
+  const zond4838VestData = useSelector(getPerioZ4838VDataSelector);
+  const zond4838OralData = useSelector(getPerioZ4838ODataSelector);
+
   const msg = new Lang({
     messages: lngPatient,
     locale: appLang,
   });
-  const msgFormula = new Lang({
-    messages: lngFormula,
-    locale: appLang,
-  });
-
   const dispatch = useDispatch<any>();
   const teethType = useSelector(teethTypeSelector);
   const handleTabClick = tabName => {
     setTab(tabName);
   };
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subdiagnozis = useSelector(getSubDiagnosisSelector);
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const scColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+  const [values, setValues] = useState({
+    clinic_id: clinicData.id,
+    patientData: patientData,
+    treatmentData: teethDiagnozis,
+    formula_type: teethType,
+    yk1828Vest: yasen1828VestData,
+    yk1828Oral: yasen1828OralData,
+    yk4838Vest: yasen4838VestData,
+    yk4838Oral: yasen4838OralData,
+
+    z1828Vest: zond1828VestData,
+    z1828Oral: zond1828OralData,
+    z4838Vest: zond4838VestData,
+    z4838Oral: zond4838OralData,
+
+  });
+
+  const submit = e => {
+    e.preventDefault();
+
+    values['yk1828Vest'] = yasen1828VestData;
+    values['yk1828Oral'] = yasen1828OralData;
+    values['yk4838Vest'] = yasen4838VestData;
+    values['yk4838Oral'] = yasen4838OralData;
+
+    values['z1828Vest'] = zond1828VestData;
+    values['z1828Oral'] = zond1828OralData;
+    values['z4838Vest'] = zond4838VestData;
+    values['z4838Oral'] = zond4838OralData;
+
+    values['treatmentData'] = teethDiagnozis;
+    values['perioChartData'] = {
+      yk1828Vest: yasen1828VestData,
+      yk1828Oral: yasen1828OralData,
+      yk4838Vest: yasen4838VestData,
+      yk4838Oral: yasen4838OralData,
+      z1828Vest: zond1828VestData,
+      z1828Oral: zond1828OralData,
+      z4838Vest: zond4838VestData,
+      z4838Oral: zond4838OralData
+    }
+    values['teethType'] = teethType;
+    //
+    // // clear selector
+    // dispatch(dispatch(setClearFormula()));
+    //
+    if (treatmentData.id) {
+      router.post(`/patient/update-perio?id=${treatmentData.id}`, values);
+    } else {
+      // router.post('/pricing/update', {
+      //   clinic_id: values.clinic_id,
+      //   category_id: values?.category_id,
+      //   name: values.name,
+      //   price: values.price,
+      //   rows: invoiceItems,
+      // });
+    }
+  };
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -71,52 +128,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <Details patientData={patientData} clinicData={clinicData} />
 
-            {/* <div className="patient-view-border relative">
-                            <div className='flex'>
-                                {patientData.avatar ? (
-                                    <div className='profile-photo' style={{backgroundImage: `url(/uploads/patients/${patientData.avatar})`}} />
-                                ) : (
-                                    <div className='profile-photo' />
-                                )}
-                                <div className='parient-info'>
-                                    <b>{patientData.first_name} {patientData.last_name}</b>
-                                    <span className='block text-[11px]'>{patientData.phone}</span>
-                                </div>
-                            </div>
-                            <div className='icon-block'>
-                                <ul>
-                                    <li>
-                                        <Link href="/">
-                                            <FontAwesomeIcon icon={faUserPlus} className='mr-3' />
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="">
-                                            <FontAwesomeIcon icon={faPencil} />
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div className='tabs-block'>
-                                <ul>
-                                    <li id="documents" className={tab === 'documents' ? 'active' : ''} onClick={() => handleTabClick('documents')}>
-                                        Документи
-                                    </li>
-                                    <li id="visits" className={tab === 'visits' ? 'active' : ''} onClick={() => handleTabClick('visits')}>
-                                        Візити
-                                    </li>
-                                    <li id="plans" className={tab === 'plans' ? 'active' : ''} onClick={() => handleTabClick('plans')}>
-                                        Плани лікування
-                                    </li>
-                                    <li id="history" className={tab === 'history' ? 'active' : ''} onClick={() => handleTabClick('history')}>
-                                        Історія лікування
-                                    </li>
-                                    <li id="finances" className={tab === 'finances' ? 'active' : ''} onClick={() => handleTabClick('finances')}>
-                                        Фінанси
-                                    </li>
-                                </ul>
-                            </div>
-                        </div> */}
             {tab === 'history' && (
               <ul className="sub-tab text-right mt-5">
                 <li className="relative">
@@ -177,6 +188,18 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 <Perio />
 
                 <div className="clearfix" />
+              </div>
+              <div className="mt-[20px] mb-[10px] float-right relative z-10">
+                <Link
+                  className="btn-back"
+                  title={msg.get('patient.back')}
+                  href={`/patient/view/${patientData.id}`}
+                >
+                  {msg.get('patient.back')}
+                </Link>
+                <PrimaryButton onClick={e => submit(e)}>
+                  {msg.get('patient.save')}
+                </PrimaryButton>
               </div>
             </div>
           </div>

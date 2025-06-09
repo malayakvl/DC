@@ -83,7 +83,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
   const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
   const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-console.log('Dia', teethDiagnozis);
+
   const [values, setValues] = useState({
     clinic_id: clinicData.id,
     patientData: patientData,
@@ -198,99 +198,21 @@ console.log('Dia', teethDiagnozis);
       tData = emptyFormula;
     }
     if (teethType === 'adult') {
-      // dispatch(showAllAdult(true));
       for (let i = 11; i <= 18; i++) {
         tData[`tooth${i}`].paradont_health = true;
-        // tData[`tooth${i}`].paradont_health = true;
-        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-        //   tData[`tooth${i}`].show = true;
-        // }
       }
       for (let i = 41; i <= 48; i++) {
         tData[`tooth${i}`].paradont_health = true;
-        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-        //   tData[`tooth${i}`].show = true;
-        // }
       }
       for (let i = 21; i <= 28; i++) {
         tData[`tooth${i}`].paradont_health = true;
-        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-        //   tData[`tooth${i}`].show = true;
-        // }
       }
       for (let i = 31; i <= 38; i++) {
         tData[`tooth${i}`].paradont_health = true;
-        // if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-        //   tData[`tooth${i}`].show = true;
-        // }
       }
 
-      // for (let i = 51; i <= 55; i++) {
-      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 61; i <= 65; i++) {
-      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 81; i <= 85; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 71; i <= 75; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
       dispatch(setDataDiagnozes(tData));
     } else {
-      // dispatch(showAllAdult(false));
-      // dispatch(showAllChild(true));
-      // for (let i = 11; i <= 18; i++) {
-      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 41; i <= 48; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 21; i <= 28; i++) {
-      //   if (!tData[`tooth${i}`].absent && tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      // for (let i = 31; i <= 38; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = false;
-      //   }
-      // }
-      //
-      // for (let i = 51; i <= 55; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = true;
-      //   }
-      // }
-      // for (let i = 61; i <= 65; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = true;
-      //   }
-      // }
-      // for (let i = 81; i <= 85; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = true;
-      //   }
-      // }
-      // for (let i = 71; i <= 75; i++) {
-      //   if (!tData[`tooth${i}`].absent && !tData[`tooth${i}`].show) {
-      //     tData[`tooth${i}`].show = true;
-      //   }
-      // }
-      // dispatch(setToothDiagnoze(tData));
     }
   };
 
@@ -401,13 +323,13 @@ console.log('Dia', teethDiagnozis);
     if (treatmentData.id) {
       router.post(`/patient/update-formula?id=${treatmentData.id}`, values);
     } else {
-      router.post('/pricing/update', {
-        clinic_id: values.clinic_id,
-        category_id: values?.category_id,
-        name: values.name,
-        price: values.price,
-        rows: invoiceItems,
-      });
+      // router.post('/pricing/update', {
+      //   clinic_id: values.clinic_id,
+      //   category_id: values?.category_id,
+      //   name: values.name,
+      //   price: values.price,
+      //   rows: invoiceItems,
+      // });
     }
   };
 

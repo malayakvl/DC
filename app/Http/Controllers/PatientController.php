@@ -194,6 +194,22 @@ class PatientController extends Controller
         }
     }
 
+
+    public function updatePerio(Request $request) {
+        if ($request->user()->can('patient-edit')) {
+            $requestData = $request->all();
+            $formulaId = $requestData['id'];
+            $patientTreatment = PatientTreatment::where('id', '=', $formulaId)->first();
+            $patientTreatment->formula = json_encode($requestData['treatmentData']);
+            $patientTreatment->perio = json_encode($requestData['perioChartData']);
+//            $patientTreatment->formula_type = '';
+            $patientTreatment->save();
+
+            return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
+        }
+
+    }
+
     /**
      * view patient clinic card
      * 
