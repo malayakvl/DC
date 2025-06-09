@@ -1,46 +1,14 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
-  setNewToothActive,
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
+  perioDiagnozisSelector,
+  getPerioStatusChangeSelector,
 } from '../../../Redux/Formula/selectors';
 
 export default function Tooth45({ className = '' }) {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth48Diagnozis = teethDiagnozis.tooth48;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+  const perioDiagnozis = useSelector(perioDiagnozisSelector);
+  const tooth45 = perioDiagnozis.tooth45;
+  const statusChange = useSelector(getPerioStatusChangeSelector); // do not remove need for update component
 
   return (
     <>
@@ -57,8 +25,6 @@ export default function Tooth45({ className = '' }) {
             ? 'matrix(0.6919584, -0.1058001, 0.1058001, 0.6919584 -136 -278)'
             : 'matrix(-0.6919584, 0.1058001, -0.1058001, -0.6919584 1052 932)'
         }
-
-        // transform="matrix(-0.6919584, 0.1058001, -0.1058001, -0.6919584 1052 932)"
       >
         <g className="underlay" style={{ visibility: 'inherit' }}>
           <path
@@ -69,15 +35,13 @@ export default function Tooth45({ className = '' }) {
             C731.4,1155.9,715.8,1191.9,707.8,1213.9z"
           ></path>
         </g>
-        <g id="T_45" className="common-view" style={{ visibility: 'inherit' }}>
+        <g id="TH_45" className="common-view" style={{ visibility: tooth45.status !== 'absent' ? 'inherit' : 'hidden' }}>
           <g className="dentin">
             <g
-              id="dentin_v_45"
               className="hRoot hImplant hEmpty"
               style={{ visibility: 'inherit' }}
             >
               <path
-                id="dentin_v_45"
                 className="st9"
                 d="M717.1,1157.8c0,5-0.2,10.1-0.6,15.1c-2.8,8.6-5.5,17.2-8.1,25.8
                 c-0.8,2.7-1.6,5.3-2.4,8c0.8-2.7,1.6-5.3,2.4-8c1-3.2,1.9-6.3,2.9-9.4c-5.8,5.9-12.8,10.5-20.7,13.1c-2.9,0.9-5.8,1.6-8.8,1.9
@@ -86,12 +50,9 @@ export default function Tooth45({ className = '' }) {
               ></path>
             </g>
             <g
-              id="dentin_n_45"
-              className="hImplant hEmpty"
-              style={{ visibility: 'inherit' }}
+              style={{ visibility: (tooth45.status === 'implant' || tooth45.status === 'middlepart') ? 'hidden' : 'inherit' }}
             >
               <path
-                id="dentin_n_45"
                 className="st10"
                 d="M711.3,1189.2c-1,3.1-1.9,6.3-2.9,9.4c-3.2,10.7-6.4,21.4-10,32
                 c-6.7,19.6-15,38.8-23.6,57.8c-6.2,13.8-12.6,27.7-21,40.5c-2.9,4.4-6.7,8.4-10.3,11.5c-3.3,2.8-7,4.7-11.3,3.5
@@ -103,7 +64,7 @@ export default function Tooth45({ className = '' }) {
           </g>
           <g className="pulp">
             <g
-              className="hEmpty hRoot hImplant pulpitis-pfilling"
+              className="pulpitis-pfilling"
               data-position="45"
               style={{ visibility: 'inherit' }}
             >
@@ -118,7 +79,7 @@ export default function Tooth45({ className = '' }) {
               ></path>
             </g>
             <g
-              className="hEmpty hImplant pulpitis-pfilling"
+              className="pulpitis-pfilling"
               data-position="45"
               style={{ visibility: 'inherit' }}
             >
@@ -133,7 +94,7 @@ export default function Tooth45({ className = '' }) {
               ></path>
             </g>
             <g
-              className="hEmpty hImplant pulpitis-pfilling"
+              className="pulpitis-pfilling"
               data-position="45"
               style={{ visibility: 'inherit' }}
             >
@@ -144,36 +105,32 @@ export default function Tooth45({ className = '' }) {
               ></path>
             </g>
             <g
-              className="level hEmpty hImplant periodontitis"
+              className="level periodontitis"
               data-level="1"
               data-position="45"
-              status="0"
               style={{ visibility: 'inherit', opacity: 0 }}
             >
               <circle className="st42" cx="629.2" cy="1347.7" r="8.2"></circle>
             </g>
             <g
-              className="level hEmpty hImplant periodontitis"
+              className="level periodontitis"
               data-level="2"
               data-position="45"
-              status="0"
               style={{ visibility: 'inherit', opacity: 0 }}
             >
               <circle className="st42" cx="627.4" cy="1354.5" r="17.5"></circle>
             </g>
             <g
-              className="level hEmpty hImplant periodontitis"
+              className="level periodontitis"
               data-level="3"
               data-position="45"
-              status="0"
               style={{ visibility: 'inherit', opacity: 0 }}
             >
               <circle className="st42" cx="625.2" cy="1367" r="30"></circle>
             </g>
           </g>
           <g
-            className="pin hEmpty hImplant"
-            status="0"
+            className="pin"
             style={{ visibility: 'inherit', opacity: 0 }}
           >
             <path
@@ -187,8 +144,7 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="stump hEmpty hIntact hImplant"
-            status="0"
+            className="stump"
             style={{ visibility: 'hidden', opacity: 0 }}
           >
             <path
@@ -205,8 +161,7 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="abutment hEmpty hIntact hRoot"
-            status="0"
+            className="abutment"
             style={{ visibility: 'hidden', opacity: 0 }}
           >
             <path
@@ -222,7 +177,7 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="shaper hEmpty hIntact hRoot"
+            className="shaper"
             style={{ visibility: 'hidden' }}
           >
             <path
@@ -231,8 +186,8 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="implant hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden' }}
+            className="implant"
+            style={{ visibility: tooth45.status === 'implant' ? 'inherit' : 'hidden' }}
           >
             <path
               className="st18"
@@ -275,7 +230,7 @@ export default function Tooth45({ className = '' }) {
               y2="1315.2"
             ></line>
           </g>
-          <g className="outline-1" style={{ visibility: 'inherit' }}>
+          <g className="toutline" style={{ visibility: 'inherit' }}>
             <path
               className="st46"
               d="M731.8,1130c-1.3-2.2-2.9-4.2-4.7-6c-3.1-3.2-6.9-5.7-9.9-8.9c-1.7-1.9-3.2-4-4.5-6.3
@@ -286,7 +241,7 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="wedge-shaped hRoot hImplant hEmpty"
+            className="wedge-shaped"
             style={{ visibility: 'inherit' }}
           >
             <path
@@ -304,7 +259,6 @@ export default function Tooth45({ className = '' }) {
           </g>
           <g
             className="tartar hImplant hEmpty"
-            status="0"
             style={{ visibility: 'inherit', opacity: 0 }}
           >
             <path
@@ -317,7 +271,7 @@ export default function Tooth45({ className = '' }) {
             ></path>
           </g>
           <g
-            className="header caries-filling hRoot hImplant hEmpty"
+            className="header caries-filling"
             style={{ visibility: 'inherit' }}
           >
             <g className="caries-filling" data-position="45_5">
@@ -379,38 +333,31 @@ export default function Tooth45({ className = '' }) {
             <g className="with">
               <path
                 className="st54"
-                areas="45_2 45_5"
                 d="M659.5 1140L666.5 1111.5"
               ></path>
               <path
                 className="st54"
-                areas="45_1 45_2"
                 d="M659.5 1140C657 1147 656.2 1162.1 645 1168.5"
               ></path>
               <path
                 className="st54"
-                areas="45_1 45_5"
                 d="M659.5 1140C669.5 1156.5 695.2 1160.9 710 1156.5"
               ></path>
               <path
                 className="st54"
-                areas="45_1 45_4"
                 d="M710 1156.5C710 1163.5 709 1172.5 712 1180"
               ></path>
               <path
                 className="st54"
-                areas="45_4 45_5"
                 d="M710 1156.5L712 1117"
               ></path>
             </g>
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
-              status="0"
               style={{ visibility: 'hidden', opacity: 0 }}
             >
               <path
@@ -419,13 +366,9 @@ export default function Tooth45({ className = '' }) {
               ></path>
             </g>
           </g>
-          <g
-            className="crown"
-            status="0"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="crown" style={{ visibility: tooth45.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth45.status !== 'exist') ? 1 : 0 }}>
             <path
-              className="st46 target"
+              className={`st46 target temporary-crown crown-fill blue`}
               d="M731.8,1130c-1.3-2.2-2.9-4.2-4.7-6c-3.1-3.2-6.9-5.7-9.9-8.9c-1.7-1.9-3.2-4-4.5-6.3
                 c-1.1-1.9-2.2-3.8-3.3-5.6c-2-3.6-4.1-7-7.8-9.1c-4-2.2-8.7-2.1-13-0.6c-7.3,2.6-12.6,8.7-19.7,11.8c-0.6,0.2-1.1,0.5-1.7,0.7
                 c-4.1,1.5-8.4,2.2-12.4,3.9c-4.7,2-8.7,5.3-11.5,9.6c-2.2,4-3.9,8.2-4.9,12.7c-2.3,10.2-1,20.8,1.2,31c0.5,2.5,1.1,5,1.8,7.4

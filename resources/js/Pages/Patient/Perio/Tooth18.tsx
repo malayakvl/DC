@@ -127,7 +127,7 @@ export default function Tooth18({ className = '' }) {
             </g>
           </g>
           <g
-            className="pin hEmpty hImplant"
+            className="pin"
             style={{ visibility: 'hidden', opacity: 0 }}
           >
             <path
@@ -162,7 +162,7 @@ export default function Tooth18({ className = '' }) {
             ></path>
           </g>
           <g
-            className="abutment "
+            className="abutment"
             style={{ visibility: 'hidden', opacity: 0 }}
           >
             <path
@@ -181,7 +181,7 @@ export default function Tooth18({ className = '' }) {
             ></path>
           </g>
           <g
-            className="shaper "
+            className="shaper"
             style={{ visibility: 'hidden' }}
           >
             <path
