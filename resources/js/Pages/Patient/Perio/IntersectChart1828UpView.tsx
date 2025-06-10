@@ -31,12 +31,12 @@ ChartJS.register(
   Filler
 );
 
-export default function IntersectChart1828Up() {
-  const zond1828VestData = useSelector(chartZondUpSelector);
-  const yasen1828VestData = useSelector(chartKrayUpSelector);
-  const bar1828VestData = useSelector(chartBarUpSelector);
-// console.log('CHART YASN', yasen1828VestData)
-//   console.log('CHART ZOND', zond1828VestData)
+export default function IntersectChart1828UpView({ zondData, yasenData, barData }) {
+  const zond1828VestData = zondData;
+  const yasen1828VestData = yasenData;
+  const bar1828VestData = barData;
+console.log('CHARTS YASN', yasenData)
+
   const options = {
     layout: {
       padding: 0,
@@ -160,7 +160,7 @@ export default function IntersectChart1828Up() {
         label: 'Глибина зондування',
         pointRadius: 0,
         borderWidth: 2,
-        data: zond1828VestData,
+        data: zondData,
         borderColor: 'red',
         fill: 'rgba(243, 128, 153, 0.4)', // или target: 'Линия B'
       },
@@ -168,7 +168,7 @@ export default function IntersectChart1828Up() {
         label: 'Ясений край',
         pointRadius: 0,
         borderWidth: 2,
-        data: yasen1828VestData,
+        data: yasenData,
         borderColor: 'blue',
         fill: '-1', // заполняет между этой и предыдущей линией
       },
@@ -180,7 +180,7 @@ export default function IntersectChart1828Up() {
         backgroundColor: 'green',
         barThickness: 1,
         with: 2,
-        data: bar1828VestData,
+        data: barData,
       },
     ],
   };

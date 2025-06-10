@@ -20,11 +20,21 @@ import { useState } from 'react';
 import Perio from './Perio/index';
 import {
   chartBarDown2Selector,
-  chartBarDownSelector, chartBarUp2Selector, chartBarUpSelector,
-  getPerioYK1828ODataSelector, getPerioYK1828VDataSelector, getPerioYK4838ODataSelector,
+  chartBarDownSelector,
+  chartBarUp2Selector,
+  chartBarUpSelector, chartKrayDownSelector, chartKrayUp2Selector,
+  chartKrayDown2Selector,
+  chartKrayUpSelector, chartZondDown2Selector,
+  chartZondDownSelector, chartZondUp2Selector,
+  chartZondUpSelector,
+  getPerioYK1828ODataSelector,
+  getPerioYK1828VDataSelector,
+  getPerioYK4838ODataSelector,
   getPerioYK4838VDataSelector,
   getPerioZ1828ODataSelector,
-  getPerioZ1828VDataSelector, getPerioZ4838ODataSelector, getPerioZ4838VDataSelector,
+  getPerioZ1828VDataSelector,
+  getPerioZ4838ODataSelector,
+  getPerioZ4838VDataSelector,
   perioDiagnozisSelector,
   teethTypeSelector,
 } from '../../Redux/Formula/selectors';
@@ -51,6 +61,29 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const bar4838VestData = useSelector(chartBarUp2Selector);
   const bar4838OralData = useSelector(chartBarDown2Selector);
 
+  // const pKrayChartUp = useSelector(chartKrayUpSelector);
+  // const pZondChartUp = useSelector(chartZondUpSelector);
+  // const pBarUp = useSelector(chartBarUpSelector);
+  // const pKrayChartDown = useSelector(chartKrayDownSelector);
+  // const pZondChartDown = useSelector(chartZondDownSelector);
+  // const pBarDown = useSelector(chartBarDownSelector);
+  //
+  // const pKrayChart2Up = useSelector(chartKrayUp2Selector);
+  // const pZondChart2Up = useSelector(chartZondUp2Selector);
+  // const pBar2Up = useSelector(chartBarUp2Selector);
+  // const pKrayChart2Down = useSelector(chartKrayDown2Selector);
+  // const pZondChart2Down = useSelector(chartZondDown2Selector);
+  // const pBar2Down = useSelector(chartBarUp2Selector);
+  const zond1828VestChart = useSelector(chartZondUpSelector);
+  const yasen1828VestChart = useSelector(chartKrayUpSelector);
+  const bar1828VestChart = useSelector(chartBarUpSelector);
+
+  const zond1828OralChart = useSelector(chartZondDownSelector);
+  const yasen1828OralChart = useSelector(chartKrayDownSelector);
+  const bar1828OralChart = useSelector(chartBarDownSelector);
+
+  console.log(yasen1828VestChart);
+
   const msg = new Lang({
     messages: lngPatient,
     locale: appLang,
@@ -66,43 +99,13 @@ export default function index({ patientData, treatmentData, clinicData }) {
     patientData: patientData,
     treatmentData: teethDiagnozis,
     formula_type: teethType,
-
-    yk1828Vest: yasen1828VestData,
-    yk1828Oral: yasen1828OralData,
-    yk4838Vest: yasen4838VestData,
-    yk4838Oral: yasen4838OralData,
-
-    z1828Vest: zond1828VestData,
-    z1828Oral: zond1828OralData,
-    z4838Vest: zond4838VestData,
-    z4838Oral: zond4838OralData,
-
-    bar1828VestData: bar1828VestData,
-    bar1828OralData: bar1828OralData,
-
-    bar4838VestData: bar4838VestData,
-    bar4838OralData: bar4838OralData
   });
 
   const submit = e => {
     e.preventDefault();
 
-    values['yk1828Vest'] = yasen1828VestData;
-    values['yk1828Oral'] = yasen1828OralData;
-    values['yk4838Vest'] = yasen4838VestData;
-    values['yk4838Oral'] = yasen4838OralData;
-    values['bar1828VestData'] = bar1828VestData;
-    values['bar1828OralData'] = bar1828OralData;
-
-    values['z1828Vest'] = zond1828VestData;
-    values['z1828Oral'] = zond1828OralData;
-    values['z4838Vest'] = zond4838VestData;
-    values['z4838Oral'] = zond4838OralData;
-    values['bar4838VestData'] = bar4838VestData;
-    values['bar4838OralData'] = bar4838OralData;
-
     values['treatmentData'] = teethDiagnozis;
-    values['perioChartData'] = {
+    values['perioValues'] = {
       yk1828Vest: yasen1828VestData,
       yk1828Oral: yasen1828OralData,
       yk4838Vest: yasen4838VestData,
@@ -111,20 +114,26 @@ export default function index({ patientData, treatmentData, clinicData }) {
       z1828Oral: zond1828OralData,
       z4838Vest: zond4838VestData,
       z4838Oral: zond4838OralData,
-      bar1828VestData: bar1828VestData,
-      bar1828OralData: bar1828OralData,
-      bar4838VestData: bar4838VestData,
-      bar4838OralData: bar4838OralData
+    }
+    values['chartsData'] = {
+      yasen1828VestChart: yasen1828VestChart,
+      zond1828VestChart: zond1828VestChart,
+      bar1828VestChart: bar1828VestChart,
+
+      yasen1828OralChart: yasen1828OralChart,
+      zond1828OralChart: zond1828OralChart,
+      bar1828OralChart: bar1828OralChart
     }
     values['teethType'] = '';
-    console.log('VALUES', values);
-    // // clear selector
-    dispatch(setClearPerio());
+    console.log(values);
+    // exit;
     //
-    // if (treatmentData.id) {
-    //   router.post(`/patient/update-perio?id=${treatmentData.id}`, values);
-    // } else {
-    // }
+    // dispatch(setClearPerio());
+    //
+    if (treatmentData.id) {
+      router.post(`/patient/update-perio?id=${treatmentData.id}`, values);
+    } else {
+    }
   };
 
   return (

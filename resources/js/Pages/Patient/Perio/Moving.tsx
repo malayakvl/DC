@@ -10,7 +10,7 @@ export default function Moving({ toothNum, type }) {
 
   const setDiagnozis = () => {
     let stage = 0;
-    if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 0)
+    if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 0 || !perioDiagnozis[`tooth${toothNum}`][`moving_st`])
       stage = 1;
     else if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 1)
       stage = 2;

@@ -19,6 +19,7 @@ import { useState } from 'react';
 import lngFormula from '../../Lang/Formula/translation';
 import InputText from '../../Components/Form/InputText';
 import ViewFormula from './ViewFormula';
+import ViewPerio from './ViewPerio';
 import moment from 'moment';
 import {
   setChangeDia,
@@ -103,6 +104,13 @@ export default function index({ patientData, type, treatmentData }) {
                   </ul>
                 </div>
               </div>
+              {element.type === 'perio' && (
+                <div className="w-full flex flex-row">
+                  <div className="w-1/2">
+                    <ViewPerio perioData={element} />
+                  </div>
+                </div>
+              )}
               {element.type === 'formula' && (
                 <div className="w-full flex flex-row">
                   <div className="w-1/2">
@@ -290,7 +298,6 @@ export default function index({ patientData, type, treatmentData }) {
                     </ul>
                     <div className={`tabs-content w-full bg-white border mt-10 patient-stage flex`} id={`up-t-content`} >
                       <ViewDiagnoze formulaData={element} />
-
                     </div>
                     <div className={`tabs-content`} id={`bottom-t-content`} style={{display: tab === 'down' ? 'block' : 'none'}}></div>
                     <div className={`tabs-content`} id={`occlusion-content`} style={{display: tab === 'occlusion' ? 'block' : 'none'}}></div>

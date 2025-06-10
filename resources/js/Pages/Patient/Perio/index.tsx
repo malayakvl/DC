@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getPerioSelector,
-  getPerioStatusChangeSelector,
   perioDiagnozisSelector,
 } from '../../../Redux/Formula/selectors';
 import Furkacia from './Furkacia';

@@ -201,8 +201,8 @@ class PatientController extends Controller
             $formulaId = $requestData['id'];
             $patientTreatment = PatientTreatment::where('id', '=', $formulaId)->first();
             $patientTreatment->formula = json_encode($requestData['treatmentData']);
-            $patientTreatment->perio = json_encode($requestData['perioChartData']);
-//            $patientTreatment->formula_type = '';
+            $patientTreatment->perioValues = json_encode($requestData['perioValues']);
+            $patientTreatment->chartsData = json_encode($requestData['chartsData']);
             $patientTreatment->save();
 
             return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
