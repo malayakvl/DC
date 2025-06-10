@@ -31,10 +31,10 @@ ChartJS.register(
   Filler
 );
 
-export default function IntersectChart4838Down() {
-  const zond1828VestData = useSelector(chartZondDown2Selector);
-  const yasen1828VestData = useSelector(chartKrayDown2Selector);
-  const bar1828VestData = useSelector(chartBarDown2Selector);
+export default function IntersectChart4838DownView({ zondData, yasenData, barData }) {
+  const zond1828VestData = zondData;
+  const yasen1828VestData = yasenData;
+  const bar1828VestData = barData;
 
   const options = {
     layout: {

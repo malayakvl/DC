@@ -492,7 +492,7 @@ export default function Index() {
                 key={`furkacia-${tooth}`}
                 style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
               >
-                {(tooth >= 46 && tooth <= 48) || (tooth >= 46 && tooth <= 48) ? (
+                {(tooth >= 46 && tooth <= 48) || (tooth >= 36 && tooth <= 38) ? (
                   <Furkacia toothNum={tooth} type="vest" />
                 ) : null}
               </td>

@@ -31,12 +31,11 @@ ChartJS.register(
   Filler
 );
 
-export default function IntersectChart4838Up() {
-  const zond1828VestData = useSelector(chartZondUp2Selector);
-  const yasen1828VestData = useSelector(chartKrayUp2Selector);
-  const bar1828VestData = useSelector(chartBarUp2Selector);
-  // const zv1828Data = useSelector(getPerioZ1828VDataSelector);
-  // const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
+export default function IntersectChart4838UpView({ zondData, yasenData, barData }) {
+  const zond1828VestData = zondData;
+  const yasen1828VestData = yasenData;
+  const bar1828VestData = barData;
+console.log('ZOND DATA', zond1828VestData)
 
   const options = {
     layout: {

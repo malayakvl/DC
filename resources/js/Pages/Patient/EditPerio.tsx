@@ -58,22 +58,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const zond1828OralData = useSelector(getPerioZ1828ODataSelector);
   const zond4838VestData = useSelector(getPerioZ4838VDataSelector);
   const zond4838OralData = useSelector(getPerioZ4838ODataSelector);
-  const bar4838VestData = useSelector(chartBarUp2Selector);
-  const bar4838OralData = useSelector(chartBarDown2Selector);
 
-  // const pKrayChartUp = useSelector(chartKrayUpSelector);
-  // const pZondChartUp = useSelector(chartZondUpSelector);
-  // const pBarUp = useSelector(chartBarUpSelector);
-  // const pKrayChartDown = useSelector(chartKrayDownSelector);
-  // const pZondChartDown = useSelector(chartZondDownSelector);
-  // const pBarDown = useSelector(chartBarDownSelector);
-  //
-  // const pKrayChart2Up = useSelector(chartKrayUp2Selector);
-  // const pZondChart2Up = useSelector(chartZondUp2Selector);
-  // const pBar2Up = useSelector(chartBarUp2Selector);
-  // const pKrayChart2Down = useSelector(chartKrayDown2Selector);
-  // const pZondChart2Down = useSelector(chartZondDown2Selector);
-  // const pBar2Down = useSelector(chartBarUp2Selector);
   const zond1828VestChart = useSelector(chartZondUpSelector);
   const yasen1828VestChart = useSelector(chartKrayUpSelector);
   const bar1828VestChart = useSelector(chartBarUpSelector);
@@ -82,7 +67,13 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const yasen1828OralChart = useSelector(chartKrayDownSelector);
   const bar1828OralChart = useSelector(chartBarDownSelector);
 
-  console.log(yasen1828VestChart);
+  const zond4838VestChart = useSelector(chartZondUp2Selector);
+  const yasen4838VestChart = useSelector(chartKrayUp2Selector);
+  const bar4838VestChart = useSelector(chartBarUp2Selector);
+
+  const zond4838OralChart = useSelector(chartZondDown2Selector);
+  const yasen4838OralChart = useSelector(chartKrayDown2Selector);
+  const bar4838OralChart = useSelector(chartBarDown2Selector);
 
   const msg = new Lang({
     messages: lngPatient,
@@ -122,14 +113,19 @@ export default function index({ patientData, treatmentData, clinicData }) {
 
       yasen1828OralChart: yasen1828OralChart,
       zond1828OralChart: zond1828OralChart,
-      bar1828OralChart: bar1828OralChart
+      bar1828OralChart: bar1828OralChart,
+
+      yasen4838VestChart: yasen4838VestChart,
+      zond4838VestChart: zond4838VestChart,
+      bar4838VestChart: bar4838VestChart,
+
+      yasen4838OralChart: yasen4838OralChart,
+      zond4838OralChart: zond4838OralChart,
+      bar4838OralChart: bar4838OralChart
     }
     values['teethType'] = '';
-    console.log(values);
-    // exit;
-    //
-    // dispatch(setClearPerio());
-    //
+
+    dispatch(setClearPerio());
     if (treatmentData.id) {
       router.post(`/patient/update-perio?id=${treatmentData.id}`, values);
     } else {

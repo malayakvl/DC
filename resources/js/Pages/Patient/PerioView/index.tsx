@@ -18,11 +18,6 @@ import YasenKray1828 from './YasenKray1828';
 import DeepZond4838 from './DeepZoond4838';
 import YasenKray4838 from './YasenKray4838';
 
-import IntersectChart1828Up from './IntersectChart1828Up';
-import IntersectChart1828Down from './IntersectChart1828Down';
-
-import IntersectChart4838Up from './IntersectChart4838Up';
-import IntersectChart4838Down from './IntersectChart4838Down';
 import { checkAction } from '../../../Redux/Formula';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -50,82 +45,6 @@ export default function Index() {
   useEffect(() => {
     dispatch(checkAction());
   });
-
-  // *******************************
-  // ******* move cursor to other input 18-28
-  // *******************************
-  const focusNextUp1828YasenInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputUp1828YasenRefs.current[nextIdx]) {
-      inputUp1828YasenRefs.current[nextIdx].focus();
-    } else {
-      // переходим в конец нижнего яс края
-      inputDownYasen1828Refs.current[currentIdx].focus();
-    }
-  };
-  const focusNextUp1828ZondInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputUpZond1828Refs.current[nextIdx]) {
-      inputUpZond1828Refs.current[nextIdx].focus();
-    } else {
-      // переходим в конец нижнего яс края
-      inputDownZond1828Refs.current[currentIdx].focus();
-    }
-  };
-  const focusNextDown1828YasenInput = (currentIdx) => {
-    const nextIdx = currentIdx - 1;
-    if (inputDownYasen1828Refs.current[nextIdx]) {
-      inputDownYasen1828Refs.current[nextIdx].focus();
-    } else {
-      inputUp1828YasenRefs.current[0].focus();
-    }
-  };
-  const focusNextDown1828ZondInput = (currentIdx) => {
-    const nextIdx = currentIdx - 1;
-    if (inputDownZond1828Refs.current[nextIdx]) {
-      inputDownZond1828Refs.current[nextIdx].focus();
-    } else {
-      inputUpZond1828Refs.current[0].focus();
-    }
-  };
-
-  // *******************************
-  // ******* move cursor to other input 48-38
-  // *******************************
-  const focusNextUp4838YasenInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputUp4838YasenRefs.current[nextIdx]) {
-      inputUp4838YasenRefs.current[nextIdx].focus();
-    } else {
-      // переходим в конец нижнего яс края
-      inputDownYasen4838Refs.current[currentIdx].focus();
-    }
-  };
-  const focusNextUp4838ZondInput = (currentIdx) => {
-    const nextIdx = currentIdx + 1;
-    if (inputUpZond4838Refs.current[nextIdx]) {
-      inputUpZond4838Refs.current[nextIdx].focus();
-    } else {
-      // переходим в конец нижнего яс края
-      inputDownZond4838Refs.current[currentIdx].focus();
-    }
-  };
-  const focusNextDown4838YasenInput = (currentIdx) => {
-    const nextIdx = currentIdx - 1;
-    if (inputDownYasen4838Refs.current[nextIdx]) {
-      inputDownYasen4838Refs.current[nextIdx].focus();
-    } else {
-      inputUp4838YasenRefs.current[0].focus();
-    }
-  };
-  const focusNextDown4838ZondInput = (currentIdx) => {
-    const nextIdx = currentIdx - 1;
-    if (inputDownZond4838Refs.current[nextIdx]) {
-      inputDownZond4838Refs.current[nextIdx].focus();
-    } else {
-      inputUpZond4838Refs.current[0].focus();
-    }
-  };
 
   // Define tooth numbers and indices for mapping
   const toothNumbersUp = [
@@ -594,67 +513,6 @@ export default function Index() {
               </td>
             ))}
           </tr>
-          {/*<tr>*/}
-          {/*  <td className="title">{msgFormula.get('formula.yasn')}</td>*/}
-          {/*  {yasenUpKrayVestIndices.map((sIndx4, i) => (*/}
-          {/*    <td*/}
-          {/*      key={`yasen-vest-${toothNumbers[i]}`}*/}
-          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
-          {/*    >*/}
-          {/*      <div className="col-xs-12 action-zone-v">*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4 + 1}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 1] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4 + 2}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 2] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*    </td>*/}
-          {/*  ))}*/}
-          {/*</tr>*/}
-          {/*<tr>*/}
-          {/*  <td className="title">{msgFormula.get('formula.zond')}</td>*/}
-          {/*  {deepUpZondVestIndices.map((sIndx5, i) => (*/}
-          {/*    <td*/}
-          {/*      key={`deep-zond-${toothNumbersUp[i]}`}*/}
-          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
-          {/*    >*/}
-          {/*      <div className="col-xs-12 action-zone-v">*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5 + 1}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 1] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5 + 2}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 2] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*    </td>*/}
-          {/*  ))}*/}
-          {/*</tr>*/}
-
           <tr>
             <td className="title" style={{ backgroundColor: 'none' }}>
               <span style={{ display: 'block', marginTop: '50px' }}>
@@ -671,11 +529,13 @@ export default function Index() {
               }}
             >
               <div className="relative">
-                <IntersectChart4838Up />
+                <IntersectChart4838UpView
+                />
               </div>
               <FormulaPerio3848 />
               <div className="relative">
-                <IntersectChart4838Down />
+                <IntersectChart4838DownView
+                />
               </div>
             </td>
           </tr>
