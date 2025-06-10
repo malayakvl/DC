@@ -36,9 +36,6 @@ export default function IntersectChart1828Down() {
   const yasen1828VestData = useSelector(chartKrayDownSelector);
   const bar1828VestData = useSelector(chartBarDownSelector);
 
-  // const zv1828Data = useSelector(getPerioZ1828VDataSelector);
-  // const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
-
   const options = {
     layout: {
       padding: 0,

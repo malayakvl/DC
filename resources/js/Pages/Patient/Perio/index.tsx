@@ -754,115 +754,126 @@ export default function Index() {
           <tr>
             <td className="title">{msgFormula.get('formula.depozit')}</td>
             <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <DentalDeposits toothNum={48} />
+              <DentalDeposits toothNum={48} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={47} />
+              <DentalDeposits toothNum={47} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={46} />
+              <DentalDeposits toothNum={46} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={45} />
+              <DentalDeposits toothNum={45} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={44} />
+              <DentalDeposits toothNum={44} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={43} />
+              <DentalDeposits toothNum={43} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={42} />
+              <DentalDeposits toothNum={42}  type={'oral'}/>
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={41} />
+              <DentalDeposits toothNum={41} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={31} />
+              <DentalDeposits toothNum={31} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={32} />
+              <DentalDeposits toothNum={32} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={33} />
+              <DentalDeposits toothNum={33} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={34} />
+              <DentalDeposits toothNum={34} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={35} />
+              <DentalDeposits toothNum={35} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={36} />
+              <DentalDeposits toothNum={36} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={37} />
+              <DentalDeposits toothNum={37} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={38} />
+              <DentalDeposits toothNum={38} type={'oral'} />
             </td>
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.fertilizer')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Fertilizer toothNum={48} />
+              <Fertilizer toothNum={48} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={47} />
+              <Fertilizer toothNum={47} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={46} />
+              <Fertilizer toothNum={46} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={45} />
+              <Fertilizer toothNum={45} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={44} />
+              <Fertilizer toothNum={44} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={43} />
+              <Fertilizer toothNum={43} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={42} />
+              <Fertilizer toothNum={42} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={41} />
+              <Fertilizer toothNum={41} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={31} />
+              <Fertilizer toothNum={31} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={32} />
+              <Fertilizer toothNum={32} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={33} />
+              <Fertilizer toothNum={33} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={34} />
+              <Fertilizer toothNum={34} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={35} />
+              <Fertilizer toothNum={35} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={36} />
+              <Fertilizer toothNum={36} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={37} />
+              <Fertilizer toothNum={37} type={'oral'} />
             </td>
             <td>
-              <Fertilizer toothNum={38} />
+              <Fertilizer toothNum={38} type={'oral'} />
             </td>
+          </tr>
+          <tr>
+            <td className="title">{msgFormula.get('formula.bleeding')}</td>
+            {toothNumbersDown.map((tooth) => (
+              <td
+                key={`bleeding-${tooth}`}
+                style={tooth === 48 ? { borderLeft: 'none', borderRight: 'none' } : {}}
+              >
+                <Bleeding toothNum={tooth} type="oral" />
+              </td>
+            ))}
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.furkacia')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Furkacia toothNum={48} />
+              <Furkacia toothNum={48} type={'oral'} />
             </td>
             <td>
-              <Furkacia toothNum={47} />
+              <Furkacia toothNum={47} type={'oral'} />
             </td>
             <td>
-              <Furkacia toothNum={46} />
+              <Furkacia toothNum={46} type={'oral'} />
             </td>
             <td></td>
             <td></td>
@@ -875,64 +886,64 @@ export default function Index() {
             <td></td>
             <td></td>
             <td>
-              <Furkacia toothNum={38} />
+              <Furkacia toothNum={38} type={'oral'} />
             </td>
             <td>
-              <Furkacia toothNum={38} />
+              <Furkacia toothNum={38} type={'oral'} />
             </td>
             <td>
-              <Furkacia toothNum={38} />
+              <Furkacia toothNum={38} type={'oral'} />
             </td>
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.moving')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Moving toothNum={48} />
+              <Moving toothNum={48} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={47} />
+              <Moving toothNum={47} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={46} />
+              <Moving toothNum={46} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={45} />
+              <Moving toothNum={45} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={44} />
+              <Moving toothNum={44} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={43} />
+              <Moving toothNum={43} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={42} />
+              <Moving toothNum={42} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={41} />
+              <Moving toothNum={41} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={31} />
+              <Moving toothNum={31} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={32} />
+              <Moving toothNum={32} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={33} />
+              <Moving toothNum={33} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={34} />
+              <Moving toothNum={34} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={35} />
+              <Moving toothNum={35} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={36} />
+              <Moving toothNum={36} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={37} />
+              <Moving toothNum={37} type={'oral'} />
             </td>
             <td>
-              <Moving toothNum={38} />
+              <Moving toothNum={38} type={'oral'} />
             </td>
           </tr>
           <tr>

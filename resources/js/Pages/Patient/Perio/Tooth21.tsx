@@ -358,7 +358,7 @@ export default function Tooth21({ className = '' }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: tooth21.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth21.status !== 'exist') ? 1 : 0 }}>
+          <g className="crown" style={{ visibility: (tooth21.status !== 'exist' && tooth21.status) ? 'inherit' : 'hidden', opacity: (tooth21.status !== 'exist') ? 1 : 0 }}>
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M1147.4,467.4c-0.8-6.8-2-13.6-3.6-20.2c-1.5-6.2-3.4-12.2-6-18.1

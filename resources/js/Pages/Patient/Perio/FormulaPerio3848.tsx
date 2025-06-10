@@ -1,34 +1,4 @@
-import { Transition } from '@headlessui/react';
-import { Link, router, useForm } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
-import Lang from 'lang.js';
-import lngMaterial from '../../../Lang/Material/translation';
-import InputText from '../../../Components/Form/InputText';
-import InputTreeSelect from '../../../Components/Form/InputTreeSelect';
-import {
-  emptyProducersAutocompleteAction,
-  findProducersAction,
-} from '../../../Redux/Clinic';
-import { useDispatch, useSelector } from 'react-redux';
-import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
-import InputSelect from '../../../Components/Form/InputSelect';
-import Tooth28 from './Tooth28';
-import Tooth27 from './Tooth27';
-import Tooth26 from './Tooth26';
-import Tooth25 from './Tooth25';
-import Tooth24 from './Tooth24';
-import Tooth23 from './Tooth23';
-import Tooth22 from './Tooth22';
-import Tooth21 from './Tooth21';
-import Tooth11 from './Tooth11';
-import Tooth12 from './Tooth12';
-import Tooth13 from './Tooth13';
-import Tooth14 from './Tooth14';
-import Tooth15 from './Tooth15';
-import Tooth16 from './Tooth16';
-import Tooth17 from './Tooth17';
-import Tooth18 from './Tooth18';
+import React from 'react';
 import Tooth48 from './Tooth48';
 import Tooth47 from './Tooth47';
 import Tooth46 from './Tooth46';
@@ -45,14 +15,9 @@ import Tooth35 from './Tooth35';
 import Tooth36 from './Tooth36';
 import Tooth37 from './Tooth37';
 import Tooth38 from './Tooth38';
-import {
-  getStatusesSelector,
-  getActiveToothNumberSelector,
-} from '../../../Redux/Formula/selectors';
 
 export default function FormulaPerio3848() {
-  const toothActive = useSelector(getStatusesSelector);
-  const activeNumber = useSelector(getActiveToothNumberSelector);
+
   return (
     <section className="f-prerio">
       <svg

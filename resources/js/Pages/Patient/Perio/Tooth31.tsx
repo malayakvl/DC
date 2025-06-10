@@ -344,7 +344,7 @@ export default function Tooth31({ className = '' }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: tooth31.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth31.status !== 'exist') ? 1 : 0 }}>
+          <g className="crown" style={{ visibility: (tooth31.status !== 'exist' && tooth31.status) ? 'inherit' : 'hidden', opacity: (tooth31.status !== 'exist') ? 1 : 0 }}>
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M1114.9,1130c0.1-1.7-0.4-3.5-1.5-4.8c-1-1.2-2.3-2.1-3.8-2.5l-13.1,0.1l-32.3,0.3
