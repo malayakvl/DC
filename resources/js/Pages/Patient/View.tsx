@@ -127,6 +127,7 @@ export default function index({ patientData, type, treatmentData }) {
                                 .classList.contains('hide-up-teeth')
                             ) {
                               setDisableTeethTab('up');
+                              document.getElementById(`dia-up-${element.id}`).classList.add('hide-dia');
                               document
                                 .getElementById(`up-t-${element.id}`)
                                 .classList.remove('active');
@@ -152,6 +153,7 @@ export default function index({ patientData, type, treatmentData }) {
                               document.getElementById(`lB_${element.id}`).classList.add('move-down-bone');
                             } else {
                               setDisableTeethTab('');
+                              document.getElementById(`dia-up-${element.id}`).classList.remove('hide-dia');
                               document
                                 .getElementById(`up-t-${element.id}`)
                                 .classList.add('active');
@@ -191,6 +193,7 @@ export default function index({ patientData, type, treatmentData }) {
                                 .classList.contains('hide-teeth')
                             ) {
                               setDisableTeethTab('down');
+                              document.getElementById(`dia-down-${element.id}`).classList.add('hide-dia');
                               document
                                 .getElementById(`bottom-t-${element.id}`)
                                 .classList.remove('active');
@@ -211,6 +214,7 @@ export default function index({ patientData, type, treatmentData }) {
                               }
                             } else {
                               setDisableTeethTab('');
+                              document.getElementById(`dia-down-${element.id}`).classList.remove('hide-dia');
                               document
                                 .getElementById(`bottom-t-${element.id}`)
                                 .classList.add('active');
@@ -232,6 +236,8 @@ export default function index({ patientData, type, treatmentData }) {
                       <li className={'active'} id={`occlusion-${element.id}`}>
                         <span
                           onClick={() => {
+                            document.getElementById(`dia-down-${element.id}`).classList.remove('hide-dia');
+                            document.getElementById(`dia-up-${element.id}`).classList.remove('hide-dia');
                             if (
                               document
                                 .getElementById(`occlusion-${element.id}`)
@@ -279,7 +285,7 @@ export default function index({ patientData, type, treatmentData }) {
                       </li>
                     </ul>
                     <div className={`tabs-content w-full bg-white border mt-10 patient-stage flex`} id={`up-t-content`} >
-                      <ViewDiagnoze formulaData={element} />
+                      <ViewDiagnoze formulaData={element} formulaId={element.id} />
                     </div>
                     <div className={`tabs-content`} id={`bottom-t-content`} style={{display: tab === 'down' ? 'block' : 'none'}}></div>
                     <div className={`tabs-content`} id={`occlusion-content`} style={{display: tab === 'occlusion' ? 'block' : 'none'}}></div>

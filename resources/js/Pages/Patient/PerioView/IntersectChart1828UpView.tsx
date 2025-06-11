@@ -32,10 +32,6 @@ ChartJS.register(
 );
 
 export default function IntersectChart1828UpView({ zondData, yasenData, barData }) {
-  const zond1828VestData = zondData;
-  const yasen1828VestData = yasenData;
-  const bar1828VestData = barData;
-console.log('CHARTS YASN', yasenData)
 
   const options = {
     layout: {

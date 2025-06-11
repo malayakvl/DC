@@ -22,8 +22,6 @@ export default function ViewPerio({ perioData }) {
   const pValues = JSON.parse(perioData.perioValues);
   const pCharts = JSON.parse(perioData.chartsData)
 
-  console.log('pCharts', pCharts)
-
   const appLang = useSelector(appLangSelector);
   const msgFormula = new Lang({
     messages: lngFormula,

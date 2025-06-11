@@ -4,7 +4,7 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
 
-export default function ViewFormulaDiagnozis({ formulaData }) {
+export default function ViewFormulaDiagnozis({ formulaData, formulaId }) {
   const appLang = useSelector(appLangSelector);
   const tData = formulaData;
   const msgFormula = new Lang({
@@ -117,12 +117,12 @@ export default function ViewFormulaDiagnozis({ formulaData }) {
     ];
     return (
       <div className="w-full flex">
-        <div className="w-1/2">
+        <div className="w-1/2" id={`dia-up-${formulaId}`}>
           {jawUp.map((index, num) => (
             <React.Fragment key={index}>{renderDiagnoze(index)}</React.Fragment>
           ))}
         </div>
-        <div className="w-1/2">
+        <div className="w-1/2" id={`dia-down-${formulaId}`}>
           {jawDown.map((index, num) => (
             <React.Fragment key={index}>{renderDiagnoze(index)}</React.Fragment>
           ))}

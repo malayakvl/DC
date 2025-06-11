@@ -32,9 +32,6 @@ ChartJS.register(
 );
 
 export default function IntersectChart1828DownView({ zondData, yasenData, barData }) {
-  const zond1828VestData = zondData;
-  const yasen1828VestData = yasenData;
-  const bar1828VestData = barData;
 
   const options = {
     layout: {
@@ -159,7 +156,7 @@ export default function IntersectChart1828DownView({ zondData, yasenData, barDat
         label: 'Глибина зондування',
         pointRadius: 0,
         borderWidth: 2,
-        data: zond1828VestData,
+        data: zondData,
         borderColor: 'red',
         fill: 'rgba(243, 128, 153, 0.4)', // или target: 'Линия B'
       },
@@ -167,7 +164,7 @@ export default function IntersectChart1828DownView({ zondData, yasenData, barDat
         label: 'Ясений край',
         pointRadius: 0,
         borderWidth: 2,
-        data: yasen1828VestData,
+        data: yasenData,
         borderColor: 'blue',
         fill: '-1', // заполняет между этой и предыдущей линией
       },
@@ -179,7 +176,7 @@ export default function IntersectChart1828DownView({ zondData, yasenData, barDat
         backgroundColor: 'green',
         barThickness: 1,
         with: 2,
-        data: bar1828VestData,
+        data: barData,
       },
     ],
   };

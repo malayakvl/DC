@@ -253,7 +253,9 @@
     bottom: -5px;
     left: -20px;
 }
-
+.hide-dia {
+    display: none;
+}
 .hide-up-teeth {
     transform: matrix(1, 0, 0, 1, 0, -700);
     transition: transform 1s;
