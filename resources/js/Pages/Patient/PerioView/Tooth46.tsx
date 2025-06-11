@@ -395,7 +395,7 @@ export default function Tooth46({ className = '', tDia }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: tooth46.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth46.status !== 'exist') ? 1 : 0 }}>
+          <g className="crown" style={{ visibility: tooth46.status !== 'exist' && tooth46.status ? 'inherit' : 'hidden', opacity: (tooth46.status !== 'exist') ? 1 : 0 }}>
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M638,1131.5c-0.9-4.4-2.3-8.8-4.2-12.9c-2.4-5.3-5.5-10.3-9.5-14.5

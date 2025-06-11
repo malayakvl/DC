@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
-import { setPerioDiagnoze } from '../../../Redux/Formula';
+import React from 'react';
 
 export default function BleedingView({ data, type, toothNum }) {
 

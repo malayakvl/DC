@@ -1,20 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
-import { setPerioDiagnoze } from '../../../Redux/Formula';
+import React from 'react';
 
-export default function DentalDeposits({ toothNum, type }) {
-  const dispatch = useDispatch<any>();
-  const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
-
-  const setDiagnozis = stage => {
-    perioDiagnozis[`tooth${toothNum}`][`dentaldeposit_${type}_st${stage}`] =
-      !perioDiagnozis[`tooth${toothNum}`][`dentaldeposit_${type}_st${stage}`];
-    dispatch(setPerioDiagnoze(perioDiagnozis));
-    setChangeState(!changeState);
-  };
-  useEffect(() => {}, [changeState]);
+export default function DentalDepositsView({ data, toothNum, type }) {
 
   return (
     <>
@@ -35,16 +21,13 @@ export default function DentalDeposits({ toothNum, type }) {
           cx="50"
           cy="50"
           r="25"
-          onClick={() => {
-            setDiagnozis(1);
-          }}
           fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
               ? 'rgb(201,199,193)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
               ? 'rgba(80,79,77,0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }
@@ -57,16 +40,13 @@ export default function DentalDeposits({ toothNum, type }) {
           cx="150"
           cy="50"
           r="25"
-          onClick={() => {
-            setDiagnozis(2);
-          }}
           fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
               ? 'rgb(201,199,193)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
               ? 'rgba(80,79,77,0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }
@@ -79,16 +59,13 @@ export default function DentalDeposits({ toothNum, type }) {
           cx="250"
           cy="50"
           r="25"
-          onClick={() => {
-            setDiagnozis(3);
-          }}
           fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
               ? 'rgb(201,199,193)'
               : 'rgba(255, 255, 255, 0)'
           }
           stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
+            data[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
               ? 'rgba(80,79,77,0.9)'
               : 'rgba(200, 200, 200, 0.9)'
           }

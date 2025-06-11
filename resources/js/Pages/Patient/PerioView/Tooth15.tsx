@@ -175,7 +175,7 @@ export default function Tooth15({ className = '', tDia }) {
             ></path>
           </g>
           <g
-            style={{ visibility: (tooth15.status == 'implant') ? 'inherit' : 'hidden' }}
+            style={{ visibility: (tooth15?.status == 'implant') ? 'inherit' : 'hidden' }}
           >
             <path
               className="st18"
@@ -355,7 +355,7 @@ export default function Tooth15({ className = '', tDia }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: tooth15.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth15.status !== 'exist') ? 1 : 0 }}>
+          <g className="crown" style={{ visibility: tooth15.status !== 'exist' && tooth15.status  ? 'inherit' : 'hidden', opacity: (tooth15.status !== 'exist') ? 1 : 0 }}>
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M694.8,440.6c-0.7-4.7-1.9-9.3-2.9-13.9c-0.5-2.1-0.9-4.3-1.4-6.4

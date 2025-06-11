@@ -1,18 +1,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import MovingView from './Perio/MovingView';
-import FurkaciaView from './Perio/FurkaciaView';
-import BleedingView from './Perio/BleedingView';
-import FertilizerView from './Perio/FertilizerView';
-import DentalDepositsView from './Perio/DentalDepositsView';
-import YasenKrayView from './Perio/YasenKrayView';
-import DeepZondView from './Perio/DeepZoondView';
+import MovingView from './PerioView/MovingView';
+import FurkaciaView from './PerioView/FurkaciaView';
+import BleedingView from './PerioView/BleedingView';
+import FertilizerView from './PerioView/FertilizerView';
+import DentalDepositsView from './PerioView/DentalDepositsView';
+import YasenKrayView from './PerioView/YasenKrayView';
+import DeepZondView from './PerioView/DeepZoondView';
 import IntersectChart1828UpView from './PerioView/IntersectChart1828UpView';
 import IntersectChart1828DownView from './PerioView/IntersectChart1828DownView'
 import IntersectChart4838UpView from './PerioView/IntersectChart4838UpView'
 import IntersectChart4838DownView from './PerioView/IntersectChart4838DownView'
-import FormulaPerio1828 from './Perio/FormulaPerio1828';
-import FormulaPerio3848 from './Perio/FormulaPerio3848';
+import FormulaPerio1828View from './PerioView/FormulaPerio1828View';
+import FormulaPerio4838View from './PerioView/FormulaPerio3848View';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
@@ -38,7 +38,7 @@ export default function ViewPerio({ perioData }) {
   ];
   const yasenUpKrayVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
   const deepUpZondVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
-
+console.log(pDia)
   return (
     <div className="py-0 w-full">
       <div className="w-full scroll-x">
@@ -260,7 +260,7 @@ export default function ViewPerio({ perioData }) {
                     barData={pCharts.bar1828VestChart}
                   />
                 </div>
-                {pDia && <FormulaPerio1828 pDia={pDia} />}
+                {pDia && <FormulaPerio1828View pDia={pDia} />}
 
                 <div className="relative">
                   <IntersectChart1828DownView
@@ -536,7 +536,7 @@ export default function ViewPerio({ perioData }) {
                     barData={pCharts.bar4838VestChart}
                   />
                 </div>
-                <FormulaPerio3848 />
+                {pDia && <FormulaPerio4838View pDia={pDia} />}
                 <div className="relative">
                   <IntersectChart4838DownView
                     zondData={pCharts.zond4838OralChart}

@@ -350,7 +350,7 @@ export default function Tooth11({ className = '', tDia }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: tooth11.status !== 'exist' ? 'inherit' : 'hidden', opacity: (tooth11.status !== 'exist') ? 1 : 0 }}>
+          <g className="crown" style={{ visibility: tooth11.status !== 'exist' && tooth11.status ? 'inherit' : 'hidden', opacity: (tooth11.status !== 'exist') ? 1 : 0 }}>
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M1047,466.5c-1.1-7.3-2.8-14.6-5.5-21.5c-0.2-0.6-0.5-1.3-0.7-1.9

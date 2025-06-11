@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
-import { setPerioDiagnoze } from '../../../Redux/Formula';
+import React from 'react';
 
 export default function Furkacia({ data, type = '', qty = 1 }) {
 
