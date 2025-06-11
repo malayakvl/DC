@@ -459,7 +459,13 @@
     transform: matrix(1, 0, 0, 1, 0, 0);
 }
 .tooth-number-active {
-    opacity: 1 !important;
+    opacity: 1;
+}
+.tooth-number-hide {
+    opacity: 0 !important;
+}
+.tooth-part-hide {
+    visibility: hidden !important;
 }
 .change-color {
     fill: #fdde88;

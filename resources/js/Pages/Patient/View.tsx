@@ -241,53 +241,35 @@ export default function index({ patientData, type, treatmentData }) {
                               document.getElementById(`axis_${element.id}`).classList.add('hide-axis');
                               document.getElementById(`lB_${element.id}`).classList.add('opclusion');
                               document.getElementById(`lower_${element.id}`).classList.add('opclusion');
-                              // hide teeth top view
-                              for (let i = 18; i >= 11; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
-                                document.getElementById(`${i}`).style.visibility = 'hidden';
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              for (let i = 28; i >= 21; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
-                                document.getElementById(`${i}`).style.visibility = 'hidden';
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              for (let i = 48; i >= 41; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
-                                document.getElementById(`${i}`).style.visibility = 'hidden';
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              for (let i = 38; i >= 31; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'hidden';
-                                document.getElementById(`${i}`).style.visibility = 'hidden';
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
+                              const numbersEl = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('tooth-number-active');
+                              const bonesEl = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('tooth-number-active');
+                              const topElements = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('top-view');
+                              Array.from(numbersEl).forEach(el => {
+                                el.classList.add('hide-number');
+                              });
+                              Array.from(topElements).forEach(el => {
+                                el.classList.add('tooth-part-hide');
+                              });
+                              Array.from(bonesEl).forEach(el => {
+                                el.classList.add('tooth-part-hide');
+                              });
                             } else {
                               document.getElementById(`occlusion-${element.id}`).classList.add('active');
                               document.getElementById(`axis_${element.id}`).classList.remove('hide-axis');
                               document.getElementById(`lB_${element.id}`).classList.remove('opclusion');
                               document.getElementById(`lower_${element.id}`).classList.remove('opclusion');
-                              // hide teeth top view
-                              for (let i = 18; i >= 11; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
-                                document.getElementById(`${i}`).style.visibility = 'inherit';
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              for (let i = 28; i >= 21; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
-                                document.getElementById(`${i}`).style.visibility = 'inherit';
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              for (let i = 48; i >= 41; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
-                                document.getElementById(`${i}`).style.visibility = 'inherit';
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              for (let i = 38; i >= 31; i--) {
-                                document.getElementById(`TH-${i}`).getElementsByClassName('top-view')[0].style.visibility = 'inherit';
-                                document.getElementById(`${i}`).style.visibility = 'inherit';
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
+                              const numbersEl = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('tooth-number-active');
+                              const bonesEl = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('tooth-number-active');
+                              const topElements = document.getElementById(`formula-view-${element.id}`).getElementsByClassName('top-view');
+                              Array.from(numbersEl).forEach(el => {
+                                el.classList.remove('hide-number');
+                              });
+                              Array.from(topElements).forEach(el => {
+                                el.classList.remove('tooth-part-hide');
+                              });
+                              Array.from(bonesEl).forEach(el => {
+                                el.classList.remove('tooth-part-hide');
+                              });
                             }
                             setDisableTeethTab('occlusion');
                           }}
@@ -453,5 +435,5 @@ export default function index({ patientData, type, treatmentData }) {
         </div>
       </div>
     </AuthenticatedLayout>
-  );
+  )
 }
