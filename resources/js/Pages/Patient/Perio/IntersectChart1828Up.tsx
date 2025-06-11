@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
   chartZondUpSelector,
@@ -31,12 +31,17 @@ ChartJS.register(
   Filler
 );
 
-export default function IntersectChart1828Up() {
+export default function IntersectChart1828Up({editPerio}) {
   const zond1828VestData = useSelector(chartZondUpSelector);
   const yasen1828VestData = useSelector(chartKrayUpSelector);
   const bar1828VestData = useSelector(chartBarUpSelector);
-// console.log('CHART YASN', yasen1828VestData)
-//   console.log('CHART ZOND', zond1828VestData)
+
+  // useEffect(() => {
+  //   if (editPerio) {
+  //     console.log('Edit perio', yasen1828VestData);
+  //   }
+  // }, [editPerio, yasen1828VestData])
+
   const options = {
     layout: {
       padding: 0,
@@ -184,6 +189,8 @@ export default function IntersectChart1828Up() {
       },
     ],
   };
+
+
 
   return (
     <>

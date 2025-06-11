@@ -16,7 +16,7 @@ export default function Statuses({ toothNum, type }) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
   const [changeState, setChangeState] = useState(false);
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedValue, setSelectedValue] = useState('exist');
   const statusChange = useSelector(getPerioStatusChangeSelector);
   const appLang = useSelector(appLangSelector);
   const msgFormula = new Lang({
@@ -24,30 +24,28 @@ export default function Statuses({ toothNum, type }) {
     locale: appLang,
   });
 
+
   const setDiagnozis = (status) => {
     perioDiagnozis[`tooth${toothNum}`][`status`] = status;
-    // perioDiagnozis[`tooth${toothNum}`][`fertilizer_${type}_st${stage}`] =
-    //   !perioDiagnozis[`tooth${toothNum}`][`fertilizer_${type}_st${stage}`];
     dispatch(setPerioDiagnoze(perioDiagnozis));
     dispatch(setPerioStatusChange(!statusChange));
-    // setChangeState(!changeState);
   };
   useEffect(() => {}, [changeState]);
 
+  useEffect(() => {
+    if (perioDiagnozis[`tooth${toothNum}`]?.status) {
+      setSelectedValue(perioDiagnozis[`tooth${toothNum}`]?.status);
+    }
+  }, [perioDiagnozis[`tooth${toothNum}`]])
+
   return (
     <>
-      {/*<Select*/}
-      {/*  className={'perio-statuses'}*/}
-      {/*  value={selectedValue}*/}
-      {/*  onChange={setDiagnozis}*/}
-      {/*  options={options}*/}
-      {/*/>*/}
-      <select className="perio-select" data-tooth="18">
+      <select className="perio-select" data-tooth="18" defaultValue={selectedValue}>
         <option value="intact" onClick={() => setDiagnozis('exist')}>{msgFormula.get('formula.perio_exist')}</option>
-        <option value="absent" onClick={() => setDiagnozis('absent')}>{msgFormula.get('formula.perio_absent')}</option>
-        <option value="implant" onClick={() => setDiagnozis('implant')}>{msgFormula.get('formula.perio_implant')}</option>
-        <option value="crown" onClick={() => setDiagnozis('crown')}>{msgFormula.get('formula.perio_crown')}</option>
-        <option value="middlepart" onClick={() => setDiagnozis('middlepart')}>{msgFormula.get('formula.perio_middlepart')}</option>
+        <option value="absent" onClick={() => setDiagnozis('absent')} selected={selectedValue === 'absent'}>{msgFormula.get('formula.perio_absent')}</option>
+        <option value="implant" onClick={() => setDiagnozis('implant')} selected={selectedValue === 'implant'}>{msgFormula.get('formula.perio_implant')}</option>
+        <option value="crown" onClick={() => setDiagnozis('crown')} selected={selectedValue === 'crown'}>{msgFormula.get('formula.perio_crown')}</option>
+        <option value="middlepart" onClick={() => setDiagnozis('middlepart')} selected={selectedValue === 'middlepart'}>{msgFormula.get('formula.perio_middlepart')}</option>
       </select>
     </>
   );

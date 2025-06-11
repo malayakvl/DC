@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
 import lngPatient from '../../Lang/Patient/translation';
@@ -40,19 +40,30 @@ import {
 } from '../../Redux/Formula/selectors';
 import Details from './Partials/Details';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
-import { setClearPerio } from '../../Redux/Formula';
+import {
+  setClearPerio,
+  setPerioDiagnoze,
+  setPerioYK1828VestData,
+  setPerioYK4838VestData,
+  setPerioYK1828OralData,
+  setPerioYK4838OralData,
+  setPerioZ1828VestData,
+  setPerioZ1828OralData,
+  setPerioZ4838VestData,
+  setPerioZ4838OralData
+} from '../../Redux/Formula';
 
 export default function index({ patientData, treatmentData, clinicData }) {
+  let tDia, tValues;
+
   const [tab, setTab] = useState('history');
+  const [editPerio, setEditPerio] = useState(false);
   const appLang = useSelector(appLangSelector);
   const teethDiagnozis = useSelector(perioDiagnozisSelector);
-
   const yasen1828VestData = useSelector(getPerioYK1828VDataSelector);
   const yasen1828OralData = useSelector(getPerioYK1828ODataSelector);
   const yasen4838VestData = useSelector(getPerioYK4838VDataSelector);
   const yasen4838OralData = useSelector(getPerioYK4838ODataSelector);
-  const bar1828VestData = useSelector(chartBarUpSelector);
-  const bar1828OralData = useSelector(chartBarDownSelector);
 
   const zond1828VestData = useSelector(getPerioZ1828VDataSelector);
   const zond1828OralData = useSelector(getPerioZ1828ODataSelector);
@@ -81,6 +92,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   });
   const dispatch = useDispatch<any>();
   const teethType = useSelector(teethTypeSelector);
+
   const handleTabClick = tabName => {
     setTab(tabName);
   };
@@ -91,6 +103,26 @@ export default function index({ patientData, treatmentData, clinicData }) {
     treatmentData: teethDiagnozis,
     formula_type: teethType,
   });
+
+  useEffect(() => {
+    if (treatmentData.formula) {
+      tDia = JSON.parse(treatmentData.formula);
+      tValues = JSON.parse(treatmentData.perioValues);
+      dispatch(setPerioDiagnoze(tDia));
+      dispatch(setPerioYK1828VestData(tValues.yk1828Vest));
+      dispatch(setPerioYK4838VestData(tValues.yk4838Vest));
+      dispatch(setPerioYK1828OralData(tValues.yk1828Oral));
+      dispatch(setPerioYK4838OralData(tValues.yk4838Oral));
+      dispatch(setPerioZ1828VestData(tValues.z1828Vest));
+      dispatch(setPerioZ1828OralData(tValues.z1828Oral));
+      dispatch(setPerioZ4838VestData(tValues.z1828Vest));
+      dispatch(setPerioZ4838OralData(tValues.z1828Oral));
+    }
+  }, [treatmentData.formula])
+
+  // useEffect(() => {
+  //   setEditPerio(true);
+  // }, [treatmentData.perioValues])
 
   const submit = e => {
     e.preventDefault();
@@ -197,7 +229,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
               </div>
               <div className="clearfix" />
               <div className="flex w-full patient-content-border">
-                <Perio />
+                <Perio editPerio={!!treatmentData.perioValues} />
 
                 <div className="clearfix" />
               </div>

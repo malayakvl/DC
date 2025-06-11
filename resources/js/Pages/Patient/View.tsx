@@ -82,7 +82,7 @@ export default function index({ patientData, type, treatmentData }) {
                       </Link>
                     </li>
                     <li className="inline-block">
-                      <Link href={`/formula/edit/${element.id}`}>
+                      <Link href={`/perio/edit/${element.id}`}>
                         <FontAwesomeIcon icon={faPencil} className="mr-3" />
                       </Link>
                     </li>

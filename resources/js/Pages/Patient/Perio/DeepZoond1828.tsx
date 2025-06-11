@@ -30,6 +30,11 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
     type === 'vest' ? zv1828Data[idx] ?? '' : zo1828Data[idx] ?? ''
   );
 
+  useEffect(() => {
+    setValue(type === 'vest' ? zv1828Data[idx] : zo1828Data[idx]);
+    recalcSlice(type, type === 'vest' ? zv1828Data : zo1828Data);
+  }, [zv1828Data[idx], zo1828Data[idx]]);
+
   const recalcSlice = useCallback(
     (type, updData = []) => {
       let arrYasen = type === 'vest' ? ykv1828Data : yko1828Data;

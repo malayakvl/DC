@@ -38,9 +38,11 @@ const YasenKray4838 = forwardRef<HTMLInputElement, YasenKray4838Props>(({ type, 
     color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green',
   };
 
-  // useEffect(() => {
-  //   recalcSlice(type)
-  // });
+  useEffect(() => {
+    setValue(type === 'vest' ? ykv4838Data[idx] : yko4838Data[idx]);
+    recalcSlice(type, type === 'vest' ? ykv4838Data : yko4838Data);
+
+  }, [ykv4838Data[idx], yko4838Data[idx]]);
 
   const handleKeyPress = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {

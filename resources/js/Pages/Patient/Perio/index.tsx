@@ -26,14 +26,14 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
 
-export default function Index() {
+export default function Index({editPerio}) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
-  const perioDiagnozis = useSelector(perioDiagnozisSelector);
   const msgFormula = new Lang({
     messages: lngFormula,
     locale: appLang,
   });
+
   // Create an array of refs for YasenKray1828 inputs (vest and oral combined)
   const inputUp1828YasenRefs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
   const inputUpZond1828Refs = useRef(new Array(48).fill(null)); // 48 for vest yeasen
@@ -327,11 +327,11 @@ export default function Index() {
               }}
             >
               <div className="relative">
-                <IntersectChart1828Up />
+                <IntersectChart1828Up editPerio={editPerio} />
               </div>
               <FormulaPerio1828 />
               <div className="relative">
-                <IntersectChart1828Down />
+                <IntersectChart1828Down editPerio={editPerio} />
               </div>
             </td>
           </tr>
