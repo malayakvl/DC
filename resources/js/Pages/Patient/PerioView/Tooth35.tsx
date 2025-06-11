@@ -1,14 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import {
-  perioDiagnozisSelector,
-  getPerioStatusChangeSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth35({ className = '' }) {
-  const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const tooth35 = perioDiagnozis.tooth35;
-  const statusChange = useSelector(getPerioStatusChangeSelector); // do not remove need for update component
+export default function Tooth35({ className = '', tDia }) {
+  const tooth35 = tDia;
 
   return (
     <>

@@ -1,9 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import {
-  perioDiagnozisSelector,
-  getPerioStatusChangeSelector,
-} from '../../../Redux/Formula/selectors';
+import { getPerioStatusChangeSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
 
 export default function Tooth28({ className = '' }) {
   const perioDiagnozis = useSelector(perioDiagnozisSelector);

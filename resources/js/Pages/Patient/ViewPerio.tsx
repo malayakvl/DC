@@ -260,7 +260,8 @@ export default function ViewPerio({ perioData }) {
                     barData={pCharts.bar1828VestChart}
                   />
                 </div>
-                <FormulaPerio1828 />
+                {pDia && <FormulaPerio1828 pDia={pDia} />}
+
                 <div className="relative">
                   <IntersectChart1828DownView
                     zondData={pCharts.zond1828OralChart}

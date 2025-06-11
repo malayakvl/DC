@@ -17,6 +17,7 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 
 export default function FormulaPerio1828() {
+  console.log('AAAAAAAAAA BARAN')
   return (
     <section className="f-prerio">
       <svg

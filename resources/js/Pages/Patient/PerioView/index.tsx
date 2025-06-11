@@ -250,7 +250,7 @@ export default function Index() {
               <div className="relative">
                 <IntersectChart1828Up />
               </div>
-              <FormulaPerio1828 />
+              <FormulaPerio1828 tDia={t} />
               <div className="relative">
                 <IntersectChart1828Down />
               </div>

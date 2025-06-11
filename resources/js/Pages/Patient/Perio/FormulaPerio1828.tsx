@@ -30,62 +30,6 @@ export default function FormulaPerio1828() {
         xmlSpace="preserve"
         width={'100%'}
       >
-        {/* <path stroke="#cccccccc" d="M129 10 L129 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M259.5 10 L259.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M390 10 L390 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M520.5 10 L520.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M651 10 L651 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M781.5 10 L781.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M911.5 10 L911.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1041.5 10 L1041.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1172 10 L1172 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1302 10 L1302 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1432 10 L1432 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1563.5 10 L1563.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1693.5 10 L1693.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1823.5 10 L1823.5 640" strokeWidth="2px"></path>
-                <path stroke="#cccccccc" d="M1954 10 L1954 640" strokeWidth="2px"></path>
-
-                <path stroke="#cccccc40" d="M0 26 L2085 26" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 34 L2085 34" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 42 L2085 42" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 50 L2085 50" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 58 L2085 58" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 66 L2085 66" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 74 L2085 74" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 82 L2085 82" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 90 L2085 90" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 98 L2085 98" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 106 L2085 106" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 114 L2085 114" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 122 L2085 122" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 130 L2085 130" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 138 L2085 138" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 146 L2085 146" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 154 L2085 154" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 162 L2085 162" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 170 L2085 170" strokeWidth="2px"></path>
-
-                <path stroke="#cccccc40" d="M0 480 L2085 480" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 488 L2085 488" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 496 L2085 496" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 504 L2085 504" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 512 L2085 512" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 520 L2085 520" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 528 L2085 528" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 536 L2085 536" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 544 L2085 544" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 552 L2085 552" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 560 L2085 560" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 568 L2085 568" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 576 L2085 576" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 584 L2085 584" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 592 L2085 592" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 600 L2085 600" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 608 L2085 608" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 616 L2085 616" strokeWidth="2px"></path>
-                <path stroke="#cccccc40" d="M0 624 L2085 624" strokeWidth="2px"></path> */}
-
         <Tooth28 />
         <Tooth27 />
         <Tooth26 />
