@@ -1,34 +1,6 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-  settooth45Active,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth45() {
-  const dispatch = useDispatch<any>();
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth45Diagnozis = teethDiagnozis.tooth45;
+export default function Tooth45({ psrValue }) {
 
   return (
     <>
@@ -49,7 +21,7 @@ export default function Tooth45() {
           />
         </g>
         <g
-          id="T_45"
+          id="TH_45"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -59,19 +31,11 @@ export default function Tooth45() {
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_45"
               style={{
-                visibility:
-                  !tooth45Diagnozis.implant &&
-                  !tooth45Diagnozis.apex &&
-                  !tooth45Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_v_45"
-                className={`st10 change-color-psr-up ${tooth45Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M717.1,1157.8c0,5-0.2,10.1-0.6,15.1c-2.8,8.6-5.5,17.2-8.1,25.8
                                 c-0.8,2.7-1.6,5.3-2.4,8c0.8-2.7,1.6-5.3,2.4-8c1-3.2,1.9-6.3,2.9-9.4c-5.8,5.9-12.8,10.5-20.7,13.1c-2.9,0.9-5.8,1.6-8.8,1.9
                                 c-5.4,0.6-10.9,0-16-2c-0.5-0.2-0.9-0.4-1.3-0.6c-5.9-2.6-10.9-7-14.6-12.3c-2.5-3.5-4.4-7.3-5.9-11.2c-0.2-4.8-0.5-9.6-0.9-14.3
@@ -79,19 +43,11 @@ export default function Tooth45() {
               />
             </g>
             <g
-              id="dentin_n_45"
               style={{
-                visibility:
-                  !tooth45Diagnozis.implant &&
-                  !tooth45Diagnozis.abutment &&
-                  !tooth45Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_n_45"
-                className={`st10 change-color-psr ${tooth45Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr color-dia-${psrValue}`}
                 d="M711.3,1189.2c-1,3.1-1.9,6.3-2.9,9.4c-3.2,10.7-6.4,21.4-10,32
                                 c-6.7,19.6-15,38.8-23.6,57.8c-6.2,13.8-12.6,27.7-21,40.5c-2.9,4.4-6.7,8.4-10.3,11.5c-3.3,2.8-7,4.7-11.3,3.5
                                 c-7.9-2.2-7.5-11.7-6.1-20c1.1-6.8,1.1-13.6,2-20.4c0.9-6.9,2.6-13.7,4.3-20.4c3.3-13.7,6.2-27.4,8.3-41.3
@@ -104,7 +60,7 @@ export default function Tooth45() {
           <g className="pulp">
             <g>
               <path
-                className={`st22 target top ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.pulpit ? 'pulpit' : ''} ${tooth45Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M690.6,1171.2c-0.1,1.3-0.3,2.6-0.6,3.8c-2.7,9.7-5.4,19.5-8.3,29.2
                                 c-0.2,0-0.4,0-0.6,0.1c0,0-0.1,0-0.1,0c-0.5,0-1,0.1-1.6,0.1c-0.8,0-1.6,0-2.5,0c-0.6,0-1.2,0-1.7-0.1c-0.3,0-0.6,0-0.9-0.1
                                 c-0.6-0.1-1.1-0.1-1.7-0.2c-0.3,0-0.6-0.1-0.9-0.1c-0.3-0.1-0.6-0.1-0.8-0.2c-0.6-0.1-1.1-0.2-1.7-0.4c-0.3-0.1-0.6-0.2-0.8-0.2
@@ -115,7 +71,7 @@ export default function Tooth45() {
             </g>
             <g>
               <path
-                className={`st22 target top ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.pulpit ? 'pulpit' : ''} ${tooth45Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M654,1272.3C654,1272.3,654,1272.3,654,1272.3c2.1,0.2,4,0.3,5.8,0.2
                                 c0.6-1.7,1.2-3.5,1.8-5.2c2.4-7,4.8-14,7.1-21.1c4.6-13.9,8.9-27.9,13.1-42l0,0c-0.1,0-0.2,0-0.3,0c-0.1,0-0.2,0-0.3,0
                                 c0,0-0.1,0-0.1,0c-0.5,0-1,0.1-1.6,0.1c-0.8,0-1.6,0-2.5,0c-0.6,0-1.1,0-1.7-0.1c-0.3,0-0.6-0.1-0.9-0.1c-0.3,0-0.6-0.1-0.9-0.1
@@ -126,7 +82,7 @@ export default function Tooth45() {
             </g>
             <g className="pulpitis-pfilling">
               <path
-                className={`st22 target top ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.channel_class} ${tooth45Diagnozis.pulpit ? 'pulpit' : ''} ${tooth45Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M633.1,1342.9c9.5-23.2,18.4-46.7,26.7-70.4c-1.8,0.1-3.7,0-5.7-0.2
                                 c0,0,0,0-0.1,0C648.5,1296.2,641.5,1319.7,633.1,1342.9z"
               />
@@ -135,15 +91,7 @@ export default function Tooth45() {
           <g
             className="toutline"
             style={{
-              visibility:
-                !tooth45Diagnozis.culttab &&
-                !tooth45Diagnozis.abutment &&
-                !tooth45Diagnozis.implant &&
-                !tooth45Diagnozis.shaper &&
-                !tooth45Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"

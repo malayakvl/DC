@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Select from 'react-select';
 import {
-  getPerioSelector,
   getPerioStatusChangeSelector,
-  getTeethDiagnozisSelector,
   perioDiagnozisSelector,
 } from '../../../Redux/Formula/selectors';
 import { setPerioDiagnoze, setPerioStatusChange } from '../../../Redux/Formula';

@@ -1,8 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  perioDiagnozisSelector,
-} from '../../../Redux/Formula/selectors';
 import Furkacia from './Furkacia';
 import FormulaPerio1828 from './FormulaPerio1828';
 import FormulaPerio3848 from './FormulaPerio3848';

@@ -63,26 +63,17 @@ export default function Tooth38() {
           id="T_48"
           className="common-view"
           style={{
-            visibility: tooth38Diagnozis.absent ? 'hidden' : 'inherit',
+            visibility: 'inherit',
             transform: 'matrix(1, 0, 0, 1, 0, 0)',
           }}
         >
           <g className="dentin">
             <g
-              id="dentin_v_38"
-              className=" hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth38Diagnozis.implant &&
-                  !tooth38Diagnozis.apex &&
-                  !tooth38Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_v_38"
-                className={`st9 change-color-psr-up ${tooth38Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr`}
                 d="M1892,1087.7c-5,10.9-12.8,20.3-22.5,27.3c-2.3,1.6-4.6,3.1-7.1,4.5
                                 c-9.6,5.4-20.3,8.6-31.2,10.5c-2.1,0.4-4.3,0.7-6.4,0.9c-12.4,1.5-24.9,1.2-37.2-0.8c-0.6-0.4-1.2-0.9-1.7-1.4c0,0,0,0,0,0
                                 c-1.4-1.4-2.8-2.8-4.3-4.3c-1.3-8.2-2.6-18.8-3.1-27.1c-0.4-7.5-0.5-15.1-0.3-22.6c8.6,1.3,17.3,2.2,26,2.8
@@ -94,18 +85,9 @@ export default function Tooth38() {
               id="dentin_n_38"
               className="hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth38Diagnozis.culttab &&
-                  !tooth38Diagnozis.abutment &&
-                  !tooth38Diagnozis.implant &&
-                  !tooth38Diagnozis.shaper &&
-                  !tooth38Diagnozis.apex
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_n_38"
                 className={`st10 change-color-psr ${tooth38Diagnozis.change_color ? 'diagnoze' : ''}`}
                 d="M1890.7,1173.1c-0.6,12.8-1.9,26.4-12,35.2c-2.2,1.9-5.1,3.4-7.8,2.3
                                 c-1.8-0.7-2.7-2.4-3.3-4.1c-1.8-5.8,0.5-11.7,0.9-17.7c0.4-6.8-1.8-13.5-3.3-20.2c-1.3-5.6-2.3-11.4-6-16
@@ -120,11 +102,11 @@ export default function Tooth38() {
           {/*PULPIT/CHANNEL NOT SEALED/PART SALED*/}
           <g className="pulp">
             <g
-              className="hEmpty  hImplant pulpitis-pfilling"
+              className="pulpitis-pfilling"
               style={{ visibility: 'inherit' }}
             >
               <path
-                className={`st22 target top ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.pulpit ? 'pulpit' : ''} ${tooth38Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1862.4,1119.5c-0.6,0.3-1.2,0.6-1.8,1c-0.4,0.2-0.9,0.5-1.4,0.7
                                 c-0.3,0.2-0.6,0.3-0.9,0.5c-0.5,0.2-1,0.5-1.5,0.7c-0.5,0.2-1,0.5-1.5,0.7c-0.2,0.1-0.3,0.1-0.5,0.2c-0.6,0.2-1.1,0.5-1.7,0.7
                                 c-1.5,0.6-3.1,1.2-4.6,1.7c-0.6,0.2-1.1,0.4-1.7,0.6c-0.4,0.1-0.7,0.2-1.1,0.3c-0.7,0.2-1.3,0.4-2,0.6c-0.6,0.2-1.2,0.3-1.8,0.5
@@ -136,7 +118,7 @@ export default function Tooth38() {
             </g>
             <g className="pulpitis-pfilling" style={{ visibility: 'inherit' }}>
               <path
-                className={`st22 target top ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.pulpit ? 'pulpit' : ''} ${tooth38Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1881.1,1154.1c-0.9,0.4-1.8,0.7-2.7,1.1c-2.5-7.6-6.8-14.4-13.9-19.1
                                 c-4.4-2.9-9.4-4.7-15.2-3.4c-8.2,1.8-13.2,8.7-15,15.7c-1.4,5.3-1.8,10.7-1.2,15.9c-1.3,0-2.6-0.1-3.8-0.1
                                 c-2-11-1.5-22.5-4.5-33.2c0.4-0.1,0.8-0.1,1.2-0.2c0.7-0.1,1.4-0.2,2-0.3c0.2,0,0.3,0,0.5-0.1c0.9-0.1,1.8-0.3,2.8-0.4
@@ -149,13 +131,13 @@ export default function Tooth38() {
             </g>
             <g className="pulpitis-pfilling">
               <path
-                className={`st22 target top ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.pulpit ? 'pulpit' : ''} ${tooth38Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target`}
                 d="M1837.4,1179.4c-2.2-4.8-3.7-9.9-4.3-15.1c-1.3,0-2.6-0.1-3.8-0.1c0.2,0.9,0.4,1.8,0.6,2.8
                                 c1.9,8.5,5.6,16.5,11.3,23.5c6.1,7.4,14.4,13.2,24.3,17.1c0.8,0.3,1.6,0.6,2.4,0.9c-0.8-0.4-1.6-0.8-2.3-1.1
                                 C1852.7,1200.9,1842.9,1191.2,1837.4,1179.4z"
               />
               <path
-                className={`st22 target top ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.channel_class} ${tooth38Diagnozis.pulpit ? 'pulpit' : ''} ${tooth38Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1881.1,1154.1c-0.9,0.4-1.8,0.7-2.7,1.1c1.1,3.5,1.8,7.1,2.2,10.7c1.6,14.4-1.2,29.4-8.1,43.3
                                 c5.6-10,9-20.5,10.2-31C1883.7,1170.1,1883.3,1161.9,1881.1,1154.1z"
               />
@@ -164,15 +146,7 @@ export default function Tooth38() {
           <g
             className="toutline"
             style={{
-              visibility:
-                !tooth38Diagnozis.culttab &&
-                !tooth38Diagnozis.abutment &&
-                !tooth38Diagnozis.implant &&
-                !tooth38Diagnozis.shaper &&
-                !tooth38Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"
@@ -183,22 +157,6 @@ export default function Tooth38() {
                             c1.3,10.5,4.9,20.7,11.7,28.9c1.2,1.5,2.5,2.9,3.9,4.2l0,0c1.1,1,2.2,2,3.4,2.9c14.5,2.4,29.2,2.3,43.7-0.1
                             c13.7-2.3,27-6.9,38.3-15c10-7.2,17.9-16.9,22.9-28.2c0.6-1.3,1.1-2.7,1.5-4l0,0C1895.5,1077.2,1895.7,1071.2,1894.3,1065.5z"
             />
-          </g>
-          <g className="" style={{ visibility: 'inherit' }}>
-            <g
-              className="vinir"
-              style={{
-                visibility: tooth38Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth38Diagnozis.vinir ? 1 : 0,
-              }}
-            >
-              <path
-                className={`vinir-fill ${tooth38Diagnozis.vinir_color}`}
-                d="M1894.3 1065.5C1893.1 1060.3 1890.7 1055.5 1887.8 1051C1882.4 1042.6 1875.4 1035.4 1867.3 1029.6L1858.9 1030.7C1858 1034.1 1856 1037.1 1853.2 1039.3C1852.3 1040 1851.3 1040.7 1850.2 1041.2C1843 1045.1 1833.4 1046 1830.6 1054C1829.5 1057.1 1830 1060.4 1830.5 1063.6C1831.1 1067.2 1831.7 1070.9 1832.3 
-                                1074.5H1830.4C1829.9 1070.5 1828.8 1066.5 1827.3 1062.7C1826.6 1060.9 1825.8 1059.2 1824.5 1057.8C1821.5 1054.6 1816.9 1054 1812.6 1054.3C1802.6 1055 1792.7 1059.8 1782.9 1057.1H1782.8C1780.5 1056.5 1778.3 1055.4 1776.4 1054L1772.7 1055.1C1771.5 1058.9 1770.5 1062.8 1769.7 1066.7C1767.9 1075.7 1767.2 1084.8 1768.3 1093.9C1769.6 1104.4 1773.2 1114.6 1780 1122.8C1781.2 1124.3 1782.5 1125.7 1783.9 1127C1785 1128 1786.1 1129 1787.3 1129.9C1801.8 1132.3 1816.5 1132.2 1831 
-                                1129.8C1844.7 1127.5 1858 1122.9 1869.3 1114.8C1879.3 1107.6 1887.2 1097.9 1892.2 1086.6C1892.8 1085.3 1893.3 1083.9 1893.7 1082.6C1895.5 1077.2 1895.7 1071.2 1894.3 1065.5Z"
-              />
-            </g>
           </g>
         </g>
       </g>

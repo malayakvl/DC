@@ -1,47 +1,6 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-  setTooth16Active,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth16() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth16Diagnozis = teethDiagnozis.tooth16;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+export default function Tooth16({ psrValue }) {
 
   return (
     <>
@@ -63,7 +22,7 @@ export default function Tooth16() {
           />
         </g>
         <g
-          id="T_16"
+          id="TH_16"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -73,19 +32,11 @@ export default function Tooth16() {
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_16"
-              className="hRoot hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth16Diagnozis.implant &&
-                  !tooth16Diagnozis.apex &&
-                  !tooth16Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit' }}
             >
               <path
-                className={`st9 change-color-psr-up ${tooth16Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr color-dia-${psrValue}`}
                 d="M606.3,407.9c-1.3,8.2-2.7,16.5-4.9,24.5c-2.9,10.7-7.3,21-13,30.7l-18.3-13.1
                                 l-21.6,2.8l-29.3-12l-28,8.1c-8.2-16.1-11.8-34.2-8.5-51.7c0.7-3.8,1.8-7.5,3-11.1c0.1-0.1,0.2-0.2,0.2-0.2
                                 c8.8-4,18.2-6.8,28.1-8.4c23.2-3.6,47.7,0,68.3,10.7c9.1,4.8,17.2,10.8,23.9,17.9C606.2,406.7,606.2,407.3,606.3,407.9z"
@@ -94,16 +45,10 @@ export default function Tooth16() {
             <g
               id="dentin_n_16"
               style={{
-                visibility:
-                  !tooth16Diagnozis.implant &&
-                  !tooth16Diagnozis.abutment &&
-                  !tooth16Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility: 'inherit'}}
             >
               <path
-                className={`st9 change-color-psr ${tooth16Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr color-dia-${psrValue}`}
                 d="M614.5,349.4c-0.7,17.4-4.3,34.5-7.1,51.7c-0.4,2.3-0.7,4.5-1.1,6.8c-0.1-0.6-0.1-1.2-0.2-1.8
                                 c-6.7-7.1-14.7-13.1-23.9-17.9c-20.6-10.7-45-14.3-68.3-10.7c-9.9,1.5-19.4,4.3-28.1,8.3c-0.1,0.1-0.2,0.2-0.2,0.2
                                 c3.4-10.6,8-20.9,9-31.8c1.2-12.6-1.7-25.2-2.4-37.8c-0.5-9,0.1-17.9,1.6-26.8c1-6.1,2.5-12.1,3.7-18.1
@@ -113,7 +58,7 @@ export default function Tooth16() {
                                 c4.3,8.8,6.9,18.2,9.1,27.7C612.6,311.6,615.2,330.5,614.5,349.4z"
               />
               <path
-                className={`st10 change-color-psr ${tooth16Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M544.9,342.6c1.7,2.4,3.3,4.8,5.2,7.1c2.9,3.4,6.7,6.3,11,5.9c3-0.3,5.4-2.1,7.4-4.4
                                 c3.6-4,5.7-8.9,7.3-14c1.8-5.9,2.9-12.1,3.1-18.3c-2.7-10.6-5.6-21.1-8.7-31.6c-3.5-12-7.3-23.8-10.5-35.9
                                 c-0.6-2.3-1.2-4.7-2.6-6.7c-1.8-2.5-4.7-4.1-7.8-4.1c-4.4-0.1-8.4,2.8-9.8,7c-1.2,7.9-2.1,15.7-2.8,23.6
@@ -125,7 +70,7 @@ export default function Tooth16() {
           <g className="pulp">
             <g>
               <path
-                className={`st22 target top ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.pulpit ? 'pulpit' : ''} ${tooth16Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M576.9,385.7c-1.4,5-2.5,10.1-2.9,15.3c-0.4,5.5-0.2,10.9-1,16.4
                                 c-0.6,4.3-1.9,8.4-3.8,12.4c-3.9-7.2-11.2-12.4-19.8-14.2c-9.8-2-20,0.7-27.1,7c-0.5-3.9-0.6-7.9-0.2-11.8
                                 c1-11.6,5.6-22.8,5.4-34.5C544.5,375.6,561.5,378.8,576.9,385.7z"
@@ -133,7 +78,7 @@ export default function Tooth16() {
             </g>
             <g>
               <path
-                className={`st22 target middle ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.pulpit ? 'pulpit' : ''} ${tooth16Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target middle `}
                 d="M597,326.2c-0.2,2-0.5,4-0.9,6c-2.1,10.7-6.5,20.9-10.8,31.1
                                 c-3.1,7.4-6.2,14.8-8.4,22.4c-15.3-6.9-32.4-10-49.4-9.4c0-0.8,0-1.5-0.1-2.3c-0.8-10.2-5.4-19.3-9.4-28.7
                                 c-3.7-8.8-6.8-17.8-8.9-27c1.1-0.4,2.3-0.7,3.7-1.1c3.6,11.7,8.9,22.8,15.1,33.6c3.6,6.3,8,12.7,14.3,16.4
@@ -145,18 +90,18 @@ export default function Tooth16() {
             {/* Отростки периодонтита */}
             <g>
               <path
-                className={`st22 target part ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.pulpit ? 'pulpit' : ''} ${tooth16Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M510.1,256c-2.2,9-3.6,18.1-4,27.3c-0.5,10.6,0.2,21.2,2.3,31.7c0.2,1.1,0.4,2.1,0.7,3.2
                                     c1.1-0.4,2.3-0.7,3.7-1.1c-0.4-1.3-0.8-2.6-1.1-3.9C506.5,294.4,506,274.9,510.1,256z"
               />
               <path
-                className={`st22 target part ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.pulpit ? 'pulpit' : ''} ${tooth16Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part  top-sealed-part`}
                 d="M547.7,240.8c0-0.2,0-0.3,0-0.5C547.6,240.5,547.7,240.6,547.7,240.8c0.3,19.9,0.1,39.7-0.7,59.6
                                     c-0.2,4.1-0.3,8.2-0.6,12.3c1.5,0,3.1,0.1,4.6,0.2c2.2,0.1,4.3,0.4,6.5,0.7c-0.4-2.4-0.8-4.9-1.1-7.3
                                     C553.1,284.5,550.2,262.7,547.7,240.8z"
               />
               <path
-                className={`st22 target part ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.channel_class} ${tooth16Diagnozis.pulpit ? 'pulpit' : ''} ${tooth16Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M595.6,294.3c-2-12.4-5.2-24.7-9.5-36.8c4,13.3,6.6,26.9,7.9,40.7c0.8,8.8,1.1,17.8-0.3,26.5
                                 c1.2,0.5,2.3,1.1,3.3,1.5C598.2,315.6,597.3,304.8,595.6,294.3z"
               />
@@ -164,15 +109,7 @@ export default function Tooth16() {
           </g>
           <g
             style={{
-              visibility:
-                !tooth16Diagnozis.culttab &&
-                !tooth16Diagnozis.abutment &&
-                !tooth16Diagnozis.implant &&
-                !tooth16Diagnozis.shaper &&
-                !tooth16Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility: 'inherit' }}
           >
             <path
               className="st46"
@@ -187,14 +124,13 @@ export default function Tooth16() {
             />
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
               style={{
-                visibility: tooth16Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth16Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path

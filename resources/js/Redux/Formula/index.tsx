@@ -25,6 +25,7 @@ import {
   setDeepZondData,
   setPsrChange,
   setChangeDia,
+  setPsrValues,
 
   // 1828
   setPerioZ1828VestData,
@@ -83,6 +84,7 @@ const initialState = {
   selectedTooth: '',
   selected_tooth_number: '',
   psrChange: false,
+  psrValues: [0,0,0,0,0,0],
   changeDia: false,
   teethStatuses: {
     tooth18: { active: false },
@@ -10635,6 +10637,12 @@ const ACTION_HANDLERS = {
       teethStatuses: { ...state.teethStatuses, ...action.payload },
     }),
   },
+  [setPsrValues.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      psrValues: action.payload,
+    }),
+  },
   [setDisactiveAll.toString()]: {
     next: (state, action) => ({
       ...state,
@@ -15748,7 +15756,8 @@ export {
   setClearFormula,
   setClearPerio,
   setRemoveDia,
-  setPerioStatusChange
+  setPerioStatusChange,
+  setPsrValues
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

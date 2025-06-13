@@ -130,12 +130,6 @@ const DeepZond1828 = forwardRef(({ type, idx, onEnter }, ref) => {
           ? setPerioZ1828VestData(updatedData)
           : setPerioZ1828OralData(updatedData)
       );
-      // if (idx === 47) {
-      //   setTimeout(() => {
-      //     alert(1)
-      //     recalcSlice(type)
-      //   }, 2000);
-      // }
       // Update input color based on value
       e.target.style.color =
         newValue !== '' && Number(newValue) > 5

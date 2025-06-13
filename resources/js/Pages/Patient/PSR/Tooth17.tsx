@@ -1,47 +1,6 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setSubDiagnosis,
-  setNewToothActive,
-  setToothDiagnoze,
-  setDisactiveAll,
-  setSelectedToothNumber,
-  setTooth17Active,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth17() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth17Diagnozis = teethDiagnozis.tooth17;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+export default function Tooth17({ psrValue }) {
 
   return (
     <>
@@ -57,30 +16,23 @@ export default function Tooth17() {
           />
         </g>
         <g
-          id="T_17"
+          id="TH_17"
           className="common-view"
           style={{
-            visibility: tooth17Diagnozis.absent ? 'hidden' : 'inherit',
+            visibility: 'inherit',
             transform: 'matrix(1, 0, 0, 1, 0, 0)',
           }}
         >
           {/*CHANGE COLOR*/}
           <g className="dentin">
             <g
-              id="dentin_v_17"
-              className="hRoot hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth17Diagnozis.implant &&
-                  !tooth17Diagnozis.apex &&
-                  !tooth17Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
+                visibility: 'inherit',
+                transform: 'matrix(1, 0, 0, 1, 0, 0)',
               }}
             >
               <path
-                id="dentin_v_17"
-                className={`st9 change-color-psr-up ${tooth17Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr-up color-dia-${psrValue}`}
                 d="M460,405.8c-1.2,6.5-4.5,12.8-7.8,18.7c-5.5,9.8-13.5,18.3-23.6,24.9
                                 l-14.2-14.8l-33.6-10.1l-33.3,6.7c-6.2-9-9.6-19.3-9.7-29.7c-0.1-9.7,2.5-19.3,7.7-27.9c6.3-6.1,12.2-11.3,15.8-18.6
                                 c0.2-0.2,0.5-0.4,0.7-0.6c8.7-1,17.5-1.4,26.3-1.1c2.8,0.1,5.5,0.2,8.3,0.5c9.6,0.8,19.2,2.4,28.2,5.8c0.2,0.1,0.5,0.2,0.7,0.3
@@ -88,19 +40,9 @@ export default function Tooth17() {
               />
             </g>
             {/* CHANGE COLOR */}
-            <g
-              id="dentin_n_17"
-              style={{
-                visibility:
-                  !tooth17Diagnozis.implant &&
-                  !tooth17Diagnozis.abutment &&
-                  !tooth17Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
-            >
+            <g>
               <path
-                className={`st10 change-color-psr ${tooth17Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M462,339.2c-0.3,8.6-1.5,17.1-2.4,25.7c-0.6,6.5,0,13.1-0.2,19.7
                                 c-0.1,3.3-0.1,6.7,0,10c0-1.4-0.1-2.8-0.1-4.1c-2.8-5.6-6.4-10.8-10.7-15.3c-6.5-6.7-14.4-11.9-23.1-15.3
                                 c-0.2-0.1-0.5-0.2-0.7-0.3c-9-3.5-18.6-5.1-28.2-5.8c-2.8-0.2-5.5-0.4-8.3-0.5c-8.8-0.3-17.6,0.1-26.3,1.1
@@ -112,7 +54,7 @@ export default function Tooth17() {
                                 c3.1,12.3,4.6,24.9,6.2,37.5C460.8,315,462.4,327.1,462,339.2z"
               />
               <path
-                className={`st10 change-color-psr ${tooth17Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M405.9,312.3c2.3,4.6,4.7,9.2,7.8,13.3c1.7,2.2,3.5,4.3,5.6,6.1
                                 c1.3-2.5,2.3-5.2,3-7.9c1-3.8,1.5-7.7,1.9-11.6c0.7-6.2,1.4-12.5,1.7-18.8c0.5-11.2-0.2-22.4,0-33.6c0-2.2,0.1-4.4,0.7-6.6
                                 c0.4-1.6,1.1-3.1,2.1-4.4c-0.4-7.7-2.2-15.2-5.7-22.2c-1.1-2.2-2.6-4.4-4.9-5c-1.6-0.4-3.3,0.1-4.8,1c-3,1.9-4.7,5.4-5.6,8.9
@@ -125,7 +67,7 @@ export default function Tooth17() {
           <g className="pulp">
             <g className={`hEmpty hRoot hImplant pulpitis-pfilling`}>
               <path
-                className={`st22 target ${tooth17Diagnozis.channel_class}`}
+                className={`st22 target`}
                 d="M424.2,392.7c-0.5,5.9-2.2,11.6-5.1,16.9c-3.5-7.3-10.7-12.6-19.3-14.1
                                 c-7.3-1.3-14.9,0.3-20.8,4.4c-0.7-4.1-0.4-8.4,0.7-12.4c1.3-4.4,3.6-8.6,5.2-13c2.5-6.8,3.2-14,3.5-21.2c2.8,0.1,5.6,0.2,8.3,0.5
                                 c9.6,0.8,19.2,2.4,28.2,5.8c0.2,0.1,0.5,0.2,0.7,0.3c-0.8,3.2-1.5,6.4-1.7,9.7C423.3,377.2,424.8,384.9,424.2,392.7z"
@@ -133,7 +75,7 @@ export default function Tooth17() {
             </g>
             <g className="hEmpty hImplant pulpitis-pfilling">
               <path
-                className={`st22 target top ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.pulpit ? 'pulpit' : ''} ${tooth17Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M443.5,290.9c-0.1,3.9-0.4,7.9-0.8,11.8c-1.3,11.6-4.3,22.9-8.5,33.9
                                 c-2.9,7.7-6.5,15.3-8.6,23.2c-0.2-0.1-0.5-0.2-0.8-0.3c-9-3.5-18.6-5.1-28.2-5.8c-2.8-0.2-5.5-0.4-8.3-0.5c0-0.6,0-1.2,0.1-1.7
                                 c0.6-17.9-0.5-35.9-3.6-53.5c-0.4-2.4-0.9-4.7-1.4-7h3.4c4.3,14.6,9,29.1,13.3,43.7c0.6,2.1,1.3,4.3,2.2,6.3
@@ -143,33 +85,25 @@ export default function Tooth17() {
             </g>
             <g className="hEmpty hImplant pulpitis-pfilling">
               <path
-                className={`st22 part ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.pulpit ? 'pulpit' : ''} ${tooth17Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 part top-sealed-part`}
                 d="M379.4,266.9c-3-8.2-6.9-16.2-11.4-23.8c6.8,15.4,12,31.4,15.5,47.8h3.4c-0.1-0.4-0.2-0.8-0.4-1.3
                                 C384.3,282,382.1,274.4,379.4,266.9z"
               />
               <path
-                className={`st22 part ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.pulpit ? 'pulpit' : ''} ${tooth17Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 part top-sealed-part`}
                 d="M416.4,222c-0.7,19.8-2.2,39.6-4.5,59.3c-0.4,3.2-0.8,6.4-1.2,9.6h8.9c-0.1-1.1-0.2-2.2-0.2-3.3
                                 C417.9,265.8,416.9,243.9,416.4,222z"
               />
               <path
-                className={`st22 target part ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.channel_class} ${tooth17Diagnozis.pulpit ? 'pulpit' : ''} ${tooth17Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M436.7,247.3c4.1,14.3,5.8,29,5,43.6h1.8c0-0.9,0-1.8,0-2.8C443.5,274.3,441.2,260.5,436.7,247.3z"
               />
             </g>
           </g>
           <g
-            className="toutline hRoot hImplant hEmpty"
+            className="toutline"
             style={{
-              visibility:
-                !tooth17Diagnozis.culttab &&
-                !tooth17Diagnozis.abutment &&
-                !tooth17Diagnozis.implant &&
-                !tooth17Diagnozis.apex &&
-                !tooth17Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility: 'inherit'}}
           >
             <path
               className="st46"
@@ -183,18 +117,17 @@ export default function Tooth17() {
             />
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
               style={{
-                visibility: tooth17Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth17Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path
-                className={`vinir-fill ${tooth17Diagnozis.vinir_color}`}
+                className={`vinir-fill`}
                 d="M460.3 407.7C459.9 402.4 459.6 397 459.4 391.6C459.4 391.2 459.4 390.8 459.4 390.4C456.6 384.8 453.1
                                   379.6 448.7 375.1C442 368.2 433.9 363 424.9 359.5C415.9 356 406.3 354.4 396.7 353.7C385.2 352.8 373.6
                                   353 362.1 354.4C362 354.4 362 354.5 362 354.5C352.6 363 344 372.2 336.2 382.2C333.5 385.7 330.8 389.3

@@ -25,7 +25,7 @@ import {
   getStatusesSelector,
 } from '../../../Redux/Formula/selectors';
 
-export default function Tooth26() {
+export default function Tooth26({ psrValue }) {
   const dispatch = useDispatch<any>();
   const toothActive = useSelector(getStatusesSelector);
   const allTeeth = useSelector(allTeethSelector);
@@ -62,7 +62,7 @@ export default function Tooth26() {
           />
         </g>
         <g
-          id="T_26"
+          id="TH_26"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -72,19 +72,11 @@ export default function Tooth26() {
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_26"
-              className="hRoot hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth26Diagnozis.implant &&
-                  !tooth26Diagnozis.apex &&
-                  !tooth26Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                className={`st9 change-color-psr-up ${tooth26Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr color-dia-${psrValue}`}
                 d="M1606.9,448.9l-28-8.1l-29.3,12l-21.6-2.8l-18.3,13.1c-5.7-9.7-10.1-20-13-30.7
                                 c-2.2-8.1-3.6-16.3-4.9-24.5c0.1-0.6,0.1-1.2,0.2-1.8c6.7-7.1,14.7-13.1,23.9-17.9c1.8-0.9,3.5-1.8,5.3-2.6
                                 c15.3-6.9,32.4-10,49.4-9.4c4.5,0.2,9,0.6,13.5,1.3c9.9,1.5,19.4,4.4,28.1,8.4c0.1,0.1,0.1,0.2,0.2,0.2l0,0
@@ -92,25 +84,18 @@ export default function Tooth26() {
               />
             </g>
             <g
-              id="dentin_n_26"
               style={{
-                visibility:
-                  !tooth26Diagnozis.implant &&
-                  !tooth26Diagnozis.abutment &&
-                  !tooth26Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr ${tooth26Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M1522.2,337.2c1.6,5,3.7,10,7.3,14c2,2.2,4.5,4.1,7.4,4.4c4.4,0.4,8.1-2.4,11-5.9
                                 c1.9-2.2,3.5-4.7,5.2-7.1c1.4-2,3-3.9,4.5-5.8c2.7-3.3,5.3-6.7,7.9-10.2c-0.8-8.3-1.5-16.6-2-25c-0.7-10.1-1.2-20.2-2.2-30.3
                                 c-0.7-7.9-1.7-15.8-2.8-23.6c-1.4-4.3-5.4-7.1-9.8-7c-3.1,0.1-6,1.6-7.8,4.1c-1.4,2-2,4.4-2.6,6.7c-3.2,12-6.9,23.9-10.5,35.9
                                 c-3.1,10.5-6,21-8.7,31.6C1519.3,325.1,1520.3,331.3,1522.2,337.2z"
               />
               <path
-                className={`st10 change-color-psr ${tooth26Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M1612.4,386.1c-0.1-0.1-0.1-0.2-0.2-0.2c-8.8-4-18.2-6.8-28.1-8.3c-4.5-0.7-9-1.1-13.5-1.3
                                 c-17-0.6-34.1,2.5-49.4,9.4c-1.8,0.8-3.6,1.7-5.3,2.6c-9.1,4.8-17.2,10.8-23.9,17.9c-0.1,0.6-0.1,1.2-0.2,1.8
                                 c-0.4-2.3-0.7-4.5-1.1-6.8c-2.8-17.2-6.4-34.3-7.1-51.7c-0.8-18.9,1.9-37.8,6.2-56.3c2.2-9.5,4.8-18.9,9.1-27.7
@@ -125,7 +110,7 @@ export default function Tooth26() {
           <g className="pulp">
             <g>
               <path
-                className={`st22 target top ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.pulpit ? 'pulpit' : ''} ${tooth26Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1575.8,422.5c-7.2-6.4-17.4-9-27.1-7c-8.6,1.8-15.9,7-19.8,14.2
                                 c-1.9-3.9-3.2-8.1-3.8-12.4c-0.8-5.4-0.5-10.9-0.9-16.4c-0.4-5.4-1.5-10.5-3-15.7c0,0.1,0.1,0.2,0.1,0.3c0.2-0.1,0.4-0.2,0.5-0.2
                                 c0.6-0.3,1.2-0.5,1.9-0.8c1.9-0.8,3.8-1.5,5.7-2.2c0.9-0.3,1.8-0.6,2.7-0.9c0.8-0.3,1.6-0.5,2.4-0.8c0.2-0.1,0.4-0.1,0.6-0.2
@@ -137,7 +122,7 @@ export default function Tooth26() {
             </g>
             <g>
               <path
-                className={`st22 target middle ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.pulpit ? 'pulpit' : ''} ${tooth26Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target middle`}
                 d="M1589.4,316.2c-2.1,9.9-5.3,19.6-9.3,28.9c-4,9.5-8.7,18.6-9.4,28.7
                                 c-0.1,0.8-0.1,1.5-0.1,2.3c-1.4,0-2.8-0.1-4.1-0.1c-1,0-1.9,0-2.9,0c0,0,0,0,0,0c-0.9,0-1.8,0-2.8,0.1c-0.1,0-0.2,0-0.3,0
                                 c-0.8,0-1.6,0.1-2.3,0.1c-0.3,0-0.5,0-0.8,0.1c-0.8,0.1-1.6,0.1-2.4,0.2c-0.2,0-0.4,0-0.6,0.1c-0.8,0.1-1.7,0.2-2.5,0.3
@@ -153,34 +138,25 @@ export default function Tooth26() {
             {/* Отростки периодонтита */}
             <g>
               <path
-                className={`st22 target part ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.pulpit ? 'pulpit' : ''} ${tooth26Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M1512,257.5c-4.3,12.1-7.5,24.4-9.5,36.8c-1.8,10.9-2.7,22.1-1.3,33.1c1-0.6,2.1-1.2,3.3-1.9
                                 c-1.5-9-1.3-18.2-0.4-27.4C1505.4,284.4,1508,270.8,1512,257.5z"
               />
               <path
-                className={`st22 target part ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.pulpit ? 'pulpit' : ''} ${tooth26Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M1550.4,240.8c0-0.2,0-0.3,0-0.5C1550.4,240.5,1550.4,240.6,1550.4,240.8c-2.5,21.9-5.4,43.7-8.8,65.5
                                 c-0.4,2.5-0.8,5-1.2,7.5c3.7-0.5,7.5-0.8,11.2-0.9c-0.2-4.1-0.4-8.3-0.6-12.5C1550.3,280.5,1550,260.6,1550.4,240.8z"
               />
               <path
-                className={`st22 target part ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.channel_class} ${tooth26Diagnozis.pulpit ? 'pulpit' : ''} ${tooth26Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M1591.9,283.3c-0.4-9.2-1.8-18.3-4-27.3c4.1,18.9,3.6,38.4-1.5,57.2c-0.2,0.8-0.4,1.6-0.7,2.4
                                 c1.3,0.2,2.5,0.5,3.6,0.7c0.1-0.4,0.2-0.9,0.3-1.3C1591.7,304.5,1592.4,293.9,1591.9,283.3z"
               />
             </g>
           </g>
           <g
-            className="hRoot hImplant hEmpty"
             style={{
-              visibility:
-                !tooth26Diagnozis.culttab &&
-                !tooth26Diagnozis.abutment &&
-                !tooth26Diagnozis.implant &&
-                !tooth26Diagnozis.shaper &&
-                !tooth26Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"
@@ -196,14 +172,13 @@ export default function Tooth26() {
             />
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
               style={{
-                visibility: tooth26Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth26Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path

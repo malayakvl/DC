@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngMaterial from '../../../Lang/Material/translation';
@@ -47,14 +47,36 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 //
 import {
-  getStatusesSelector,
+  getPsrValuesSelector,
   getActiveToothNumberSelector,
 } from '../../../Redux/Formula/selectors';
 
 export default function PSR() {
-  const toothActive = useSelector(getStatusesSelector);
-  const activeNumber = useSelector(getActiveToothNumberSelector);
+  const [values, setValues] = useState(['', '', '', '']); // Массив для хранения значений
+  const inputRefs = useRef([null, null, null, null, null]); // Массив для хранения ссылок на input
+  const psrValues = useSelector(getPsrValuesSelector);
+  const dispatch = useDispatch();
+  const handleInputChange = (index, event) => {
+    const newValue = event.target.value;
+    const newValues = [...values]; // Создаем копию массива для обновления
+    // Проверяем, что введено число
+    if (/^\d*$/.test(newValue)) {
+      const lastDigit = event.target.value.replace(newValues[index], '');
+      const numValue = lastDigit === '' ? '' : parseInt(lastDigit);
+      // Если число больше 4, устанавливаем 4, иначе последнее введенное значение
+      newValues[index] = numValue > 4 ? '4' : lastDigit;
+      setValues(newValues)
+      inputRefs.current[index < 5 ? index +1 : 0].focus();
+    }
+  };
 
+  // Привязываем ссылки на input при рендере
+  useEffect(() => {
+    inputRefs.current = [
+      ...document.querySelectorAll('input[type="text"]') // Получаем все input
+    ];
+  }, []);
+console.log(values[0])
   return (
     <div className="w-full scroll-x">
       <section className="psr-jaw-up">
@@ -68,20 +90,20 @@ export default function PSR() {
           xmlSpace="preserve"
         >
           <Tooth28 />
-          <Tooth27 />
-          <Tooth26 />
-          <Tooth25 />
-          <Tooth24 />
-          <Tooth23 />
-          <Tooth22 />
-          <Tooth21 />
-          <Tooth11 />
-          <Tooth12 />
-          <Tooth13 />
-          <Tooth14 />
-          <Tooth15 />
-          <Tooth16 />
-          <Tooth17 />
+          <Tooth27 psrValue={values[2]} />
+          <Tooth26 psrValue={values[2]} />
+          <Tooth25 psrValue={values[2]} />
+          <Tooth24 psrValue={values[2]} />
+          <Tooth23 psrValue={values[1]}/>
+          <Tooth22 psrValue={values[1]}/>
+          <Tooth21 psrValue={values[1]}/>
+          <Tooth11 psrValue={values[1]}/>
+          <Tooth12 psrValue={values[1]}/>
+          <Tooth13 psrValue={values[1]}/>
+          <Tooth14 psrValue={values[0]} />
+          <Tooth15 psrValue={values[0]} />
+          <Tooth16 psrValue={values[0]} />
+          <Tooth17 psrValue={values[0]} />
           <Tooth18 />
         </svg>
       </section>
@@ -94,14 +116,22 @@ export default function PSR() {
           style={{ maxWidth: '450px', margin: 'auto' }}
           className=" flex flex-row max-w-[650px]"
         >
-          <div className="text-center mr-[60px]">
-            <input type="text" className="psr" data-position="t14_17" />
-          </div>
-          <div className="text-center mr-[60px]">
-            <input type="text" className="psr" data-position="t13_23" />
-          </div>
-          <div className="text-center">
-            <input type="text" className="psr" data-position="t24_27" />
+          <div className="flex">
+            {
+              [0, 1, 2].map((index) => (
+                <div className={`text-center mr-[${index != 2 ? 6 : ''}0px]`}>
+                  <input
+                    key={index}
+                    type="text"
+                    className="psr"
+                    value={values[index]}
+                    onChange={(event) => handleInputChange(index, event)}
+                    ref={(el) => { inputRefs.current[index] = el; }}
+                    maxLength={2}  // Ограничиваем ввод до одного символа
+                  />
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -114,14 +144,22 @@ export default function PSR() {
           style={{ maxWidth: '450px', margin: 'auto' }}
           className=" flex flex-row max-w-[650px]"
         >
-          <div className="text-center mr-[60px]">
-            <input type="text" className="psr" data-position="t14_17" />
-          </div>
-          <div className="text-center mr-[60px]">
-            <input type="text" className="psr" data-position="t13_23" />
-          </div>
-          <div className="text-center">
-            <input type="text" className="psr" data-position="t24_27" />
+          <div className="flex">
+            {
+              [3, 4, 5].map((index) => (
+                <div className={`text-center mr-[${index != 5 ? 6 : ''}0px]`}>
+                  <input
+                    key={index}
+                    type="text"
+                    className="psr"
+                    value={values[index]}
+                    onChange={(event) => handleInputChange(index, event)}
+                    ref={(el) => { inputRefs.current[index] = el; }}
+                    maxLength={2}  // Ограничиваем ввод до одного символа
+                  />
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>
@@ -137,20 +175,20 @@ export default function PSR() {
           xmlSpace="preserve"
         >
           <Tooth48 />
-          <Tooth47 />
-          <Tooth46 />
-          <Tooth45 />
-          <Tooth44 />
-          <Tooth43 />
-          <Tooth42 />
-          <Tooth41 />
-          <Tooth31 />
-          <Tooth32 />
-          <Tooth33 />
-          <Tooth34 />
-          <Tooth35 />
-          <Tooth36 />
-          <Tooth37 />
+          <Tooth47 psrValue={values[3]} />
+          <Tooth46 psrValue={values[3]} />
+          <Tooth45 psrValue={values[3]} />
+          <Tooth44 psrValue={values[3]} />
+          <Tooth43 psrValue={values[4]} />
+          <Tooth42 psrValue={values[4]} />
+          <Tooth41 psrValue={values[4]} />
+          <Tooth31 psrValue={values[4]} />
+          <Tooth32 psrValue={values[4]} />
+          <Tooth33 psrValue={values[4]} />
+          <Tooth34 psrValue={values[4]} />
+          <Tooth35 psrValue={values[5]} />
+          <Tooth36 psrValue={values[5]} />
+          <Tooth37 psrValue={values[5]} />
           <Tooth38 />
         </svg>
       </section>

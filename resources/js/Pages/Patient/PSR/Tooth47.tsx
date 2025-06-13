@@ -1,46 +1,7 @@
 import React from 'react';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth47() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth47Diagnozis = teethDiagnozis.tooth47;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+
+export default function Tooth47({ psrValue }) {
 
   return (
     <>
@@ -61,27 +22,20 @@ export default function Tooth47() {
           />
         </g>
         <g
-          id="T_47"
+          id="TH_47"
           className="common-view"
           style={{
-            visibility: tooth47Diagnozis.absent ? 'hidden' : 'inherit',
+            visibility: 'inherit',
             transform: 'matrix(1, 0, 0, 1, 0, 0)',
           }}
         >
           <g className="dentin">
             <g
-              id="dentin_v_47"
               style={{
-                visibility:
-                  !tooth47Diagnozis.implant &&
-                  !tooth47Diagnozis.apex &&
-                  !tooth47Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                className={`st9 change-color-psr-up ${tooth47Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr color-dia-${psrValue}`}
                 d="M460.5,1138.7c-0.3,8.3-3.4,29.5-5.4,37.5c-0.2,0.3-0.5,0.6-0.7,0.8
                                 c-14,5.4-29.2,7.5-44.1,6c-1.3-0.1-2.6-0.3-3.9-0.5c-16.6-2.3-32.2-8.8-46.7-17.3c-0.4-0.2-0.7-0.4-1.1-0.7
                                 c-12.8-7.8-24.6-17.1-35-27.9c0-0.2,0-0.4,0-0.5c6.1-7.3,11.7-23.2,18-30.1c5.5-6.1,11.2-12.1,16.9-18.1l37.2,23.3l60.9-6.6
@@ -89,19 +43,11 @@ export default function Tooth47() {
               />
             </g>
             <g
-              id="dentin_n_47"
               style={{
-                visibility:
-                  !tooth47Diagnozis.implant &&
-                  !tooth47Diagnozis.abutment &&
-                  !tooth47Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_n_47"
-                className={`st10 change-color-psr ${tooth47Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M454.5,1177.1c-9.2,11.2-14.9,17.1-20.7,30.4c-8.3,19.2-12.7,33.7-21.7,52.7
                                 c-6.2,13.2-15,25.8-29,32c-6,2.7-12.7,4-19.4,3.7c-3.9-0.7-7.2-3.2-8.7-6.7c-1.7-3.7-1-7.8,0.6-11.6c2.6-6.2,7.5-11.2,11.7-16.6
                                 c4.4-5.5,8.1-11.6,10-18.2c2.3-7.9,1.8-16.2,0-24.2c-0.9-3.9-2.2-8-5.8-10.3c-4.1-2.7-9.6-2.2-14.3-0.2c-4.7,2-8.7,5.3-12,9
@@ -116,7 +62,7 @@ export default function Tooth47() {
           <g className="pulp">
             <g className="pulpitis-pfilling" style={{ visibility: 'inherit' }}>
               <path
-                className={`st22 target top ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.pulpit ? 'pulpit' : ''} ${tooth47Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top `}
                 d="M422.1,1134.3c-0.3,5.6-1.5,11.1-3.3,16.4c-2.6,7.1-6.5,13.8-9.2,20.9
                                 c-1.3,3.6-2.3,7.3-3.1,11c-1.5-0.2-3-0.4-4.5-0.7c-0.6-0.1-1.1-0.2-1.7-0.3c0,0,0,0,0,0c-1-0.2-2-0.4-3.1-0.7
                                 c-0.1,0-0.1,0-0.2-0.1c-2.2-0.5-4.4-1.1-6.5-1.8c-0.5-0.2-1.1-0.3-1.6-0.5c-0.5-0.2-1.1-0.3-1.6-0.5c-0.5-0.2-1.1-0.4-1.6-0.5
@@ -128,7 +74,7 @@ export default function Tooth47() {
             </g>
             <g className="pulpitis-pfilling" style={{ visibility: 'inherit' }}>
               <path
-                className={`st22 target top ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.pulpit ? 'pulpit' : ''} ${tooth47Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top `}
                 d="M322.9,1211.5c1.1,0.5,2.3,1,3.5,1.6c4.8-7.3,10.3-14.3,16.9-20.5
                                 c13-12.4,32.4-19.3,45.1-8.8c5.5,4.6,7.3,11.3,8.2,17.8c1.2,9.5,0.9,18.9-0.6,28.1c1.4,0,2.8-0.1,4.2-0.2
                                 c1.6-7.8,2.5-15.7,3.3-23.6c0.8-7.8,1.4-15.7,3-23.3c-2.1-0.3-4.1-0.6-6.2-1.1c-0.9-0.2-1.9-0.4-2.8-0.6c-0.3-0.1-0.7-0.2-1-0.2
@@ -141,12 +87,12 @@ export default function Tooth47() {
             </g>
             <g className="pulpitis-pfilling" style={{ visibility: 'inherit' }}>
               <path
-                className={`st22 target top ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.pulpit ? 'pulpit' : ''} ${tooth47Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M395.9,1229.7c1.4,0,2.8-0.1,4.2-0.2c-0.7,3.6-1.6,7.2-2.7,10.8c-6.2,20.8-18.8,39.6-36.1,54.1
                                 c13-12.8,22.7-27.8,28.8-43.9C392.8,1243.8,394.7,1236.8,395.9,1229.7z"
               />
               <path
-                className={`st22 target top ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.channel_class} ${tooth47Diagnozis.pulpit ? 'pulpit' : ''} ${tooth47Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M317,1221.5c1.8-3.4,3.8-6.8,5.9-10c1.1,0.5,2.3,1,3.5,1.6c-8.3,12.7-14.4,26.8-19.7,41
                                 c-2.8,7.4-5.3,14.9-7.7,22.4C301.6,1257.3,307.7,1238.7,317,1221.5z"
               />
@@ -155,15 +101,7 @@ export default function Tooth47() {
           <g
             className="toutline "
             style={{
-              visibility:
-                !tooth47Diagnozis.culttab &&
-                !tooth47Diagnozis.abutment &&
-                !tooth47Diagnozis.implant &&
-                !tooth47Diagnozis.shaper &&
-                !tooth47Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"
@@ -180,12 +118,12 @@ export default function Tooth47() {
             <g
               className="vinir"
               style={{
-                visibility: tooth47Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth47Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path
-                className={`vinir-fill ${tooth47Diagnozis.vinir_color}`}
+                className={`vinir-fill`}
                 d="M469.8 1092.2C466.2 1087.6 461.8 1083.5 457 1080.3C456.9 1080.3 456.9 1080.2 456.8 1080.2L448.1 1079C445.1 1081.1 442.1 1083.2 439.1 1085.3C435.5 1087.8 431.8 1090.4 427.4 1091.5C422.8 1092.6 417.9 1091.8 413.5 1093.6C408.7 1095.5 405.4 1099.9 405 1105L403 1103.4C405.4 1100.6 406.8 1097.2 407.2 1093.5C407.5 1090.7 407.1 
                                 1087.8 405.7 1085.4C403.1 1080.8 397.9 1078.7 393.8 1075.6C390.3 1072.9 387.5 1069.4 385.7 1065.3L378.8 1062.9C374.9 1063.7 371 1064.7 367.2 1066C364.4 1066.9 361.6 1068 358.9 1069.2C353.5 1071.6 348.4 1074.4 343.5 1077.7C339.9 1082.9 336.7 1088.3 333.9 1093.9C329.4 1102.8 325.7 1112.2 324.3 1122.1C324 1124.6 323.6 1126.6 323.3 1128.7C323.1 1130.7 323 
                                 1132.6 323.2 1135C333.9 1146.1 346.8 1157.5 360 1165.3C375.5 1174.5 392.5 1181.3 410.5 1183.1C425.9 1184.6 441.4 1182.4 455.7 1176.7C459.3 1173.3 462.7 1169.5 465.6 1165.4C469 1160.7 471.9 1155.5 474.2 1150.1C477.2 1142.9 479.2 1135.3 480.8 1127.6C481 1126.8 481.1 1126 481.3 1125.2C481.2 

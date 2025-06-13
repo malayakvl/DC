@@ -1,53 +1,13 @@
 import React from 'react';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth15() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth15Diagnozis = teethDiagnozis.tooth15;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+export default function Tooth15({ psrValue }) {
 
   return (
     <>
       <g id="15" className="df-tooth-text" style={{ opacity: 1 }}>
         <text
           transform="matrix(1 0 0 1 631.0918 716.1968)"
-          className={`st3 st4 st5 ${toothActive.tooth15.active ? 'num-active' : ''}`}
+          className={`st3 st4 st5`}
         >
           15
         </text>
@@ -68,7 +28,7 @@ export default function Tooth15() {
           />
         </g>
         <g
-          id="T_15"
+          id="TH_15"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -78,19 +38,11 @@ export default function Tooth15() {
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_15"
-              className="hRoot hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth15Diagnozis.implant &&
-                  !tooth15Diagnozis.apex &&
-                  !tooth15Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility: 'inherit' }}
             >
               <path
-                className={`st10 change-color-psr-up ${tooth15Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr-up color-dia-${psrValue}`}
                 d="M690,418.1c-0.6,6.4-1.4,12.8-2.6,19.2c-2.1,11.3-5.2,22.4-9.2,33.3l-26.2-6.6l-23.9,2.9
                                 c-3.5-9.1-5.8-18.6-6.8-28.2c-1.2-10.9-0.8-21.8,0.1-32.7c0.8-2.1,1.7-4.2,2.9-6.2c5-8.9,13.6-15.4,23.7-17.2
                                 c1.4-0.3,2.8-0.4,4.2-0.5c3.2-0.1,6.3,0.2,9.3,1.1c0.7,0.2,1.4,0.5,2.1,0.7c3.8,1.5,7.1,3.8,10.1,6.5c7.8,7,13.1,16.3,15.9,26.2
@@ -98,20 +50,12 @@ export default function Tooth15() {
               />
             </g>
             <g
-              id="dentin_n_15"
-              className="hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth15Diagnozis.implant &&
-                  !tooth15Diagnozis.abutment &&
-                  !tooth15Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit' }}
             >
               <path
                 id="dentin_n_15"
-                className={`st10 change-color-psr ${tooth15Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M690.3,415c-0.1,1-0.1,2.1-0.2,3.1c-0.1-0.5-0.2-1-0.4-1.5
                                 c-2.8-10-8-19.2-15.9-26.2c-3-2.7-6.3-5-10.1-6.5c-0.7-0.3-1.4-0.5-2.1-0.7c-3-0.9-6.2-1.3-9.3-1.1c-1.4,0.1-2.8,0.2-4.2,0.5
                                 c-10.1,1.8-18.7,8.3-23.7,17.2c-1.1,2-2,4.1-2.9,6.2c0.2-2.4,0.4-4.8,0.7-7.2c2.2-22.4,5.8-44.8,8.3-67.2
@@ -124,7 +68,7 @@ export default function Tooth15() {
           <g className="pulp">
             <g>
               <path
-                className={`st22 target top ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.pulpit ? 'pulpit' : ''} ${tooth15Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top `}
                 d="M666,421.6c0,1.5-0.1,3-0.2,4.5c-0.4,3.8-1.2,7.6-2.6,11.2
                                 c-2.6-2-5.8-3.2-9.1-3.4c-3.2-0.2-6.4,0.6-9.1,2.2c-1-2.3-1.5-4.8-1.7-7.2c-0.2-2.4,0-4.9,0.6-7.2c2.1-16.2,4.2-39.5,4.2-39.5
                                 s2.8-0.2,4.2-0.3c3.1-0.2,6.3,0.2,9.3,1.1c0.7,0.2,1.4,0.5,2,0.7C664.5,396.3,665.3,408.9,666,421.6z"
@@ -132,7 +76,7 @@ export default function Tooth15() {
             </g>
             <g>
               <path
-                className={`st22 target middle ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.pulpit ? 'pulpit' : ''} ${tooth15Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target middle `}
                 d="M663.7,383.7c-0.7-0.3-1.4-0.5-2.1-0.8c-3-0.9-6.2-1.2-9.3-1.1
                                 c-1.4,0.1-2.8,0.2-4.2,0.5c1.6-18.8,2.5-37.8,2.7-56.7c0.1-7.9,0.1-15.9-0.1-23.8c1.6-0.2,3.4-0.2,5.4,0h0
                                 c1.3,11.4,2.5,22.8,3.6,34.3C661.3,352,662.6,367.8,663.7,383.7z"
@@ -140,24 +84,16 @@ export default function Tooth15() {
             </g>
             <g>
               <path
-                className={`st22 target part ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.channel_class} ${tooth15Diagnozis.pulpit ? 'pulpit' : ''} ${tooth15Diagnozis.periodontit ? 'periodontit' : ''} top-sealed-part`}
+                className={`st22 target part top-sealed-part`}
                 d="M656.2,301.9L656.2,301.9c-2-0.2-3.8-0.2-5.5,0c-0.5-27.6-2.4-55.1-5.8-82.5
                                 C649.2,246.7,653,274.3,656.2,301.9z"
               />
             </g>
           </g>
           <g
-            className="toutline hRoot hImplant hEmpty"
+            className="toutline"
             style={{
-              visibility:
-                !tooth15Diagnozis.culttab &&
-                !tooth15Diagnozis.abutment &&
-                !tooth15Diagnozis.implant &&
-                !tooth15Diagnozis.shaper &&
-                !tooth15Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility: 'inherit' }}
           >
             <path
               className="st46"
@@ -170,18 +106,17 @@ export default function Tooth15() {
             />
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
               style={{
-                visibility: tooth15Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth15Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path
-                className={`vinir-fill ${tooth15Diagnozis.vinir_color}`}
+                className={`vinir-fill`}
                 d="M694.8 440.6C694.1 435.9 692.9 431.3 691.9 426.7C691.4 424.6 691 422.4 690.5 420.3C690.2 419.1 689.9 417.8 
                                 689.6 416.6C686.8 406.6 681.6 397.4 673.7 390.4C670.2 387.2 666.1 384.5 661.5 383.1C658.5 382.2 655.3 381.8 652.2 382C640.4 
                                 382.6 630 389.6 624.3 399.7C621.9 403.9 620.5 408.6 618.8 413.1C618.4 414.1 618 415.2 617.6 416.2C615.2 422.2 612.1 427.9 

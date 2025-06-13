@@ -1,53 +1,13 @@
 import React from 'react';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
 
-export default function Tooth21() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth21Diagnozis = teethDiagnozis.tooth21;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+export default function Tooth21({ psrValue }) {
 
   return (
     <>
       <g id="21" className="df-tooth-text" style={{ opacity: 1 }}>
         <text
           transform="matrix(1 0 0 1 1076.7275 716.1968)"
-          className={`st3 st4 st5 ${toothActive.tooth21.active ? 'num-active' : ''}`}
+          className={`st3 st4 st5`}
         >
           21
         </text>
@@ -68,7 +28,7 @@ export default function Tooth21() {
           />
         </g>
         <g
-          id="T_21"
+          id="TH_21"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -78,19 +38,11 @@ export default function Tooth21() {
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_21"
               style={{
-                visibility:
-                  !tooth21Diagnozis.implant &&
-                  !tooth21Diagnozis.apex &&
-                  !tooth21Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_v_21"
-                className={`st10 change-color-psr-up ${tooth21Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M1144,446.6c-0.5,14.5-2.3,29-5.5,43.1l-1.5,1.7l-2.4,1.6
                                 c-5.2,0.5-10.4,1-15.6,1.4c-17.7,1.3-35.4,1.8-53.1,1.4l-2.7-1.2l-2.2-2.9c-1.3-9.1-2.3-18.2-2.8-27.3c-0.5-7.7-0.7-15.4-0.2-23v0
                                 c3.9-9,9.5-17.3,16.9-23.8c4.8-4.1,10.2-7.4,16.1-9.7c0.9-0.4,1.9-0.7,2.9-1c6.3-2,12.9-2.7,19.2-1.5c2.6,0.5,5.1,1.4,7.4,2.6
@@ -99,19 +51,11 @@ export default function Tooth21() {
             </g>
             {/*змінений у кольорі*/}
             <g
-              id="dentin_n_21"
               style={{
-                visibility:
-                  !tooth21Diagnozis.implant &&
-                  !tooth21Diagnozis.abutment &&
-                  !tooth21Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                id="dentin_n_21"
-                className={`st10 change-color-psr ${tooth21Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M1144.2,347.6c-0.1,23.2-0.6,46.4-0.3,69.7c0.1,9.8,0.4,19.5,0.1,29.3
                                 c0,0.3,0,0.6,0,0.9c0-0.1,0-0.2-0.1-0.4c-1.5-6.2-3.4-12.2-6-18.1c-3.7-8.5-9-16.6-17.3-20.9c-2.4-1.2-4.9-2.1-7.4-2.6
                                 c-6.3-1.2-13-0.5-19.2,1.5c-1,0.3-1.9,0.6-2.9,1c-5.9,2.2-11.4,5.5-16.1,9.7c-7.5,6.5-13,14.8-16.9,23.8c0.2-2.4,0.4-4.8,0.7-7.2
@@ -125,7 +69,7 @@ export default function Tooth21() {
           <g className="pulp">
             <g>
               <path
-                className={`st22 target top ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.pulpit ? 'pulpit' : ''} ${tooth21Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1116.7,428.4c0.3,5.5,0,11.1-0.7,16.6c-0.5,4.7-1.3,9.3-2.2,13.9l-1.8,2.1l-22.7,0
                                 l-2.2-2.3c-2-7.6-2.7-15.5-1.9-23.3c0.8-7.6,2.8-14.9,4.6-22.4c0.4-1.7,0.8-3.4,1.2-5c0.4-0.2,0.9-0.3,1.3-0.5
                                 c0.5-0.2,1-0.4,1.5-0.5c4.4-1.4,9-2.2,13.5-2c0.6,0,1.3,0,1.9,0.1c0.3,0,0.6,0.1,0.9,0.1c0.3,0,0.6,0.1,0.9,0.1
@@ -134,7 +78,7 @@ export default function Tooth21() {
             </g>
             <g>
               <path
-                className={`st22 target top ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.pulpit ? 'pulpit' : ''} ${tooth21Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top `}
                 d="M1112.9,404.3c0.1,0.5,0.1,0.9,0.2,1.3v0c-0.4-0.1-0.7-0.1-1.1-0.2
                                 c-0.3,0-0.6-0.1-0.9-0.1s-0.6-0.1-0.9-0.1c-0.3,0-0.6,0-0.9-0.1c-0.6,0-1.3-0.1-1.9-0.1c-4.5-0.1-9.1,0.7-13.5,2
                                 c-0.5,0.2-1,0.3-1.5,0.5c-0.4,0.2-0.9,0.3-1.3,0.5c5.1-22.9,7.9-46.2,11.3-69.3c0.9-5.8,1.7-11.6,2.7-17.3
@@ -143,7 +87,7 @@ export default function Tooth21() {
             </g>
             <g>
               <path
-                className={`st22 target top ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.channel_class} ${tooth21Diagnozis.pulpit ? 'pulpit' : ''} ${tooth21Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top `}
                 d="M1122.6,234.3c0,0.1,0,0.2,0,0.3c-2.1,15.6-3.8,31.2-5.1,46.8
                                 c-1.2,13.3-2.1,26.6-3,39.9c-2.5-0.2-5-0.3-7.6,0c-0.6,0.1-1.3,0.1-1.9,0.2c1.9-11.7,3.9-23.3,6.2-35c3.4-17.4,7.2-34.7,11.4-51.9
                                 C1122.6,234.5,1122.6,234.4,1122.6,234.3z"
@@ -153,15 +97,7 @@ export default function Tooth21() {
           <g
             className="toutline"
             style={{
-              visibility:
-                !tooth21Diagnozis.culttab &&
-                !tooth21Diagnozis.abutment &&
-                !tooth21Diagnozis.implant &&
-                !tooth21Diagnozis.shaper &&
-                !tooth21Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"
@@ -174,14 +110,13 @@ export default function Tooth21() {
             />
           </g>
           <g
-            className="hEmpty hImplant hRoot"
             style={{ visibility: 'inherit' }}
           >
             <g
               className="vinir"
               style={{
-                visibility: tooth21Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth21Diagnozis.vinir ? 1 : 0,
+                visibility: 'hidden',
+                opacity: 0,
               }}
             >
               <path
