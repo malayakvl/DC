@@ -1,46 +1,7 @@
 import React from 'react';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
+
 
 export default function Tooth38() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth38Diagnozis = teethDiagnozis.tooth38;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
 
   return (
     <>
@@ -60,7 +21,7 @@ export default function Tooth38() {
           />
         </g>
         <g
-          id="T_48"
+          id="TH-48"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -88,7 +49,7 @@ export default function Tooth38() {
                 visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr ${tooth38Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr`}
                 d="M1890.7,1173.1c-0.6,12.8-1.9,26.4-12,35.2c-2.2,1.9-5.1,3.4-7.8,2.3
                                 c-1.8-0.7-2.7-2.4-3.3-4.1c-1.8-5.8,0.5-11.7,0.9-17.7c0.4-6.8-1.8-13.5-3.3-20.2c-1.3-5.6-2.3-11.4-6-16
                                 c-1.9-2.4-4.8-4.2-7.7-3.2c-3.4,1.2-3.9,5.1-3.6,8.7c0.6,6,2,11.8,4.1,17.5c2.8,7.5,7,14.6,10.9,21.7c1.5,2.7,3,5.5,2.8,8.6

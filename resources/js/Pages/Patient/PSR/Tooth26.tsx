@@ -1,47 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setNewToothActive,
-  setDisactiveAll,
-  setSelectedToothNumber,
-  settooth26Active,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
+
 
 export default function Tooth26({ psrValue }) {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth26Diagnozis = teethDiagnozis.tooth26;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
 
   return (
     <>
@@ -170,25 +130,6 @@ export default function Tooth26({ psrValue }) {
                             c-2.1,2.3-4.3,4.4-6.6,6.5c1.8,0.1,3.6,0.5,5.2,1.1c1,0.4,2,0.8,2.9,1.4l5.6-1.3c4.5-5.7,7.9-11.8,10.3-18.2
                             C1636.8,446,1638,437.4,1637.3,429z"
             />
-          </g>
-          <g
-            style={{ visibility: 'inherit' }}
-          >
-            <g
-              className="vinir"
-              style={{
-                visibility: 'hidden',
-                opacity: 0,
-              }}
-            >
-              <path
-                className={`vinir-fill ${tooth26Diagnozis.vinir_color}`}
-                d="M1637.3 429C1636.4 423.7 1634.8 418.6 1632.4 413.7C1630 408.7 1626.8 403.9 1623.4 399.4C1620 394.8 1616.3 390.4 1612.4 386.2C1612.3 386.1 1612.3 386 1612.2 386C1603.4 382 1594 379.2 1584.1 377.6C1560.9 374 1536.4 377.6 1515.9 388.3C1506.8 393.1 1498.7 399.1 1492 406.2C1492 406.3 1492 406.3 1492 406.4C1491.4 411.8 1490.8 417.2 1490.2 
-                                422.6C1489.5 429.5 1488.8 436.5 1488.9 443.4C1489 450 1489.8 456.6 1491.3 463.1C1493.2 467.3 1495.8 471.2 1499 474.8C1504.2 480.7 1511 485.5 1518.8 488.9L1524.9 488.1C1526.6 486.3 1528.5 484.6 1530.6 483.1C1531.2 482.7 1531.7 482.3 1532.3 481.9C1538 478 1544.4 475 1550.4 471.5C1552.3 470.4 1554.1 469.3 1555.9 468.1L1552.5 460.8L1551.5 450.9L1546.6 446.7L1547.6 445.3L1553 450.4L1554.2 460.5L1557.9 467.4C1559.3 
-                                468.3 1560.7 469 1562.3 469.6C1567.4 471.5 1573.2 471.9 1578.6 473.2C1583.3 474.4 1587.6 476.3 1591.3 478.9L1595.9 478.6C1596.8 478.1 1597.6 477.6 1598.5 477C1601.4 475.2 1604.2 473.3 1606.9 471.2C1613 466.5 1618.6 461.2 1621.3 454.7C1622.1 452.8 1622.6 450.9 1622.9 448.9L1624.6 449.1C1624.4 451 1623.9 452.8 1623.2 454.6C1621.7 458.3 1619.1 461.7 1616.3 464.8C1614.2 467.1 1612 469.2 1609.7 471.3C1611.5 471.4 1613.3 471.8 1614.9 472.4C1615.9 472.8 1616.9 473.2 
-                                1617.8 473.8L1623.4 472.5C1627.9 466.8 1631.3 460.7 1633.7 454.3C1636.8 446 1638 437.4 1637.3 429Z"
-              />
-            </g>
           </g>
         </g>
       </g>

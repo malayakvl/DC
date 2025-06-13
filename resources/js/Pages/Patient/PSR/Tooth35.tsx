@@ -23,7 +23,7 @@ export default function Tooth35({ psrValue }) {
           />
         </g>
         <g
-          id="T_35"
+          id="TH-35"
           className="common-view"
           style={{
             visibility: 'inherit',
@@ -45,12 +45,10 @@ export default function Tooth35({ psrValue }) {
               />
             </g>
             <g
-              id="dentin_n_35"
               style={{
                 visibility:'inherit'}}
             >
               <path
-                id="dentin_n_35"
                 className={`st10 change-color-psr color-dia-${psrValue}`}
                 d="M1465.9,1343.9c-4.3,1.2-8-0.7-11.3-3.5c-3.6-3-7.4-7-10.3-11.5
                                 c-8.4-12.8-14.8-26.6-21.1-40.5c-8.6-19-16.9-38.2-23.6-57.8c-3.6-10.6-6.8-21.3-10-32c-0.9-3.2-1.9-6.3-2.9-9.5

@@ -1,46 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  setNewToothActive,
-  setSubDiagnosis,
-  setToothDiagnoze,
-  setDisactiveAll,
-  setSelectedToothNumber,
-} from '../../../Redux/Formula';
-import {
-  allTeethSelector,
-  getDiagnosisSelector,
-  getSealColor1Selector,
-  getSealColor2Selector,
-  getSealColor3Selector,
-  getSubDiagnosisSelector,
-  getTeethDiagnozisSelector,
-  getSealServicalColorSelector,
-  getVinirColorSelector,
-  getCeramicCrownColorSelector,
-  getCeramicMCrownColorSelector,
-  getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
-  getStatusesSelector,
-} from '../../../Redux/Formula/selectors';
+
 
 export default function Tooth28() {
-  const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
-  const allTeeth = useSelector(allTeethSelector);
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subDiagnozis = useSelector(getSubDiagnosisSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const tooth28Diagnozis = teethDiagnozis.tooth28;
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const wsDefectColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
 
   return (
     <>
@@ -62,29 +23,21 @@ export default function Tooth28() {
           />
         </g>
         <g
-          id="T_28"
+          id="T-28"
           className="common-view"
           style={{
-            visibility: tooth28Diagnozis.absent ? 'hidden' : 'inherit',
+            visibility: 'inherit',
             transform: 'matrix(1, 0, 0, 1, 0, 0)',
           }}
         >
           {/* CHANGE COLOR */}
           <g className="dentin">
             <g
-              id="dentin_v_28"
-              className="hRoot hImplant hEmpty"
               style={{
-                visibility:
-                  !tooth28Diagnozis.implant &&
-                  !tooth28Diagnozis.apex &&
-                  !tooth28Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                className={`st9 change-color-psr-up ${tooth28Diagnozis.change_color ? 'diagnoze' : ''}`}
+                className={`st9 change-color-psr-up`}
                 d="M1828.7,245.5c-4-1.2-8.3-1-12.3,0.3c-7,2.3-12.1,7.7-15.8,13.7
                                 c-7.1,11.5-9.2,24.8-11.2,37.9c-1.2,8.4-2.4,16.9-3.9,25.3c-1.2,7-2.6,10-4.1,17c-2.7,12.5-5.6,18.3-8.9,30.8
                                 c1.8,7.3,3.7,25.3,6.1,32.5c1.1,3.4,2.3,6.9,3.5,10.3c1.2,3.4,2.5,6.8,3.8,10.2c2.4-2.7,5.1-5.1,8-7.3c4.1-3.1,8.6-5.7,13.5-7.7
@@ -97,16 +50,10 @@ export default function Tooth28() {
             <g
               id="dentin_n_28"
               style={{
-                visibility:
-                  !tooth28Diagnozis.implant &&
-                  !tooth28Diagnozis.abutment &&
-                  !tooth28Diagnozis.shaper
-                    ? 'inherit'
-                    : 'hidden',
-              }}
+                visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr ${tooth28Diagnozis?.change_color ? 'diagnoze' : ''}`}
+                className={`st10 change-color-psr`}
                 d="M1861.2,341c-3.5-1.8-7.5-2.7-11.5-3.1c-6.4-0.7-12.7-0.3-19,0.7c-3.8,0.6-7.6,1.4-11.4,2.3c-2,0.5-4,1-6,1.6
                                 c-6.8,1.9-13.4,4.4-19.6,7.9c-8.2,4.6-15.2,10.9-20.8,18.5c3.2-11.3,5.9-17.1,8.5-29.1c1.5-7,2.9-10,4.1-17
                                 c1.5-8.4,2.7-16.9,3.9-25.3c1.9-13.1,4.1-26.4,11.2-37.9c3.7-6,8.8-11.3,15.8-13.7c4-1.3,8.3-1.5,12.3-0.3
@@ -117,9 +64,9 @@ export default function Tooth28() {
           </g>
           {/*PULPIT/CHANNEL NOT SEALED/PART SALED*/}
           <g className="pulp">
-            <g className="hEmpty hRoot hImplant pulpitis-pfilling">
+            <g className="pulpitis-pfilling">
               <path
-                className={`st22 target top ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.pulpit ? 'pulpit' : ''} ${tooth28Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1841.8,379c-5.7-2.8-12.3-3.6-18.6-2.4c-7.1,1.3-13.3,5.1-17.4,10.5
                                 c4.4-14.5,6.9-29.5,7.5-44.5c0,0,0,0,0,0l0,0c0,0,0.1,0,0.1,0c2-0.6,3.9-1.1,5.9-1.6c3.8-0.9,7.5-1.7,11.4-2.3
                                 C1835.1,351.9,1838.8,365.3,1841.8,379z"
@@ -127,7 +74,7 @@ export default function Tooth28() {
             </g>
             <g>
               <path
-                className={`st22 target top ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.pulpit ? 'pulpit' : ''} ${tooth28Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1830.8,338.5c-3.8,0.6-7.6,1.4-11.4,2.3c-2,0.5-4,1-6,1.6v-0.1c0.2-4,0.2-8,0.1-12
                                 c-0.4-11.6-1.8-23.4-1.7-35c1.1-0.1,2.2-0.2,3.5-0.3c0.8,0,1.7-0.1,2.5-0.1c2.1,12.5,6.8,25.2,11.1,37.5
                                 C1829.4,334.4,1830.1,336.4,1830.8,338.5C1830.8,338.5,1830.8,338.5,1830.8,338.5z"
@@ -135,24 +82,16 @@ export default function Tooth28() {
             </g>
             <g>
               <path
-                className={`st22 target top ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.channel_class} ${tooth28Diagnozis.pulpit ? 'pulpit' : ''} ${tooth28Diagnozis.periodontit ? 'periodontit' : ''}`}
+                className={`st22 target top`}
                 d="M1819.9,264c-3.9,10.1-4,20.5-2.3,30.9c-0.8,0-1.6,0.1-2.5,0.1
                                 c-1.2,0.1-2.4,0.2-3.5,0.3c0.1-9.9,1.3-19.7,5.4-29c3.1-7.1,7.8-13.6,13.8-19.1C1826,252.1,1822.3,257.8,1819.9,264z"
               />
             </g>
           </g>
           <g
-            className="toutline hRoot hImplant hEmpty"
+            className="toutline"
             style={{
-              visibility:
-                !tooth28Diagnozis.culttab &&
-                !tooth28Diagnozis.abutment &&
-                !tooth28Diagnozis.implant &&
-                !tooth28Diagnozis.shaper &&
-                !tooth28Diagnozis.apex
-                  ? 'inherit'
-                  : 'hidden',
-            }}
+              visibility:'inherit'}}
           >
             <path
               className="st46"
@@ -164,26 +103,6 @@ export default function Tooth28() {
                             l7.9-0.4l5.5-8.5l1.1-2.4l5.7-11.9c0.9-1.8,1.6-3.8,2.1-5.8c0.6-3,0.7-6,0.1-9l1.9,0.7c-0.1,1.9-0.4,3.8-0.8,5.6
                             c-0.9,4.8-2.4,9.5-4.5,14c-1.2,2.5-2.5,5-4,7.3l5.1,3.7l4.8,0c3.2-4.8,5.6-10,7.2-15.5C1881.6,401.8,1882.3,395.7,1882.1,389.5z"
             ></path>
-          </g>
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
-            <g
-              className="vinir"
-              style={{
-                visibility: tooth28Diagnozis.vinir ? 'inherit' : 'hidden',
-                opacity: tooth28Diagnozis.vinir ? 1 : 0,
-              }}
-            >
-              <path
-                className={`vinir-fill ${tooth28Diagnozis.vinir_color}`}
-                d="M1882.1 389.5C1881.8 383.2 1880.8 377 1879.2 371C1878.1 367 1876.7 363.1 1875.1 359.3C1873.6 355.9 1871.9 352.5 1870 349.3C1868.6 346.8 1866.7 344.6 1864.4 342.9C1860.2 339.7 1855 338.4 1849.7 337.8C1839.5 336.7 1829.3 338.4 1819.3 340.8C1810.4 343 1801.6 345.8 1793.7 350.3C1785.1 
-                                355.2 1777.6 362 1771.9 370.1C1771.6 371.8 1771.3 373.5 1771.1 375.2C1769.7 385.3 1769.6 395.6 1770.6 405.8C1771.2 411.9 1772.3 417.9 1773.8 423.9C1775.3 428 1777.6 431.9 1780.4 435.3C1782.9 438.3 1785.8 440.9 1789.1 443.1L1793.3 442.1C1794.5 439.8 1796.1 437.7 1798.1 436C1798.7 435.4 1799.4 434.9 1800.1 434.5C1806.1 430.4 1814.2 429.4 1818.9 423.7C1820.2 422.2 1821.1 420.3 1821.6 418.4C1823.1 420.6 1825.2 422.4 
-                                1827.8 423.3C1830.9 424.4 1834.2 424.3 1837.4 424.9C1841.2 425.6 1844.8 427.3 1847.8 429.7L1855.7 429.3L1861.2 420.8L1862.3 418.4L1868 406.5C1868.9 404.7 1869.6 402.7 1870.1 400.7C1870.7 397.7 1870.8 394.7 1870.2 391.7L1872.1 392.4C1872 394.3 1871.7 396.2 1871.3 398C1870.4 402.8 1868.9 407.5 1866.8 412C1865.6 414.5 1864.3 417 1862.8 419.3L1867.9 423H1872.7C1875.9 418.2 
-                                1878.3 413 1879.9 407.5C1881.6 401.8 1882.3 395.7 1882.1 389.5Z"
-              />
-            </g>
           </g>
         </g>
       </g>

@@ -23,7 +23,7 @@ export default function Tooth37({ psrValue }) {
           />
         </g>
         <g
-          id="T_37"
+          id="TH-37"
           className="common-view"
           style={{
             visibility: 'inherit',
