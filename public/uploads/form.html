@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>BOP Розрахунок</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+      body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+      table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+      th, td { border: 1px solid #ccc; text-align: center; padding: 6px; }
+      input[type='checkbox'] { transform: scale(1.2); }
+      .result { margin-top: 20px; font-weight: bold; font-size: 18px; }
+  </style>
+</head>
+<body>
+<h1>Розрахунок кровоточивості при зондуванні (BOP)</h1>
+<p>Позначте ділянки з кровоточивістю (●)</p>
+<table id="bopTable">
+  <thead>
+  <tr>
+    <th>Зуб</th>
+    <th>MB</th><th>B</th><th>DB</th><th>DL</th><th>L</th><th>ML</th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<button onclick="calculateBOP()">Розрахувати BOP%</button>
+<div class="result" id="result"></div>
+
+<script>
+  const teeth = [...Array(8).keys()].map(i => 18 - i)
+    .concat([...Array(8).keys()].map(i => 21 + i))
+    .concat([...Array(8).keys()].map(i => 48 - i))
+    .concat([...Array(8).keys()].map(i => 31 + i));
+
+  const tbody = document.querySelector("#bopTable tbody");
+  teeth.forEach(tooth => {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.textContent = tooth;
+    row.appendChild(cell);
+    for (let i = 0; i < 6; i++) {
+      const td = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      td.appendChild(checkbox);
+      row.appendChild(td);
+    }
+    tbody.appendChild(row);
+  });
+
+  function calculateBOP() {
+    const checkboxes = document.querySelectorAll("#bopTable input[type='checkbox']");
+    const total = checkboxes.length;
+    const positive = Array.from(checkboxes).filter(cb => cb.checked).length;
+    const percent = ((positive / total) * 100).toFixed(1);
+    document.getElementById("result").textContent = `BOP: ${positive} з ${total} (${percent}%)`;
+  }
+</script>
+</body>
+</html>

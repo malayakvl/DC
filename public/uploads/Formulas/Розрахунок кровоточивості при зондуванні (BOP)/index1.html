@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розрахунок кровоточивості при зондуванні (BOP) по зубах</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #f4f4f4;
+      }
+      .container {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+      h1, h2 {
+          text-align: center;
+          color: #333;
+      }
+      label {
+          display: block;
+          margin: 10px 0 5px;
+          font-weight: bold;
+      }
+      input[type="number"] {
+          width: 100%;
+          padding: 8px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+      }
+      input[type="checkbox"] {
+          margin: 5px;
+      }
+      button {
+          width: 100%;
+          padding: 10px;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          margin-bottom: 10px;
+      }
+      button:hover {
+          background-color: #218838;
+      }
+      #pdfButton {
+          background-color: #007bff;
+      }
+      #pdfButton:hover {
+          background-color: #0056b3;
+      }
+      #result {
+          margin-top: 20px;
+          font-size: 16px;
+          color: #333;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+      }
+      th, td {
+          border: 1px solid #ccc;
+          padding: 8px;
+          text-align: center;
+      }
+      th {
+          background-color: #f0f0f0;
+      }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Розрахунок кровоточивості при зондуванні (BOP) по зубах</h1>
+  <form id="bopForm">
+    <label for="numTeeth">Кількість зубів для обстеження (1–32):</label>
+    <input type="number" id="numTeeth" min="1" max="32" required>
+    <button type="button" id="generateInputs">Створити поля для введення</button>
+  </form>
+  <div id="teethInputs"></div>
+  <button id="calculateButton" style="display: none;">Розрахувати</button>
+  <button id="pdfButton" style="display: none;">Зберегти як PDF</button>
+  <div id="result"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  let teethData = [];
+
+  // Генерація полів для введення даних по зубах
+  document.getElementById('numTeeth').addEventListener('change', generateTeethInputs);
+  document.getElementById('generateInputs').addEventListener('click', generateTeethInputs);
+
+  function generateTeethInputs() {
+    const numTeeth = parseInt(document.getElementById('numTeeth').value);
+    if (numTeeth < 1 || numTeeth > 32) {
+      document.getElementById('result').innerHTML = 'Помилка: Кількість зубів має бути від 1 до 32!';
+      return;
+    }
+
+    let inputsHtml = '<h2>Вкажіть наявність кровоточивості для кожного зуба (6 точок)</h2>';
+    inputsHtml += '<table><tr><th>Зуб №</th><th>Точка 1</th><th>Точка 2</th><th>Точка 3</th><th>Точка 4</th><th>Точка 5</th><th>Точка 6</th></tr>';
+    for (let i = 1; i <= numTeeth; i++) {
+      inputsHtml += `<tr><td>Зуб ${i}</td>`;
+      for (let j = 1; j <= 6; j++) {
+        inputsHtml += `<td><input type="checkbox" id="tooth_${i}_point_${j}"></td>`;
+      }
+      inputsHtml += '</tr>';
+    }
+    inputsHtml += '</table>';
+    document.getElementById('teethInputs').innerHTML = inputsHtml;
+    document.getElementById('calculateButton').style.display = 'block';
+    document.getElementById('result').innerHTML = '';
+    document.getElementById('pdfButton').style.display = 'none';
+  }
+
+  // Розрахунок BOP
+  document.getElementById('calculateButton').addEventListener('click', function() {
+    const numTeeth = parseInt(document.getElementById('numTeeth').value);
+    teethData = [];
+    let totalBleedingPoints = 0;
+    let totalSurfaces = 0;
+
+    for (let i = 1; i <= numTeeth; i++) {
+      let bleedingPoints = 0;
+      let validSurfaces = 0;
+      for (let j = 1; j <= 6; j++) {
+        const isBleeding = document.getElementById(`tooth_${i}_point_${j}`).checked;
+        if (isBleeding) {
+          bleedingPoints++;
+        }
+        validSurfaces++; // Усі точки вважаються дослідженими
+      }
+      const toothBOP = validSurfaces > 0 ? ((bleedingPoints / validSurfaces) * 100).toFixed(2) : 'N/A';
+      teethData.push({ tooth: i, bleedingPoints: bleedingPoints, surfaces: validSurfaces, bop: toothBOP });
+      totalBleedingPoints += bleedingPoints;
+      totalSurfaces += validSurfaces;
+    }
+
+    const overallBOP = totalSurfaces > 0 ? ((totalBleedingPoints / totalSurfaces) * 100).toFixed(2) : 'N/A';
+
+    // Виведення результатів
+    let resultHtml = '<h2>Результати</h2><table><tr><th>Зуб №</th><th>BOP (%)</th></tr>';
+    teethData.forEach(tooth => {
+      resultHtml += `<tr><td>Зуб ${tooth.tooth}</td><td>${tooth.bop}</td></tr>`;
+    });
+    resultHtml += '</table>';
+    resultHtml += `<p><strong>Загальний BOP: ${overallBOP} %</strong></p>`;
+    document.getElementById('result').innerHTML = resultHtml;
+    document.getElementById('pdfButton').style.display = 'block';
+  });
+
+  // Генерація PDF
+  document.getElementById('pdfButton').addEventListener('click', function() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica");
+    doc.setFontSize(16);
+    doc.text('Звіт про кровоточивість при зондуванні (BOP) по зубах', 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Дата: ${new Date().toLocaleDateString('uk-UA')}`, 20, 30);
+
+    let y = 40;
+    doc.text('Зуб № | BOP (%)', 20, y);
+    y += 10;
+    teethData.forEach(tooth => {
+      doc.text(`Зуб ${tooth.tooth} | ${tooth.bop}`, 20, y);
+      y += 10;
+    });
+    const overallBOP = totalSurfaces > 0 ? ((teethData.reduce((sum, tooth) => {
+      return tooth.bop !== 'N/A' ? sum + parseFloat(tooth.bop) : sum;
+    }, 0) / teethData.filter(t => t.bop !== 'N/A').length).toFixed(2)) : 'N/A';
+    doc.text(`Загальний BOP: ${overallBOP} %`, 20, y);
+
+    doc.save('bop_per_tooth_report.pdf');
+  });
+</script>
+</body>
+</html>

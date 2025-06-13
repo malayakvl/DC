@@ -16,6 +16,12 @@ import FormulaPerio4838View from './PerioView/FormulaPerio3848View';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
+import FertilizerPercentage from './FertilizerPercentage';
+import BleedingPercentage from './BleedingPercentage';
+import DentalDepositPercentage from './DentalDepositPercentage';
+import Metrics from './Metrics';
+import PeriodontalSummary from './PeriodontalSummary'
+import BOPCalculator from './BOPCalculator'
 
 export default function ViewPerio({ perioData }) {
   const pDia = JSON.parse(perioData.formula);
@@ -38,7 +44,13 @@ export default function ViewPerio({ perioData }) {
   ];
   const yasenUpKrayVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
   const deepUpZondVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
-console.log(pDia)
+
+  const yk1828Vest = [3,6,8,8,7,4,7,8,9,null,null,null,null,null,null,null,null,null,null,null];
+  const yk1828Oral = [1,2,4,3,4,3,8,4,3,null,null,null,null,null,null,null,null,null,null,null];
+  const z1828Vest = [3,4,5,6,7,5,7,6,18,null,null,null,null,null,null,null,null,null,null,null];
+  const z1828Oral = [12,9,8,12,11,11,8,8,9,null,null,null,null,null,null,null,null,null,null,null];
+
+  // console.log(pDia)
   return (
     <div className="py-0 w-full">
       <div className="w-full scroll-x">
@@ -752,6 +764,19 @@ console.log(pDia)
             </tr>
           </tbody>
         </table>
+
+        <div className="description-perio">
+          <PeriodontalSummary data={pDia} />
+          <Metrics
+            ykVest={pValues.yk1828Vest}
+            zVest={pValues.z1828Vest}
+            ykOral={pValues.yk1828Oral}
+            zOral={pValues.z1828Oral}
+            calCorrectionMm={0.235} // +0.235 мм, щоб отримати -0.30 см
+          />
+        </div>
+
+
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ export default function Bleeding({ toothNum, type }) {
   const [changeState, setChangeState] = useState(false);
 
   const setDiagnozis = stage => {
+    console.log('11', perioDiagnozis);
     perioDiagnozis[`tooth${toothNum}`][`bleeding_${type}_st${stage}`] =
       !perioDiagnozis[`tooth${toothNum}`][`bleeding_${type}_st${stage}`];
     dispatch(setPerioDiagnoze(perioDiagnozis));
@@ -34,6 +35,7 @@ export default function Bleeding({ toothNum, type }) {
           cy="50"
           r="25"
           onClick={() => {
+            console.log(1)
             setDiagnozis(1);
           }}
           fill={

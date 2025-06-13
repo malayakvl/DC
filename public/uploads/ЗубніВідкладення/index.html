@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор зубних відкладень</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #f4f4f9;
+      }
+      h1, h2 {
+          text-align: center;
+          color: #333;
+      }
+      .patient-form {
+          background-color: #fff;
+          padding: 15px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          margin-bottom: 20px;
+      }
+      .patient-form label {
+          display: block;
+          margin-bottom: 5px;
+      }
+      .patient-form input {
+          width: 100%;
+          padding: 8px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+      }
+      .tooth-grid {
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 10px;
+          margin: 20px 0;
+      }
+      .tooth {
+          background-color: #fff;
+          border: 1px solid #ccc;
+          padding: 10px;
+          text-align: center;
+          cursor: pointer;
+      }
+      .tooth.selected {
+          background-color: #d4edda;
+          border-color: #28a745;
+      }
+      .result {
+          margin-top: 20px;
+          padding: 15px;
+          background-color: #e9ecef;
+          border-radius: 5px;
+      }
+      button {
+          display: block;
+          margin: 20px auto;
+          padding: 10px 20px;
+          background-color: #007bff;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+      button:hover {
+          background-color: #0056b3;
+      }
+  </style>
+</head>
+<body>
+<h1>Калькулятор зубних відкладень</h1>
+<p>Введіть дані пацієнта та виберіть зуби, на яких є зубні відкладення.</p>
+
+<!-- Форма для введення даних про пацієнта -->
+<div class="patient-form">
+  <h2>Дані пацієнта</h2>
+  <label for="name">ПІБ:</label>
+  <input type="text" id="name" required>
+  <label for="birthdate">Дата народження:</label>
+  <input type="date" id="birthdate" required>
+  <label for="phone">Номер телефону:</label>
+  <input type="tel" id="phone" required>
+</div>
+
+<h2>Верхня щелепа</h2>
+<div class="tooth-grid" id="upper-jaw">
+  <div class="tooth" data-tooth="1">1</div>
+  <div class="tooth" data-tooth="2">2</div>
+  <div class="tooth" data-tooth="3">3</div>
+  <div class="tooth" data-tooth="4">4</div>
+  <div class="tooth" data-tooth="5">5</div>
+  <div class="tooth" data-tooth="6">6</div>
+  <div class="tooth" data-tooth="7">7</div>
+  <div class="tooth" data-tooth="8">8</div>
+  <div class="tooth" data-tooth="9">9</div>
+  <div class="tooth" data-tooth="10">10</div>
+  <div class="tooth" data-tooth="11">11</div>
+  <div class="tooth" data-tooth="12">12</div>
+  <div class="tooth" data-tooth="13">13</div>
+  <div class="tooth" data-tooth="14">14</div>
+  <div class="tooth" data-tooth="15">15</div>
+  <div class="tooth" data-tooth="16">16</div>
+</div>
+
+<h2>Нижня щелепа</h2>
+<div class="tooth-grid" id="lower-jaw">
+  <div class="tooth" data-tooth="17">17</div>
+  <div class="tooth" data-tooth="18">18</div>
+  <div class="tooth" data-tooth="19">19</div>
+  <div class="tooth" data-tooth="20">20</div>
+  <div class="tooth" data-tooth="21">21</div>
+  <div class="tooth" data-tooth="22">22</div>
+  <div class="tooth" data-tooth="23">23</div>
+  <div class="tooth" data-tooth="24">24</div>
+  <div class="tooth" data-tooth="25">25</div>
+  <div class="tooth" data-tooth="26">26</div>
+  <div class="tooth" data-tooth="27">27</div>
+  <div class="tooth" data-tooth="28">28</div>
+  <div class="tooth" data-tooth="29">29</div>
+  <div class="tooth" data-tooth="30">30</div>
+  <div class="tooth" data-tooth="31">31</div>
+  <div class="tooth" data-tooth="32">32</div>
+</div>
+
+<button onclick="calculatePlaque()">Розрахувати та зберегти</button>
+<div class="result" id="result"></div>
+
+<script>
+  // Обробка вибору зубів
+  const teeth = document.querySelectorAll('.tooth');
+  teeth.forEach(tooth => {
+    tooth.addEventListener('click', () => {
+      tooth.classList.toggle('selected');
+    });
+  });
+
+  // Функція для розрахунку та збереження даних
+  function calculatePlaque() {
+    const name = document.getElementById('name').value;
+    const birthdate = document.getElementById('birthdate').value;
+    const phone = document.getElementById('phone').value;
+    const selectedTeeth = Array.from(document.querySelectorAll('.tooth.selected')).map(tooth => tooth.dataset.tooth);
+    const resultDiv = document.getElementById('result');
+
+    // Перевірка заповнення форми
+    if (!name || !birthdate || !phone) {
+      resultDiv.innerHTML = '<p style="color: red;">Будь ласка, заповніть усі поля даних пацієнта!</p>';
+      return;
+    }
+
+    // Розрахунок відсотків
+    const totalTeeth = 32;
+    const plaquePercentage = Math.round((selectedTeeth.length / totalTeeth) * 100);
+
+    // Виведення результату
+    resultDiv.innerHTML = `
+                <p><strong>Пацієнт:</strong> ${name}</p>
+                <p><strong>Дата народження:</strong> ${birthdate}</p>
+                <p><strong>Телефон:</strong> ${phone}</p>
+                <p><strong>Зуби з відкладеннями:</strong> ${selectedTeeth.join(', ') || 'Немає'}</p>
+                <p><strong>Відсоток зубів із відкладеннями:</strong> ${plaquePercentage}%</p>
+            `;
+
+    // Збереження даних у localStorage
+    const patientData = {
+      name,
+      birthdate,
+      phone,
+      selectedTeeth,
+      plaquePercentage,
+      date: new Date().toISOString()
+    };
+    let patients = JSON.parse(localStorage.getItem('patients')) || [];
+    patients.push(patientData);
+    localStorage.setItem('patients_data', JSON.stringify(patients));
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор BOP% для всіх зубів</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          max-width: 1000px;
+          margin: 20px auto;
+          padding: 20px;
+          text-align: center;
+      }
+      .teeth-grid {
+          display: grid;
+          grid-template-columns: repeat(8, 1fr);
+          gap: 10px;
+          margin: 20px 0;
+      }
+      .tooth-input {
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          padding: 10px;
+          text-align: center;
+      }
+      input[type="number"] {
+          width: 50px;
+          padding: 5px;
+          margin: 5px;
+      }
+      button {
+          padding: 10px 20px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin: 10px;
+      }
+      button:hover {
+          background-color: #45a049;
+      }
+      .result {
+          margin-top: 20px;
+          font-weight: bold;
+          color: #333;
+      }
+      .error {
+          color: red;
+          margin-top: 10px;
+      }
+      table {
+          margin: 20px auto;
+          border-collapse: collapse;
+          width: 80%;
+      }
+      th, td {
+          border: 1px solid #ccc;
+          padding: 8px;
+      }
+      th {
+          background-color: #f2f2f2;
+      }
+  </style>
+</head>
+<body>
+<h1>Калькулятор BOP% для всіх зубів</h1>
+<p>Введіть кількість кровоточивих точок (0–6) для кожного зуба. Загальна кількість точок зондування для кожного зуба — 6.</p>
+
+<h2>Верхня щелепа</h2>
+<div class="teeth-grid" id="upperJaw">
+  <!-- Зуби верхньої щелепи (11–18, 21–28) будуть додані через JS -->
+</div>
+
+<h2>Нижня щелепа</h2>
+<div class="teeth-grid" id="lowerJaw">
+  <!-- Зуби нижньої щелепи (31–38, 41–48) будуть додані через JS -->
+</div>
+
+<button onclick="calculateBOP()">Обчислити BOP%</button>
+<div class="error" id="errorMessage"></div>
+
+<h2>Результати</h2>
+<table id="resultsTable">
+  <thead>
+  <tr>
+    <th>Номер зуба</th>
+    <th>Кровоточиві точки</th>
+    <th>BOP%</th>
+  </tr>
+  </thead>
+  <tbody id="toothResults"></tbody>
+</table>
+
+<div class="result" id="totalResult"></div>
+
+<script>
+  const teeth = [
+    // Верхня щелепа (праворуч: 11–18, ліворуч: 21–28)
+    18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28,
+    // Нижня щелепа (праворуч: 48–41, ліворуч: 31–38)
+    48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38
+  ];
+
+  function createTeethInputs() {
+    const upperJaw = document.getElementById('upperJaw');
+    const lowerJaw = document.getElementById('lowerJaw');
+
+    teeth.forEach(tooth => {
+      const div = document.createElement('div');
+      div.className = ' tooth-input';
+      div.innerHTML = `
+                    <label>Зуб ${tooth}</label><br>
+                    <input type="number" id="tooth${tooth}" min="0" max="6" placeholder="0–6">
+                `;
+      if (tooth < 30) {
+        upperJaw.appendChild(div);
+      } else {
+        lowerJaw.appendChild(div);
+      }
+    });
+  }
+
+  function calculateBOP() {
+    const errorMessage = document.getElementById('errorMessage');
+    const toothResults = document.getElementById('toothResults');
+    const totalResult = document.getElementById('totalResult');
+    let totalPointsSum = 0;
+    let bleedingPointsSum = 0;
+    let results = [];
+
+    errorMessage.textContent = "";
+    toothResults.innerHTML = "";
+
+    teeth.forEach(tooth => {
+      const bleedingPoints = parseInt(document.getElementById(`tooth${tooth}`).value) || 0;
+      if (bleedingPoints < 0 || bleedingPoints > 6) {
+        errorMessage.textContent = `Помилка: Кількість кровоточивих точок для зуба ${tooth} має бути від 0 до 6!`;
+        return;
+      }
+
+      const totalPoints = 6; // Кількість точок зондування для кожного зуба
+      const bopPercentage = (bleedingPoints / totalPoints) * 100;
+      totalPointsSum += totalPoints;
+      bleedingPointsSum += bleedingPoints;
+
+      results.push({ tooth, bleedingPoints, bopPercentage });
+    });
+
+    if (errorMessage.textContent) return;
+
+    // Оновлення таблиці результатів
+    results.forEach(data => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+                    <td>${data.tooth}</td>
+                    <td>${data.bleedingPoints}</td>
+                    <td>${data.bopPercentage.toFixed(2)}%</td>
+                `;
+      toothResults.appendChild(row);
+    });
+
+    // Загальний BOP%
+    const totalBOP = (bleedingPointsSum / totalPointsSum) * 100;
+    totalResult.textContent = `Загальний BOP%: ${totalBOP.toFixed(2)}%`;
+  }
+
+  // Ініціалізація форми
+  createTeethInputs();
+</script>
+</body>
+</html>
