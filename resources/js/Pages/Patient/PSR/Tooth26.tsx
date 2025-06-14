@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default function Tooth26({ psrValue }) {
+export default function Tooth26({ psrValue, psrStar }) {
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function Tooth26({ psrValue }) {
                 visibility:'inherit'}}
             >
               <path
-                className={`st9 change-color-psr color-dia-${psrValue}`}
+                className={`st9 change-color-psr-up color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M1606.9,448.9l-28-8.1l-29.3,12l-21.6-2.8l-18.3,13.1c-5.7-9.7-10.1-20-13-30.7
                                 c-2.2-8.1-3.6-16.3-4.9-24.5c0.1-0.6,0.1-1.2,0.2-1.8c6.7-7.1,14.7-13.1,23.9-17.9c1.8-0.9,3.5-1.8,5.3-2.6
                                 c15.3-6.9,32.4-10,49.4-9.4c4.5,0.2,9,0.6,13.5,1.3c9.9,1.5,19.4,4.4,28.1,8.4c0.1,0.1,0.1,0.2,0.2,0.2l0,0
@@ -48,14 +48,14 @@ export default function Tooth26({ psrValue }) {
                 visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr color-dia-${psrValue}`}
+                className={`st10 change-color-psr color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M1522.2,337.2c1.6,5,3.7,10,7.3,14c2,2.2,4.5,4.1,7.4,4.4c4.4,0.4,8.1-2.4,11-5.9
                                 c1.9-2.2,3.5-4.7,5.2-7.1c1.4-2,3-3.9,4.5-5.8c2.7-3.3,5.3-6.7,7.9-10.2c-0.8-8.3-1.5-16.6-2-25c-0.7-10.1-1.2-20.2-2.2-30.3
                                 c-0.7-7.9-1.7-15.8-2.8-23.6c-1.4-4.3-5.4-7.1-9.8-7c-3.1,0.1-6,1.6-7.8,4.1c-1.4,2-2,4.4-2.6,6.7c-3.2,12-6.9,23.9-10.5,35.9
                                 c-3.1,10.5-6,21-8.7,31.6C1519.3,325.1,1520.3,331.3,1522.2,337.2z"
               />
               <path
-                className={`st10 change-color-psr color-dia-${psrValue}`}
+                className={`st10 change-color-psr color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M1612.4,386.1c-0.1-0.1-0.1-0.2-0.2-0.2c-8.8-4-18.2-6.8-28.1-8.3c-4.5-0.7-9-1.1-13.5-1.3
                                 c-17-0.6-34.1,2.5-49.4,9.4c-1.8,0.8-3.6,1.7-5.3,2.6c-9.1,4.8-17.2,10.8-23.9,17.9c-0.1,0.6-0.1,1.2-0.2,1.8
                                 c-0.4-2.3-0.7-4.5-1.1-6.8c-2.8-17.2-6.4-34.3-7.1-51.7c-0.8-18.9,1.9-37.8,6.2-56.3c2.2-9.5,4.8-18.9,9.1-27.7

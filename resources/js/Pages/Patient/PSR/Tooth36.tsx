@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export default function Tooth36({ psrValue }) {
+export default function Tooth36({ psrValue, psrStar }) {
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function Tooth36({ psrValue }) {
                 visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr color-dia-${psrValue}`}
+                className={`st10 change-color-psr-up color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M1623,1172.8c0,0.2-0.1,0.4-0.1,0.6c-3.4,4.4-7.3,8.3-11.7,11.6
                                 c-8.6,6.6-18.8,10.8-29.2,13.7c-0.7,0.2-1.4,0.4-2.1,0.6c-10.6,2.7-21.5,4-32.4,4.6c-9.6,0.5-19.3,0.6-28.9-0.9
                                 c-1.9-0.3-3.9-0.7-5.8-1.1c-13-2.9-25.2-9-35.4-17.7c-1.2-5.7-1.4-6-1.6-12c-0.3-8,0.2-16.1,1.9-24c1.2-5.7,3-11.2,5.4-16.5
@@ -48,7 +48,7 @@ export default function Tooth36({ psrValue }) {
                 visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr color-dia-${psrValue}`}
+                className={`st10 change-color-psr color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M1653,1311.7c-0.3,3.7-1.2,7.5-3.4,10.4c-1.8,2.5-4.5,4.2-7.8,4
                                 c-0.2,0-0.5,0-0.7-0.1c-0.2,0-0.4-0.1-0.6-0.1c-3.6-0.7-5.7-3.4-7.9-6.4c-3.4-4.7-7.7-9.8-11-15.1c-5.9-9.5-10.8-19.4-16.8-28.8
                                 c-4.5-7.2-9.6-14.1-15.1-20.7c-3.5-4.2-7.1-8.4-12-11.2c-4.3-2.5-9.3-3.8-14.3-3c-11.7,1.6-18.6,12.1-20.9,23.2

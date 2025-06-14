@@ -1,14 +1,9 @@
 .psr-jaw-up {
     width: 650px;
-    // height: 170px;
-    // border: solid 1px red;
-    // background: rgb(188, 223, 215);
 }
 .psr-jaw-down {
     width: 650px;
-    // height: 170px;
-    // border: solid 1px blue;
-    // background: yellow;
+    margin-top: 45px;
 }
 .change-color-psr {
     fill: #ffffff;
@@ -17,7 +12,6 @@
 .change-color-psr-up {
     fill: #ffffff;
     stroke: #e1e0e0;
-    // opacity: 0.5;
 }
 input.psr {
     width: 32px;
@@ -28,9 +22,41 @@ input.psr {
     outline: none;
     font-size: 24px;
     padding: 1px;
-    // background-color: yellow;
 }
 .psr-b-inputs {
-    // background: aqua;
     max-width: 650px;
+}
+.psr-btn-line {
+    width: 16px;
+    font-size: 14px;
+    color: gray;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    display: inline-block;
+}
+.psr-btn-star {
+    font-size: 14px;
+    color: gray;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    display: inline-block;
+}
+.c-gray {
+    color: lightgray;
+    font-size: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.c-gray.active {
+    color: lightslategray;
+}
+.change-color-psr.star, .change-color-psr-up.star {
+    fill: #c50d0d !important;
 }

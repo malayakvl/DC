@@ -34,7 +34,7 @@ export default function Tooth38() {
                 visibility:'inherit'}}
             >
               <path
-                className={`st10 change-color-psr`}
+                className={`st10 change-color-psr-up`}
                 d="M1892,1087.7c-5,10.9-12.8,20.3-22.5,27.3c-2.3,1.6-4.6,3.1-7.1,4.5
                                 c-9.6,5.4-20.3,8.6-31.2,10.5c-2.1,0.4-4.3,0.7-6.4,0.9c-12.4,1.5-24.9,1.2-37.2-0.8c-0.6-0.4-1.2-0.9-1.7-1.4c0,0,0,0,0,0
                                 c-1.4-1.4-2.8-2.8-4.3-4.3c-1.3-8.2-2.6-18.8-3.1-27.1c-0.4-7.5-0.5-15.1-0.3-22.6c8.6,1.3,17.3,2.2,26,2.8
@@ -43,8 +43,6 @@ export default function Tooth38() {
               />
             </g>
             <g
-              id="dentin_n_38"
-              className="hImplant hEmpty"
               style={{
                 visibility:'inherit'}}
             >

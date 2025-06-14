@@ -13,6 +13,14 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
 import InputSelect from '../../../Components/Form/InputSelect';
+import {
+  faMinus,
+  faStar,
+  faTrash,
+  faCopy,
+  faPrint,
+  faUserDoctor, faUserPlus,
+} from '@fortawesome/free-solid-svg-icons';
 import Tooth48 from './Tooth48';
 import Tooth47 from './Tooth47';
 import Tooth46 from './Tooth46';
@@ -50,12 +58,16 @@ import {
   getPsrValuesSelector,
   getActiveToothNumberSelector,
 } from '../../../Redux/Formula/selectors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function PSR() {
-  const [values, setValues] = useState(['', '', '', '']); // Массив для хранения значений
-  const inputRefs = useRef([null, null, null, null, null]); // Массив для хранения ссылок на input
+  const [values, setValues] = useState(['', '', '', '', '', '', '', '']); // Массив для хранения значений
+  const [stars, setStars] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
+  const [minuses, setMinuses] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
+  const inputRefs = useRef([null, null, null, null, null, null]); // Массив для хранения ссылок на input
   const psrValues = useSelector(getPsrValuesSelector);
   const dispatch = useDispatch();
+
   const handleInputChange = (index, event) => {
     const newValue = event.target.value;
     const newValues = [...values]; // Создаем копию массива для обновления
@@ -70,13 +82,25 @@ export default function PSR() {
     }
   };
 
+  const handleStarChange = (index) => {
+    const newStars = [...stars]; // Создаем копию массива для обновления
+    newStars[index] = newStars[index] != 1 ? 1 : 0;
+    setStars(newStars);
+  }
+
+  const handleMinusChange = (index) => {
+    const newMinuses = [...minuses]; // Создаем копию массива для обновления
+    newMinuses[index] = newMinuses[index] != 1 ? 1 : 0;
+    setMinuses(newMinuses);
+  }
+
   // Привязываем ссылки на input при рендере
   useEffect(() => {
     inputRefs.current = [
       ...document.querySelectorAll('input[type="text"]') // Получаем все input
     ];
   }, []);
-console.log(values[0])
+
   return (
     <div className="w-full scroll-x">
       <section className="psr-jaw-up">
@@ -90,20 +114,20 @@ console.log(values[0])
           xmlSpace="preserve"
         >
           <Tooth28 />
-          <Tooth27 psrValue={values[2]} />
-          <Tooth26 psrValue={values[2]} />
-          <Tooth25 psrValue={values[2]} />
-          <Tooth24 psrValue={values[2]} />
-          <Tooth23 psrValue={values[1]}/>
-          <Tooth22 psrValue={values[1]}/>
-          <Tooth21 psrValue={values[1]}/>
-          <Tooth11 psrValue={values[1]}/>
-          <Tooth12 psrValue={values[1]}/>
-          <Tooth13 psrValue={values[1]}/>
-          <Tooth14 psrValue={values[0]} />
-          <Tooth15 psrValue={values[0]} />
-          <Tooth16 psrValue={values[0]} />
-          <Tooth17 psrValue={values[0]} />
+          <Tooth27 psrValue={values[2]} psrStar={stars[2]} />
+          <Tooth26 psrValue={values[2]} psrStar={stars[2]} />
+          <Tooth25 psrValue={values[2]} psrStar={stars[2]} />
+          <Tooth24 psrValue={values[2]} psrStar={stars[2]} />
+          <Tooth23 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth22 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth21 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth11 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth12 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth13 psrValue={values[1]} psrStar={stars[1]} />
+          <Tooth14 psrValue={values[0]} psrStar={stars[0]} />
+          <Tooth15 psrValue={values[0]} psrStar={stars[0]} />
+          <Tooth16 psrValue={values[0]} psrStar={stars[0]} />
+          <Tooth17 psrValue={values[0]} psrStar={stars[0]} />
           <Tooth18 />
         </svg>
       </section>
@@ -114,12 +138,12 @@ console.log(values[0])
       >
         <div
           style={{ maxWidth: '450px', margin: 'auto' }}
-          className=" flex flex-row max-w-[650px]"
+          className=" flex flex-row max-w-[650px] pl-[20px]"
         >
           <div className="flex">
             {
               [0, 1, 2].map((index) => (
-                <div className={`text-center mr-[${index != 2 ? 6 : ''}0px]`}>
+                <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
                   <input
                     key={index}
                     type="text"
@@ -129,6 +153,19 @@ console.log(values[0])
                     ref={(el) => { inputRefs.current[index] = el; }}
                     maxLength={2}  // Ограничиваем ввод до одного символа
                   />
+                  <div>
+                    <span className={`c-gray ${minuses[index] === 1 ? 'active' : ''}`}>
+                      <FontAwesomeIcon onClick={() => {
+                        handleMinusChange(index)
+                      }} icon={faMinus} className="mr-3" />
+                    </span>
+                      <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
+                      <FontAwesomeIcon onClick={() => {
+                        handleStarChange(index)
+                      }} icon={faStar} className="mr-3" />
+                    </span>
+                  </div>
+                  <div className="clearfix" />
                 </div>
               ))
             }
@@ -138,16 +175,16 @@ console.log(values[0])
       <div className="clearfix" />
       <div
         className="flex flex-row psr-b-inputs"
-        style={{ margin: '15px 0', height: '32px' }}
+        style={{ margin: '45px 0', height: '32px' }}
       >
         <div
           style={{ maxWidth: '450px', margin: 'auto' }}
-          className=" flex flex-row max-w-[650px]"
+          className=" flex flex-row max-w-[650px] pl-[20px]"
         >
           <div className="flex">
             {
               [3, 4, 5].map((index) => (
-                <div className={`text-center mr-[${index != 5 ? 6 : ''}0px]`}>
+                <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
                   <input
                     key={index}
                     type="text"
@@ -157,6 +194,19 @@ console.log(values[0])
                     ref={(el) => { inputRefs.current[index] = el; }}
                     maxLength={2}  // Ограничиваем ввод до одного символа
                   />
+                  <div>
+                    <span className={'c-gray'}>
+                      <FontAwesomeIcon onClick={() => {
+                        console.log('clear put minus')
+                      }} icon={faMinus} className="mr-3" />
+                    </span>
+                    <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
+                      <FontAwesomeIcon onClick={() => {
+                        handleStarChange(index)
+                      }} icon={faStar} className="mr-3" />
+                    </span>
+                  </div>
+                  <div className="clearfix" />
                 </div>
               ))
             }
@@ -175,20 +225,20 @@ console.log(values[0])
           xmlSpace="preserve"
         >
           <Tooth48 />
-          <Tooth47 psrValue={values[3]} />
-          <Tooth46 psrValue={values[3]} />
-          <Tooth45 psrValue={values[3]} />
-          <Tooth44 psrValue={values[3]} />
-          <Tooth43 psrValue={values[4]} />
-          <Tooth42 psrValue={values[4]} />
-          <Tooth41 psrValue={values[4]} />
-          <Tooth31 psrValue={values[4]} />
-          <Tooth32 psrValue={values[4]} />
-          <Tooth33 psrValue={values[4]} />
-          <Tooth34 psrValue={values[4]} />
-          <Tooth35 psrValue={values[5]} />
-          <Tooth36 psrValue={values[5]} />
-          <Tooth37 psrValue={values[5]} />
+          <Tooth47 psrValue={values[3]} psrStar={stars[3]} />
+          <Tooth46 psrValue={values[3]} psrStar={stars[3]} />
+          <Tooth45 psrValue={values[3]} psrStar={stars[3]} />
+          <Tooth44 psrValue={values[3]} psrStar={stars[3]} />
+          <Tooth43 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth42 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth41 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth31 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth32 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth33 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth34 psrValue={values[4]} psrStar={stars[4]} />
+          <Tooth35 psrValue={values[5]} psrStar={stars[5]} />
+          <Tooth36 psrValue={values[5]} psrStar={stars[5]} />
+          <Tooth37 psrValue={values[5]} psrStar={stars[5]} />
           <Tooth38 />
         </svg>
       </section>

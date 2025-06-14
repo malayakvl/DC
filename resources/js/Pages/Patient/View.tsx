@@ -13,7 +13,6 @@ import {
   faTrash,
   faCopy,
   faPrint,
-  faUserDoctor,
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import lngFormula from '../../Lang/Formula/translation';

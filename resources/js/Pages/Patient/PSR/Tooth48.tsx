@@ -22,7 +22,7 @@ export default function Tooth48() {
         </g>
 
         <g
-          id="T_48"
+          id="TH-48"
           className="common-view"
           style={{
             visibility: 'inherit',

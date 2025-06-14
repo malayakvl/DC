@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Tooth13({ psrValue }) {
+export default function Tooth13({ psrValue, psrStar }) {
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function Tooth13({ psrValue }) {
                 visibility:'inherit' }}
             >
               <path
-                className={`st9 change-color-psr-up color-dia-${psrValue}`}
+                className={`st9 change-color-psr-up color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M862.4,463.1c-4.4,6.1-12.2,9.2-18.2,14c-5.2,4.2-9.1,9.8-15.2,13
                                 c-1.3,0.7-2.6,1.2-4,1.6c-1.4-0.4-2.8-0.9-4-1.5c-7-3.3-11.6-9.3-16.4-14.9c-6.6-7.8-13.9-15.4-17-24.8c-2.1-6.1-2.2-12.6-2.4-19
                                 c0,0.8,0,1.6,0.1,2.4c1-3.2,2-6.3,3-9.5c1.9-5.8,3.6-11.7,6.6-17c3.5-6.1,8.4-11.1,14.4-14.3c4.1-2.2,8.7-3.6,13.5-3.9
@@ -48,7 +48,7 @@ export default function Tooth13({ psrValue }) {
             >
               <path
                 id="dentin_x5F_n_x5F_13_1_"
-                className={`st10 change-color-psr color-dia-${psrValue}`}
+                className={`st10 change-color-psr color-dia-${psrValue} ${psrStar === 1 ? "star" : ''}`}
                 d="M861.1,415.4c-4.7-6.5-10.5-12.4-16.8-17.6c-3.7-3.1-7.6-6-12.2-7.5
                                 c-1-0.3-2.1-0.6-3.1-0.8c-2-0.4-4.1-0.5-6.2-0.3c-4.8,0.3-9.4,1.7-13.5,3.9c-5.9,3.2-10.9,8.2-14.4,14.3c-3,5.3-4.8,11.2-6.6,17
                                 c-1,3.2-2.1,6.3-3,9.5c0-1.7-0.1-3.4-0.1-5.2c-0.4-11.7-1.8-23.2-2.7-34.9c-1.1-13.4-1.7-27-2.2-40.5c-0.6-16.8-1.1-33.7-1.2-50.5
