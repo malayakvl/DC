@@ -61,12 +61,13 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { setPsrValues } from '../../../Redux/Formula';
 
-export default function PSR() {
+export default function PSR({ psrData }) {
   const [values, setValues] = useState(['', '', '', '', '', '', '', '']); // Массив для хранения значений
   const [stars, setStars] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
   const [minuses, setMinuses] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
   const inputRefs = useRef([null, null, null, null, null, null]); // Массив для хранения ссылок на input
   const dispatch = useDispatch();
+  const psrDefData = useSelector(getPsrDataSelector);
 
   const handleInputChange = (index, event) => {
     const newValue = event.target.value;
@@ -77,6 +78,11 @@ export default function PSR() {
       const numValue = lastDigit === '' ? '' : parseInt(lastDigit);
       // Если число больше 4, устанавливаем 4, иначе последнее введенное значение
       newValues[index] = numValue > 4 ? '4' : lastDigit;
+      setValues(newValues);
+      inputRefs.current[index < 5 ? index +1 : 0].focus();
+    } else {
+      const lastDigit = event.target.value.replace(newValues[index], '');
+      newValues[index] = parseInt(lastDigit) > 4 ? '4' : lastDigit;
       setValues(newValues);
       inputRefs.current[index < 5 ? index +1 : 0].focus();
     }
@@ -122,6 +128,12 @@ export default function PSR() {
       minuses: minuses
     }));
   }, [values, stars, minuses]);
+
+  useEffect(() => {
+    setValues(psrDefData.values)
+    setStars(psrDefData.stars)
+    setMinuses(psrDefData.minuses)
+  }, [psrDefData])
 
   return (
     <div className="w-full scroll-x">

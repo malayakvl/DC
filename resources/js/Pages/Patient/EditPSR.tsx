@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
 import lngPatient from '../../Lang/Patient/translation';
@@ -32,7 +32,20 @@ import {
 } from '../../Redux/Formula/selectors';
 import Details from './Partials/Details';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
-import { setClearPerio, setClearPSR } from '../../Redux/Formula';
+import {
+  setClearPerio,
+  setClearPSR,
+  setPerioDiagnoze,
+  setPerioYK1828OralData,
+  setPerioYK1828VestData,
+  setPerioYK4838OralData,
+  setPerioYK4838VestData,
+  setPerioZ1828OralData,
+  setPerioZ1828VestData,
+  setPerioZ4838OralData,
+  setPerioZ4838VestData,
+  setPsrValues,
+} from '../../Redux/Formula';
 
 export default function index({ patientData, treatmentData, clinicData }) {
   const [tab, setTab] = useState('history');
@@ -41,8 +54,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
     messages: lngPatient,
     locale: appLang,
   });
-  const psrData = useSelector(getPsrDataSelector);
-
+  let psrData = useSelector(getPsrDataSelector);
   const [values, setValues] = useState({
     clinic_id: clinicData.id,
     patientData: patientData,
@@ -53,6 +65,13 @@ export default function index({ patientData, treatmentData, clinicData }) {
   const handleTabClick = tabName => {
     setTab(tabName);
   };
+
+  useEffect(() => {
+    if (treatmentData.psr) {
+      psrData = JSON.parse(treatmentData.psr);
+      dispatch(setPsrValues(psrData));
+    }
+  }, [treatmentData.psr])
 
   const submit = e => {
     e.preventDefault();
@@ -130,7 +149,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
               </div>
               <div className="clearfix" />
               <div className="flex w-full patient-content-border">
-                <PSR />
+                <PSR pData={psrData} />
 
                 <div className="clearfix" />
               </div>

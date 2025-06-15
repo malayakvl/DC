@@ -36,7 +36,6 @@ import {
   getPerioZ4838ODataSelector,
   getPerioZ4838VDataSelector,
   perioDiagnozisSelector,
-  teethTypeSelector,
 } from '../../Redux/Formula/selectors';
 import Details from './Partials/Details';
 import PrimaryButton from '../../Components/Form/PrimaryButton';

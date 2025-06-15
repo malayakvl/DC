@@ -81,11 +81,27 @@ export default function index({ patientData, type, treatmentData }) {
                         <FontAwesomeIcon icon={faUserPlus} className="mr-3" />
                       </Link>
                     </li>
-                    <li className="inline-block">
-                      <Link href={`/perio/edit/${element.id}`}>
-                        <FontAwesomeIcon icon={faPencil} className="mr-3" />
-                      </Link>
-                    </li>
+                    {element.type === 'psr' && (
+                      <li className="inline-block">
+                        <Link href={`/psr/edit/${element.id}`}>
+                          <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                        </Link>
+                      </li>
+                    )}
+                    {element.type === 'perio' && (
+                      <li className="inline-block">
+                        <Link href={`/perio/edit/${element.id}`}>
+                          <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                        </Link>
+                      </li>
+                    )}
+                    {element.type === 'formula' && (
+                      <li className="inline-block">
+                        <Link href={`/formula/edit/${element.id}`}>
+                          <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                        </Link>
+                      </li>
+                    )}
                     <li className="inline-block">
                       <Link href="">
                         <FontAwesomeIcon icon={faCopy} className="mr-3" />
