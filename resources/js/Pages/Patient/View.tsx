@@ -27,6 +27,7 @@ import {
 } from '../../Redux/Formula';
 import { emptyFormula } from '../../Constants';
 import ViewDiagnoze from './ViewDiagnoze';
+import ViewPSR from './ViewPSR'
 
 
 export default function index({ patientData, type, treatmentData }) {
@@ -103,6 +104,13 @@ export default function index({ patientData, type, treatmentData }) {
                   </ul>
                 </div>
               </div>
+              {element.type === 'psr' && (
+                <div className="w-full flex flex-row">
+                  <div className="w-1/2">
+                    <ViewPSR psrData={element} />
+                  </div>
+                </div>
+              )}
               {element.type === 'perio' && (
                 <div className="w-full flex flex-row">
                   <div className="w-1/2">

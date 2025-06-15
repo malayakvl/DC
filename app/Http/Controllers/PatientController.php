@@ -216,7 +216,6 @@ class PatientController extends Controller
             $requestData = $request->all();
             $formulaId = $requestData['id'];
             $patientTreatment = PatientTreatment::where('id', '=', $formulaId)->first();
-//            $patientTreatment->formula = json_encode($requestData['treatmentData']);
             $patientTreatment->psr = json_encode($requestData['treatmentData']);
             $patientTreatment->save();
 
