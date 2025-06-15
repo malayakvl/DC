@@ -263,6 +263,33 @@ class PatientController extends Controller
     }
 
     /**
+     * view patient clinic card
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function psrCopy(Request $request, $id) {
+        $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
+        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+
+        // copy row
+        $patientTreatmentCopy = new PatientTreatment();
+        $patientTreatmentCopy->user_id = $patientTreatment->user_id;
+        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->type = $patientTreatment->type;
+        $patientTreatmentCopy->psr = $patientTreatment->psr;
+        $patientTreatmentCopy->save();
+
+        return Inertia::render('Patient/EditPSR', [
+            'patientData' => $patientData,
+            'clinicData' => $clinicData,
+            'treatmentData' => $patientTreatmentCopy,
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Producer $producer) {

@@ -92,7 +92,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/formula/edit/{id}', [PatientController::class, 'formulaEdit'])->name('patient.formula.edit');
     Route::get('/perio/edit/{id}', [PatientController::class, 'perioEdit'])->name('patient.perio.edit');
     Route::get('/psr/edit/{id}', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
-    
+    Route::get('/psr/copy/{id}', [PatientController::class, 'psrCopy'])->name('patient.psr.copy');
+    Route::get('/import', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
+
     Route::get('/stores', [StoreController::class, 'index'])->name('store.index');
     Route::get('/store/create', [StoreController::class, 'create'])->name('store.create');
     Route::get('/store/edit/{id}', [StoreController::class, 'edit'])->name('store.edit');
