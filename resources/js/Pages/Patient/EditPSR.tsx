@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import React from 'react';
 import Lang from 'lang.js';
 import lngFormula from '../../Lang/Formula/translation';
@@ -9,10 +9,7 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserPlus,
   faFloppyDisk,
-  faPencil,
-  faTrash,
   faPrint,
   faUserDoctor,
 } from '@fortawesome/free-solid-svg-icons';
@@ -31,24 +28,11 @@ import {
   getCeramicCrownColorSelector,
   getCeramicMCrownColorSelector,
   getMetalicCrownColorSelector,
-  getZirconiaCrownColorSelector,
+  getZirconiaCrownColorSelector, getPsrDataSelector,
 } from '../../Redux/Formula/selectors';
-import {
-  setTeethType,
-  setDiagnosis,
-  setSubDiagnosis,
-  setSealColor1,
-  setSealColor2,
-  setSealColor3,
-  setSealServicalColor,
-  setVinirColor,
-  setCeramicCrownColor,
-  setMCeramicCrownColor,
-  setMetalicCrownColor,
-  setZirconiaCrownColor,
-  setDiagnosisClass,
-} from '../../Redux/Formula';
 import Details from './Partials/Details';
+import PrimaryButton from '../../Components/Form/PrimaryButton';
+import { setClearPerio, setClearPSR } from '../../Redux/Formula';
 
 export default function index({ patientData, treatmentData, clinicData }) {
   const [tab, setTab] = useState('history');
@@ -57,27 +41,30 @@ export default function index({ patientData, treatmentData, clinicData }) {
     messages: lngPatient,
     locale: appLang,
   });
-  const msgFormula = new Lang({
-    messages: lngFormula,
-    locale: appLang,
+  const psrData = useSelector(getPsrDataSelector);
+
+  const [values, setValues] = useState({
+    clinic_id: clinicData.id,
+    patientData: patientData,
+    treatmentData: psrData,
   });
 
   const dispatch = useDispatch<any>();
-  const teethType = useSelector(teethTypeSelector);
   const handleTabClick = tabName => {
     setTab(tabName);
   };
-  const diagnozis = useSelector(getDiagnosisSelector);
-  const subdiagnozis = useSelector(getSubDiagnosisSelector);
-  const sealColor1 = useSelector(getSealColor1Selector);
-  const sealColor2 = useSelector(getSealColor2Selector);
-  const sealColor3 = useSelector(getSealColor3Selector);
-  const scColor = useSelector(getSealServicalColorSelector);
-  const vinirColor = useSelector(getVinirColorSelector);
-  const ceramicCrownColor = useSelector(getCeramicCrownColorSelector);
-  const mceramicCrownColor = useSelector(getCeramicMCrownColorSelector);
-  const metalicCrownColor = useSelector(getMetalicCrownColorSelector);
-  const zirconiaCrownColor = useSelector(getZirconiaCrownColorSelector);
+
+  const submit = e => {
+    e.preventDefault();
+
+    values['treatmentData'] = psrData;
+
+    dispatch(setClearPSR());
+    if (treatmentData.id) {
+      router.post(`/patient/update-psr?id=${treatmentData.id}`, values);
+    } else {
+    }
+  };
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -146,6 +133,18 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 <PSR />
 
                 <div className="clearfix" />
+              </div>
+              <div className="mt-[20px] mb-[10px] float-right relative z-10">
+                <Link
+                  className="btn-back"
+                  title={msg.get('patient.back')}
+                  href={`/patient/view/${patientData.id}`}
+                >
+                  {msg.get('patient.back')}
+                </Link>
+                <PrimaryButton onClick={e => submit(e)}>
+                  {msg.get('patient.save')}
+                </PrimaryButton>
               </div>
             </div>
           </div>

@@ -118,3 +118,4 @@ export const setRemoveDia = createAction('formula/REMOVE_TOOTH_DIA');
 export const setPerioStatusChange = createAction('formula/PERIO_TOOTH_STATUS_CHANGE');
 export const setClearPerio = createAction('formula/SET_CLEAR_PERIO');
 export const setPsrValues = createAction('formula/SET_PSR_VALUES');
+export const setClearPSR = createAction('formula/SET_CLEAR_PSR');

@@ -26,6 +26,7 @@ import {
   setPsrChange,
   setChangeDia,
   setPsrValues,
+  setClearPSR,
 
   // 1828
   setPerioZ1828VestData,
@@ -84,7 +85,12 @@ const initialState = {
   selectedTooth: '',
   selected_tooth_number: '',
   psrChange: false,
-  psrValues: [0,0,0,0,0,0],
+  psrValues: ['', '', '', '', '', '', '', ''],
+  psrData: {
+    values:['', '', '', '', '', '', '', ''],
+    stars: [0, 0, 0, 0, 0, 0, 0, 0],
+    minuses: [0, 0, 0, 0, 0, 0, 0, 0]
+  },
   changeDia: false,
   teethStatuses: {
     tooth18: { active: false },
@@ -10640,7 +10646,17 @@ const ACTION_HANDLERS = {
   [setPsrValues.toString()]: {
     next: (state, action) => ({
       ...state,
-      psrValues: action.payload,
+      psrData: action.payload,
+    }),
+  },
+  [setClearPSR.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      psrData: {
+        values:['', '', '', '', '', '', '', ''],
+        stars: [0, 0, 0, 0, 0, 0, 0, 0],
+        minuses: [0, 0, 0, 0, 0, 0, 0, 0]
+      },
     }),
   },
   [setDisactiveAll.toString()]: {
@@ -15757,7 +15773,8 @@ export {
   setClearPerio,
   setRemoveDia,
   setPerioStatusChange,
-  setPsrValues
+  setPsrValues,
+  setClearPSR
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

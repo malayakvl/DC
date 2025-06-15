@@ -2,17 +2,13 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import React, { useEffect } from 'react';
 import Lang from 'lang.js';
-import lngFormula from '../../Lang/Formula/translation';
 import lngPatient from '../../Lang/Patient/translation';
 import { useSelector, useDispatch } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUserPlus,
   faFloppyDisk,
-  faPencil,
-  faTrash,
   faPrint,
   faUserDoctor,
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,10 +18,14 @@ import {
   chartBarDown2Selector,
   chartBarDownSelector,
   chartBarUp2Selector,
-  chartBarUpSelector, chartKrayDownSelector, chartKrayUp2Selector,
+  chartBarUpSelector,
+  chartKrayDownSelector,
+  chartKrayUp2Selector,
   chartKrayDown2Selector,
-  chartKrayUpSelector, chartZondDown2Selector,
-  chartZondDownSelector, chartZondUp2Selector,
+  chartKrayUpSelector,
+  chartZondDown2Selector,
+  chartZondDownSelector,
+  chartZondUp2Selector,
   chartZondUpSelector,
   getPerioYK1828ODataSelector,
   getPerioYK1828VDataSelector,
@@ -57,7 +57,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
   let tDia, tValues;
 
   const [tab, setTab] = useState('history');
-  const [editPerio, setEditPerio] = useState(false);
   const appLang = useSelector(appLangSelector);
   const teethDiagnozis = useSelector(perioDiagnozisSelector);
   const yasen1828VestData = useSelector(getPerioYK1828VDataSelector);
@@ -91,7 +90,6 @@ export default function index({ patientData, treatmentData, clinicData }) {
     locale: appLang,
   });
   const dispatch = useDispatch<any>();
-  const teethType = useSelector(teethTypeSelector);
 
   const handleTabClick = tabName => {
     setTab(tabName);
@@ -101,7 +99,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
     clinic_id: clinicData.id,
     patientData: patientData,
     treatmentData: teethDiagnozis,
-    formula_type: teethType,
+    formula_type: '',
   });
 
   useEffect(() => {

@@ -55,17 +55,17 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 //
 import {
-  getPsrValuesSelector,
+  getPsrDataSelector,
   getActiveToothNumberSelector,
 } from '../../../Redux/Formula/selectors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { setPsrValues } from '../../../Redux/Formula';
 
 export default function PSR() {
   const [values, setValues] = useState(['', '', '', '', '', '', '', '']); // Массив для хранения значений
   const [stars, setStars] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
   const [minuses, setMinuses] = useState([0, 0, 0, 0, 0, 0, 0, 0]); // Массив для хранения звездочек
   const inputRefs = useRef([null, null, null, null, null, null]); // Массив для хранения ссылок на input
-  const psrValues = useSelector(getPsrValuesSelector);
   const dispatch = useDispatch();
 
   const handleInputChange = (index, event) => {
@@ -77,21 +77,35 @@ export default function PSR() {
       const numValue = lastDigit === '' ? '' : parseInt(lastDigit);
       // Если число больше 4, устанавливаем 4, иначе последнее введенное значение
       newValues[index] = numValue > 4 ? '4' : lastDigit;
-      setValues(newValues)
+      setValues(newValues);
       inputRefs.current[index < 5 ? index +1 : 0].focus();
     }
   };
 
   const handleStarChange = (index) => {
     const newStars = [...stars]; // Создаем копию массива для обновления
+    const newMinuses = [...minuses]; // Создаем копию массива для обновления
+    const newValues = [...values];
     newStars[index] = newStars[index] != 1 ? 1 : 0;
+    newMinuses[index] = 0;
+    if (newValues[index] === '-') {
+      newValues[index] = '0'
+    }
+    setMinuses(newMinuses);
     setStars(newStars);
+    setValues(newValues);
   }
 
   const handleMinusChange = (index) => {
     const newMinuses = [...minuses]; // Создаем копию массива для обновления
+    const newStars = [...stars]; // Создаем копию массива для обновления
+    const newValues = [...values];
     newMinuses[index] = newMinuses[index] != 1 ? 1 : 0;
+    newStars[index] = 0;
+    newValues[index] = '-';
     setMinuses(newMinuses);
+    setStars(newStars);
+    setValues(newValues);
   }
 
   // Привязываем ссылки на input при рендере
@@ -100,6 +114,14 @@ export default function PSR() {
       ...document.querySelectorAll('input[type="text"]') // Получаем все input
     ];
   }, []);
+
+  useEffect(() => {
+    dispatch(setPsrValues({
+      values: values,
+      stars: stars,
+      minuses: minuses
+    }));
+  }, [values, stars, minuses]);
 
   return (
     <div className="w-full scroll-x">
@@ -197,7 +219,7 @@ export default function PSR() {
                   <div>
                     <span className={'c-gray'}>
                       <FontAwesomeIcon onClick={() => {
-                        console.log('clear put minus')
+                        handleMinusChange(index)
                       }} icon={faMinus} className="mr-3" />
                     </span>
                     <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
