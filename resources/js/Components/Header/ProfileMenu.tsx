@@ -80,6 +80,9 @@ export default function ProfileMenu() {
               <Link className="dropdown-span" href={'/clinic/create'}>
                 {lng.get('menu.taxes')}
               </Link>
+              <Link className="dropdown-span" href={'/clinic/create'}>
+                {lng.get('menu.import')}
+              </Link>
               <Dropdown.Link
                 href={'/logout'}
                 method="post"
