@@ -90,7 +90,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');
     Route::get('/formula/edit/{id}', [PatientController::class, 'formulaEdit'])->name('patient.formula.edit');
+    Route::get('/formula/copy/{id}', [PatientController::class, 'formulaCopy'])->name('patient.formula.copy');
     Route::get('/perio/edit/{id}', [PatientController::class, 'perioEdit'])->name('patient.perio.edit');
+    Route::get('/perio/copy/{id}', [PatientController::class, 'perioCopy'])->name('patient.perio.copy');
     Route::get('/psr/edit/{id}', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
     Route::get('/psr/copy/{id}', [PatientController::class, 'psrCopy'])->name('patient.psr.copy');
     Route::get('/import', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');

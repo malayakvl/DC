@@ -184,7 +184,7 @@ export default function IntersectChart4838UpView({ zondData, yasenData, barData 
   return (
     <>
       <div
-        style={{ width: '1200px', height: '100px' }}
+        style={{ width: '900px', height: '100px' }}
         className="chart-intersect-up"
       >
         <Line data={data} options={options} height={100} />

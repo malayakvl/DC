@@ -181,6 +181,33 @@ class PatientController extends Controller
         ]);
     }
 
+    /**
+     * view patient clinic card
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function formulaCopy(Request $request, $id) {
+        $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
+        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+
+        // copy row
+        $patientTreatmentCopy = new PatientTreatment();
+        $patientTreatmentCopy->user_id = $patientTreatment->user_id;
+        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->type = $patientTreatment->type;
+        $patientTreatmentCopy->perioValues = $patientTreatment->perioValues;
+        $patientTreatmentCopy->formula = $patientTreatment->formula;
+        $patientTreatmentCopy->save();
+        return Inertia::render('Patient/EditFormula', [
+            'patientData' => $patientData,
+            'clinicData' => $clinicData,
+            'treatmentData' => $patientTreatment,
+        ]);
+    }
+
     public function updateFormula(Request $request) {
         if ($request->user()->can('patient-edit')) {
             $requestData = $request->all();
@@ -240,6 +267,34 @@ class PatientController extends Controller
             'patientData' => $patientData,
             'clinicData' => $clinicData,
             'treatmentData' => $patientTreatment,
+        ]);
+    }
+
+    /**
+     * view patient clinic card
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function perioCopy(Request $request, $id) {
+        $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
+        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+
+        // copy row
+        $patientTreatmentCopy = new PatientTreatment();
+        $patientTreatmentCopy->user_id = $patientTreatment->user_id;
+        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->type = $patientTreatment->type;
+        $patientTreatmentCopy->perioValues = $patientTreatment->perioValues;
+        $patientTreatmentCopy->formula = $patientTreatment->formula;
+        $patientTreatmentCopy->save();
+
+        return Inertia::render('Patient/EditPerio', [
+            'patientData' => $patientData,
+            'clinicData' => $clinicData,
+            'treatmentData' => $patientTreatmentCopy,
         ]);
     }
 

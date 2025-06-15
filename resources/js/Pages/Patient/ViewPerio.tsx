@@ -48,6 +48,7 @@ export default function ViewPerio({ perioData }) {
   return (
     <div className="py-0 w-full">
       <div className="w-full scroll-x">
+        <div className="scale-perio">
         <table className="table-auto perio-table perio-table-view">
           <tbody>
             {/*<tr>*/}
@@ -162,16 +163,16 @@ export default function ViewPerio({ perioData }) {
             {/*  ))}*/}
             {/*</tr>*/}
             <tr>
-              <td className="title" style={{ backgroundColor: 'none' }}>
-              <span style={{ display: 'block', marginTop: '50px' }}>
-                {msgFormula.get('formula.vest_oral')}
-              </span>
-              </td>
+              {/*<td className="title" style={{ backgroundColor: 'none' }}>*/}
+              {/*  <span style={{ display: 'block', marginTop: '50px' }}>*/}
+              {/*    {msgFormula.get('formula.vest_oral')}*/}
+              {/*  </span>*/}
+              {/*</td>*/}
               <td
                 colSpan={16}
                 style={{
                   textAlign: 'center',
-                  width: '1050px',
+                  width: '800px',
                   borderRight: 'none',
                   borderLeft: 'none',
                 }}
@@ -181,6 +182,7 @@ export default function ViewPerio({ perioData }) {
                     zondData={pCharts.zond1828VestChart}
                     yasenData={pCharts.yasen1828VestChart}
                     barData={pCharts.bar1828VestChart}
+
                   />
                 </div>
                 {pDia && <FormulaPerio1828View pDia={pDia} />}
@@ -194,9 +196,9 @@ export default function ViewPerio({ perioData }) {
                 </div>
               </td>
             </tr>
-            <tr>
-              <td colSpan={17} style={{ height: '40px' }}></td>
-            </tr>
+            {/*<tr>*/}
+            {/*  <td colSpan={17} style={{ height: '40px' }}></td>*/}
+            {/*</tr>*/}
 
             {/*<tr>*/}
             {/*  <td className="title">{msgFormula.get('formula.zond')}</td>*/}
@@ -438,16 +440,16 @@ export default function ViewPerio({ perioData }) {
             {/*  ))}*/}
             {/*</tr>*/}
             <tr>
-              <td className="title" style={{ backgroundColor: 'none' }}>
-              <span style={{ display: 'block', marginTop: '50px' }}>
-                {msgFormula.get('formula.vest_oral')}
-              </span>
-              </td>
+              {/*<td className="title" style={{ backgroundColor: 'none' }}>*/}
+              {/*  <span style={{ display: 'block', marginTop: '50px' }}>*/}
+              {/*    {msgFormula.get('formula.vest_oral')}*/}
+              {/*  </span>*/}
+              {/*</td>*/}
               <td
                 colSpan={16}
                 style={{
                   textAlign: 'center',
-                  width: '1024px',
+                  width: '900px',
                   borderLeft: 'none',
                   borderRight: 'none',
                 }}
@@ -469,16 +471,16 @@ export default function ViewPerio({ perioData }) {
                 </div>
               </td>
             </tr>
-            <tr>
-              <td
-                colSpan={17}
-                style={{
-                  height: '40px',
-                  borderLeft: 'none',
-                  borderRight: 'none',
-                }}
-              ></td>
-            </tr>
+            {/*<tr>*/}
+            {/*  <td*/}
+            {/*    colSpan={17}*/}
+            {/*    style={{*/}
+            {/*      height: '40px',*/}
+            {/*      borderLeft: 'none',*/}
+            {/*      borderRight: 'none',*/}
+            {/*    }}*/}
+            {/*  ></td>*/}
+            {/*</tr>*/}
             {/*<tr>*/}
             {/*  <td className="title">{msgFormula.get('formula.zond')}</td>*/}
             {/*  {deepUpZondVestIndices.map((bIndx2, i) => (*/}
@@ -675,7 +677,7 @@ export default function ViewPerio({ perioData }) {
             {/*</tr>*/}
           </tbody>
         </table>
-
+        </div>
         <div className="description-perio">
           <PeriodontalSummary data={pDia} />
           <Metrics
