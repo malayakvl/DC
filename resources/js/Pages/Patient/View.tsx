@@ -33,6 +33,7 @@ import ViewPSR from './ViewPSR'
 export default function index({ patientData, type, treatmentData }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState<string>(type ? type : 'history');
+  const [stageTab, setStageTab] = useState<string>('');
   const [_, setDisableTeethTab] = useState<string>('');
   const [trType, setTrType] = useState<string>('');
   const appLang = useSelector(appLangSelector);
@@ -67,7 +68,8 @@ export default function index({ patientData, type, treatmentData }) {
           return (
             <div
               key={index}
-              className="w-full bg-white border mt-10 patient-stage"
+              style={{display: stageTab === '' || stageTab === element.type ? 'block' : 'none'}}
+              className={`w-full bg-white border mt-10 patient-stage stage-${element.type}`}
             >
               <div className="flex justify-between">
                 <h2 className="text-left text-[14px] font-bold">
@@ -338,6 +340,14 @@ export default function index({ patientData, type, treatmentData }) {
     );
   };
 
+  const setActiveStageTab = (tab) => {
+    if (stageTab === tab)
+      setStageTab('');
+    else
+      setStageTab(tab);
+
+  }
+
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Patient Card'} />
@@ -417,7 +427,6 @@ export default function index({ patientData, type, treatmentData }) {
                 </ul>
               </div>
             </div>
-            <div className="w-full">{renderTreatmentStages()}</div>
             <div className="w-full bg-white border mt-10 patient-stage flex">
               <form
                 onSubmit={submit}
@@ -476,6 +485,30 @@ export default function index({ patientData, type, treatmentData }) {
                 </div>
               </form>
             </div>
+            {/*TABS BLOCK*/}
+            <div className="tabs-block w-full bg-white border mt-10 patient-stage flex">
+              <div className={`stage-tabs w-full`}>
+                <ul className={'w-full'}>
+                  <li className={`inline-block w-1/3 text-center ${stageTab === 'formula' ? 'active' : ''}`} onClick={() => setActiveStageTab('formula')}>
+                    <label>
+                      <i className="icon formula-tab"></i><span>{msg.get('patient.tab.formula')}</span>
+                    </label>
+                  </li>
+                  <li className={`inline-block w-1/3 text-center ${stageTab === 'perio' ? 'active' : ''}`} onClick={() => setActiveStageTab('perio')}>
+                    <label>
+                      <i className="icon perio-tab"></i><span>{msg.get('patient.tab.perio')}</span>
+                    </label>
+                  </li>
+                  <li className={`inline-block w-1/3 text-center ${stageTab === 'psr' ? 'active' : ''}`} onClick={() => setActiveStageTab('psr')}>
+                    <label>
+                      <i className="icon psr-tab"></i><span>{msg.get('patient.tab.test')}</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="w-full">{renderTreatmentStages()}</div>
+
           </div>
         </div>
       </div>

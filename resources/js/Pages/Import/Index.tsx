@@ -52,15 +52,15 @@ export default function Index() {
                   <h2 className={'w-full'}>{msg.get('import.title.list')}</h2>
                   <div>
                     <input type="radio" id={'patients'} name="address" value={'patients'} />
-                    <label for={'patients'}>patients</label>
+                    <label for={'patients'} className={'ml-2'}>{msg.get('import.patients')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} name="address" value={'patients'} />
-                    <label htmlFor={'patients'}>patients</label>
+                    <input type="radio" id={'patients'} name="address" value={'customers'} />
+                    <label htmlFor={'customers'} className={'ml-2'}>{msg.get('import.customers')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} name="address" value={'patients'} />
-                    <label htmlFor={'patients'}>patients</label>
+                    <input type="radio" id={'patients'} name="address" value={'dia'} />
+                    <label htmlFor={'dia'} className={'ml-2'}>{msg.get('import.dia')}</label>
                   </div>
 
                   <div className="mt-2">
