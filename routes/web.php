@@ -20,6 +20,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ImportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -95,7 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/perio/copy/{id}', [PatientController::class, 'perioCopy'])->name('patient.perio.copy');
     Route::get('/psr/edit/{id}', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
     Route::get('/psr/copy/{id}', [PatientController::class, 'psrCopy'])->name('patient.psr.copy');
-    Route::get('/import', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
+    Route::get('/import', [ImportController::class, 'index'])->name('import.index');
 
     Route::get('/stores', [StoreController::class, 'index'])->name('store.index');
     Route::get('/store/create', [StoreController::class, 'create'])->name('store.create');

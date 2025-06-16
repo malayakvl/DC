@@ -68,6 +68,7 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
     'schedule',
     'price',
     'cabinet',
+    'import'
   ];
 
   return (

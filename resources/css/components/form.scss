@@ -211,7 +211,12 @@
     z-index: -1;
 }
 input[type="file"]::file-selector-button {
-    background-color: red !important;
+    //background-color: #760fe5 !important;
+    background-image: linear-gradient(to left top, rgb(217, 192, 245), rgb(144, 11, 154)) !important;
+    width: 90px !important;
+    height: 40px !important;
+    color: #fff !important;
+    border-radius: 4px !important;
 }
 .preview-photo {
     width: 197px;

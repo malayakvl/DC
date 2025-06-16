@@ -41,11 +41,11 @@ export default function CustomerForm({
     color: formData.color,
   });
   const [hideFields, setHideFields] = useState(false);
-  const [customerColor, setCustomerColor] = useState('#000000');
+  const [_, setCustomerColor] = useState('#000000');
   const colorSettings = useSelector(paletterDataSelector);
-  // const [customerColor, setCustomerColor] = useState('#000000');
   const serchResults = useSelector(userSearchResultsSelector);
   const { processing, recentlySuccessful } = useForm();
+
 
   const handleChangeComplete = color => {
     setCustomerColor(color.hex);
@@ -183,12 +183,29 @@ export default function CustomerForm({
             label={msg.get('customer.phone')}
           />
 
-          <InputLabel htmlFor="name" value={msg.get('customer.photo')} />
-          <div className="input_container">
+          {/*<InputLabel htmlFor="name" value={msg.get('customer.photo')} />*/}
+          {/*<div className="mb-0">*/}
+          {/*  <label className="">File</label>*/}
+          {/*  <input*/}
+          {/*    type="file"*/}
+          {/*    className="w-full px-4 py-2"*/}
+          {/*    label="File"*/}
+          {/*    name="file"*/}
+          {/*    onChange={(e) =>*/}
+          {/*      setData("file", e.target.files[0])*/}
+          {/*    }*/}
+          {/*  />*/}
+          {/*  <span className="text-red-600">*/}
+          {/*    {errors.file}*/}
+          {/*  </span>*/}
+
+          {/*</div>*/}
+          <div className="input-container">
             <input
               type="file"
               id="file"
-              className="w-full px-4 py-0"
+              className="w-full px-0 py-0 mt-4"
+              style={{width: '100px', height: '40px', color: '#fff'}}
               name="file"
               onChange={handleChangeFile}
             />

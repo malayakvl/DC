@@ -143,6 +143,8 @@ const lngRole = {
     'cabinet-edit': 'Редагувати кабінет',
     'cabinet-delete': 'Видаляти кабінет',
     'cabinet-view': 'Дивитись кабінет',
+
+    'import': 'Завантаження з Clinicard'
   },
 };
 export default lngRole;
