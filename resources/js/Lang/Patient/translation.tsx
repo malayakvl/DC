@@ -22,6 +22,7 @@ const lngPatient = {
   },
   'uk.patient': {
     'title.list': 'Пацієнти',
+    'title.view': 'Перегляд',
     'title.create': 'Створити пацієнта',
     'title.edit': 'Редагувати пацієнта',
     'first.name': "Ім'я",

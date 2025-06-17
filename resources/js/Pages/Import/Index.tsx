@@ -43,6 +43,7 @@ export default function Index() {
 
   return (
     <AuthenticatedLayout header={<Head title="Import" />}>
+      <Head title={msg.get('import.title.list')} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

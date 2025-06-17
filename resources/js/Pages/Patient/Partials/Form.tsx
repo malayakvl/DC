@@ -1,7 +1,7 @@
-import InputLabel from '../../../Components/Form/InputLabel';
+// import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
@@ -21,7 +21,7 @@ import {
 import InputTextarea from '../../../Components/Form/InputTextarea';
 import { InputMask } from '@react-input/mask';
 import moment from 'moment';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default function Form({
   formData,
@@ -35,7 +35,7 @@ export default function Form({
     locale: appLang,
   });
 
-  const [_, setUploadedFile] = useState();
+  const [uploadedFile, setUploadedFile] = useState();
 
   const onDrop = useCallback(acceptedFiles => {
     // Do something with the files
@@ -72,8 +72,8 @@ export default function Form({
     });
   const { errors } = usePage().props;
   const [selectedFile, setSelectedFile] = useState();
-  const [preview, setPreview] = useState('/images/no-photo.jpg');
-
+  const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-photo.jpg');
+console.log(formData)
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -133,8 +133,20 @@ export default function Form({
           <div className="w-1/3">
             <div className="flex flex-row relative">
               <div className="file-preview inline-block">
-                {!selectedFile && (
+                {(!selectedFile && !formData.avatar) && (
                   <img src="/images/no-photo.png" width={197} height={244} />
+                )}
+                {(!selectedFile && formData.avatar) &&  (
+                  <div className={'patient-avatar'} style={{
+                    width: '197px',
+                    height: '244px',
+                    backgroundSize: 'cover',
+                    backgroundRepeat:'no-repeat',
+                    backgroundPosition: 'center',
+                    border: 'solid 2px #e6e7e9',
+                    background: `url(/uploads/patients/${formData.avatar})`
+                  }}></div>
+                  // <img src={`/uploads/patients/${formData.avatar}`} width={197} height={244} />
                 )}
                 {selectedFile && (
                   <div

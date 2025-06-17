@@ -32,7 +32,7 @@ export default function List({ listData, permissions }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Patients'} />
+      <Head title={msg.get('patient.title.list')} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

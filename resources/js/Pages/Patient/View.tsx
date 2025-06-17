@@ -350,7 +350,7 @@ export default function index({ patientData, type, treatmentData }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Patient Card'} />
+      <Head title={msg.get('patient.title.view')+ ' '+patientData.first_name+' '+patientData.last_name } />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
