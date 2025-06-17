@@ -138,12 +138,6 @@ console.log(formData)
                 )}
                 {(!selectedFile && formData.avatar) &&  (
                   <div className={'patient-avatar'} style={{
-                    width: '197px',
-                    height: '244px',
-                    backgroundSize: 'cover',
-                    backgroundRepeat:'no-repeat',
-                    backgroundPosition: 'center',
-                    border: 'solid 2px #e6e7e9',
                     background: `url(/uploads/patients/${formData.avatar})`
                   }}></div>
                   // <img src={`/uploads/patients/${formData.avatar}`} width={197} height={244} />

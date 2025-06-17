@@ -96,7 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/perio/copy/{id}', [PatientController::class, 'perioCopy'])->name('patient.perio.copy');
     Route::get('/psr/edit/{id}', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
     Route::get('/psr/copy/{id}', [PatientController::class, 'psrCopy'])->name('patient.psr.copy');
-    Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+    Route::get('/import-data', [ImportController::class, 'index'])->name('import.index');
 
     Route::get('/stores', [StoreController::class, 'index'])->name('store.index');
     Route::get('/store/create', [StoreController::class, 'create'])->name('store.create');
