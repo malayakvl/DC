@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
@@ -10,6 +10,7 @@ import NavLink from '../../Components/Links/NavLink';
 import InputError from '../../Components/Form/InputError';
 import { paletterDataSelector } from '../../Redux/Staff/selectors';
 import { userSearchResultsSelector } from '../../Redux/Clinic/selectors';
+import { Transition } from '@headlessui/react';
 
 export default function Index() {
   const dispatch = useDispatch();
@@ -21,12 +22,18 @@ export default function Index() {
   const { errors } = usePage().props;
   const [values, setValues] = useState({
     file: null,
+    type: ''
   });
   const [hideFields, setHideFields] = useState(false);
-  const [_, setCustomerColor] = useState('#000000');
+  const [importType, setImportType] = useState('');
   const colorSettings = useSelector(paletterDataSelector);
   const serchResults = useSelector(userSearchResultsSelector);
-  const { processing, recentlySuccessful } = useForm();
+  // const { processing, recentlySuccessful } = useForm();
+  const { data, setData, processing, post, recentlySuccessful, progress } =
+    useForm({
+      file: null,
+      type: null,
+    });
 
 
   const sendRequest = useCallback(() => {
@@ -41,26 +48,39 @@ export default function Index() {
     }));
   };
 
+  const submit = e => {
+    e.preventDefault();
+    values['type'] = importType;
+    console.log(values);
+    router.post(`/import/save`, values);
+    // post(route('import.update'));
+  };
+
+console.log(values)
   return (
     <AuthenticatedLayout header={<Head title="Import" />}>
       <Head title={msg.get('import.title.list')} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+            <form
+              onSubmit={submit}
+              className="mt-0 w-full"
+              encType="multipart/form-data"
+            >
             <section>
-              <header>
                 <div className="">
                   <h2 className={'w-full'}>{msg.get('import.title.list')}</h2>
                   <div>
-                    <input type="radio" id={'patients'} name="address" value={'patients'} />
+                    <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />
                     <label for={'patients'} className={'ml-2'}>{msg.get('import.patients')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} name="address" value={'customers'} />
+                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'customers'} />
                     <label htmlFor={'customers'} className={'ml-2'}>{msg.get('import.customers')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} name="address" value={'dia'} />
+                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
                     <label htmlFor={'dia'} className={'ml-2'}>{msg.get('import.dia')}</label>
                   </div>
 
@@ -90,9 +110,23 @@ export default function Index() {
                   {/*  </PrimaryButton>*/}
                   {/*</div>*/}
                 </div>
-              </header>
-            </section>
+              <div className="flex items-center mt-[20px]">
+                <PrimaryButton disabled={processing}>
+                  {msg.get('import.save')}
+                </PrimaryButton>
 
+                <Transition
+                  show={recentlySuccessful}
+                  enter="transition ease-in-out"
+                  enterFrom="opacity-0"
+                  leave="transition ease-in-out"
+                  leaveTo="opacity-0"
+                >
+                  <p className="text-sm text-gray-600">{msg.get('import.processing')}</p>
+                </Transition>
+              </div>
+            </section>
+            </form>
           </div>
         </div>
       </div>

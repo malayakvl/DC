@@ -49,7 +49,7 @@ class PatientController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response {
+    public function create(Request $request) {
         if ($request->user()->can('store-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $customerData = DB::table('users')

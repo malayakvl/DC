@@ -40,11 +40,7 @@ export default function Form({
   const onDrop = useCallback(acceptedFiles => {
     // Do something with the files
     setUploadedFile(acceptedFiles);
-    console.log(acceptedFiles);
   }, []);
-
-  // const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
-  // const { files } = usePage().props
 
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
@@ -73,7 +69,7 @@ export default function Form({
   const { errors } = usePage().props;
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-photo.jpg');
-console.log(formData)
+
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;

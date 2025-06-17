@@ -54,7 +54,7 @@ export default function List({ clinicData, filialData, customerData }) {
                   <td style={{ width: '100px' }}>
                     {item.photo && (
                       <img
-                        src={`http://localhost:8000/storage/clinic/users/${item.photo}`}
+                        src={`/uploads/patients/${item.photo}`}
                         width={40}
                         className="float-left rounded"
                         height="auto"

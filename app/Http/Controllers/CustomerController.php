@@ -186,7 +186,6 @@ class CustomerController extends Controller
     }
 
     public function assign(Request $request, $id) {
-//        $clinic = $request->user()->clinic;
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
         $customer = User::where('id', $id)->get();
@@ -197,7 +196,6 @@ class CustomerController extends Controller
             ->where('user_id', $id)
             ->where('clinic_id', $clinic->id)
             ->get();
-
         if (count($assignedData) > 0) {
             return Inertia::render('Customer/AssignFilialEdit', [
                 'rolesData' => $rolesData,
