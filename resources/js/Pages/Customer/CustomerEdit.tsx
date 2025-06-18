@@ -7,7 +7,7 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCustomer from '../../Lang/Customer/translation';
 
-export default function Create({ formData, clinicData, roleData, imagePath }) {
+export default function Create({ formData, clinicData, roleData, photoPath }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
@@ -26,7 +26,7 @@ export default function Create({ formData, clinicData, roleData, imagePath }) {
               clinicData={clinicData}
               roleData={roleData}
               formData={formData}
-              imagePath={imagePath}
+              photoPath={photoPath}
               className="max-w-xl"
             />
           </div>

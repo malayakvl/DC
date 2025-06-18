@@ -21,7 +21,7 @@ import { paletterDataSelector } from '../../../Redux/Staff/selectors';
 export default function CustomerForm({
   formData,
   clinicData,
-  imagePath,
+  photoPath,
   className = '',
 }) {
   const dispatch = useDispatch();
@@ -44,13 +44,12 @@ export default function CustomerForm({
   const [_, setCustomerColor] = useState('#000000');
   const colorSettings = useSelector(paletterDataSelector);
   const serchResults = useSelector(userSearchResultsSelector);
-  // const { processing, recentlySuccessful, progress } = useForm();
   const [selectedFile, setSelectedFile] = useState();
-  const [preview, setPreview] = useState(formData.file ? `/images/users/${formData.file}` : '/images/no-photo.png');
+  const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-photo.png');
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
       id: formData.id,
-      file: null,
+      file: formData.file,
       name: formData.name,
       first_name: formData.first_name,
       last_name: formData.last_name,
@@ -59,6 +58,8 @@ export default function CustomerForm({
       color: formData.color,
       inn: formData.inn
     });
+  console.log('photo', photoPath)
+  console.log('preview', preview)
 
   const handleChangeComplete = color => {
     setCustomerColor(color.hex);
@@ -173,12 +174,12 @@ console.log(formData.photo)
           <div className="w-1/3">
             <div className="flex flex-row relative">
               <div className="file-preview inline-block">
-                {(!selectedFile && !formData.photo) && (
+                {(!selectedFile && !photoPath) && (
                   <img src="/images/no-photo.png" width={197} height={250} />
                 )}
-                {(!selectedFile && formData.photo) &&  (
+                {(!selectedFile && photoPath) &&  (
                   <div className={'patient-avatar'} style={{
-                    background: `url(/uploads/patients/${formData.photo})`,
+                    background: `url(${photoPath})`,
                   }}></div>
                 )}
                 {selectedFile && (
@@ -293,9 +294,6 @@ console.log(formData.photo)
               {/*  />*/}
               {/*  <InputError className="mt-2" message={errors.file} />*/}
               {/*</div>*/}
-              <div>
-                <img src={imagePath} width={100} />
-              </div>
             </div>
           </div>
         </div>

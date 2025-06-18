@@ -104,21 +104,22 @@ class CustomerController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        $serverFilePath = public_path('storage/clinic/users/customer-' .$id. '.png');
-        $imagePath = '';
-        if (file_exists($serverFilePath)) {
-            $imagePath = asset('storage/clinic/users/customer-' .$id. '.png');
-        }
         if ($request->user()->can('customer-edit')) {
 //            $clinicData = $request->user()->clinic;
             $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));;
             $formData = User::where('id', $id)->get();
+            $serverFilePath = public_path('/uploads/users/' .$formData[0]->file);
+            $photoPath = '';
+            if (file_exists($serverFilePath)) {
+                $photoPath = asset('uploads/users/' .$formData[0]->file);
+            }
+
             $rolesData = Role::all();
             return Inertia::render('Customer/CustomerEdit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData[0],
                 'roleData' => $rolesData,
-                'imagePath' => $imagePath
+                'photoPath' => $photoPath
             ]);
         }
     }
