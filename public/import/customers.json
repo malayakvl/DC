@@ -1,0 +1,82 @@
+[
+{
+"doctor_id": "23285",
+"lastname": "Стефанів",
+"firstname": "Володимир",
+"date_added": "2021-05-18 15:55:27",
+"color": "7",
+"role": "MANAGER",
+"order_index": "0",
+"phone": "380962192096"
+},
+{
+"doctor_id": "23286",
+"lastname": "Черных",
+"firstname": "Наталья",
+"date_added": "2021-05-18 16:04:08",
+"color": "1",
+"role": "ADMINISTRATOR",
+"order_index": "0",
+"phone": "+380505819151"
+},
+{
+"doctor_id": "23287",
+"lastname": "Ейхгорн",
+"firstname": "Сергій",
+"date_added": "2021-05-18 16:20:04",
+"color": "11",
+"role": "DOCTOR",
+"order_index": "0",
+"phone": "380950647417"
+},
+{
+"doctor_id": "23356",
+"lastname": "Калита",
+"firstname": "Сергій",
+"date_added": "2021-05-20 10:40:30",
+"color": "15",
+"role": "DOCTOR",
+"order_index": "0",
+"phone": "380671396360"
+},
+{
+"doctor_id": "23495",
+"lastname": "Новикова",
+"firstname": "Анастасия",
+"date_added": "2021-05-26 08:40:42",
+"color": "17",
+"role": "DOCTOR",
+"order_index": "1",
+"phone": "380671340074"
+},
+{
+"doctor_id": "24323",
+"lastname": "Солтыс",
+"firstname": "Павел",
+"date_added": "2021-06-30 15:58:58",
+"color": "1",
+"role": "DOCTOR",
+"order_index": "0",
+"phone": "380997226211"
+},
+{
+"doctor_id": "38659",
+"lastname": "Солтис",
+"firstname": "Володимир",
+"date_added": "2022-09-22 12:16:40",
+"color": "3",
+"role": "DOCTOR",
+"order_index": "0",
+"phone": "380500607285"
+},
+{
+"doctor_id": "82288",
+"lastname": "Кузнецова",
+"firstname": "Ирина",
+"date_added": "2025-05-05 09:50:18",
+"color": "2",
+"role": "DOCTOR",
+"order_index": "0",
+"phone": "380503047906"
+}
+]
