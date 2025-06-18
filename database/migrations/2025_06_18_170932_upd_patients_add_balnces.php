@@ -12,6 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         //
+        Schema::table('patients', function (Blueprint $table) {
+            $table->float('dt_balance')->nullable();
+            $table->float('kt_balance')->nullable();
+        });
     }
 
     /**
@@ -20,5 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         //
+        Schema::table('patients', function (Blueprint $table) {
+            $table->dropColumn('dt_balance');
+            $table->dropColumn('kt_balance');
+        });
     }
 };

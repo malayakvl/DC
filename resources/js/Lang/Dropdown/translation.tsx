@@ -24,6 +24,13 @@ const lngDropdown = {
     uah: 'грн',
     usd: 'usd',
     euro: 'euro',
+    'Hungarian Forint': 'Hungarian Forint',
+    'Danish Krone': 'Danish Krone',
+    'British Pound Sterling': 'British Pound Sterling',
+    'Swedish Krona': 'Swedish Krona',
+    'Swiss Franc': 'Swiss Franc',
+    'South African Rand': 'South African Rand',
+    'Australian Dollar': 'Australian Dollar'
   },
 };
 export default lngDropdown;

@@ -29,7 +29,7 @@ export default function List({ listData, permissions }) {
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
-
+console.log(listData.data)
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('patient.title.list')} />
@@ -51,7 +51,7 @@ export default function List({ listData, permissions }) {
               </header>
             </section>
             <ul className="mt-5">
-              {listData?.map(item => (
+              {listData.data?.map(item => (
                 <li
                   className="patient-item grid grid-cols-1 place-content-between"
                   key={item.id}
@@ -61,11 +61,12 @@ export default function List({ listData, permissions }) {
                       {item.avatar ? (
                         <img
                           src={`/uploads/patients/${item.avatar}`}
-                          width="45"
+                          width="auto"
                           height="45"
                         />
                       ) : (
                         <img
+                          className='p-photo'
                           src={`/images/patients/patient-avatar.jpg`}
                           width="45"
                           height="45"
@@ -76,6 +77,11 @@ export default function List({ listData, permissions }) {
                           {item.first_name} {item.last_name}
                         </span>
                         <i className="phone-patient">{item.phone}</i>
+                        <span className="ml-3 mt-3 text-[13px]">
+                          <b>Виконано на:</b> <span className="text-kt">{item.kt_balance}&nbsp;</span>
+                          <b>Сплачено:</b> <span className="text-dt">{item. dt_balance}&nbsp;</span>
+                          {item.kt_balance > item.dt_balance && <><b>Борг:</b> <span className="text-debt">{item. dt_balance}</span></>}
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -105,6 +111,62 @@ export default function List({ listData, permissions }) {
                 </li>
               ))}
             </ul>
+
+            {/* Pagination */}
+            <div className="mt-4 flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing page {listData.current_page} of {listData.last_page}
+                </p>
+              </div>
+              <nav className="flex space-x-2">
+                {/* Previous Button */}
+                <a
+                  href={listData.prev_page_url || '#'}
+                  className={`px-3 py-1 border rounded text-sm ${
+                    listData.prev_page_url
+                      ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                  onClick={(e) => !listData.prev_page_url && e.preventDefault()}
+                >
+                  Previous
+                </a>
+
+                {/* Page Links */}
+                {listData.links
+                  .filter((link) => link.label !== 'Previous' && link.label !== 'Next')
+                  .map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.url || '#'}
+                      className={`px-3 py-1 border rounded text-sm ${
+                        link.active
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : link.url
+                            ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                            : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+                      }`}
+                      onClick={(e) => !link.url && e.preventDefault()}
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+
+                {/* Next Button */}
+                <a
+                  href={listData.next_page_url || '#'}
+                  className={`px-3 py-1 border rounded text-sm ${
+                    listData.next_page_url
+                      ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                  onClick={(e) => !listData.next_page_url && e.preventDefault()}
+                >
+                  Next
+                </a>
+              </nav>
+            </div>
           </div>
         </div>
       </div>

@@ -34,6 +34,9 @@ export default {
             },
             fukcia: {
                 100: '#f76ab0'
+            },
+            red: {
+                550: '#860000'
             }
         }
     },

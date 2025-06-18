@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vat_rates', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        //
+        Schema::table('patients', function (Blueprint $table) {
+            $table->string('patronomic_name')->nullable();
         });
     }
 
@@ -22,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vat_rates');
+        //
+        Schema::table('patients', function (Blueprint $table) {
+            $table->dropColumn('patronomic_name');
+        });
     }
 };

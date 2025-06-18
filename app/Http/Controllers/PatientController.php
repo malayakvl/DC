@@ -26,24 +26,25 @@ class PatientController extends Controller
     {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         if ($request->session()->get('filial_id')) {
-            $listData = DB::table('patients')
+            $query = DB::table('patients')
                 ->select('patients.*')
                 ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
                 ->where('clinic_patient.clinic_id', $clinic->id)
                 ->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
-                ->orderBy('first_name')->get();
+                ->orderBy('first_name');
         } else {
-            $listData = DB::table('patients')
+            $query = DB::table('patients')
                 ->select('patients.*')
                 ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
                 ->where('clinic_patient.clinic_id', $clinic->id)
-                ->orderBy('first_name')->get();
+                ->orderBy('first_name');
         }
+        $listData = $query->paginate(50);
+
         return Inertia::render('Patient/List', [
             'clinicData' => $clinic,
             'listData' => $listData,
         ]);
-
     }
 
     /**
@@ -94,6 +95,7 @@ class PatientController extends Controller
      */
     public function update(PatientUpdateRequest $request) {
         if ($request->user()->can('patient-edit')) {
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $isNew = false;
             if ($request->id)
                 $patient = Patient::find($request->id);
@@ -103,6 +105,17 @@ class PatientController extends Controller
             }
             $patient->fill($request->validated());
             $patient->save();
+
+            // connect patient with clinic
+            if ($isNew) {
+                DB::table('clinic_patient')->insert(
+                    [
+                        'patient_id' => $patient->id,
+                        'filial_id' => $request->session()->get('filial_id'),
+                        'clinic_id' => $clinicData->id
+                    ]
+                );
+            }
 
             if ($request->file) {
                 $fileName = 'Patient'.$patient->id.'.'.$request->file->extension();  

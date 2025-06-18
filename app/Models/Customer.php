@@ -9,7 +9,8 @@ class Customer extends Model implements MustVerifyEmail
     use Notifiable;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];

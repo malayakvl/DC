@@ -24,21 +24,13 @@ export default function Index() {
     file: null,
     type: ''
   });
-  const [hideFields, setHideFields] = useState(false);
   const [importType, setImportType] = useState('');
-  const colorSettings = useSelector(paletterDataSelector);
-  const serchResults = useSelector(userSearchResultsSelector);
-  // const { processing, recentlySuccessful } = useForm();
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
       file: null,
       type: null,
     });
 
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   const handleChangeFile = e => {
     const key = e.target.id;
@@ -51,12 +43,10 @@ export default function Index() {
   const submit = e => {
     e.preventDefault();
     values['type'] = importType;
-    console.log(values);
     router.post(`/import/save`, values);
     // post(route('import.update'));
   };
 
-console.log(values)
   return (
     <AuthenticatedLayout header={<Head title="Import" />}>
       <Head title={msg.get('import.title.list')} />
