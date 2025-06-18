@@ -8,6 +8,8 @@ const lngImport = {
     'title.list': 'Імпорт даних',
     customers: 'Імпорт користувачів',
     patients: 'Імпорт пацієнтів',
+    save: 'Завантажити',
+    dia: 'Імпорт діагнозів'
   },
 };
 export default lngImport;

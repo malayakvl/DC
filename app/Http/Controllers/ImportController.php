@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rap2hpoutre\FastExcel\FastExcel;
 use File;
+use Carbon\Carbon;
 class ImportController extends Controller
 {
     //
@@ -42,9 +43,37 @@ class ImportController extends Controller
             }
             if ($extension === 'xlsx') {
                 $collection = (new FastExcel)->import(public_path('clinic-import/patients/'.$fileName));
+//                dd($collection);exit;
                 $collection->map(function ($item, int $key) {
+                    $patient = new Patient();
+                    $patient->first_name = $item['Пацієнт'];
+                    if ($item['Дата народження']){
+                        $dateB = Carbon::createFromFormat('d.m.Y', $item['Дата народження'])->format('Y-m-d');
+                        $patient->birthday = $dateB;
+                    }
+                    if ($item['Дата реєстрації']){
+                        $dateB = Carbon::createFromFormat('d.m.Y', $item['Дата реєстрації'])->format('Y-m-d');
+                        $patient->register_date = $dateB;
+                    }
+                    if ($item['Стать'] === 'Чоловік') {
+                        $patient->gender = 'male';
+                    } else if ($item['Стать'] === 'Жінка') {
+                        $patient->gender = 'female';
+                    }
+                    $patient->phone = $item['Телефон'];
+                    $user = User::where('name', '=', $item['Куратор'])->get();
+                    if (count($user)) {
+                        $patient->curator_id = $user[0]->id;
+//                        dd($user[0]->id);exit;
+                    }
+                    if ($item['Виконано на суму'] === $item['Оплачено']) {
 
-                    dd($item);exit;
+                    }
+//
+//                    if ($key === 50){
+//                        dd($item);exit;
+//                    }
+
 
                 });
             }
