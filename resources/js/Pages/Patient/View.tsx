@@ -381,7 +381,7 @@ export default function index({ patientData, type, treatmentData }) {
                     </Link>
                   </li>
                   <li>
-                    <Link href="">
+                    <Link href={`/patient/edit/${patientData.id}`}>
                       <FontAwesomeIcon icon={faPencil} />
                     </Link>
                   </li>
