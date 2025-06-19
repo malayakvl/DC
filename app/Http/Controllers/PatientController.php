@@ -44,6 +44,7 @@ class PatientController extends Controller
         return Inertia::render('Patient/List', [
             'clinicData' => $clinic,
             'listData' => $listData,
+            'currency' => $clinic->currency->symbol
         ]);
     }
 
