@@ -37,8 +37,8 @@ class SchedulerController extends Controller
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
             ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
         foreach ($customerData as $customer) {
-            if ($customer->photo) {
-                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->photo;
+            if ($customer->file) {
+                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->file;
             }
         }
         if ($request->session()->get('filial_id')) {
