@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Calendar, dateFnsLocalizer, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -89,7 +90,35 @@ export default function Index({
       },
     ],
   });
-  const [filteredEvents, setFilteredEvents] = useState(events)
+  const [filteredEvents, setFilteredEvents] = useState(events);
+  const colourOptions = [
+    { value: "ocean", label: "Ocean", color: "#00B8D9" },
+    { value: "blue", label: "Blue", color: "#0052CC" },
+    { value: "purple", label: "Purple", color: "#5243AA" },
+    { value: "red", label: "Red", color: "#FF5630" },
+    { value: "orange", label: "Orange", color: "#FF8B00" },
+    { value: "yellow", label: "Yellow", color: "#FFC400" },
+    { value: "green", label: "Green", color: "#36B37E" },
+    { value: "forest", label: "Forest", color: "#00875A" },
+    { value: "slate", label: "Slate", color: "#253858" },
+    { value: "silver", label: "Silver", color: "#666666" }
+  ];
+
+  const flavourOptions = [
+    { value: "vanilla", label: "Vanilla", rating: "safe" },
+    { value: "chocolate", label: "Chocolate", rating: "good" },
+    { value: "strawberry", label: "Strawberry", rating: "wild" }
+  ];
+  const groupedOptions = [
+    {
+      label: "Colours",
+      options: colourOptions
+    },
+    {
+      label: "Flavours",
+      options: flavourOptions
+    }
+  ];
 
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
@@ -315,6 +344,11 @@ export default function Index({
             </div>
             <div className={'clearfix'} />
           </div>
+          <Select
+            value={null}
+            onChange={() => console.log(1)}
+            options={groupedOptions}
+          />
           <ul
             className="flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 sh-p-tabs">
             {customerData.map((person) => (

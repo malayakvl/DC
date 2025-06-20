@@ -32,6 +32,7 @@ class SchedulerController extends Controller
     public function index(Request $request)
     {
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $filialId = $request->session()->get('filial_id');
         $customerData = DB::table('users')
             ->select('users.*')
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')

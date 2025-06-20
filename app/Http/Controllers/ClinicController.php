@@ -21,21 +21,30 @@ class ClinicController extends Controller
     public function create(Request $request): Response
     {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-        return Inertia::render('Clinic/Create', [
-            'clinicData' => $clinicData,
-            'currencyData' => $currencyData
-        ]);
+        if ($clinicData) {
+            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        } else {
+            $clinicData = new Clinic();
+            $currencyData = Currency::all();
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        }
     }
 
     public function new(Request $request): Response
     {
-dd(1);
-exit;
-//        return Inertia::render('Clinic/Create', [
-//            'clinicData' => $clinicData,
-//            'currencyData' => $currencyData
-//        ]);
+        $clinicData = new Clinic();
+        $currencyData = Currency::all();
+        return Inertia::render('Clinic/Create', [
+            'clinicData' => $clinicData,
+            'currencyData' => $currencyData
+        ]);
     }
 
     /**
@@ -51,16 +60,24 @@ exit;
      * Update the user's profile information.
      */
     public function update(ClinicUpdateRequest $request) {
-        if ($request->user()->can('clinic-create')) {
-            if ($request->id)
-                $clinic = Clinic::find($request->id);
-            else {
-                $clinic = new Clinic();
-            }
+        if (!$request->id) {
+            $clinic = new Clinic();
             $clinic->fill($request->validated());
             $clinic->save();
 
             return Redirect::route('clinic.create');
+        } else {
+            if ($request->user()->can('clinic-create')) {
+                if ($request->id)
+                    $clinic = Clinic::find($request->id);
+                else {
+                    $clinic = new Clinic();
+                }
+                $clinic->fill($request->validated());
+                $clinic->save();
+
+                return Redirect::route('clinic.create');
+            }
         }
     }
 
