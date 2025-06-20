@@ -32,3 +32,114 @@
 .css-1mrufi {
     z-index: 30 !Important;
 }
+
+.patients-data {
+    background: #fff;
+    border-left-color: #29425e;
+    border-width: 3px;
+    border-top: solid 1px #d2cfcf;
+    border-radius: 5px;
+    border-bottom: solid 1px #d2cfcf;
+    border-right: solid 1px #d2cfcf;
+    width: 100%;
+    height: 100px;
+
+    img {
+        height: 95px;
+        width: auto;
+        padding-left:5px;
+    }
+
+    .icon-block {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        ul li {
+            list-style: none;
+            display: inline;
+            margin-right: 20px;
+        }
+    }
+    .tabs-block {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+
+        li {
+            list-style: none;
+            display: inline;
+            padding-right: 10px;
+            padding-left: 10px;
+            font-size: 14px;
+            padding-bottom: 11px;
+            cursor: pointer;
+        }
+        li.active {
+            border-bottom: solid 4px;
+            border-color: #29425e;
+        }
+    }
+}
+.me-2 {
+    white-space: nowrap;
+    padding-bottom: 10px;
+}
+.sh-p-tabs {
+    max-width: 1000px;
+    min-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    overflow-x: scroll;
+    margin-bottom: 10px;
+    scrollbar-color: #d5c2f1 #e8e5e0;
+    scrollbar-width: thin;
+}
+.sh-p-tabs a {
+    color: #0a3622;
+    display: inline-block;
+    padding: 8px;
+    background: #f3ecfd;
+    border-radius: 4px 4px 0 0;
+    font-size: 12px;
+}
+.rbc-btn-group {
+    font-size: 12px;
+    font-weight: bold;
+}
+.date-picker {
+    font-size: 12px;
+    background: #fff;
+    border-color: #d5c2f1;
+    padding: 4px;
+    border-radius: 4px;
+}
+.rbc-timeslot-group {
+    min-width: 78px;
+}
+.rbc-time-slot {
+    text-align: center !important;
+    font-weight: bold !important;
+    font-size: 13px;
+}
+.disabled-content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left:0;
+    background: palevioletred;
+    z-index: 80;
+}
+.form-scheduler {
+    position: absolute;
+    top: 15%;
+    left:29%;
+    //background: palevioletred;
+    z-index: 99999;
+    min-width: 600px;
+    min-height: 600px;
+}
+.rbc-event {
+    font-size: 12px;
+}

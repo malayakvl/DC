@@ -70,15 +70,13 @@ class SchedulerController extends Controller
             ->get();
         $events = array();
         foreach ($eventsData as $event) {
-//            $event->title = $event->title;
             $event->startDate = date($event->event_date.' '.$event->event_time_from);
             $event->endDate = date($event->event_date.' '.$event->event_time_to);
             $event->cabinet = $event->cabinet_name;
             $events[] = (object) $event;
         }
-//        dd($events);
-//        exit;
         $formData = new Scheduler();
+
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
             'customerData' => $customerData,

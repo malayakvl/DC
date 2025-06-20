@@ -235,3 +235,13 @@ input[type="file"]::file-selector-button {
     --tw-ring-offset-color: #fff;
     --tw-ring-color: #fff !important
 }
+.overlay-bg-popup {
+    background: #cdccce;
+    width: 100%;
+    height: 2000px;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+}

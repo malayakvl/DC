@@ -4,6 +4,7 @@ import {
     changeLangAction,
     setPaginationAction,
     setSwitchToggleAction,
+    setPopupAction
 } from "./actions";
 import { PaginationType } from '../../Constants';
 const initPagination = { limit: 25, offset: 0, sort: 'DESC', column: 'created_at', query: '' };
@@ -29,6 +30,7 @@ const initialState: State.Layouts = {
     isSidebarOpen: false,
     isMobileDevice: false,
     isDataLoading: false,
+    isPopupActive: false,
     toasts: [],
     checkedIds: [],
     switchHeader: false,
@@ -64,12 +66,19 @@ const ACTION_HANDLERS: any = {
             appLang: action.payload
         })
     },
+    [setPopupAction]: {
+        next: (state: State.Layouts, action: Action<string>): State.Layouts => ({
+            ...state,
+            isPopupActive: action.payload
+        })
+    },
 }
 
 export {
     changeLangAction,
     setPaginationAction,
-    setSwitchToggleAction
+    setSwitchToggleAction,
+    setPopupAction
 }
 
 export default handleActions(ACTION_HANDLERS, initialState);

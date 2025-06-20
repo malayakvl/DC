@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Lang from 'lang.js';
 import lngHeader from '../Lang/Header/translation';
 import { useSelector } from 'react-redux';
-import { appFilialSelector, appLangSelector } from '../Redux/Layout/selectors';
+import { appFilialSelector, appLangSelector, isPopupSelector } from '../Redux/Layout/selectors';
 import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
@@ -16,6 +16,7 @@ export default function AuthenticatedLayout({ header, children }) {
     locale: appLang,
   });
   const filialName = useSelector(appFilialSelector);
+  const popupShow = useSelector(isPopupSelector);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const user = usePage().props.auth.user;
   const handleNavCollapse = () => {
@@ -23,7 +24,7 @@ export default function AuthenticatedLayout({ header, children }) {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{overflowY: popupShow ? 'hidden' : 'auto'}}>
       {header && (
         <header className="bg-white shadow">
           <div className="flex shadow-md py-2 px-4 sm:px-10 top-header font-sans min-h-[60px] tracking-wide relative z-50 header-fixed">
@@ -77,6 +78,7 @@ export default function AuthenticatedLayout({ header, children }) {
           <div>{children}</div>
         </div>
       </main>
+      <div className={`overlay-bg-popup ${popupShow ? 'show' : 'hidden'}`} />
     </div>
   );
 }

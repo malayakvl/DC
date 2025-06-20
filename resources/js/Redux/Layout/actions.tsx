@@ -5,6 +5,7 @@ export const changeLangAction: any = createAction('layouts/CHANGE_LANG');
 export const setSwitchToggleAction: any = createAction(
   'layouts/SWITCH_HEADER_TOGGLE'
 );
+export const setPopupAction: any = createAction('layouts/SET_POPUP');
 
 export const setCheckedAction: any = createAction('layouts/SET_CHECKED');
 

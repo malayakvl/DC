@@ -78,7 +78,7 @@
     "rc-time-picker": "^3.7.3",
     "react-autocomplete": "^1.8.1",
     "react-autosuggest": "^10.1.0",
-    "react-big-calendar": "^1.19.2",
+    "react-big-calendar": "^1.19.4",
     "react-big-schedule": "^4.4.5",
     "react-chartjs-2": "^5.3.0",
     "react-color": "^2.19.3",

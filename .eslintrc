@@ -15,15 +15,17 @@
   "env": {
     "browser": true,
     "amd": true,
+    "es2021": true,
     "node": true
   },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["prettier", "react", "react-hooks"],
+  "plugins": ["prettier", "react", "react-hooks", "@typescript-eslint"],
   "rules": {
     "react/jsx-first-prop-new-line": [2, "multiline"],
     "react/jsx-max-props-per-line": [2, { "maximum": 1, "when": "multiline" }],
@@ -37,6 +39,7 @@
     ],
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
-    "no-console": 2
+    "no-console": 2,
+    "@typescript-eslint/no-explicit-any": "off" // Временно отключите строгие правила
   }
 }

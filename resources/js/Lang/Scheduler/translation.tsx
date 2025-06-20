@@ -12,6 +12,8 @@ const lngScheduler = {
     'form.doctor': 'Лікар',
     'form.comment': 'Коментар',
     'calendar.view': 'Режим відображення',
+    next: 'Наступний',
+    prev: 'Попередній',
     month: 'Місяць',
     week: 'Тиждень',
     day: 'День',
@@ -39,6 +41,7 @@ const lngScheduler = {
     patient: 'Пацієнт',
     'calendar.tabdefault': 'За замовчуванням',
     'calendar.tabds': 'Вкладки',
+    'period': 'Період'
   },
 };
 export default lngScheduler;

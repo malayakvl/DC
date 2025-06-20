@@ -36,7 +36,7 @@ export default function EventStatus() {
   });
 
   return (
-    <div className="mb-4 relative grid justify-items-end">
+    <div className="mb-0 relative grid justify-items-end mt-[-35px]">
       <button
         className="text-center inline-flex text-xs font-bold"
         style={{ color: eventStatus.color }}

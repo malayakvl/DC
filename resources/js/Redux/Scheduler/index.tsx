@@ -20,6 +20,8 @@ const initialState = {
   statusId: { name: 'planned', color: '#4c95f5' },
   newPatientData: null,
   eventsData: [],
+  weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
+  weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
 };
 
 // ------------------------------------

@@ -19,10 +19,11 @@ import {
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
-  popupTimeSelector,
+  popupTimeSelector, showSchedulePopupSelector,
 } from '../../../Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
+import { setPopupAction } from '../../../Redux/Layout';
 
 export default function SchedulerFormCreate({
   formData,
@@ -54,6 +55,7 @@ export default function SchedulerFormCreate({
   const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
+  const showPopup = useSelector(showSchedulePopupSelector);
 
   const handleChangeSelect = e => {
     const key = e.target.id;
@@ -108,6 +110,7 @@ export default function SchedulerFormCreate({
     dispatch(showSchedulePopupAction(false));
     const element = document.getElementsByTagName('body')[0];
     element.style.overflow = 'inherit';
+    dispatch(setPopupAction(false));
   };
 
   const submit = e => {
@@ -121,10 +124,11 @@ export default function SchedulerFormCreate({
     } else {
       router.post('/scheduler/update', values);
     }
+    dispatch(setPopupAction(false));
   };
 
   return (
-    <section className="p-5  max-h-[80vh] overflow-y-auto">
+    <section className={`px-5 max-h-[80vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2>
           {formData?.id
@@ -207,6 +211,7 @@ export default function SchedulerFormCreate({
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
               dispatch(showSchedulePopupAction(false));
+              dispatch(setPopupAction(false));
             }}
             title={msg.get('scheduler.close')}
           >
