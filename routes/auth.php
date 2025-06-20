@@ -60,5 +60,5 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
-Route::get('/clinic-new', [ClinicController::class, 'new'])
-    ->name('clinic.new');
+//Route::get('/clinic-new', [ClinicController::class, 'new'])
+//    ->name('clinic.new');

@@ -33,7 +33,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/clinic-new', [ClinicController::class, 'new'])
+Route::get('/clinic-new', [ClinicController::class, 'create'])
     ->name('clinic.new');
 
 Route::get('/dashboard', function () {

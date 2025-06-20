@@ -71,6 +71,8 @@ class AuthenticatedSessionController extends Controller
                 ->where('user_id', $logUser->id)->get();
 
             $logUser->assignRole($data[0]->name);
+            $request->session()->put('clinic_id', $data[0]->clinic_id);
+            $request->session()->put('filial_id', $data[0]->filial_id);
             return response()->json([
                 'dashboardSelect' => false,
             ]);

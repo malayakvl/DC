@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClinicUpdateRequest;
 use App\Models\Clinic;
+use App\Models\ClinicFilial;
 use App\Models\Currency;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -64,6 +65,20 @@ class ClinicController extends Controller
             $clinic = new Clinic();
             $clinic->fill($request->validated());
             $clinic->save();
+
+            // созадем дефолтний филиал
+            $clinicFilial = new ClinicFilial();
+            $clinicFilial->name = $clinic->name;
+            $clinicFilial->address = $clinic->address;
+            $clinicFilial->uraddress = $clinic->uraddress;
+            $clinicFilial->inn = $clinic->inn;
+            $clinicFilial->edrpou = $clinic->edrpou;
+            $clinicFilial->phone = $clinic->phone;
+            $clinicFilial->clinic_id = $clinic->id;
+            $clinicFilial->save();
+
+            // add roles
+//            $request->user()
 
             return Redirect::route('clinic.create');
         } else {
