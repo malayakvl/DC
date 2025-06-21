@@ -25,12 +25,12 @@
 @use "components/psr";
 
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:ital,wght@0,300..800;1,300..800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 
 body {
     background: #fff;
-    font-family: "Raleway", sans-serif;
+    font-family: "Manrope", sans-serif;
 }
 .bg-main {
     background-image: url(../images/bg/1.jpeg);

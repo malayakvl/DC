@@ -34,9 +34,33 @@ class SchedulerController extends Controller
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         $filialId = $request->session()->get('filial_id');
         $customerData = DB::table('users')
-            ->select('users.*')
+            ->select([
+                'users.id',
+                'users.file',
+                'users.color',
+                'users.first_name',
+                'users.last_name',
+                'roles.name AS role_name'
+            ])
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
+            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+            ->where('clinic_user.clinic_id', $clinicData->id)
+            ->orderBy('last_name')
+            ->get();
+        // Group users by role_name and format into groupedOptions
+        $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
+            return [
+                'label' => $roleName,
+                'options' => $group->map(function ($user) {
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->first_name . ' ' . $user->last_name,
+                        'color' => $user->color
+                    ];
+                })->values()->toArray()
+            ];
+        })->values()->toArray();
+//        dd($groupedOptions);exit;
         foreach ($customerData as $customer) {
             if ($customer->file) {
                 $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->file;
@@ -56,6 +80,17 @@ class SchedulerController extends Controller
                 ->where('cabinets.clinic_id', $clinicData->id)
                 ->orderBy('name')->get();
         }
+        $groupedCabinets = $listCabinets->groupBy('filial_name')->map(function ($group, $roleName) {
+            return [
+                'label' => 'Кабінети',
+                'options' => $group->map(function ($user) {
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->name,
+                    ];
+                })->values()->toArray()
+            ];
+        })->values()->toArray();
         $weekStart = date("Y-m-d", strtotime('monday this week'));
         $weekEnd = date("Y-m-d", strtotime('sunday this week'));
         $eventsData = DB::table('schedulers')
@@ -81,6 +116,8 @@ class SchedulerController extends Controller
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
             'customerData' => $customerData,
+            'customerGroupped' => $groupedOptions,
+            'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
             'formData' => $formData,
             'eventsData' => $events

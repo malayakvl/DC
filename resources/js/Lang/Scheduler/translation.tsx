@@ -41,7 +41,9 @@ const lngScheduler = {
     patient: 'Пацієнт',
     'calendar.tabdefault': 'За замовчуванням',
     'calendar.tabds': 'Вкладки',
-    'period': 'Період'
+    'period': 'Період',
+    time_schedule_error: 'Период недоступен',
+    from: 'Час'
   },
 };
 export default lngScheduler;

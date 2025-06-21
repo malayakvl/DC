@@ -11,19 +11,25 @@ import InputSelect from '../../../Components/Form/InputSelect';
 import lngScheduler from '../../../Lang/Scheduler/translation';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import { showSchedulePopupAction } from '../../../Redux/Scheduler';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'rc-time-picker/assets/index.css';
+import dayjs from 'dayjs';
 import moment from 'moment';
-import TimePicker from 'rc-time-picker';
+// import TimePicker from 'rc-time-picker';
 import {
   newPatientDataSelector,
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
-  popupTimeSelector, showSchedulePopupSelector,
+  popupTimeSelector,
+  showSchedulePopupSelector,
 } from '../../../Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
-import { setPopupAction } from '../../../Redux/Layout';
+import { setPopupAction, showOverlayAction } from '../../../Redux/Layout';
+import TextField from '@mui/material/TextField';
 
 export default function SchedulerFormCreate({
   formData,
@@ -56,6 +62,7 @@ export default function SchedulerFormCreate({
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showSchedulePopupSelector);
+  const [value, setValue] = useState(null);
 
   const handleChangeSelect = e => {
     const key = e.target.id;
@@ -124,8 +131,16 @@ export default function SchedulerFormCreate({
     } else {
       router.post('/scheduler/update', values);
     }
-    dispatch(setPopupAction(false));
+    dispatch(showOverlayAction(false));
   };
+console.log(timeStart,  moment(timeStart).format('HH:mm'))
+  const valueFrom = new Date()
+  valueFrom.setHours(9)
+  valueFrom.setMinutes(0);
+  const today = dayjs(new Date(2025, 6, 21, 15, 30));
+  const yesterday = dayjs().subtract(1, 'day');
+  const todayStartOfTheDay = today
+  console.log(today)
 
   return (
     <section className={`px-5 max-h-[80vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
@@ -143,7 +158,37 @@ export default function SchedulerFormCreate({
         encType="multipart/form-data"
       >
         <EventStatus />
-
+        <div className="flex">
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <TimePicker
+                format="HH:mm"
+                label={msg.get('scheduler.from')}
+                slotProps={{
+                  textField: {
+                    size: 'small',
+                    fullWidth: true,
+                  },
+                }}
+                defaultValue={dayjs(new Date(2025, 6, 21, 16, 30))}
+                name={'time_from'}
+                onChange={(newValue) => handleChangeTimeFrom(newValue)}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+          </div>
+          <div className="ml-4">
+            {/*<TimePicker defaultValue={moment().add(10, 'minutes')} showSecond={false} />*/}
+            {/*<TimePicker*/}
+            {/*  name={'time_to'}*/}
+            {/*  className={'input-time'}*/}
+            {/*  defaultValue={moment(timeStart).add(30, 'minutes')}*/}
+            {/*  onChange={handleChangeTimeTo}*/}
+            {/*  showSecond={false}*/}
+            {/*  minuteStep={10}*/}
+            {/*/>*/}
+          </div>
+        </div>
         <EventPatient values={values} />
 
         <InputText
@@ -174,28 +219,7 @@ export default function SchedulerFormCreate({
           required
           label={msg.get('scheduler.form.doctor')}
         />
-        <div className="flex">
-          <div>
-            <TimePicker
-              name={'time_from'}
-              className={'input-time'}
-              defaultValue={moment(timeStart)}
-              onChange={handleChangeTimeFrom}
-              showSecond={false}
-              minuteStep={5}
-            />
-          </div>
-          <div className="ml-4">
-            <TimePicker
-              name={'time_to'}
-              className={'input-time'}
-              defaultValue={moment(timeStart).add(30, 'minutes')}
-              onChange={handleChangeTimeTo}
-              showSecond={false}
-              minuteStep={10}
-            />
-          </div>
-        </div>
+
         <InputTextarea
           name={'comment'}
           values={values}
@@ -211,6 +235,7 @@ export default function SchedulerFormCreate({
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
               dispatch(showSchedulePopupAction(false));
+              dispatch(showOverlayAction(false));
               dispatch(setPopupAction(false));
             }}
             title={msg.get('scheduler.close')}

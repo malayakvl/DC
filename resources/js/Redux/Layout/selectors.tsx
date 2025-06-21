@@ -33,7 +33,7 @@ export const checkedIdsSelector = createSelector(
   rootSelector,
   (layout: State.Layouts): Layouts.checkedIds[] => layout.checkedIds
 );
-export const isPopupSelector = createSelector(
+export const isShowOverlaySelector = createSelector(
   rootSelector,
-  (layout: State.Layouts): Layouts.checkedIds[] => layout.isPopupActive
+  (layout: State.Layouts): Layouts.checkedIds[] => layout.showOverlay
 );

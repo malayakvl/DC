@@ -15,9 +15,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
-import { showSchedulePopupAction } from '../../Redux/Scheduler';
+import { setScheduleDateAction, setScheduleTimeAction, showSchedulePopupAction } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
-import { setPopupAction } from '../../Redux/Layout';
+import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
 
 const localizer = momentLocalizer(moment);
 const locales = {
@@ -36,8 +36,37 @@ const maxTime = new Date();
 maxTime.setHours(20, 0, 0, 0); // 20:00
 
 const DnDCalendar = withDragAndDrop(Calendar);
-
-
+const customStyles = {
+  group: (provided) => ({
+    ...provided,
+    borderBottom: '2px solid #e0e0e0',
+    padding: '10px 0',
+  }),
+  groupHeading: (provided) => ({
+    ...provided,
+    fontSize: '13px',
+    fontWeight: 'bold',
+    color: '#5b28e3',
+    textTransform: 'uppercase',
+    fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
+  }),
+  option: (provided) => ({
+    ...provided,
+    fontSize: '12px',
+    fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
+  }),
+  control: (provided) => ({
+    ...provided,
+    fontSize: '12px',
+    fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    fontSize: '14px', // Размер шрифта для выбранного значения
+    fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
+    color: '#333',
+  }),
+};
 
 
 export default function Index({
@@ -45,6 +74,8 @@ export default function Index({
   formData,
   clinicData,
   cabinetData,
+  customerGroupped,
+  cabinetGroupped,
   eventsData,
 }) {
   const appLang = useSelector(appLangSelector);
@@ -91,42 +122,34 @@ export default function Index({
     ],
   });
   const [filteredEvents, setFilteredEvents] = useState(events);
-  const colourOptions = [
-    { value: "ocean", label: "Ocean", color: "#00B8D9" },
-    { value: "blue", label: "Blue", color: "#0052CC" },
-    { value: "purple", label: "Purple", color: "#5243AA" },
-    { value: "red", label: "Red", color: "#FF5630" },
-    { value: "orange", label: "Orange", color: "#FF8B00" },
-    { value: "yellow", label: "Yellow", color: "#FFC400" },
-    { value: "green", label: "Green", color: "#36B37E" },
-    { value: "forest", label: "Forest", color: "#00875A" },
-    { value: "slate", label: "Slate", color: "#253858" },
-    { value: "silver", label: "Silver", color: "#666666" }
-  ];
-
-  const flavourOptions = [
-    { value: "vanilla", label: "Vanilla", rating: "safe" },
-    { value: "chocolate", label: "Chocolate", rating: "good" },
-    { value: "strawberry", label: "Strawberry", rating: "wild" }
-  ];
-  const groupedOptions = [
-    {
-      label: "Colours",
-      options: colourOptions
-    },
-    {
-      label: "Flavours",
-      options: flavourOptions
-    }
-  ];
 
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
-  const [dateRange, setDateRange] = useState({
-    start: new Date(2025, 4, 31), // 31 May 2025
-    end: new Date(2025, 5, 6),   // 6 June 2025
-  });
+  const [showAlert, setShowAlert] = useState(false);
+  const getCurrentWeekRange = () => {
+    const now = new Date(); // Динамическое текущее время
+    const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
+    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Расстояние до понедельника
 
+    // Начало недели (понедельник)
+    const start = new Date(now);
+    start.setDate(now.getDate() - diffToMonday);
+    start.setHours(0, 0, 0, 0); // Устанавливаем время на 00:00:00
+
+    // Конец недели (воскресенье)
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999); // Устанавливаем время на 23:59:59.999
+
+    return { start, end };
+  };
+
+  // const [dateRange, setDateRange] = useState({
+  //   start: new Date(2025, 4, 31), // 31 May 2025
+  //   end: new Date(2025, 5, 6),   // 6 June 2025
+  // });
+  const [dateRange, setDateRange] = useState(getCurrentWeekRange());
+  const [selectedGCabinet, setSelectedGCabinet] = useState(null);
 
   const filterByCabinets = (cabinetId) => {
     let filteredEvents;
@@ -279,12 +302,29 @@ export default function Index({
   // Click on calendar for create event
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
+      // Текущее время
+      const now = moment();
+
+      // Сравнение start с текущим временем
+      if (moment(start).isBefore(now)) {
+        dispatch(showOverlayAction(true));
+        setShowAlert(true); // Показать алерт
+        return;
+      }
+
       dispatch(showSchedulePopupAction(true));
-      dispatch(setPopupAction(true));
+      dispatch(showOverlayAction(true));
+      dispatch(setScheduleDateAction(moment(start).format('dd-mm-YYYY')));
+      dispatch(setScheduleTimeAction(start));
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
     },
     [setEvents]
   )
+
+  const closeAlert = () => {
+    setShowAlert(false);
+    dispatch(showOverlayAction(false));
+  };
 
   const CustomEvent = ({ event, view }) => {
     return view === 'month' ? (
@@ -303,31 +343,47 @@ export default function Index({
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Scheduler'} />
       <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
-        <div style={{ width: '120px', padding: '10px', borderRight: '1px solid #ccc', background: '#f9f9f9' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-            {cabinetData.map((cabinet, index) => (
+        {/* Кастомный алерт */}
+        {showAlert && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
+              <p className="text-gray-700 mb-6">
+                {msg.get('scheduler.time_schedule_error')}
+              </p>
               <button
-                key={`room_${index}`}
-                onClick={() => {
-
-                  setSelectedCabinet(selectedCabinet !== cabinet.id ? cabinet.id : 'all');
-                  filterByCabinets(selectedCabinet !== cabinet.id ? cabinet.id : 'all');
-                }}
-                style={{
-                  padding: '8px',
-                  background: selectedCabinet === cabinet.id ? '#6248a1' : '#f1eafd',
-                  color: selectedCabinet === cabinet.id ? '#fff' : '#000',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '12px'
-                }}
+                onClick={closeAlert}
+                className="w-full bg-violet-500 text-white py-2 px-4 rounded hover:bg-violet-600 transition"
               >
-                {cabinet.name}
+                ОК
               </button>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
+        {/*<div style={{ width: '120px', padding: '10px', borderRight: '1px solid #ccc', background: '#f9f9f9' }}>*/}
+        {/*  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>*/}
+        {/*    {cabinetData.map((cabinet, index) => (*/}
+        {/*      <button*/}
+        {/*        key={`room_${index}`}*/}
+        {/*        onClick={() => {*/}
+
+        {/*          setSelectedCabinet(selectedCabinet !== cabinet.id ? cabinet.id : 'all');*/}
+        {/*          filterByCabinets(selectedCabinet !== cabinet.id ? cabinet.id : 'all');*/}
+        {/*        }}*/}
+        {/*        style={{*/}
+        {/*          padding: '8px',*/}
+        {/*          background: selectedCabinet === cabinet.id ? '#6248a1' : '#f1eafd',*/}
+        {/*          color: selectedCabinet === cabinet.id ? '#fff' : '#000',*/}
+        {/*          borderRadius: '4px',*/}
+        {/*          cursor: 'pointer',*/}
+        {/*          textAlign: 'left',*/}
+        {/*          fontSize: '12px'*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        {cabinet.name}*/}
+        {/*      </button>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*</div>*/}
         <div style={{ flex: 1, padding: '10px' }}>
           <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '13px' }}>
@@ -344,22 +400,42 @@ export default function Index({
             </div>
             <div className={'clearfix'} />
           </div>
-          <Select
-            value={null}
-            onChange={() => console.log(1)}
-            options={groupedOptions}
-          />
-          <ul
-            className="flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 sh-p-tabs">
-            {customerData.map((person) => (
-              <li className="me-2 nowrap">
-                <a href="#" aria-current="page"
-                   className="">
-                  {shortenName(person.name)}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div className={'w-full flex relative z-10'}>
+            <div className={'w-1/2 mb-5'}>
+              <Select
+                placeholder="Лікарі..."
+                value={null}
+                styles={customStyles}
+                className={'sh-d-select'}
+                onChange={() => console.log(1)}
+                options={customerGroupped}
+              />
+            </div>
+            <div className={'w-1/2 mb-5 ml-4'}>
+              <Select
+                placeholder="Кабінети..."
+                value={selectedGCabinet}
+                styles={customStyles}
+                className={'sh-d-select'}
+                onChange={(option) =>  {
+                  setSelectedGCabinet(option);
+                }}
+                options={cabinetGroupped}
+              />
+            </div>
+          </div>
+
+          {/*<ul*/}
+          {/*  className="flex text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400 sh-p-tabs">*/}
+          {/*  {customerData.map((person) => (*/}
+          {/*    <li className="me-2 nowrap">*/}
+          {/*      <a href="#" aria-current="page"*/}
+          {/*         className="">*/}
+          {/*        {shortenName(person.name)}*/}
+          {/*      </a>*/}
+          {/*    </li>*/}
+          {/*  ))}*/}
+          {/*</ul>*/}
 
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
           <DnDCalendar
