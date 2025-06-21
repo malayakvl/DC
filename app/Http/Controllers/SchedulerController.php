@@ -5,23 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SchedulerUpdateRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
-use App\Models\Customer;
 use App\Models\Filial;
 use App\Models\Patient;
 use App\Models\Scheduler;
 use App\Models\User;
-use App\Models\ClinicUser;
-use App\Notifications\CustomerInviteNotification;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 
 class SchedulerController extends Controller
@@ -47,10 +40,12 @@ class SchedulerController extends Controller
             ->where('clinic_user.clinic_id', $clinicData->id)
             ->orderBy('last_name')
             ->get();
+
         // Group users by role_name and format into groupedOptions
+        App::setLocale($request->user()->locale);
         $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
             return [
-                'label' => $roleName,
+                'label' => __('roles.'.$roleName),
                 'options' => $group->map(function ($user) {
                     return [
                         'value' => $user->id,
