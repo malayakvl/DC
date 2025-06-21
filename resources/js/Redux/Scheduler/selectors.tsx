@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect';
-import { useSelector } from 'react-redux';
 // ------------------------------------
 // Selectors
 // ------------------------------------
@@ -14,6 +13,8 @@ export const showErrorPopupSelector = state =>
   state.scheduler.showErrorSchedulePopup;
 
 export const popupDoctorSelector = state => state.scheduler.popupDoctorId;
+export const pricePopupSelector = state => state.scheduler.showPricePopup;
+export const servicesSelector = state => state.scheduler.services;
 export const popupDateSelector = state => state.scheduler.dateStart;
 export const popupTimeSelector = state => state.scheduler.timeStart;
 export const popupStatusSelector = state => state.scheduler.statusId;

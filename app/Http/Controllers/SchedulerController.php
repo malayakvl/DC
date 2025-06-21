@@ -7,6 +7,8 @@ use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Filial;
 use App\Models\Patient;
+use App\Models\PriceCategory;
+use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\User;
 use Illuminate\Support\Facades\App;
@@ -40,6 +42,16 @@ class SchedulerController extends Controller
             ->where('clinic_user.clinic_id', $clinicData->id)
             ->orderBy('last_name')
             ->get();
+
+        $categories = PriceCategory::where('parent_id', null)
+            ->where('clinic_id', $clinicData->id)
+            ->get();
+        $arrServices = [];
+        foreach ($categories as $category) {
+            $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+        }
+        $arrCat = array();
+        $tree = $this->generateCategories($categories, $arrCat, 0);
 
         // Group users by role_name and format into groupedOptions
         App::setLocale($request->user()->locale);
@@ -115,9 +127,27 @@ class SchedulerController extends Controller
             'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
             'formData' => $formData,
-            'eventsData' => $events
+            'eventsData' => $events,
+            'categoriesData' => $categories,
+            'services' => $arrServices,
+            'tree' => $tree,
+            'currency' => $clinicData->currency->symbol
         ]);
     }
+
+    public function generateCategories($categories, &$arrCat, $level) {
+        foreach ($categories as $category) {
+            $category->level = $level;
+            $category->producerName = $category->producer();
+            $arrCat[] = $category;
+            if (count($category->children) > 0) {
+                $this->generateCategories($category->children, $arrCat, ($level+1));
+            }
+        }
+
+        return $arrCat;
+    }
+
 
     public function fetchEvents(Request $request) {
         $qData = $request->all();

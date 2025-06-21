@@ -43,7 +43,8 @@ const lngScheduler = {
     'calendar.tabds': 'Вкладки',
     'period': 'Період',
     time_schedule_error: 'Период недоступен',
-    from: 'Час'
+    from: 'Час',
+    manipulation: 'Послуга'
   },
 };
 export default lngScheduler;

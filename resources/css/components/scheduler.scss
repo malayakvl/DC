@@ -136,7 +136,7 @@
     top: 15%;
     left:29%;
     //background: palevioletred;
-    z-index: 99999;
+    z-index: 20;
     min-width: 600px;
     min-height: 600px;
 }
@@ -147,4 +147,32 @@
     font-family: "Manrope", sans-serif;
     font-weight: bold;
     color: #5b28e3;
+}
+.manipulation {
+    color: #424d71;
+    cursor: pointer;
+}
+.add-services {
+    color: #424d71;
+}
+.price-popup {
+    //position: fixed;
+    //top: 30px;
+    //left: 22%;
+}
+.pricing-block {
+}
+.bg-price {
+    height: 300px;
+    max-height: 300px;
+}
+.price-container {
+    margin-bottom: 30px;
+}
+.add-minpulation-row {
+    cursor: pointer;
+}
+.add-minpulation-row.selected .price-row{
+    background: #032f62;
+    color: #fff;
 }

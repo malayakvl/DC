@@ -16,6 +16,7 @@ export default function InputText({
   const { errors } = usePage().props;
 
   return (
+
     <div className={`relative`}>
       {showLabel && <InputLabel htmlFor={name} value={label} children={null} />}
 

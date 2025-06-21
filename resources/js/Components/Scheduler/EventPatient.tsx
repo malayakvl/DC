@@ -40,9 +40,9 @@ export default function EventPatient(values) {
   // }, [patientData])
 
   return (
-    <div className="mb-4">
+    <div>
       <>
-        <div className="mb-4 relative">
+        <div className="mb-0 relative">
           {/*<label className="control-label text-sm">{msg.get('scheduler.patient')}</label>*/}
           <InputText
             name={'patient'}

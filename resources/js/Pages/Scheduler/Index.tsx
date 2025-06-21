@@ -18,6 +18,9 @@ import { uk } from 'date-fns/locale';
 import { setScheduleDateAction, setScheduleTimeAction, showSchedulePopupAction } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
+import Pricing from './Pricing';
+import { pricePopupSelector } from '../../Redux/Scheduler/selectors';
+import dayjs from 'dayjs';
 
 const localizer = momentLocalizer(moment);
 const locales = {
@@ -77,6 +80,10 @@ export default function Index({
   customerGroupped,
   cabinetGroupped,
   eventsData,
+  currency,
+  categoriesData,
+  tree,
+  services
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -126,6 +133,8 @@ export default function Index({
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
+  const showPrice = useSelector(pricePopupSelector);
+
   const getCurrentWeekRange = () => {
     const now = new Date(); // Динамическое текущее время
     const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -144,10 +153,6 @@ export default function Index({
     return { start, end };
   };
 
-  // const [dateRange, setDateRange] = useState({
-  //   start: new Date(2025, 4, 31), // 31 May 2025
-  //   end: new Date(2025, 5, 6),   // 6 June 2025
-  // });
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [selectedGCabinet, setSelectedGCabinet] = useState(null);
 
@@ -314,8 +319,10 @@ export default function Index({
 
       dispatch(showSchedulePopupAction(true));
       dispatch(showOverlayAction(true));
-      dispatch(setScheduleDateAction(moment(start).format('dd-mm-YYYY')));
-      dispatch(setScheduleTimeAction(start));
+      dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
+      dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
+      dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
+      console.log('Dispatched time:', moment(start).toISOString()); // Для отладки
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
     },
     [setEvents]
@@ -342,7 +349,7 @@ export default function Index({
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Scheduler'} />
-      <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
+      <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
         {/* Кастомный алерт */}
         {showAlert && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -358,6 +365,15 @@ export default function Index({
               </button>
             </div>
           </div>
+        )}
+        {showPrice && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px]">
+            <div style={{maxHeight: '400px', overflow: 'scroll'}}>
+              <Pricing clinicData={clinicData} currency={currency} services={services} tree={tree} />
+            </div>
+          </div>
+        </div>
         )}
         {/*<div style={{ width: '120px', padding: '10px', borderRight: '1px solid #ccc', background: '#f9f9f9' }}>*/}
         {/*  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>*/}

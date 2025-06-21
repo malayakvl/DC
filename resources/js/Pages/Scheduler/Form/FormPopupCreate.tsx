@@ -1,7 +1,7 @@
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -10,33 +10,35 @@ import InputTextarea from '../../../Components/Form/InputTextarea';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngScheduler from '../../../Lang/Scheduler/translation';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
-import { showSchedulePopupAction } from '../../../Redux/Scheduler';
+import { showPricePopupAction, showSchedulePopupAction } from '../../../Redux/Scheduler';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'rc-time-picker/assets/index.css';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 import moment from 'moment';
-// import TimePicker from 'rc-time-picker';
 import {
   newPatientDataSelector,
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
   popupTimeSelector,
+  servicesSelector,
   showSchedulePopupSelector,
 } from '../../../Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '../../../Redux/Layout';
 import TextField from '@mui/material/TextField';
+import isoparse from 'dayjs/plugin/isoparse';
 
 export default function SchedulerFormCreate({
   formData,
   clinicData,
   cabinetData,
-  customerData,
-  className = '',
+  customerData
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -62,7 +64,7 @@ export default function SchedulerFormCreate({
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showSchedulePopupSelector);
-  const [value, setValue] = useState(null);
+  const popupServices = useSelector(servicesSelector);
 
   const handleChangeSelect = e => {
     const key = e.target.id;
@@ -113,6 +115,7 @@ export default function SchedulerFormCreate({
       ['status_id']: eventStatus,
     }));
   }, [eventDate, doctorId, eventStatus]);
+
   const closeModal = () => {
     dispatch(showSchedulePopupAction(false));
     const element = document.getElementsByTagName('body')[0];
@@ -133,19 +136,16 @@ export default function SchedulerFormCreate({
     }
     dispatch(showOverlayAction(false));
   };
-console.log(timeStart,  moment(timeStart).format('HH:mm'))
-  const valueFrom = new Date()
-  valueFrom.setHours(9)
-  valueFrom.setMinutes(0);
-  const today = dayjs(new Date(2025, 6, 21, 15, 30));
-  const yesterday = dayjs().subtract(1, 'day');
-  const todayStartOfTheDay = today
-  console.log(today)
+
+  const parsedTime = useMemo(() => {
+    return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
+  }, [timeStart]);
+  const parsedTimePlus30 = parsedTime ? parsedTime.add(30, 'minute') : null;
 
   return (
-    <section className={`px-5 max-h-[80vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`px-5 max-h-[85vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
-        <h2>
+        <h2 className={'pt-7'}>
           {formData?.id
             ? msg.get('mCategories.pricing.edit')
             : msg.get('scheduler.title.create.visit')}
@@ -154,41 +154,11 @@ console.log(timeStart,  moment(timeStart).format('HH:mm'))
 
       <form
         onSubmit={event => submit(event)}
-        className="mt-0 space-y-4 min-w-[350px]"
+        className="mt-0 space-y-3 min-w-[350px]"
         encType="multipart/form-data"
       >
         <EventStatus />
-        <div className="flex">
-          <div>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <TimePicker
-                format="HH:mm"
-                label={msg.get('scheduler.from')}
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    fullWidth: true,
-                  },
-                }}
-                defaultValue={dayjs(new Date(2025, 6, 21, 16, 30))}
-                name={'time_from'}
-                onChange={(newValue) => handleChangeTimeFrom(newValue)}
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
-          </div>
-          <div className="ml-4">
-            {/*<TimePicker defaultValue={moment().add(10, 'minutes')} showSecond={false} />*/}
-            {/*<TimePicker*/}
-            {/*  name={'time_to'}*/}
-            {/*  className={'input-time'}*/}
-            {/*  defaultValue={moment(timeStart).add(30, 'minutes')}*/}
-            {/*  onChange={handleChangeTimeTo}*/}
-            {/*  showSecond={false}*/}
-            {/*  minuteStep={10}*/}
-            {/*/>*/}
-          </div>
-        </div>
+
         <EventPatient values={values} />
 
         <InputText
@@ -200,26 +170,73 @@ console.log(timeStart,  moment(timeStart).format('HH:mm'))
           required
           label={msg.get('scheduler.form.title')}
         />
-        <InputSelect
-          name={'cabinet_id'}
-          values={values}
-          value={values.cabinet_id}
-          options={cabinetData}
-          onChange={handleChangeSelect}
-          required
-          label={msg.get('scheduler.form.cabinet')}
-        />
-        <InputSelect
-          name={'doctor_id'}
-          values={values}
-          value={values.doctor_id}
-          options={customerData}
-          defaultValue={doctorId}
-          onChange={handleChangeSelect}
-          required
-          label={msg.get('scheduler.form.doctor')}
-        />
-
+        <div className={'flex w-full'}>
+          <div className={'w-1/2'}>
+            <InputSelect
+              name={'cabinet_id'}
+              className={'w-1/2'}
+              values={values}
+              value={values.cabinet_id}
+              options={cabinetData}
+              onChange={handleChangeSelect}
+              required
+              label={msg.get('scheduler.form.cabinet')}
+            />
+          </div>
+          <div className={'w-1/2 ml-3'}>
+            <InputSelect
+              name={'doctor_id'}
+              values={values}
+              value={values.doctor_id}
+              options={customerData}
+              defaultValue={doctorId}
+              onChange={handleChangeSelect}
+              required
+              label={msg.get('scheduler.form.doctor')}
+            />
+          </div>
+        </div>
+        <div className={'clearfix'} />
+        {timeStart && (
+          <div className="flex flex-row pt-4">
+            <div className={'w-1/2'}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  ampm={false}
+                  label={msg.get('scheduler.from')}
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      fullWidth: true,
+                    },
+                  }}
+                  defaultValue={parsedTime}
+                  name={'time_from'}
+                  onChange={(newValue) => handleChangeTimeFrom(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div className={'w-1/2 ml-5'}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  ampm={false}
+                  label={msg.get('scheduler.from')}
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      fullWidth: true,
+                    },
+                  }}
+                  defaultValue={parsedTimePlus30}
+                  name={'time_from'}
+                  onChange={(newValue) => handleChangeTimeFrom(newValue)}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+          </div>
+        )}
         <InputTextarea
           name={'comment'}
           values={values}
@@ -228,7 +245,13 @@ console.log(timeStart,  moment(timeStart).format('HH:mm'))
           required
           label={msg.get('scheduler.form.comment')}
         />
-        <div className="flex items-center">
+        <div className={'manipulation flex'}>
+          <span>{msg.get('scheduler.manipulation')}</span>
+          <div className={'add-services ml-3 btn-link font-bold'} onClick={() => {
+            dispatch(showPricePopupAction(true))
+          }}> 📌 Додати</div>
+        </div>
+        <div className="flex items-center mb-7">
           <SecondaryButton
             className="btn-back"
             onClick={() => {
