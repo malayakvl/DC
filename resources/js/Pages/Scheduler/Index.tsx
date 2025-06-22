@@ -15,14 +15,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
-import { setScheduleDateAction, setScheduleTimeAction, showSchedulePopupAction } from '../../Redux/Scheduler';
+import {
+  setScheduleDateAction,
+  setScheduleTimeAction,
+  showPricePopupAction,
+  showSchedulePopupAction,
+} from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
 import Pricing from './Pricing';
 import { pricePopupSelector } from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
+import SecondaryButton from '../../Components/Form/SecondaryButton';
+import { faTrash,faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const localizer = momentLocalizer(moment);
 const locales = {
   'uk': uk,
 };
@@ -367,11 +374,25 @@ export default function Index({
           </div>
         )}
         {showPrice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px]">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
+            <div className={'absolute right-[20px] top-[10px] cursor-pointer z-50'} onClick={() => {
+              dispatch(showPricePopupAction(false))
+            }}>
+              <FontAwesomeIcon icon={faClose} className="ml-5" />
+            </div>
             <div style={{maxHeight: '400px', overflow: 'scroll'}}>
               <Pricing clinicData={clinicData} currency={currency} services={services} tree={tree} />
             </div>
+            <SecondaryButton
+              className="btn-back float-right mt-4 mr-[30px]"
+              onClick={() => {
+                dispatch(showPricePopupAction(false));
+              }}
+              title={msg.get('scheduler.close')}
+            >
+              {msg.get('scheduler.close')}
+            </SecondaryButton>
           </div>
         </div>
         )}
@@ -495,6 +516,7 @@ export default function Index({
             clinicData={clinicData}
             cabinetData={cabinetData}
             customerData={customerData}
+            currency={currency}
           />
         </div>
       </div>

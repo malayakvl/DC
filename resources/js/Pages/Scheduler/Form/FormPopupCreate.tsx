@@ -10,7 +10,7 @@ import InputTextarea from '../../../Components/Form/InputTextarea';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngScheduler from '../../../Lang/Scheduler/translation';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
-import { showPricePopupAction, showSchedulePopupAction } from '../../../Redux/Scheduler';
+import { setServicesAction, showPricePopupAction, showSchedulePopupAction } from '../../../Redux/Scheduler';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -32,13 +32,18 @@ import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '../../../Redux/Layout';
 import TextField from '@mui/material/TextField';
-import isoparse from 'dayjs/plugin/isoparse';
+import {
+  faEdit,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default function SchedulerFormCreate({
   formData,
   clinicData,
   cabinetData,
-  customerData
+  customerData,
+  currency
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -142,10 +147,25 @@ export default function SchedulerFormCreate({
   }, [timeStart]);
   const parsedTimePlus30 = parsedTime ? parsedTime.add(30, 'minute') : null;
 
+
+  const renderService = (item, num) => {
+    return (
+      <div className={'flex flex-row min-w-[350px]'}>
+        <div className={'float-left'}>{item.name}</div>
+        <div className={'flex-1 text-right'}>
+          {item.price} {currency}
+          <FontAwesomeIcon icon={faTrash} className="ml-5" onClick={() => {
+            dispatch(setServicesAction(item));
+          }} />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <section className={`px-5 max-h-[85vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
-        <h2 className={'pt-7'}>
+        <h2 className={'pt-7 pb-7'}>
           {formData?.id
             ? msg.get('mCategories.pricing.edit')
             : msg.get('scheduler.title.create.visit')}
@@ -249,7 +269,12 @@ export default function SchedulerFormCreate({
           <span>{msg.get('scheduler.manipulation')}</span>
           <div className={'add-services ml-3 btn-link font-bold'} onClick={() => {
             dispatch(showPricePopupAction(true))
-          }}> 📌 Додати</div>
+          }}> 📌 Додати
+          </div>
+          <div className="mt-0 ml-6 text-sm">
+            {popupServices?.map((item, index) => <>{renderService(item, index)}</>)}
+          </div>
+          <div className={'clearfix'} />
         </div>
         <div className="flex items-center mb-7">
           <SecondaryButton

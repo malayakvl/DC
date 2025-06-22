@@ -13,7 +13,9 @@ import {
 } from '@headlessui/react';
 import { Link } from '@inertiajs/react';
 import { pricePopupSelector, servicesSelector } from '../../Redux/Scheduler/selectors';
-import { setServicesAction } from '../../Redux/Scheduler';
+import { setServicesAction, showPricePopupAction, showSchedulePopupAction } from '../../Redux/Scheduler';
+import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
+import SecondaryButton from '../../Components/Form/SecondaryButton';
 
 export default function Pricing({ clinicData, tree, services, currency }) {
   const dispatch = useDispatch();
@@ -52,7 +54,6 @@ console.log(servicesPopup.find(_s => _s.id === 32))
   };
 
   const renderPriceBlock = (item, num) => {
-
     return (
       <div>
         <div className={`price-container pr-${num}`}>
@@ -75,17 +76,16 @@ console.log(servicesPopup.find(_s => _s.id === 32))
               </div>
             </span>
           ))}
-
         </div>
       </div>
     );
   };
 
   return (
-    <div className={'price-popup'}>
+    <div className={'price-popup relative'}>
       <div className="py-0">
         <div>
-          <div className="sm:p-8 mb-8 content-data bg-content bg-price">
+          <div className="sm:p-8 mb-3">
             <div className="mt-6">
               {tree?.map((item, index) => <>{renderPriceBlock(item, index)}</>)}
             </div>
