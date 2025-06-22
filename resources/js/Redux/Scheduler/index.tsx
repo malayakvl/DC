@@ -12,7 +12,8 @@ import {
   showPricePopupAction,
   setServicesAction,
   findPatientsAction,
-  setSchedulePatientIdAction
+  setSchedulePatientIdAction,
+  updateSchedulerPeriodAction
 } from './actions';
 
 const initialState = {
@@ -120,6 +121,12 @@ const ACTION_HANDLERS = {
       };
     },
   },
+  [updateSchedulerPeriodAction]: {
+    next: (state, action) => ({
+      ...state,
+      eventsData: action.payload,
+    }),
+  },
 };
 
 export {
@@ -134,7 +141,8 @@ export {
   fetchEventsAction,
   showPricePopupAction,
   setServicesAction,
-  setSchedulePatientIdAction
+  setSchedulePatientIdAction,
+  updateSchedulerPeriodAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

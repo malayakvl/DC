@@ -48,3 +48,17 @@ export const findPatientsAction: any = createAction(
         });
     }
 );
+export const updateSchedulerPeriodAction: any = createAction(
+  'scheduler/UPDATE_PERIOD',
+  async (data: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+      const state = getState();
+      return axios
+        .get(`/scheduler/updatePeriod?data=${JSON.stringify(data)}`,
+        )
+        .then(async res => {
+          return res.data.items;
+        });
+    }
+);
+

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
+use DateTime; // Import the DateTime class from the global namespace
 
 class SchedulerController extends Controller
 {
@@ -170,6 +171,53 @@ class SchedulerController extends Controller
 
         return response()->json([
             'items' => $patientsQueryResults
+        ]);
+    }
+
+    public function updatePeriod(Request $request) {
+        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $qData = $request->all();
+//        $weekStart = $qData['newDate'];
+        $decodedQueryData = (json_decode($qData['data']));
+        $weekStart = $decodedQueryData->newDate;
+        $date = new DateTime($weekStart);
+        $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
+        $eventsData = DB::table('schedulers')
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
+                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
+                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services',
+                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
+            )
+            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
+            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+            ->where('schedulers.clinic_id', $clinicData->id)
+            ->whereBetween('event_date', [$weekStart, $weekEnd])
+            ->get();
+        $events = array();
+        foreach ($eventsData as $event) {
+            $startDateTime = new DateTime("{$event->event_date} {$event->event_time_from}");
+            // Combine event_date and event_time_to for end
+            $endDateTime = new DateTime("{$event->event_date} {$event->event_time_to}");
+
+            $event->cabinet = $event->cabinet_name;
+            $event->start = $startDateTime;
+            $event->end = $endDateTime;
+            $events[] = (object) $event;
+        }
+
+        return response()->json([
+            'items' => $events
         ]);
     }
 
