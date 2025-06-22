@@ -24,7 +24,7 @@ import {
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
 import Pricing from './Pricing';
-import { pricePopupSelector } from '../../Redux/Scheduler/selectors';
+import { pricePopupSelector, showSchedulePopupSelector } from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faTrash,faClose } from '@fortawesome/free-solid-svg-icons';
@@ -141,6 +141,7 @@ export default function Index({
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
+  const showEventPopup = useSelector(showSchedulePopupSelector);
 
   const getCurrentWeekRange = () => {
     const now = new Date(); // Динамическое текущее время
@@ -511,13 +512,13 @@ export default function Index({
             resizable
             selectable
           />
-          <SchedulerFormCreate
+          {showEventPopup && <SchedulerFormCreate
             formData={formData}
             clinicData={clinicData}
             cabinetData={cabinetData}
             customerData={customerData}
             currency={currency}
-          />
+          />}
         </div>
       </div>
     </AuthenticatedLayout>

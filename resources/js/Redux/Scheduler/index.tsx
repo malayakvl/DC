@@ -10,7 +10,9 @@ import {
   setRemoteEventsAction,
   fetchEventsAction,
   showPricePopupAction,
-  setServicesAction, findPatientsAction,
+  setServicesAction,
+  findPatientsAction,
+  setSchedulePatientIdAction
 } from './actions';
 
 const initialState = {
@@ -22,6 +24,7 @@ const initialState = {
   timeStart: null,
   statusId: { name: 'planned', color: '#4c95f5' },
   newPatientData: null,
+  patientId: null,
   eventsData: [],
   patientsData: [],
   services: [],
@@ -67,6 +70,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       dateStart: action.payload,
+    }),
+  },
+  [setSchedulePatientIdAction]: {
+    next: (state, action) => ({
+      ...state,
+      patientId: action.payload,
     }),
   },
   [setScheduleStatusAction]: {
@@ -124,7 +133,8 @@ export {
   setRemoteEventsAction,
   fetchEventsAction,
   showPricePopupAction,
-  setServicesAction
+  setServicesAction,
+  setSchedulePatientIdAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

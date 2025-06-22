@@ -6,6 +6,7 @@ import lngScheduler from '../../Lang/Scheduler/translation';
 import InputText from '../../Components/Form/InputText';
 import { findPatientsAction } from '../../Redux/Scheduler/actions';
 import { patientsDataSelector } from '../../Redux/Scheduler/selectors';
+import { setSchedulePatientIdAction } from '../../Redux/Scheduler';
 
 export default function EventPatient(values) {
   const dispatch = useDispatch();
@@ -39,12 +40,6 @@ export default function EventPatient(values) {
     }
   };
 
-  const renderRow = (data) => {
-    return (
-      <li>{data.firstName}</li>
-    )
-  }
-
   const renderPatientsList = () => {
     if (patientsData.length === 0) {
       return;
@@ -55,10 +50,10 @@ export default function EventPatient(values) {
         <ul>
           {patientsData.map((_p, _idx) => (
             <li key={_idx} onClick={() => {
-              console.log(_p.id);
               setShowPatientsList(false);
               patientData.patient =  `${_p.last_name} ${_p.first_name}`;
               patientData.patientExistId = _p.id;
+              dispatch(setSchedulePatientIdAction(_p.id))
 
             }}>
               {_p.last_name} {_p.first_name}

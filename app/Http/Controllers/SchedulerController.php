@@ -28,6 +28,16 @@ class SchedulerController extends Controller
     {
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         $filialId = $request->session()->get('filial_id');
+        $customerSelectData = DB::select('
+            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
+                   roles.name AS role_name
+            FROM users
+            LEFT JOIN clinic_user ON clinic_user.user_id = users.id
+            LEFT JOIN roles ON roles.id = clinic_user.role_id
+            WHERE clinic_user.clinic_id = ?
+            ORDER BY name
+        ', [$clinicData->id]);
+
         $customerData = DB::table('users')
             ->select([
                 'users.id',
@@ -67,12 +77,11 @@ class SchedulerController extends Controller
                 })->values()->toArray()
             ];
         })->values()->toArray();
-//        dd($groupedOptions);exit;
-        foreach ($customerData as $customer) {
-            if ($customer->file) {
-                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->file;
-            }
-        }
+//        foreach ($customerData as $customer) {
+//            if ($customer->file) {
+//                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->file;
+//            }
+//        }
         if ($request->session()->get('filial_id')) {
             $listCabinets = DB::table('cabinets')
                 ->select('cabinets.*', "clinic_filials.name AS filial_name")
@@ -122,7 +131,7 @@ class SchedulerController extends Controller
 
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
-            'customerData' => $customerData,
+            'customerData' => $customerSelectData,
             'customerGroupped' => $groupedOptions,
             'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
@@ -289,7 +298,6 @@ class SchedulerController extends Controller
      */
     public function update(SchedulerUpdateRequest $request) {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-//        dd($request->status_id["name"]);exit;
         if ($request->user()->can('schedule-create')) {
             if ($request->id) {
 //                $userId = $request->id;
@@ -323,6 +331,8 @@ class SchedulerController extends Controller
                     $patient->save();
 
                     $patientId = $patient->id;
+                } else {
+                    $patientId = $request->patientId;
                 }
                 $scheduler = new Scheduler();
                 $scheduler->title = $request->title;
@@ -333,9 +343,10 @@ class SchedulerController extends Controller
                 $scheduler->cabinet_id = $request->cabinet_id;
                 $scheduler->doctor_id = $request->doctor_id;
                 $scheduler->patient_id = $patientId;
-                $scheduler->description = $request->description;
+                $scheduler->description = $request->comment;
                 $scheduler->status_name = $request->status_id["name"];
                 $scheduler->status_color = $request->status_id["color"];
+                $scheduler->services = json_encode($request->services);
                 $scheduler->save();
 
 //                $userId = $user->id;

@@ -16,7 +16,8 @@ export const setScheduleDateAction = createAction('schedule/SETUP_DATE');
 export const setScheduleStatusAction = createAction('schedule/SETUP_STATUS');
 export const setNewPatientAction = createAction('schedule/SETUP_NEW_PATIENT');
 export const setRemoteEventsAction = createAction('schedule/SET_REMOTE EVENTS');
-export const setServicesAction = createAction('schedule/SET_SERVICES EVENTS');
+export const setServicesAction = createAction('schedule/SET_SERVICES_EVENTS');
+export const setSchedulePatientIdAction = createAction('schedule/SET_PATIENT_ID');
 
 export const fetchEventsAction: any = createAction(
   'scheduler/FIND_EVENTS',

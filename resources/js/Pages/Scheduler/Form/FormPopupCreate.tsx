@@ -20,7 +20,7 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import moment from 'moment';
 import {
-  newPatientDataSelector,
+  newPatientDataSelector, patientIdSelector,
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
@@ -64,6 +64,7 @@ export default function SchedulerFormCreate({
   const { processing, recentlySuccessful, errors } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
   const timeStart = useSelector(popupTimeSelector);
+  const patientId = useSelector(patientIdSelector);
   const eventStatus = useSelector(popupStatusSelector);
   const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
@@ -92,22 +93,22 @@ export default function SchedulerFormCreate({
   const handleChangeTimeFrom = value => {
     setValues(values => ({
       ...values,
-      ['event_time_from']: moment(value).format('HH:mm'),
+      ['event_time_from']: value.format('HH:mm'),
     }));
   };
 
   const handleChangeTimeTo = value => {
     setValues(values => ({
       ...values,
-      ['event_time_to']: moment(value).format('HH:mm'),
+      ['event_time_to']: value.format('HH:mm'),
     }));
   };
 
   useEffect(() => {
     setValues(values => ({
       ...values,
-      ['event_time_from']: moment(timeStart).format('HH:mm'),
-      ['event_time_to']: moment(timeStart).add(30, 'minutes').format('HH:mm'),
+      ['event_time_from']: timeStart,
+      ['event_time_to']: parsedTimePlus30.format('HH:mm'),
       ['status_id']: eventStatus,
     }));
   }, [timeStart]);
@@ -132,8 +133,12 @@ export default function SchedulerFormCreate({
     e.preventDefault();
     values['newPatientData'] = newPatientData;
     values['event_date'] = eventDate;
-    values['event_time_from'] = moment(timeStart).format('HH:mm');
-
+    // values['event_time_from'] = moment(timeStart).format('HH:mm');
+    values['services'] = popupServices;
+    if (patientId) {
+      values['patientId'] = patientId;
+    }
+console.log(values);
     if (formData.id) {
       router.post(`/scheduler/update?id=${formData.id}`, values);
     } else {
@@ -231,7 +236,7 @@ export default function SchedulerFormCreate({
                     },
                   }}
                   defaultValue={parsedTime}
-                  name={'time_from'}
+                  name={'event_time_from'}
                   onChange={(newValue) => handleChangeTimeFrom(newValue)}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -249,8 +254,8 @@ export default function SchedulerFormCreate({
                     },
                   }}
                   defaultValue={parsedTimePlus30}
-                  name={'time_from'}
-                  onChange={(newValue) => handleChangeTimeFrom(newValue)}
+                  name={'event_time_to'}
+                  onChange={(newValue) => handleChangeTimeTo(newValue)}
                   renderInput={(params) => <TextField {...params} />}
                 />
               </LocalizationProvider>

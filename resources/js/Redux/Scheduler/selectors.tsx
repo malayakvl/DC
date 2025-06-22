@@ -21,6 +21,7 @@ export const popupStatusSelector = state => state.scheduler.statusId;
 export const newPatientDataSelector = state => state.scheduler.newPatientData;
 export const eventsDataSelector = state => state.scheduler.eventsData;
 export const patientsDataSelector = state => state.scheduler.patientsData;
+export const patientIdSelector = state => state.scheduler.patientId;
 
 export const cWeekStart = state => state.scheduler.weekStart;
 export const cWeekEnd = state => state.scheduler.weekEnd;
