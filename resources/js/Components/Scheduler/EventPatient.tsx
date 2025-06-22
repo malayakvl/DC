@@ -3,20 +3,18 @@ import Lang from 'lang.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import lngScheduler from '../../Lang/Scheduler/translation';
-// import { setShowTableError } from "../../Redux/Incominginvoice";
-// import { Link } from "@inertiajs/react";
-// import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/solid';
 import InputText from '../../Components/Form/InputText';
-import { setNewPatientAction } from '../../Redux/Scheduler';
+import { findPatientsAction } from '../../Redux/Scheduler/actions';
+import { patientsDataSelector } from '../../Redux/Scheduler/selectors';
 
 export default function EventPatient(values) {
-  // const t = useTranslations();
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngScheduler,
     locale: appLang,
   });
+  const patientsData = useSelector(patientsDataSelector);
   const [addPatient, setAddPatient] = useState(false);
   const [patientData, setPatientData] = useState({
     firstName: '',
@@ -24,7 +22,9 @@ export default function EventPatient(values) {
     email: '',
     phone: '',
     patient: '',
+    patientExistId: null
   });
+  const [showPatientsList, setShowPatientsList] = useState(false)
 
   const handleChange = e => {
     const key = e.target.id;
@@ -33,11 +33,45 @@ export default function EventPatient(values) {
       ...values,
       [key]: value,
     }));
+    // find clinic patients
+    if (e.target.value.length > 3) {
+      dispatch(findPatientsAction(e.target.value))
+    }
   };
 
-  // useEffect(() => {
-  //     dispatch(setNewPatientAction(patientData));
-  // }, [patientData])
+  const renderRow = (data) => {
+    return (
+      <li>{data.firstName}</li>
+    )
+  }
+
+  const renderPatientsList = () => {
+    if (patientsData.length === 0) {
+      return;
+    }
+
+    return (
+      <div className="d-patient-list">
+        <ul>
+          {patientsData.map((_p, _idx) => (
+            <li key={_idx} onClick={() => {
+              console.log(_p.id);
+              setShowPatientsList(false);
+              patientData.patient =  `${_p.last_name} ${_p.first_name}`;
+              patientData.patientExistId = _p.id;
+
+            }}>
+              {_p.last_name} {_p.first_name}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    setShowPatientsList(true);
+  }, [patientsData])
 
   return (
     <div>
@@ -52,6 +86,7 @@ export default function EventPatient(values) {
             required
             label={msg.get('scheduler.patient')}
           />
+          <>{showPatientsList && renderPatientsList()}</>
           {!addPatient && (
             <span
               onClick={() => {

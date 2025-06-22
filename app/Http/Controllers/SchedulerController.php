@@ -148,11 +148,27 @@ class SchedulerController extends Controller
         return $arrCat;
     }
 
+    public function fetchPatients(Request $request) {
+        $qData = $request->all();
+        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $patientsQueryResults = DB::select('
+            SELECT patients.id, patients.first_name, patients.last_name 
+            FROM patients
+            LEFT JOIN clinic_patient ON clinic_patient.patient_id = patients.id
+            WHERE clinic_patient.clinic_id = ? 
+            AND (patients.first_name LIKE ? OR patients.last_name LIKE ?)
+        ', [$clinicData->id, '%' .$qData['strFind']. '%', '%' .$qData['strFind']. '%']);
+
+        return response()->json([
+            'items' => $patientsQueryResults
+        ]);
+    }
+
 
     public function fetchEvents(Request $request) {
         $qData = $request->all();
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $eventsData = Scheduler::where('clinic_id', '=', $clinicData->id)->get();
+//        $eventsData = Scheduler::where('clinic_id', '=', $clinicData->id)->get();
 //        $eventsData = DB::table('schedulers')
 //            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
 //                'schedulers.event_time_to',

@@ -374,27 +374,27 @@ export default function Index({
           </div>
         )}
         {showPrice && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
-            <div className={'absolute right-[20px] top-[10px] cursor-pointer z-50'} onClick={() => {
-              dispatch(showPricePopupAction(false))
-            }}>
-              <FontAwesomeIcon icon={faClose} className="ml-5" />
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
+              <div className={'absolute right-[20px] top-[10px] cursor-pointer z-50'} onClick={() => {
+                dispatch(showPricePopupAction(false))
+              }}>
+                <FontAwesomeIcon icon={faClose} className="ml-5" />
+              </div>
+              <div style={{maxHeight: '400px', overflow: 'scroll'}}>
+                <Pricing clinicData={clinicData} currency={currency} services={services} tree={tree} />
+              </div>
+              <SecondaryButton
+                className="btn-back float-right mt-4 mr-[30px]"
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+                title={msg.get('scheduler.close')}
+              >
+                {msg.get('scheduler.close')}
+              </SecondaryButton>
             </div>
-            <div style={{maxHeight: '400px', overflow: 'scroll'}}>
-              <Pricing clinicData={clinicData} currency={currency} services={services} tree={tree} />
-            </div>
-            <SecondaryButton
-              className="btn-back float-right mt-4 mr-[30px]"
-              onClick={() => {
-                dispatch(showPricePopupAction(false));
-              }}
-              title={msg.get('scheduler.close')}
-            >
-              {msg.get('scheduler.close')}
-            </SecondaryButton>
           </div>
-        </div>
         )}
         {/*<div style={{ width: '120px', padding: '10px', borderRight: '1px solid #ccc', background: '#f9f9f9' }}>*/}
         {/*  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>*/}

@@ -176,3 +176,19 @@
     background: #032f62;
     color: #fff;
 }
+.d-patient-list {
+    font-size: 13px;
+    background: #fff;
+    position: absolute;
+    width: 100%;
+    z-index: 999;
+    border: solid 1px #c9bfbf;
+    top: 57px;
+    padding: 5px;
+
+    li {
+        padding-bottom: 4px;
+        padding-left: 10px;
+        cursor: pointer;
+    }
+}

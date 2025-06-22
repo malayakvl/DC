@@ -34,3 +34,16 @@ export const fetchEventsAction: any = createAction(
         });
     }
 );
+export const findPatientsAction: any = createAction(
+  'scheduler/FIND_PATIENTS',
+  async (data: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+      const state = getState();
+      return axios
+        .get(`/scheduler/findPatients?strFind=${data}`,
+        )
+        .then(async res => {
+          return res.data.items;
+        });
+    }
+);

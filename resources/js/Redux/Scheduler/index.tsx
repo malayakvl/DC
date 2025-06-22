@@ -10,7 +10,7 @@ import {
   setRemoteEventsAction,
   fetchEventsAction,
   showPricePopupAction,
-  setServicesAction
+  setServicesAction, findPatientsAction,
 } from './actions';
 
 const initialState = {
@@ -23,6 +23,7 @@ const initialState = {
   statusId: { name: 'planned', color: '#4c95f5' },
   newPatientData: null,
   eventsData: [],
+  patientsData: [],
   services: [],
   weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
   weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
@@ -84,6 +85,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       eventsData: action.payload,
+    }),
+  },
+  [findPatientsAction]: {
+    next: (state, action) => ({
+      ...state,
+      patientsData: action.payload,
     }),
   },
   [setRemoteEventsAction]: {
