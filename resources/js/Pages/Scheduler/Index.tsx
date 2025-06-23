@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Calendar, dateFnsLocalizer, momentLocalizer } from 'react-big-calendar';
@@ -108,6 +108,7 @@ export default function Index({
     day: msg.get('scheduler.day'),
     agenda: msg.get('scheduler.agenda'),
   }
+
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState({
     all: [
@@ -132,9 +133,6 @@ export default function Index({
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
-  const [isHovered, setIsHovered] = useState(false);
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-
 
   const getCurrentWeekRange = () => {
     const now = new Date(); // Динамическое текущее время
@@ -334,123 +332,65 @@ export default function Index({
     dispatch(showOverlayAction(false));
   };
 
-  const showFullViewEvent = (_event) => {
-    return (
-      <div className={'absolute top-0 left-0'}>
-        <strong>{_event.title}</strong>
-        <div>{_event.description}</div>
-      </div>
-    )
-  }
-
   const CustomEvent = ({ event, view }) => {
+
+    const handleMouseEnter = (e) => {
+      let servicesData = '';
+      try {
+        const parsedData = JSON.parse(event.services);
+        if (Array.isArray(parsedData)) {
+          parsedData.map((_s, index) => (
+            servicesData += `<span class="block"><i key=${index}>${_s.name}</i></span>`
+          ))
+        }
+      } catch (error) {
+        console.error("Ошибка парсинга JSON:", error);
+      }
+      // Calculate position based on event's bounding box
+      const rect = e.currentTarget.getBoundingClientRect();
+      document.getElementById('bigViewEvent').style.top = `${rect.top  - 178}px`;
+      document.getElementById('bigViewEvent').style.left = `${rect.left - 18}px`;
+      document.getElementById('bigViewEvent').style.display = 'block';
+      document.getElementById('bigViewEvent').innerHTML = `
+        <div>
+          <p class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></p>
+          <span class="block mb-1">${msg.get('scheduler.from')}: ${event.event_time_from} - ${event.event_time_to}</span>
+          <span class="block mb-1">${msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>${event.last_name} ${event.first_name}</strong></span>
+          <span class="block mb-1">${msg.get('scheduler.form.cabinet')}: ${event.cabinet_name}</span>
+          <span class="block mb-1">${msg.get('scheduler.patient')}: <strong className={'sh-patient'}>${event.p_name} ${event.pl_name}</strong></span>
+          <p>${msg.get('scheduler.manipulation')}:</p>
+          <p>${servicesData}</p>
+        </div>
+      `;
+    };
+
+
+    let showFull = false;
+    if (view === 'week') {
+
+    }
     return view === 'month' ? (
       <strong>{event.title}</strong>
     ) : (
-      <div className={'relative'} onMouseEnter={() => {
-        handleMouseEnter(event)
-      }}>
-        <strong>{event.title}</strong>
-        <div>Кабинет: Хирургия</div>
-        <div>Приоритет: N/A</div>
+      <div className={'rbc-event-data relative'}
+           onMouseEnter={handleMouseEnter}
+           onMouseLeave={handleMouseLeave}
+      >
+        <p className={'block mb-1'}>
+          <strong style={{marginLeft: '20px'}}>{event.title}</strong>
+          <div className={'sh-event-status'} style={{background: event.status_color}}></div>
+        </p>
+        <span className={'block mb-1'}>{event.cabinet_name}</span>
         <div>{event.description}</div>
 
       </div>
     );
   };
 
-  const handleMouseEnter = (e) => {
-    setIsHovered(true);
-    // Calculate position based on event's bounding box
-    const rect = e.currentTarget.getBoundingClientRect();
-    setPopupPosition({
-      top: rect.bottom + window.scrollY, // Position below the event
-      left: rect.left + window.scrollX, // Align with the event's left edge
-    });
-  };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
   };
 
-
-  const CustomEventWrapper = ({ event, children }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-
-    const handleMouseEnter = (e) => {
-      setIsHovered(true);
-      // Calculate position based on event's bounding box
-      const rect = e.currentTarget.getBoundingClientRect();
-      setPopupPosition({
-        top: 20, // Position below the event
-        left: 50, // Align with the event's left edge
-      });
-      console.log('TUT')
-    };
-
-    const handleMouseLeave = () => {
-      setIsHovered(false);
-    };
-
-    const renderEventServices = (servicesData) => {
-      if (servicesData) {
-        try {
-          const parsedData = JSON.parse(servicesData);
-          if (Array.isArray(parsedData)) {
-            return (
-              <>
-                {parsedData.map((_s, index) => (
-                  <span className={'block'}><i key={index}>{_s.name}</i></span>
-                ))}
-              </>
-            );
-          }
-        } catch (error) {
-          console.error("Ошибка парсинга JSON:", error);
-        }
-      }
-      return null;
-    };
-
-    return (
-      <div
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {children} {/* Render the original event content */}
-        {isHovered && (
-          <div
-            id={`event-${event.id}`}
-            className={'hover-event-popup'}
-            style={{
-              position: 'absolute',
-              background:'red',
-              top: popupPosition.top,
-              left: popupPosition.left,
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
-              padding: '10px',
-              borderRadius: '5px',
-              minHeight: '200px',
-              zIndex: 99999999, // Ensure popup is on top
-              minWidth: '200px', // Example styling for a "big" popup
-              boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
-            }}
-          >
-            <p className={'block mb-2'}><strong className={'hover-event-title'}>{event.title}</strong></p>
-            <span className={'block mb-1'}>{msg.get('scheduler.from')}: {event.event_time_from} - {event.event_time_to}</span>
-            <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>{event.last_name} {event.first_name}</strong></span>
-            <span className={'block mb-1'}>{msg.get('scheduler.form.cabinet')}: {event.cabinet_name}</span>
-            <span className={'block mb-1'}>{msg.get('scheduler.patient')}: <strong className={'sh-patient'}>{event.p_name} {event.pl_name}</strong></span>
-            <p>Послуги:</p>
-            <p>{renderEventServices(event.services)}</p>
-            {/* Add more event details here */}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
@@ -477,6 +417,29 @@ export default function Index({
 
     setFilteredEvents(filteredEvents)
   }, [shEvents])
+
+
+  useEffect(() => {
+    if (eventsData.length) {
+      const _perfEvents = [];
+      eventsData.forEach(_event => {
+        _event.start = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
+        _event.end = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
+        _event.desc = 'Some description'
+      });
+    }
+    let filteredEvents;
+    filteredEvents = {
+      all: eventsData
+    };
+    setFilteredEvents(filteredEvents)
+  }, [eventsData])
 
 
 
@@ -565,43 +528,57 @@ export default function Index({
           </div>
 
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-          <DnDCalendar
-            culture="uk"
-            key={activePerson}
-            localizer={localizerFn}
-            events={filteredEvents['all']}
-            startAccessor="start"
-            endAccessor="end"
-            defaultView="week"
-            defaultDate={dateRange.start}
-            min={minTime} // Начало с 8:00
-            max={maxTime}
-            messages={shBtnsTitles}
-            onEventResize={onEventResize}
-            onEventDrop={moveEvent}
-            onNavigate={handleNavigate}
-            onDropFromOutside={onDropFromOutside}
-            draggableAccessor={() => true}
-            dragFromOutsideItem={dragFromOutsideItem}
-            onSelectSlot={handleSelectSlot}
-            onSelectEvent={(event) => alert(`EventExist: ${event.id}`)}
-            eventPropGetter={(event) => ({
-              style: {
-                borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
-                borderRadius: '5px',
-                color: 'black',
-                border: 'solid 1px #be21ea',
-                padding: '5px',
-                zIndex: 10,
-                background: 'white'
-              },
-            })}
-            components={{
-              eventWrapper: CustomEventWrapper
-            }}
-            resizable
-            selectable
-          />
+          <div className={'relative'}>
+            <DnDCalendar
+              culture="uk"
+              key={activePerson}
+              localizer={localizerFn}
+              events={filteredEvents['all']}
+              startAccessor="start"
+              step={30}
+              endAccessor="end"
+              defaultView="week"
+              defaultDate={dateRange.start}
+              min={minTime} // Начало с 8:00
+              max={maxTime}
+              messages={shBtnsTitles}
+              onEventResize={onEventResize}
+              onEventDrop={moveEvent}
+              onNavigate={handleNavigate}
+              onDropFromOutside={onDropFromOutside}
+              draggableAccessor={() => true}
+              dragFromOutsideItem={dragFromOutsideItem}
+              onSelectSlot={handleSelectSlot}
+              onSelectEvent={(event) => alert(`EventExist: ${event.id}`)}
+              eventPropGetter={(event) => ({
+                style: {
+                  borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
+                  borderRadius: '5px',
+                  color: 'black',
+                  border: 'solid 1px #be21ea',
+                  padding: '5px',
+                  zIndex: 10,
+                  backgroundColor: '#fff'
+                },
+              })}
+              //
+              components={{
+                event: CustomEvent, // Override default event rendering
+              }}
+              resizable
+              selectable
+            />
+            <div onMouseLeave={() => {
+              document.getElementById('bigViewEvent').style.display = 'none'
+            }} className={'event-big-content'} id={'bigViewEvent'} style={{
+              background: 'white',
+              position: 'absolute',
+              width: '200px',
+              minHeight: '150px',
+              zIndex: 99
+            }}></div>
+          </div>
+
           {showEventPopup && <SchedulerFormCreate
             formData={formData}
             clinicData={clinicData}

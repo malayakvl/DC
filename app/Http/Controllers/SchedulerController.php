@@ -113,21 +113,44 @@ class SchedulerController extends Controller
         $eventsData = DB::table('schedulers')
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
+                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services',
+                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
                 'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
             )
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-        $events = array();
-        foreach ($eventsData as $event) {
-            $event->startDate = date($event->event_date.' '.$event->event_time_from);
-            $event->endDate = date($event->event_date.' '.$event->event_time_to);
-            $event->cabinet = $event->cabinet_name;
-            $events[] = (object) $event;
-        }
+
+//        $eventsData = DB::table('schedulers')
+//            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
+//                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
+//                'schedulers.cabinet_id', 'schedulers.cabinet_id',
+//                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
+//            )
+//            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
+//            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+//            ->where('schedulers.clinic_id', $clinicData->id)
+//            ->whereBetween('event_date', [$weekStart, $weekEnd])
+//            ->get();
+//        $events = array();
+//        foreach ($eventsData as $event) {
+//            $event->startDate = date($event->event_date.' '.$event->event_time_from);
+//            $event->endDate = date($event->event_date.' '.$event->event_time_to);
+//            $event->cabinet = $event->cabinet_name;
+//            $events[] = (object) $event;
+//        }
         $formData = new Scheduler();
 
         return Inertia::render('Scheduler/Index', [
@@ -137,7 +160,7 @@ class SchedulerController extends Controller
             'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
             'formData' => $formData,
-            'eventsData' => $events,
+            'eventsData' => $eventsData,
             'categoriesData' => $categories,
             'services' => $arrServices,
             'tree' => $tree,
@@ -204,20 +227,8 @@ class SchedulerController extends Controller
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-        $events = array();
-        foreach ($eventsData as $event) {
-            $startDateTime = new DateTime("{$event->event_date} {$event->event_time_from}");
-            // Combine event_date and event_time_to for end
-            $endDateTime = new DateTime("{$event->event_date} {$event->event_time_to}");
-
-            $event->cabinet = $event->cabinet_name;
-            $event->start = $startDateTime;
-            $event->end = $endDateTime;
-            $events[] = (object) $event;
-        }
-
         return response()->json([
-            'items' => $events
+            'items' => $eventsData
         ]);
     }
 

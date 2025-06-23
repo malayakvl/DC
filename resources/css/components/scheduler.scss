@@ -142,6 +142,7 @@
 }
 .rbc-event {
     font-size: 12px;
+    padding: 0 !important;
 }
 .rbc-toolbar-label, .rbc-button-link {
     font-family: "Manrope", sans-serif;
@@ -208,4 +209,27 @@
 }
 .sh-patient {
     color: palevioletred;
+}
+.rbc-event-data {
+    //background: yellow;
+    margin: 5px;
+}
+.rbc-event-label {
+    display: none !important;
+}
+.event-big-content {
+    font-size: 12px;
+    padding: 10px;
+    border: solid 1px purple;
+    border-radius: 5px;
+    box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
+    -webkit-box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
+    -moz-box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
+}
+.sh-event-status {
+    position: absolute;
+    top: 0;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
 }
