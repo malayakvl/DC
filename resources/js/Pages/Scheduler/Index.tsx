@@ -1,7 +1,10 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import PropTypes from 'prop-types'
 import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Calendar, dateFnsLocalizer, momentLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, Views, Navigate, DateLocalizer } from 'react-big-calendar';
+import TimeGrid from 'react-big-calendar/lib/TimeGrid';
+import * as dates from 'date-arithmetic'
 import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import DatePicker from 'react-datepicker';
@@ -23,12 +26,12 @@ import {
   updateSchedulerPeriodAction
 } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
-import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
+import { showOverlayAction } from '../../Redux/Layout';
 import Pricing from './Pricing';
 import { eventsDataSelector, pricePopupSelector, showSchedulePopupSelector } from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
-import { faTrash,faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const locales = {
@@ -79,6 +82,68 @@ const customStyles = {
   }),
 };
 
+function MyWeek({
+  date,
+  localizer,
+  max = localizer.endOf(new Date(), 'day'),
+  min = localizer.startOf(new Date(), 'day'),
+  scrollToTime = localizer.startOf(new Date(), 'day'),
+  ...props
+}) {
+  const currRange = useMemo(
+    () => MyWeek.range(date, { localizer }),
+    [date, localizer]
+  )
+
+  return (
+    <TimeGrid
+      date={date}
+      eventOffset={30}
+      localizer={localizer}
+      max={max}
+      min={min}
+      range={currRange}
+      scrollToTime={scrollToTime}
+      {...props}
+    />
+  )
+}
+MyWeek.propTypes = {
+  date: PropTypes.instanceOf(Date).isRequired,
+  localizer: PropTypes.object,
+  max: PropTypes.instanceOf(Date),
+  min: PropTypes.instanceOf(Date),
+  scrollToTime: PropTypes.instanceOf(Date),
+}
+MyWeek.range = (date, { localizer }) => {
+  const start = date;
+  const end = dates.add(start, 2, 'day')
+
+  let current = start
+  const range = []
+
+  while (localizer.lte(current, end, 'day')) {
+    range.push(current)
+    current = localizer.add(current, 1, 'day')
+  }
+
+  return range
+}
+MyWeek.navigate = (date, action, { localizer }) => {
+  switch (action) {
+    case Navigate.PREVIOUS:
+      return localizer.add(date, -3, 'day')
+
+    case Navigate.NEXT:
+      return localizer.add(date, 3, 'day')
+
+    default:
+      return date
+  }
+}
+MyWeek.title = (date) => {
+  return `My awesome week: ${date.toLocaleDateString()}`
+}
 
 export default function Index({
   customerData,
@@ -111,29 +176,14 @@ export default function Index({
 
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState({
-    all: [
-      {
-        id: 92,
-        title: 'Some Other Event',
-        start: new Date(2025, 5, 19, 11, 0, 0),
-        end: new Date(2025, 5, 19, 11, 30, 0),
-      },
-      {
-        id: 93,
-        title: 'Some Other Event',
-        start: new Date(2025, 5, 23, 11, 0, 0),
-        end: new Date(2025, 5, 23, 11, 30, 0),
-      },
-    ],
+    all: []
   });
-  const [filteredEvents, setFilteredEvents] = useState(events);
-
+  const [filteredEvents, setFilteredEvents] = useState({all: []});
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
-
   const getCurrentWeekRange = () => {
     const now = new Date(); // Динамическое текущее время
     const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -151,9 +201,62 @@ export default function Index({
 
     return { start, end };
   };
-
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [selectedGCabinet, setSelectedGCabinet] = useState(null);
+  const [draggedTask, setDraggedTask] = useState(null);
+  const { defaultDate, views } = useMemo(
+    () => ({
+      defaultDate: new Date(2025, 5, 23),
+      views: {
+        day: true,
+        week: MyWeek,
+      },
+    }),
+    []
+  )
+  useEffect(() => {
+    if (shEvents.length) {
+      const _perfEvents = [];
+      shEvents.forEach(_event => {
+        _event.start = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
+        _event.end = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
+      });
+    }
+    let filteredEvents;
+    filteredEvents = {
+      all: shEvents
+    };
+
+    setFilteredEvents(filteredEvents)
+  }, [shEvents])
+
+  useEffect(() => {
+    if (eventsData.length) {
+      const _perfEvents = [];
+      eventsData.forEach(_event => {
+        _event.start = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
+        _event.end = new Date(
+          parseInt(_event.year),
+          parseInt(_event.month) - 1,
+          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
+        _event.desc = 'Some description'
+      });
+    }
+    let filteredEvents;
+    filteredEvents = {
+      all: eventsData
+    };
+    setFilteredEvents(filteredEvents)
+  }, [eventsData])
 
   const filterByCabinets = (cabinetId) => {
     let filteredEvents;
@@ -183,9 +286,28 @@ export default function Index({
     setSelectedCabinet(cabinetId);
     setFilteredEvents(filteredEvents)
   };
+  const shortenName = (fullName) => {
+    if (!fullName || typeof fullName !== "string") {
+      return "Неправильний формат імені";
+    }
 
-  const [draggedTask, setDraggedTask] = useState(null);
+    const parts = fullName.trim().split(" ");
+    if (parts.length < 2) {
+      return "Потрібно щонайменше прізвище та ім'я";
+    }
 
+    const [lastName, firstName, middleName] = parts;
+    let result = `${lastName} ${firstName[0]}.`;
+    if (middleName) {
+      result += `${middleName[0]}.`;
+    }
+
+    return result;
+  }
+
+  /**************************/
+  /****** EVENTS ACTIONS */
+  /**************************/
   const moveEvent = ({ event, start, end, allDay }) => {
     const eventId = event.id;
     const currEvent = events.all.find(_event => _event.id === event.id)
@@ -206,7 +328,6 @@ export default function Index({
       )
     }));
   };
-
   const onDropFromOutside = ({ start, allDay }) => {
     if (!draggedTask) {
       console.error('No dragged task found');
@@ -267,26 +388,6 @@ export default function Index({
       console.error('Error during drop operation:', error);
     }
   };
-
-  const shortenName = (fullName) => {
-    if (!fullName || typeof fullName !== "string") {
-      return "Неправильний формат імені";
-    }
-
-    const parts = fullName.trim().split(" ");
-    if (parts.length < 2) {
-      return "Потрібно щонайменше прізвище та ім'я";
-    }
-
-    const [lastName, firstName, middleName] = parts;
-    let result = `${lastName} ${firstName[0]}.`;
-    if (middleName) {
-      result += `${middleName[0]}.`;
-    }
-
-    return result;
-  }
-
   const dragFromOutsideItem = () => {
     if (!draggedTask) return null;
     console.log('Providing dragFromOutsideItem:', draggedTask);
@@ -297,43 +398,43 @@ export default function Index({
       end: new Date(new Date().getTime() + parseInt(draggedTask.duration.split(':')[0]) * 60 * 60 * 1000),
     };
   };
-
   const handleDateRangeChange = (dates) => {
     const [start, end] = dates;
     setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
   };
+  const handleMouseLeave = () => {
+  };
+  const handleNavigate = useCallback((newDate, view, action) => {
+    dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
+  }, []);
 
-  // Click on calendar for create event
+  /***** Click on cell and show popup *****/
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
       // Текущее время
       const now = moment();
-
       // Сравнение start с текущим временем
       if (moment(start).isBefore(now)) {
         dispatch(showOverlayAction(true));
         setShowAlert(true); // Показать алерт
         return;
       }
-
       dispatch(showSchedulePopupAction(true));
       dispatch(showOverlayAction(true));
       dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
-      console.log('Dispatched time:', moment(start).toISOString()); // Для отладки
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
     },
-    [setEvents]
+    []
   )
-
   const closeAlert = () => {
     setShowAlert(false);
     dispatch(showOverlayAction(false));
   };
 
+  /***** Render custom event view *****/
   const CustomEvent = ({ event, view }) => {
-
     const handleMouseEnter = (e) => {
       let servicesData = '';
       try {
@@ -363,9 +464,6 @@ export default function Index({
         </div>
       `;
     };
-
-
-    let showFull = false;
     if (view === 'week') {
 
     }
@@ -386,62 +484,6 @@ export default function Index({
       </div>
     );
   };
-
-
-  const handleMouseLeave = () => {
-  };
-
-
-  const handleNavigate = useCallback((newDate, view, action) => {
-    dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
-  }, []);
-
-  useEffect(() => {
-    if (shEvents.length) {
-      const _perfEvents = [];
-      shEvents.forEach(_event => {
-        _event.start = new Date(
-          parseInt(_event.year),
-          parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
-        _event.end = new Date(
-          parseInt(_event.year),
-          parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
-      });
-    }
-    let filteredEvents;
-    filteredEvents = {
-      all: shEvents
-    };
-
-    setFilteredEvents(filteredEvents)
-  }, [shEvents])
-
-
-  useEffect(() => {
-    if (eventsData.length) {
-      const _perfEvents = [];
-      eventsData.forEach(_event => {
-        _event.start = new Date(
-          parseInt(_event.year),
-          parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
-        _event.end = new Date(
-          parseInt(_event.year),
-          parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
-        _event.desc = 'Some description'
-      });
-    }
-    let filteredEvents;
-    filteredEvents = {
-      all: eventsData
-    };
-    setFilteredEvents(filteredEvents)
-  }, [eventsData])
-
-
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -535,9 +577,9 @@ export default function Index({
               localizer={localizerFn}
               events={filteredEvents['all']}
               startAccessor="start"
-              step={30}
-              endAccessor="end"
-              defaultView="week"
+              step={15}
+              views={views}
+              defaultView={'week'}
               defaultDate={dateRange.start}
               min={minTime} // Начало с 8:00
               max={maxTime}
@@ -575,7 +617,8 @@ export default function Index({
               position: 'absolute',
               width: '200px',
               minHeight: '150px',
-              zIndex: 99
+              zIndex: 99,
+              display: 'none'
             }}></div>
           </div>
 
