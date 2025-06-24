@@ -132,7 +132,7 @@
     z-index: 80;
 }
 .form-scheduler {
-    position: absolute;
+    position: fixed;
     top: 15%;
     left:29%;
     //background: palevioletred;
@@ -211,8 +211,13 @@
     color: palevioletred;
 }
 .rbc-event-data {
-    //background: yellow;
-    margin: 5px;
+    padding: 5px;
+    width: 100%;
+    flex: 1 1 0;
+    word-wrap: break-word;
+    line-height: 1;
+    height: 100%;
+    min-height: 1em;
 }
 .rbc-event-label {
     display: none !important;
@@ -228,7 +233,7 @@
 }
 .sh-event-status {
     position: absolute;
-    top: 0;
+    top: 6px;
     border-radius: 50%;
     width: 10px;
     height: 10px;

@@ -132,7 +132,7 @@ class SchedulerController extends Controller
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-
+//dd($eventsData);exit;
 //        $eventsData = DB::table('schedulers')
 //            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
 //                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',

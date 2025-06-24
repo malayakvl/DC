@@ -154,17 +154,28 @@ const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
   return Array.from({ length: 2 }, (_, j) => ({
     id: eventId++,
     title: `Event ${i + j} _ 6`,
-    start: new Date(2025, 5, 24 + dayDiff, 9 + (j % 4), 0, 0),
+    start: new Date(2025, 5, 24 + dayDiff, 9, 0, 0),
     end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
     resourceId: 6,
   }))
 })
-const resourcesDef = [
-  { resourceId: 6, resourceTitle: 'Стоматологія' },
-  { resourceId: 7, resourceTitle: 'Хірургія' },
-  { resourceId: 4, resourceTitle: 'Рентген кабінет' },
-  { resourceId: 4, resourceTitle: 'Meeting room 2' },
-]
+const getCurrentWeekRange = () => {
+  const now = new Date(); // Динамическое текущее время
+  const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Расстояние до понедельника
+
+  // Начало недели (понедельник)
+  const start = new Date(now);
+  const nowDay = new Date(now);
+  start.setDate(now.getDate() - diffToMonday);
+  start.setHours(0, 0, 0, 0); // Устанавливаем время на 00:00:00
+
+  // Конец недели (воскресенье)
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  end.setHours(23, 59, 59, 999); // Устанавливаем время на 23:59:59.999
+  return { start, end };
+};
 
 export default function Index({
   customerData,
@@ -194,6 +205,7 @@ export default function Index({
     day: msg.get('scheduler.day'),
     agenda: msg.get('scheduler.agenda'),
   }
+  const now = new Date();
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState(eventsData);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -202,29 +214,12 @@ export default function Index({
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
-  const getCurrentWeekRange = () => {
-    const now = new Date(); // Динамическое текущее время
-    const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
-    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Расстояние до понедельника
-
-    // Начало недели (понедельник)
-    const start = new Date(now);
-    start.setDate(now.getDate() - diffToMonday);
-    start.setHours(0, 0, 0, 0); // Устанавливаем время на 00:00:00
-
-    // Конец недели (воскресенье)
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    end.setHours(23, 59, 59, 999); // Устанавливаем время на 23:59:59.999
-
-    return { start, end };
-  };
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
-  const [selectedGCabinet, setSelectedGCabinet] = useState(null);
   const [draggedTask, setDraggedTask] = useState(null);
+  const [hoveredEvent, setHoveredEvent] = useState(null);
   const { defaultDate, views } = useMemo(
     () => ({
-      defaultDate: new Date(2025, 5, 23),
+      defaultDate: new Date(2025, 5, 24),
       views: {
         day: true,
         week: MyWeek,
@@ -274,7 +269,39 @@ export default function Index({
     //   eventsData
     // };
     setFilteredEvents(eventsData)
-  }, [eventsData])
+  }, [eventsData]);
+
+
+  // useEffect(() => {
+  //   const handleMouseEnter = (e) => {
+  //     if (e.target.classList.contains('rbc-event-content')) {
+  //       // Extract content or data (this is trickier without direct event data)
+  //       const content = e.target.innerText; // Example: Get text content
+  //       setHoveredEvent(content);
+  //       console.log('Hovering over:', content);
+  //     }
+  //   };
+  //
+  //   const handleMouseLeave = (el) => {
+  //     console.log('Out')
+  //     setHoveredEvent(null);
+  //   };
+  //
+  //   // Add event listeners to all rbc-event-content elements
+  //   // const elements = document.querySelectorAll('.rbc-event-content');
+  //   // elements.forEach((el) => {
+  //   //   el.addEventListener('mouseenter', handleMouseEnter);
+  //   //   el.addEventListener('mouseleave', handleMouseLeave);
+  //   // });
+  //
+  //   // Cleanup listeners on unmount
+  //   return () => {
+  //     elements.forEach((el) => {
+  //       el.removeEventListener('mouseenter', handleMouseEnter);
+  //       el.removeEventListener('mouseleave', handleMouseLeave);
+  //     });
+  //   };
+  // }, []);
 
   const filterByCabinets = (cabinetId) => {
     let filteredEvents;
@@ -420,9 +447,7 @@ export default function Index({
     const [start, end] = dates;
     setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
   };
-  const handleMouseLeave = () => {
-    document.getElementById('bigViewEvent').style.display = 'none'
-  };
+
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
   }, []);
@@ -443,7 +468,7 @@ export default function Index({
       dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
-      // document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
     },
     []
   )
@@ -454,22 +479,24 @@ export default function Index({
 
   /***** Render custom event view *****/
   const CustomEvent = ({ event, view }) => {
-    const handleMouseEnter = (e) => {
-      let servicesData = '';
-      try {
-        const parsedData = JSON.parse(event.services);
-        if (Array.isArray(parsedData)) {
-          parsedData.map((_s, index) => (
-            servicesData += `<span class="block"><i key=${index}>${_s.name}</i></span>`
-          ))
-        }
-      } catch (error) {
-        console.error("Ошибка парсинга JSON:", error);
+    let servicesData = '';
+    try {
+      const parsedData = JSON.parse(event.services);
+      if (Array.isArray(parsedData)) {
+        parsedData.map((_s, index) => (
+          servicesData += `<span class="block"><i key=${index}>${_s.name}</i></span>`
+        ))
       }
+    } catch (error) {
+      console.error("Ошибка парсинга JSON:", error);
+    }
+    const handleMouseEnter = (e) => {
+
+
       // Calculate position based on event's bounding box
       const rect = e.currentTarget.getBoundingClientRect();
       document.getElementById('bigViewEvent').style.top = `${rect.top - 128}px`;
-      document.getElementById('bigViewEvent').style.left = `${rect.left - 18}px`;
+      document.getElementById('bigViewEvent').style.left = `${rect.right - 70}px`;
       document.getElementById('bigViewEvent').style.display = 'block';
       document.getElementById('bigViewEvent').innerHTML = `
         <div>
@@ -478,26 +505,30 @@ export default function Index({
           <span class="block mb-1">${msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>${event.last_name} ${event.first_name}</strong></span>
           <span class="block mb-1">${msg.get('scheduler.form.cabinet')}: ${event.cabinet_name}</span>
           <span class="block mb-1">${msg.get('scheduler.patient')}: <strong className={'sh-patient'}>${event.p_name} ${event.pl_name}</strong></span>
-          <p>${msg.get('scheduler.manipulation')}:</p>
-          <p>${servicesData}</p>
+          ${servicesData ? '<span>'+msg.get('scheduler.manipulation')+'</span>' : ''}
+          ${servicesData ? servicesData : ''}
         </div>
       `;
+    };
+    const handleMouseLeave = (e) => {
+      document.getElementById('bigViewEvent').style.display = 'none'
     };
 
     return view === 'month' ? (
       <strong>{event.title}</strong>
     ) : (
-      <div className={'rbc-event-data relative'}
+      <div className={'rbc-event-data relative bg-blue-100'}
            onMouseEnter={handleMouseEnter}
            onMouseLeave={handleMouseLeave}
       >
-        <p className={'block mb-1'}>
+        <p className={'block mb-1 pb-1'}>
           <strong style={{marginLeft: '20px'}}>{event.title}</strong>
           <div className={'sh-event-status'} style={{background: event.status_color}}></div>
         </p>
-        <span className={'block mb-1'}>{event.cabinet_name}</span>
-        <div>{event.description}</div>
-
+        <span className={'block mb-2'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
+        <span className={'block mb-2'}>{msg.get('scheduler.patient')}: {shortenName(`${event.p_name} ${event.pl_name}`)}</span>
+        <div className={'block mb-2'}><strong>{event.description}</strong></div>
+        {servicesData ? servicesData : ''}
       </div>
     );
   };
@@ -546,21 +577,6 @@ export default function Index({
           </div>
         )}
         <div style={{ flex: 1, padding: '10px' }}>
-          <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', fontSize: '13px' }}>
-              <label>{msg.get('scheduler.period')}:</label>
-              <DatePicker
-                selectsRange
-                startDate={dateRange.start}
-                endDate={dateRange.end}
-                onChange={handleDateRangeChange}
-                dateFormat="MM/dd/yyyy"
-                placeholderText="Select date range"
-                className="date-picker"
-              />
-            </div>
-            <div className={'clearfix'} />
-          </div>
           <div className={'w-full flex relative z-10'}>
             <div className={'w-1/2 mb-5'}>
               <Select
@@ -572,18 +588,6 @@ export default function Index({
                 options={customerGroupped}
               />
             </div>
-            {/*<div className={'w-1/2 mb-5 ml-4'}>*/}
-            {/*  <Select*/}
-            {/*    placeholder="Кабінети..."*/}
-            {/*    value={selectedGCabinet}*/}
-            {/*    styles={customStyles}*/}
-            {/*    className={'sh-d-select'}*/}
-            {/*    onChange={(option) =>  {*/}
-            {/*      setSelectedGCabinet(option);*/}
-            {/*    }}*/}
-            {/*    options={cabinetGroupped}*/}
-            {/*  />*/}
-            {/*</div>*/}
           </div>
 
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -600,7 +604,7 @@ export default function Index({
               step={15}
               views={views}
               defaultView={'week'}
-              defaultDate={dateRange.start}
+              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)}
               min={minTime} // Начало с 8:00
               max={maxTime}
               messages={shBtnsTitles}
@@ -630,13 +634,16 @@ export default function Index({
               resizable
               selectable
             />
-            <div onMouseLeave={() => {
-              document.getElementById('bigViewEvent').style.display = 'none'
-            }} className={'event-big-content'} id={'bigViewEvent'} style={{
+            <div
+              onMouseLeave={() => {
+                document.getElementById('bigViewEvent').style.display = 'none'
+              }}
+              className={'event-big-content'} id={'bigViewEvent'}
+              style={{
               background: 'white',
               position: 'absolute',
               width: '200px',
-              minHeight: '150px',
+              minHeight: '130px',
               zIndex: 99,
               display: 'none'
             }}></div>
