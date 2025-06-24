@@ -233,3 +233,10 @@
     width: 10px;
     height: 10px;
 }
+.rbc-active {
+    background-image: none;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    background-color: #6149d7 !important;
+    border-color: #6149d7 !important;
+    color: #fff !important;
+}

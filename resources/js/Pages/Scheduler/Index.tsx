@@ -142,8 +142,10 @@ MyWeek.navigate = (date, action, { localizer }) => {
   }
 }
 MyWeek.title = (date) => {
-  return `My awesome week: ${date.toLocaleDateString()}`
-}
+  const endDate = new Date(date);
+  endDate.setDate(date.getDate() + 3);
+  return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+};
 
 export default function Index({
   customerData,
@@ -403,6 +405,7 @@ export default function Index({
     setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
   };
   const handleMouseLeave = () => {
+    document.getElementById('bigViewEvent').style.display = 'none'
   };
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
