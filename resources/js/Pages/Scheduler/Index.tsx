@@ -147,6 +147,8 @@ MyWeek.title = (date) => {
   return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 };
 
+
+
 export default function Index({
   customerData,
   formData,
@@ -171,7 +173,7 @@ export default function Index({
     previous: msg.get('scheduler.prev'),
     next: msg.get('scheduler.next'),
     month: msg.get('scheduler.month'),
-    week: msg.get('scheduler.week'),
+    week: msg.get('scheduler.3days'),
     day: msg.get('scheduler.day'),
     agenda: msg.get('scheduler.agenda'),
   }

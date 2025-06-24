@@ -44,7 +44,8 @@ const lngScheduler = {
     'period': 'Період',
     time_schedule_error: 'Период недоступен',
     from: 'Час',
-    manipulation: 'Послуга'
+    manipulation: 'Послуга',
+    '3days': 'Тиждень'
   },
 };
 export default lngScheduler;
