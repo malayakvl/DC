@@ -85,7 +85,7 @@ class SchedulerController extends Controller
 //        }
         if ($request->session()->get('filial_id')) {
             $listCabinets = DB::table('cabinets')
-                ->select('cabinets.*', "clinic_filials.name AS filial_name")
+                ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
                 ->where('cabinets.clinic_id', $clinicData->id)
                 ->where('cabinets.filial_id', $request->session()->get('filial_id'))
@@ -111,8 +111,8 @@ class SchedulerController extends Controller
         $weekStart = date("Y-m-d", strtotime('monday this week'));
         $weekEnd = date("Y-m-d", strtotime('sunday this week'));
         $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services',
                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
@@ -152,7 +152,6 @@ class SchedulerController extends Controller
 //            $events[] = (object) $event;
 //        }
         $formData = new Scheduler();
-
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
             'customerData' => $customerSelectData,
@@ -206,7 +205,7 @@ class SchedulerController extends Controller
         $date = new DateTime($weekStart);
         $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
         $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'schedulers.cabinet_id AS resourceId',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services',

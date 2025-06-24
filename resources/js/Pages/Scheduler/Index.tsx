@@ -147,7 +147,24 @@ MyWeek.title = (date) => {
   return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 };
 
+let eventId = 0
+const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
+  const dayDiff = i % 7
 
+  return Array.from({ length: 2 }, (_, j) => ({
+    id: eventId++,
+    title: `Event ${i + j} _ 6`,
+    start: new Date(2025, 5, 24 + dayDiff, 9 + (j % 4), 0, 0),
+    end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
+    resourceId: 6,
+  }))
+})
+const resourcesDef = [
+  { resourceId: 6, resourceTitle: 'Стоматологія' },
+  { resourceId: 7, resourceTitle: 'Хірургія' },
+  { resourceId: 4, resourceTitle: 'Рентген кабінет' },
+  { resourceId: 4, resourceTitle: 'Meeting room 2' },
+]
 
 export default function Index({
   customerData,
@@ -177,12 +194,9 @@ export default function Index({
     day: msg.get('scheduler.day'),
     agenda: msg.get('scheduler.agenda'),
   }
-
   const shEvents = useSelector(eventsDataSelector);
-  const [events, setEvents] = useState({
-    all: []
-  });
-  const [filteredEvents, setFilteredEvents] = useState({all: []});
+  const [events, setEvents] = useState(eventsData);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
@@ -232,12 +246,12 @@ export default function Index({
           parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
       });
     }
-    let filteredEvents;
-    filteredEvents = {
-      all: shEvents
-    };
+    // let filteredEvents;
+    // filteredEvents = {
+    //   shEvents
+    // };
 
-    setFilteredEvents(filteredEvents)
+    setFilteredEvents(shEvents)
   }, [shEvents])
 
   useEffect(() => {
@@ -255,11 +269,11 @@ export default function Index({
         _event.desc = 'Some description'
       });
     }
-    let filteredEvents;
-    filteredEvents = {
-      all: eventsData
-    };
-    setFilteredEvents(filteredEvents)
+    // let filteredEvents;
+    // filteredEvents = {
+    //   eventsData
+    // };
+    setFilteredEvents(eventsData)
   }, [eventsData])
 
   const filterByCabinets = (cabinetId) => {
@@ -429,7 +443,7 @@ export default function Index({
       dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
-      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+      // document.getElementsByTagName('body')[0].style.overflow = 'hidden'
     },
     []
   )
@@ -454,7 +468,7 @@ export default function Index({
       }
       // Calculate position based on event's bounding box
       const rect = e.currentTarget.getBoundingClientRect();
-      document.getElementById('bigViewEvent').style.top = `${rect.top  - 178}px`;
+      document.getElementById('bigViewEvent').style.top = `${rect.top - 128}px`;
       document.getElementById('bigViewEvent').style.left = `${rect.left - 18}px`;
       document.getElementById('bigViewEvent').style.display = 'block';
       document.getElementById('bigViewEvent').innerHTML = `
@@ -469,9 +483,7 @@ export default function Index({
         </div>
       `;
     };
-    if (view === 'week') {
 
-    }
     return view === 'month' ? (
       <strong>{event.title}</strong>
     ) : (
@@ -560,18 +572,18 @@ export default function Index({
                 options={customerGroupped}
               />
             </div>
-            <div className={'w-1/2 mb-5 ml-4'}>
-              <Select
-                placeholder="Кабінети..."
-                value={selectedGCabinet}
-                styles={customStyles}
-                className={'sh-d-select'}
-                onChange={(option) =>  {
-                  setSelectedGCabinet(option);
-                }}
-                options={cabinetGroupped}
-              />
-            </div>
+            {/*<div className={'w-1/2 mb-5 ml-4'}>*/}
+            {/*  <Select*/}
+            {/*    placeholder="Кабінети..."*/}
+            {/*    value={selectedGCabinet}*/}
+            {/*    styles={customStyles}*/}
+            {/*    className={'sh-d-select'}*/}
+            {/*    onChange={(option) =>  {*/}
+            {/*      setSelectedGCabinet(option);*/}
+            {/*    }}*/}
+            {/*    options={cabinetGroupped}*/}
+            {/*  />*/}
+            {/*</div>*/}
           </div>
 
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
@@ -580,7 +592,10 @@ export default function Index({
               culture="uk"
               key={activePerson}
               localizer={localizerFn}
-              events={filteredEvents['all']}
+              events={filteredEvents}
+              resources={cabinetData}
+              resourceIdAccessor="resourceId"
+              resourceTitleAccessor="resourceTitle"
               startAccessor="start"
               step={15}
               views={views}
