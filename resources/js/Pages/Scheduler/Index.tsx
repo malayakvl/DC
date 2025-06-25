@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types'
 import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
@@ -33,6 +33,9 @@ import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Simulate } from 'react-dom/test-utils';
+import reset = Simulate.reset;
+import PrimaryButton from '../../Components/Form/PrimaryButton';
 
 const locales = {
   'uk': uk,
@@ -196,6 +199,8 @@ export default function Index({
     locale: appLang,
   });
   const dispatch = useDispatch();
+  const clickRef = useRef(null);
+  const [popoverContent, setPopoverContent] = useState('')
   const shBtnsTitles = {
     today: msg.get('scheduler.today'),
     previous: msg.get('scheduler.prev'),
@@ -217,6 +222,10 @@ export default function Index({
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
   const [hoveredEvent, setHoveredEvent] = useState(null);
+  const [popover, setPopover] = useState(null);
+  const popoverRef = useRef(null);
+  const arrowRef = useRef(null);
+  const [eventView, setEventView] = useState(null);
   const { defaultDate, views } = useMemo(
     () => ({
       defaultDate: new Date(2025, 5, 24),
@@ -271,37 +280,6 @@ export default function Index({
     setFilteredEvents(eventsData)
   }, [eventsData]);
 
-
-  // useEffect(() => {
-  //   const handleMouseEnter = (e) => {
-  //     if (e.target.classList.contains('rbc-event-content')) {
-  //       // Extract content or data (this is trickier without direct event data)
-  //       const content = e.target.innerText; // Example: Get text content
-  //       setHoveredEvent(content);
-  //       console.log('Hovering over:', content);
-  //     }
-  //   };
-  //
-  //   const handleMouseLeave = (el) => {
-  //     console.log('Out')
-  //     setHoveredEvent(null);
-  //   };
-  //
-  //   // Add event listeners to all rbc-event-content elements
-  //   // const elements = document.querySelectorAll('.rbc-event-content');
-  //   // elements.forEach((el) => {
-  //   //   el.addEventListener('mouseenter', handleMouseEnter);
-  //   //   el.addEventListener('mouseleave', handleMouseLeave);
-  //   // });
-  //
-  //   // Cleanup listeners on unmount
-  //   return () => {
-  //     elements.forEach((el) => {
-  //       el.removeEventListener('mouseenter', handleMouseEnter);
-  //       el.removeEventListener('mouseleave', handleMouseLeave);
-  //     });
-  //   };
-  // }, []);
 
   const filterByCabinets = (cabinetId) => {
     let filteredEvents;
@@ -477,6 +455,194 @@ export default function Index({
     dispatch(showOverlayAction(false));
   };
 
+  const formatEventDateTime = (event, locale = 'uk') => {
+    // Об'єкт із перекладами для місяців і днів тижня
+    const translations = {
+      uk: {
+        months: [
+          'Січня', 'Лютого', 'Березня', 'Квітня', 'Травня', 'Червня',
+          'Липня', 'Серпня', 'Вересня', 'Жовтня', 'Листопада', 'Грудня'
+        ],
+        days: [
+          'Неділя', 'Понеділок', 'Вівторок', 'Середа',
+          'Четвер', 'П`ятниця', 'Субота'
+        ]
+      },
+      en: {
+        months: [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ],
+        days: [
+          'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+          'Thursday', 'Friday', 'Saturday'
+        ]
+      },
+      ru: {
+        months: [
+          'Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня',
+          'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'
+        ],
+        days: [
+          'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+          'Четверг', 'Пятница', 'Суббота'
+        ]
+      }
+    };
+
+    // Перевірка наявності потрібних полів
+    if (!event.event_date || !event.event_time_from || !event.event_time_to) {
+      throw new Error('Missing required event fields');
+    }
+
+    // Перевірка, чи підтримується локаль
+    // if (!translations[locale]) {
+    //   console.warn(`Locale ${locale} not supported, falling back to 'uk'`);
+    //   locale = 'uk';
+    // }
+    locale = 'uk';
+
+    // Парсимо дату
+    const date = new Date(event.event_date);
+    if (isNaN(date)) {
+      throw new Error('Invalid event_date format');
+    }
+
+    // Отримуємо день, місяць і день тижня
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const dayIndex = date.getDay();
+
+    // Форматуємо час (беремо лише HH:MM)
+    const timeFrom = event.event_time_from.slice(0, 5);
+    const timeTo = event.event_time_to.slice(0, 5);
+
+    // Формуємо результат
+    return `${day} ${translations[locale].months[monthIndex]}, ${translations[locale].days[dayIndex]} ${timeFrom} - ${timeTo}`;
+  }
+
+  const showActionsEvent = (el, event) => {
+    // update popover content
+    const pContent = `
+      <div class="grid grid-cols-[1fr_auto] items-baseline-last">  
+        <div>    
+          <p class="text-sm text-gray-500">
+            ${formatEventDateTime(event)}
+          </p>
+          <span class="block">${msg.get('scheduler.patient')}:${event.pl_name} ${event.p_name} ${event.birthday}</p>    
+          <span class="block">${msg.get('scheduler.form.doctor')}: ${event.last_name} ${event.first_name}</p>    
+        </div>  
+        <div>
+          <span class="block">Event status</span>
+          <span class="p-balance block ${event.dt_balance - event.kt_balance < 0 ? "red" : ''}">${msg.get('scheduler.balance')} ${event.dt_balance - event.kt_balance } ${clinicData.currency.symbol}</span>  
+          <span class="p-cabinet block">${event.cabinet_name}</span> 
+        </div>
+      </div>
+
+    `
+
+    setPopoverContent(pContent)
+
+    // document.getElementById('bigActionEventView').style.display = 'block';
+    // const rect = e.currentTarget.getBoundingClientRect();
+    // document.getElementById('bigActionEventView').style.top = `${rect.top - 128}px`;
+    // document.getElementById('bigActionEventView').style.left = `${rect.right - 70}px`;
+    // document.getElementById('bigActionEventView').style.display = 'block';
+  }
+
+  const handleSelectEvent = (event, e) => {
+    const eventElement = e.target.closest('.rbc-event-data') || e.target.closest('.rbc-event');
+    if (eventElement) {
+      setEventView(event);
+      const rect = eventElement.getBoundingClientRect();
+      const popoverWidth = 380;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const popoverEl = document.getElementById('bigActionEventView');
+      const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
+      // Проверяем, выходит ли поповер за правую границу
+      let left = rect.left;
+      if (left + popoverWidth > windowWidth) {
+        // left = windowWidth - popoverWidth - 140; // Отступ от края
+        left = rect.left - 380;
+        // показиваем стрелочку справа
+        // alert(document.getElementById('bigActionEventView'))
+        // document.getElementById('bigActionEventView').classList.add('popup-arrow-right')
+        // document.getElementById('arrow').style.right = '20px';
+        // document.getElementById('arrow').style.left = 'auto';
+      } else {
+        console.log(document.getElementById('arrow'))
+        // document.getElementById('arrow').style.left = '20px';
+        // document.getElementById('arrow').style.right = 'auto';
+      }
+
+      // Проверяем, выходит ли поповер за левую границу
+      if (left < 10) {
+        left = 10; // Минимальный отступ слева
+      }
+      console.log('Top + height', windowHeight)
+      // Позиция сверху или снизу от события
+      let top = rect.top - 100; // Поповер ниже события
+      let arrowTop = '-16px'; // Стрелка сверху поповера
+      let arrowTransform = 'rotate(45deg)'; // Стрелка указывает вверх
+      if (top + popoverHeight > windowHeight) {
+        top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
+        arrowTop = `${popoverHeight - 6}px`; // Стрелка снизу поповера
+        arrowTransform = 'rotate(225deg)'; // Стрелка указывает вниз
+      }
+
+      // Позиция стрелочки: указывает на середину события
+      const eventCenterX = rect.left + rect.width / 2;
+      const arrowLeft = eventCenterX - left - 6; // 6 - половина ширины стрелки
+      popoverEl.style.left = `${left}px`;
+      popoverEl.style.top = `${top}px`;
+      popoverEl.style.display = 'block';
+      // setPopover({
+      //   event,
+      //   style: {
+      //     left: `${left}px`,
+      //     top: `${top}px`,
+      //   },
+      // });
+
+      // Вызываем вашу функцию showActionsEvent
+      showActionsEvent(eventElement.parentElement, event);
+    }
+  };
+
+  const renderBtnsBlock = () => {
+    return (
+      <div className="row">
+        <PrimaryButton>
+          {msg.get('scheduler.save')}
+        </PrimaryButton>
+      </div>
+    )
+  }
+
+  const renderViewEventBlock = () => {
+    console.log('Event View', eventView);
+    return (
+      <div className="grid grid-cols-[1fr_auto] items-baseline-last">
+        <div>
+          <p className="text-sm text-gray-500">
+            {formatEventDateTime(eventView)}
+          </p>
+          <span className="block">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
+          <span className="block">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
+        </div>
+        <div>
+          <span className="block">Event status</span>
+          <span className="p-balance block">{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
+          <span className="p-cabinet block">{eventView.cabinet_name}</span>
+        </div>
+      </div>
+    )
+  }
+
+  const closePopover = () => {
+    setPopover(null);
+  };
   /***** Render custom event view *****/
   const CustomEvent = ({ event, view }) => {
     let servicesData = '';
@@ -491,10 +657,10 @@ export default function Index({
       console.error("Ошибка парсинга JSON:", error);
     }
     const handleMouseEnter = (e) => {
-
-
       // Calculate position based on event's bounding box
       const rect = e.currentTarget.getBoundingClientRect();
+
+
       document.getElementById('bigViewEvent').style.top = `${rect.top - 128}px`;
       document.getElementById('bigViewEvent').style.left = `${rect.right - 70}px`;
       document.getElementById('bigViewEvent').style.display = 'block';
@@ -518,8 +684,9 @@ export default function Index({
       <strong>{event.title}</strong>
     ) : (
       <div className={'rbc-event-data relative bg-blue-100'}
-           onMouseEnter={handleMouseEnter}
-           onMouseLeave={handleMouseLeave}
+        // onMouseEnter={handleMouseEnter}
+        // onMouseLeave={handleMouseLeave}
+
       >
         <p className={'block mb-1 pb-1'}>
           <strong style={{marginLeft: '20px'}}>{event.title}</strong>
@@ -528,7 +695,7 @@ export default function Index({
         <span className={'block mb-2'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
         <span className={'block mb-2'}>{msg.get('scheduler.patient')}: {shortenName(`${event.p_name} ${event.pl_name}`)}</span>
         <div className={'block mb-2'}><strong>{event.description}</strong></div>
-        {servicesData ? servicesData : ''}
+        <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
       </div>
     );
   };
@@ -615,7 +782,7 @@ export default function Index({
               draggableAccessor={() => true}
               dragFromOutsideItem={dragFromOutsideItem}
               onSelectSlot={handleSelectSlot}
-              onSelectEvent={(event) => alert(`EventExist: ${event.id}`)}
+              onSelectEvent={handleSelectEvent}
               eventPropGetter={(event) => ({
                 style: {
                   borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
@@ -640,14 +807,50 @@ export default function Index({
               }}
               className={'event-big-content'} id={'bigViewEvent'}
               style={{
-              background: 'white',
-              position: 'absolute',
-              width: '200px',
-              minHeight: '130px',
-              zIndex: 99,
-              display: 'none'
-            }}></div>
+                background: 'white',
+                position: 'absolute',
+                width: '200px',
+                minHeight: '130px',
+                zIndex: 99,
+                display: 'none'
+              }} />
+
+              <div
+                className="sch_tooltip"
+                id="bigActionEventView"
+                ref={popoverRef}
+                style={{
+                  position: 'fixed',
+                  width: '380px',
+                  background: 'white',
+                  border: '1px solid #ccc',
+                  borderRadius: '4px',
+                  zIndex: 1000,
+                }}
+                onClick={closePopover}
+              >
+                <div
+                  className={`sch_arrow`}
+                  id="sch_arrow"
+                  ref={arrowRef}
+                />
+                <div id="arrow" className={'arrow-left'}></div>
+                <div className={'sc-arrow-right'}></div>
+                <div
+                  className="sch-content"
+                  style={{
+                    padding: '10px',
+                    background: 'white', // Фон для контента
+                    borderRadius: '4px', // Скругление углов контента
+                  }}
+                >
+                  {/*<div contentEditable='true' dangerouslySetInnerHTML={{ __html: popoverContent }}></div>*/}
+                  <div>{eventView && renderViewEventBlock()}</div>
+                </div>
+              </div>
           </div>
+
+
 
           {showEventPopup && <SchedulerFormCreate
             formData={formData}
