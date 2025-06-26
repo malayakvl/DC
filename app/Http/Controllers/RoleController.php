@@ -76,7 +76,6 @@ class RoleController extends Controller implements HasMiddleware
     {
         if ($request->user()->can('clinic-create')) {
             $permissions = Permission::orderBy('name')->get();
-//            $clinicData = $request->user()->clinic;
             $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
             return Inertia::render('Role/Create', [
@@ -94,13 +93,9 @@ class RoleController extends Controller implements HasMiddleware
      */
     public function edit(Request $request, $id)
     {
-//        dd($request->user()->hasRole('Ceo Filial'));
-//        exit;
-        if ($request->user()->hasRole('Ceo Filial') || $request->user()->hasRole('Admin')) {
+        if ($request->user()->hasRole('Ceo Filial') || $request->user()->hasRole('Admin') || $request->user()->hasRole('Ceo')) {
             $role = Role::find($id);
             $permissions = Permission::orderBy('name')->get();
-//            dd($permissions);
-//            exit;
             $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
                 ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
                 ->all();
@@ -127,9 +122,7 @@ class RoleController extends Controller implements HasMiddleware
      */
     public function store(RoleUpdateRequest $request): RedirectResponse
     {
-//        $clinic = $request->user()->clinic;
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-
         $role = new Role();
         $role->name = $request->name;
         $role->guard_name = 'web';

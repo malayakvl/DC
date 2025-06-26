@@ -33,7 +33,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/clinic-new', [ClinicController::class, 'new'])
+Route::get('/clinic-new', [ClinicController::class, 'create'])
     ->name('clinic.new');
 
 Route::get('/dashboard', function () {
@@ -167,6 +167,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');
     Route::get('/scheduler/fetchEvents', [SchedulerController::class, 'fetchEvents'])->name('scheduler.fetchEvents');
+    Route::get('/scheduler/findPatients', [SchedulerController::class, 'fetchPatients'])->name('scheduler.fetchPatients');
+    Route::get('/scheduler/updatePeriod', [SchedulerController::class, 'updatePeriod'])->name('scheduler.updatePeriod');
 
     Route::get('/currency', [CurrencyController::class, 'index'])->name('currency.index');
     Route::get('/currency/edit/{id}', [CurrencyController::class, 'edit'])->name('currency.edit');

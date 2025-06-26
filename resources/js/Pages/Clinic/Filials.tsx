@@ -68,16 +68,13 @@ export default function Filials({ clinicData, filialData, permissions }) {
                       title={msg.get('filial.filial.view')}
                       href={`filial/show/${item.id}`}
                     />
-                    {/*<NavLink*/}
-                    {/*    className="btn-store"*/}
-                    {/*    title={msg.get('filial.filial.view')}*/}
-                    {/*    href={`filial/store/${item.id}`}*/}
-                    {/*/>*/}
-                    <NavLink
-                      className="btn-delete"
-                      title={msg.get('filial.filial.delete')}
-                      href={`filial/delete/${item.id}`}
-                    />
+                    {filialData.length > 1 && (
+                      <NavLink
+                        className="btn-delete"
+                        title={msg.get('filial.filial.delete')}
+                        href={`filial/delete/${item.id}`}
+                      />
+                    )}
                   </td>
                 </tr>
               ))}

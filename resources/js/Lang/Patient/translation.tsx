@@ -59,6 +59,11 @@ const lngPatient = {
     'tab.stage': 'Етап лікування',
     'tab.test': 'Пародонтальний скринінг-тест',
     newstage: 'Новий етап',
+    search: 'Пошук',
+    'search.clear': 'Очистити',
+    'worked.at': 'Виконано на',
+    'payed.at': 'Сплачено',
+    'dept.at': 'Борг'
   },
 };
 export default lngPatient;

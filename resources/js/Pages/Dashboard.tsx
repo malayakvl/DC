@@ -179,7 +179,6 @@ export default function Dashboard(clinicName) {
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <a
-                          href="javascript:;"
                           className="text-xs font-semibold leading-tight text-slate-400"
                         >
                           {' '}

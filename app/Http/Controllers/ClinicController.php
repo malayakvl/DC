@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClinicUpdateRequest;
 use App\Models\Clinic;
+use App\Models\ClinicFilial;
 use App\Models\Currency;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -21,21 +22,30 @@ class ClinicController extends Controller
     public function create(Request $request): Response
     {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-        return Inertia::render('Clinic/Create', [
-            'clinicData' => $clinicData,
-            'currencyData' => $currencyData
-        ]);
+        if ($clinicData) {
+            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        } else {
+            $clinicData = new Clinic();
+            $currencyData = Currency::all();
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        }
     }
 
     public function new(Request $request): Response
     {
-dd(1);
-exit;
-//        return Inertia::render('Clinic/Create', [
-//            'clinicData' => $clinicData,
-//            'currencyData' => $currencyData
-//        ]);
+        $clinicData = new Clinic();
+        $currencyData = Currency::all();
+        return Inertia::render('Clinic/Create', [
+            'clinicData' => $clinicData,
+            'currencyData' => $currencyData
+        ]);
     }
 
     /**
@@ -51,16 +61,38 @@ exit;
      * Update the user's profile information.
      */
     public function update(ClinicUpdateRequest $request) {
-        if ($request->user()->can('clinic-create')) {
-            if ($request->id)
-                $clinic = Clinic::find($request->id);
-            else {
-                $clinic = new Clinic();
-            }
+        if (!$request->id) {
+            $clinic = new Clinic();
             $clinic->fill($request->validated());
             $clinic->save();
 
+            // созадем дефолтний филиал
+            $clinicFilial = new ClinicFilial();
+            $clinicFilial->name = $clinic->name;
+            $clinicFilial->address = $clinic->address;
+            $clinicFilial->uraddress = $clinic->uraddress;
+            $clinicFilial->inn = $clinic->inn;
+            $clinicFilial->edrpou = $clinic->edrpou;
+            $clinicFilial->phone = $clinic->phone;
+            $clinicFilial->clinic_id = $clinic->id;
+            $clinicFilial->save();
+
+            // add roles
+//            $request->user()
+
             return Redirect::route('clinic.create');
+        } else {
+            if ($request->user()->can('clinic-create')) {
+                if ($request->id)
+                    $clinic = Clinic::find($request->id);
+                else {
+                    $clinic = new Clinic();
+                }
+                $clinic->fill($request->validated());
+                $clinic->save();
+
+                return Redirect::route('clinic.create');
+            }
         }
     }
 

@@ -63,7 +63,6 @@ class User extends Authenticatable
             } else {
                 return null;
             }
-//            return $this->hasOne(Clinic::class);
         } else {
             $clinic = Clinic::where('id', $clinicId)->get();
             return $clinic[0];

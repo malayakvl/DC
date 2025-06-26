@@ -9,17 +9,28 @@ import {
   setScheduleStatusAction,
   setRemoteEventsAction,
   fetchEventsAction,
+  showPricePopupAction,
+  setServicesAction,
+  findPatientsAction,
+  setSchedulePatientIdAction,
+  updateSchedulerPeriodAction
 } from './actions';
 
 const initialState = {
   showSchedulePopup: false,
+  showPricePopup: false,
   showErrorSchedulePopup: false,
   popupDoctorId: '',
   dateStart: null,
   timeStart: null,
   statusId: { name: 'planned', color: '#4c95f5' },
   newPatientData: null,
+  patientId: null,
   eventsData: [],
+  patientsData: [],
+  services: [],
+  weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
+  weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
 };
 
 // ------------------------------------
@@ -30,6 +41,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       showSchedulePopup: action.payload,
+    }),
+  },
+  [showPricePopupAction]: {
+    next: (state, action) => ({
+      ...state,
+      showPricePopup: action.payload,
     }),
   },
   [showScheduleErrorPopupAction]: {
@@ -56,6 +73,12 @@ const ACTION_HANDLERS = {
       dateStart: action.payload,
     }),
   },
+  [setSchedulePatientIdAction]: {
+    next: (state, action) => ({
+      ...state,
+      patientId: action.payload,
+    }),
+  },
   [setScheduleStatusAction]: {
     next: (state, action) => ({
       ...state,
@@ -74,7 +97,31 @@ const ACTION_HANDLERS = {
       eventsData: action.payload,
     }),
   },
+  [findPatientsAction]: {
+    next: (state, action) => ({
+      ...state,
+      patientsData: action.payload,
+    }),
+  },
   [setRemoteEventsAction]: {
+    next: (state, action) => ({
+      ...state,
+      eventsData: action.payload,
+    }),
+  },
+  [setServicesAction]: {
+    next: (state, action) => {
+      const exists = state.services.some(service => service.id === action.payload.id);
+
+      return {
+        ...state,
+        services: exists
+          ? state.services.filter(service => service.id !== action.payload.id) // удалить
+          : [...state.services, action.payload] // добавить
+      };
+    },
+  },
+  [updateSchedulerPeriodAction]: {
     next: (state, action) => ({
       ...state,
       eventsData: action.payload,
@@ -92,6 +139,10 @@ export {
   setScheduleStatusAction,
   setRemoteEventsAction,
   fetchEventsAction,
+  showPricePopupAction,
+  setServicesAction,
+  setSchedulePatientIdAction,
+  updateSchedulerPeriodAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

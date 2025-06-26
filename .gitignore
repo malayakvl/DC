@@ -42,3 +42,7 @@ PATIENT_SCREENS
 public/build
 /SCREENS/
 /public/uploads/examples_formulas/
+/resources/js/Pages/Scheduler/__Index.tsx
+/resources/js/Pages/Scheduler/resources/event.js
+/resources/js/Pages/Scheduler/_Index.tsx
+/public/scheduler_video/Screen Recording 2025-06-20 at 12.44.52.mov

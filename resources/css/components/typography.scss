@@ -1,16 +1,16 @@
 h2 {
     @apply font-semibold leading-tight text-purple-800 py-4 ;
-    font-weight: bold !important;
+    font-weight: normal !important;
 }
 
 h3 {
     @apply font-semibold leading-tight py-4 text-center;
     color: #29425e !important;
-    font-weight: bold !important;
+    font-weight: normal !important;
 }
 h5 {
     @apply font-semibold leading-tight text-purple-800 py-4;
-    font-weight: bold !important;
+    font-weight: normal !important;
 }
 
 .dropdown-span {
@@ -24,17 +24,4 @@ h5 {
 }
 .text-purple-700 {
     color: #29425e !important;
-}
-.text-kt {
-    color: #ef1e1e;
-    font-weight: bold;
-}
-.text-dt {
-    color: #0c1ab6;
-    font-weight: bold;
-}
-.text-debt {
-    color: #e00fb5;
-    font-weight: bold;
-    font-size: 15px;
 }

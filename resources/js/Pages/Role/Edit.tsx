@@ -96,7 +96,7 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
             <div>
               <div className="p-4 sm:p-8 mb-8 content-data bg-content">
                 <div
-                  className={`row ${!roleData.clinic_id ? 'disabled-content' : ''}`}
+                  className={`w-full mb-5 ${!roleData.clinic_id ? 'disabled-content-block' : ''}`}
                 >
                   <InputText
                     name={'name'}
@@ -138,7 +138,7 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
                   </div>
                 </div>
                 <div className="clearfix"></div>
-                <div className="flex items-center">
+                <div className="flex items-center mt-5">
                   <Link
                     className="btn-back"
                     title={msg.get('role.back')}
