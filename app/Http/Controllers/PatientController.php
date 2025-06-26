@@ -29,8 +29,14 @@ class PatientController extends Controller
             $query = DB::table('patients')
                 ->select('patients.*')
                 ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
-                ->where('clinic_patient.clinic_id', $clinic->id)
-                ->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
+                ->where('clinic_patient.clinic_id', $clinic->id);
+            if ($request->filterName) {
+                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
+            }
+            if ($request->filterPhone) {
+                $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
+            }
+            $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
                 ->orderBy('first_name');
         } else {
             $query = DB::table('patients')

@@ -63,7 +63,12 @@ const lngPatient = {
     'search.clear': 'Очистити',
     'worked.at': 'Виконано на',
     'payed.at': 'Сплачено',
-    'dept.at': 'Борг'
+    'dept.at': 'Борг',
+    'list.history': 'Історвя лікування',
+    'list.payment': 'Платежі',
+    'list.edit': 'Редагувати',
+    'list.visits': 'Візити',
+    'list.documents': 'Документи'
   },
 };
 export default lngPatient;

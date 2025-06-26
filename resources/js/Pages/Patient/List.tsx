@@ -17,6 +17,7 @@ import {
   faFolder,
   faList,
   faCopy,
+  faTooth
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from '@inertiajs/react';
 
@@ -26,7 +27,7 @@ export default function List({ listData, clinicData, currency }) {
     messages: lngPatient,
     locale: appLang,
   });
-console.log('Currency', currency)
+
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('patient.title.list')} />
@@ -47,8 +48,9 @@ console.log('Currency', currency)
                 </div>
               </header>
             </section>
-            <Filters />
 
+            {/*Filters*/}
+            <Filters />
 
             {/*Pagination*/}
             <Pagination listData={listData} />
@@ -63,6 +65,7 @@ console.log('Currency', currency)
                     <div className="inline-flex">
                       {item.avatar ? (
                         <img
+                          className='p-photo'
                           src={`/uploads/patients/${item.avatar}`}
                           width="auto"
                           height="45"
@@ -90,11 +93,11 @@ console.log('Currency', currency)
                   </Link>
                   <div className="icon-block">
                     <Link href="/patient/documents">
-                      <FontAwesomeIcon icon={faCopy} className="mr-5" />
+                      <FontAwesomeIcon icon={faCopy} className="mr-5" title={msg.get('patient.list.documents')} />
                     </Link>
                     <Link href="/patient/visits">
                       <FontAwesomeIcon
-                        icon={faPersonWalking}
+                        icon={faPersonWalking} title={msg.get('patient.list.visits')}
                         className="mr-5 font-gra"
                       />
                     </Link>
@@ -102,13 +105,13 @@ console.log('Currency', currency)
                       <FontAwesomeIcon icon={faList} className="mr-5" />
                     </Link>
                     <Link href={`/patient/view/${item.id}`}>
-                      <FontAwesomeIcon icon={faFolder} className="mr-5" />
+                      <FontAwesomeIcon icon={faTooth} className="mr-5" title={msg.get('patient.list.history')} />
                     </Link>
                     <Link href="/patient/finance">
-                      <FontAwesomeIcon icon={faEuro} className="mr-5" />
+                      <FontAwesomeIcon icon={faEuro} className="mr-5" title={msg.get('patient.list.payment')} />
                     </Link>
                     <Link href={`patient/edit/${item.id}`}>
-                      <FontAwesomeIcon icon={faEdit} className="mr-5" />
+                      <FontAwesomeIcon icon={faEdit} className="mr-5" title={msg.get('patient.list.edit')} />
                     </Link>
                   </div>
                 </li>

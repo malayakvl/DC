@@ -1,8 +1,12 @@
 import { handleActions } from 'redux-actions';
-import { setPatientTab } from './actions';
+import { setPatientTab, setFilters, clearFilters } from './actions';
 
 const initialState = {
   patientTab: '',
+  filters: {
+    name: '',
+    phone: ''
+  }
 };
 
 // ------------------------------------
@@ -15,8 +19,23 @@ const ACTION_HANDLERS = {
       patientTab: action.payload,
     }),
   },
+  [setFilters.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      filters: action.payload,
+    }),
+  },
+  [clearFilters.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      filters: {
+        name: '',
+        phone: ''
+      },
+    }),
+  },
 };
 
-export { setPatientTab };
+export { setPatientTab, setFilters, clearFilters };
 
 export default handleActions(ACTION_HANDLERS, initialState);

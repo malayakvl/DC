@@ -9,3 +9,5 @@ const rootSelector = createSelector(
 );
 
 export const patientTabSelector = state => state.patient.patientTab;
+
+export const patientFiltersSelector = state => state.patient.filters;

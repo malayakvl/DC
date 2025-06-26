@@ -1,13 +1,19 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import InputText from '../../../Components/Form/InputText';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
+import { patientFiltersSelector } from '../../../Redux/Patient/selectors';
+import { setFilters, clearFilters } from '../../../Redux/Patient';
 
 export default function Filters({ listData }) {
   const appLang = useSelector(appLangSelector);
+  const dispatch = useDispatch();
+  const filtersData = useSelector(patientFiltersSelector);
+  const { data, setData, processing, post, recentlySuccessful, progress } =
+    useForm(filtersData);
   const msg = new Lang({
     messages: lngPatient,
     locale: appLang,
@@ -16,8 +22,17 @@ export default function Filters({ listData }) {
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;
-
+    setData(values => ({
+      ...values,
+      [key]: value,
+    }));
+    filtersData[key] = value;
+    dispatch(setFilters(filtersData));
   };
+
+  const search = () => {
+    post(route('patient.index'));
+  }
 
 
   return (
@@ -30,7 +45,7 @@ export default function Filters({ listData }) {
         </div>
         <div className="md:w-2/3">
           <InputText
-            name={'last_name'}
+            name={'filterName'}
             values={''}
             dataValue={''}
             value={''}
@@ -50,7 +65,7 @@ export default function Filters({ listData }) {
         </div>
         <div className="md:w-2/3">
           <InputText
-            name={'last_name'}
+            name={'filterPhone'}
             values={''}
             dataValue={''}
             value={''}
@@ -63,20 +78,19 @@ export default function Filters({ listData }) {
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 ml-3">
-        <Link
+        <span
           className="btn-back"
           title={msg.get('patient.back')}
-          href={`/patients`}
+          onClick={() => search()}
         >
           {msg.get('patient.search')}
-        </Link>
-        <Link
+        </span>
+        <span
           className="btn-back"
           title={msg.get('patient.back')}
-          href={`/patients`}
         >
           {msg.get('patient.search.clear')}
-        </Link>
+        </span>
       </div>
     </div>
   );
