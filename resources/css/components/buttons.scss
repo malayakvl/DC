@@ -135,3 +135,24 @@
     box-shadow: 0 10px 20px rgba(247, 109, 109, 0.2), inset 0px -4px 0px rgba(0, 0, 0, 0.1);
     /*@apply basic-btn red-yellow-gradient font-bold text-sm text-white rounded-lg px-2 py-1.5*/
 }
+.btn-sch-act, .btn-sch-payment, .btn-sch-icon {
+    padding: 5px 10px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    background: palevioletred;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+.btn-sch-payment {
+    background: #247e43;
+}
+.btn-sch-icon {
+    background: none;
+    color: gray;
+    font-size: 14px;
+    padding: 5px 5px;
+}

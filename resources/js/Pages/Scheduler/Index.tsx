@@ -31,7 +31,7 @@ import Pricing from './Pricing';
 import { eventsDataSelector, pricePopupSelector, showSchedulePopupSelector } from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Simulate } from 'react-dom/test-utils';
 import reset = Simulate.reset;
@@ -623,20 +623,46 @@ export default function Index({
   const renderViewEventBlock = () => {
     console.log('Event View', eventView);
     return (
-      <div className="grid grid-cols-[1fr_auto] items-baseline-last">
-        <div>
-          <p className="text-sm text-gray-500">
-            {formatEventDateTime(eventView)}
-          </p>
-          <span className="block">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
-          <span className="block">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
+      <>
+        <div className="grid grid-cols-[1fr_auto] items-baseline-last">
+          <div className={'pt-2'}>
+            <span className="block text-gray-500  mb-1">
+              {formatEventDateTime(eventView)}
+            </span>
+            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
+            <span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
+          </div>
+          <div className={'pt-2'}>
+            <span className="block mb-1">Event status</span>
+            <span className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}>{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
+            <span className="p-cabinet  mb-1 block">{eventView.cabinet_name}</span>
+          </div>
         </div>
         <div>
-          <span className="block">Event status</span>
-          <span className="p-balance block">{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
-          <span className="p-cabinet block">{eventView.cabinet_name}</span>
+          <div className={'sch-services'}></div>
+          <div className={'sh-btns-block'}>
+            <span className={'btn-sch-act'}>{msg.get('scheduler.sch.act')}</span>
+            <span className={'btn-sch-payment ml-2'}>{msg.get('scheduler.sch.payment')}</span>
+            <span className={'btn-sch-icon ml-5'}>
+              <FontAwesomeIcon icon={faCopy} />
+            </span>
+            <span className={'btn-sch-icon ml-1'}>
+              <FontAwesomeIcon icon={faList} />
+            </span>
+            <span className={'btn-sch-icon ml-1'}>
+              <FontAwesomeIcon icon={faUser} />
+            </span>
+          </div>
+          <div className={'tabs-block mt-2 sch-tabs'}>
+            <ul>
+              <li className={'inline-block'}>Візити</li>
+              <li className={'inline-block'}>Плани</li>
+              <li className={'inline-block'}>Історія</li>
+              <li className={'inline-block'}>Фінанси</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </>
     )
   }
 

@@ -46,7 +46,9 @@ const lngScheduler = {
     from: 'Час',
     manipulation: 'Послуга',
     '3days': 'Тиждень',
-    balance: 'Баланс'
+    balance: 'Баланс',
+    'sch.act': 'Швидкий акт',
+    'sch.payment' : 'Прийняти платіж'
   },
 };
 export default lngScheduler;
