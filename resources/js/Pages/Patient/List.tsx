@@ -101,7 +101,7 @@ console.log('Currency', currency)
                     <Link href="/patient/plans">
                       <FontAwesomeIcon icon={faList} className="mr-5" />
                     </Link>
-                    <Link href="/patient/history">
+                    <Link href={`/patient/view/${item.id}`}>
                       <FontAwesomeIcon icon={faFolder} className="mr-5" />
                     </Link>
                     <Link href="/patient/finance">
