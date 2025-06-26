@@ -31,7 +31,8 @@ class PatientController extends Controller
                 ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
                 ->where('clinic_patient.clinic_id', $clinic->id);
             if ($request->filterName) {
-                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
+                $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($request->filterName) . '%']);
+                //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
             }
             if ($request->filterPhone) {
                 $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');

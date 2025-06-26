@@ -3,9 +3,10 @@ import { setPatientTab, setFilters, clearFilters } from './actions';
 
 const initialState = {
   patientTab: '',
+  isClear: false,
   filters: {
-    name: '',
-    phone: ''
+    filterName: '',
+    filterPhone: ''
   }
 };
 
@@ -29,9 +30,10 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       filters: {
-        name: '',
-        phone: ''
+        filterName: '',
+        filterPhone: ''
       },
+      isClear: true
     }),
   },
 };
