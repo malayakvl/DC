@@ -148,18 +148,6 @@ MyWeek.title = (date) => {
   return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 };
 
-// let eventId = 0
-// const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
-//   const dayDiff = i % 7
-//
-//   return Array.from({ length: 2 }, (_, j) => ({
-//     id: eventId++,
-//     title: `Event ${i + j} _ 6`,
-//     start: new Date(2025, 5, 24 + dayDiff, 9, 0, 0),
-//     end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
-//     resourceId: 6,
-//   }))
-// })
 const getCurrentWeekRange = () => {
   const now = new Date(); // Динамическое текущее время
   const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -599,9 +587,6 @@ export default function Index({
         popoverEl.style.left = `${left}px`;
         popoverEl.style.top = `${top}px`;
         popoverEl.style.display = 'block';
-
-        // Вызываем вашу функцию showActionsEvent
-        showActionsEvent(eventElement.parentElement, event);
       }
     }, 250)
   }, [])
@@ -621,14 +606,13 @@ export default function Index({
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
           <div className={'pt-2'}>
+            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
+            <span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
             <span className="block text-gray-500  mb-1">
               {formatEventDateTime(eventView)}
             </span>
-            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
-            <span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
           </div>
           <div className={'pt-2'}>
-            <span className="block mb-1">Event status</span>
             <span className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}>{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
             <span className="p-cabinet  mb-1 block">{eventView.cabinet_name}</span>
           </div>
@@ -713,7 +697,7 @@ export default function Index({
       popoverEl.style.display = showHower ? 'block' : 'none';
       popoverEl.innerHTML = `
         <div>
-          <p class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></p>
+          <span class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></span>
           <span class="block mb-1">${msg.get('scheduler.from')}: ${event.event_time_from} - ${event.event_time_to}</span>
           <span class="block mb-1">${msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>${event.last_name} ${event.first_name}</strong></span>
           <span class="block mb-1">${msg.get('scheduler.form.cabinet')}: ${event.cabinet_name}</span>
