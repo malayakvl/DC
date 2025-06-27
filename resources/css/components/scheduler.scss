@@ -305,7 +305,7 @@
 }
 
 .sch_tooltip {
-    position: fixed;
+    position: absolute;
     background: white;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -373,8 +373,18 @@
     height: 20px;
     background: white;
     transform: translateX(-50%) translateY(-50%) rotate(45deg);
-    top: 0;
+    bottom: -15px;
     left: 10%;
+    //box-shadow: 1px 1px 20px 0px rgba(0, 0, 0, 0.6);
+}
+.arrow-right {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    transform: translateX(-50%) translateY(-50%) rotate(45deg);
+    bottom: -15px;
+    right: 10%;
     //box-shadow: 1px 1px 20px 0px rgba(0, 0, 0, 0.6);
 }
 .p-cabinet {

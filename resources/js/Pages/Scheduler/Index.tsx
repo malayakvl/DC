@@ -504,9 +504,9 @@ export default function Index({
 
     // Парсимо дату
     const date = new Date(event.event_date);
-    if (isNaN(date)) {
-      throw new Error('Invalid event_date format');
-    }
+    // if (isNaN(date)) {
+    //   throw new Error('Invalid event_date format');
+    // }
 
     // Отримуємо день, місяць і день тижня
     const day = date.getDate();
@@ -551,7 +551,11 @@ export default function Index({
   }
 
   const handleSelectEvent = (event, e) => {
-    const eventElement = e.target.closest('.rbc-event-data') || e.target.closest('.rbc-event');
+    const eventElement = e.target.closest('.rbc-event');
+    // console.log(eventElement)
+    const topValue = eventElement.style.top; // "12.5%"
+    // popoverEl.style.left = `${left}px`;
+
     if (eventElement) {
       setEventView(event);
       const rect = eventElement.getBoundingClientRect();
@@ -559,21 +563,27 @@ export default function Index({
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
       const popoverEl = document.getElementById('bigActionEventView');
+      const popoverArrowLeft = document.getElementById('arrowLeft');
+      const popoverArrowRight = document.getElementById('arrowRight');
       const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
       // Проверяем, выходит ли поповер за правую границу
       let left = rect.left;
+      let arrowRight = false;
       if (left + popoverWidth > windowWidth) {
         // left = windowWidth - popoverWidth - 140; // Отступ от края
-        left = rect.left - 380;
+        left = rect.left - 300;
+        arrowRight = true;
+        popoverArrowLeft.style.display = 'none';
+        popoverArrowRight.style.display = 'block';
+
         // показиваем стрелочку справа
         // alert(document.getElementById('bigActionEventView'))
         // document.getElementById('bigActionEventView').classList.add('popup-arrow-right')
         // document.getElementById('arrow').style.right = '20px';
         // document.getElementById('arrow').style.left = 'auto';
       } else {
-        console.log(document.getElementById('arrow'))
-        // document.getElementById('arrow').style.left = '20px';
-        // document.getElementById('arrow').style.right = 'auto';
+        popoverArrowLeft.style.display = 'block';
+        popoverArrowRight.style.display = 'none';
       }
 
       // Проверяем, выходит ли поповер за левую границу
@@ -583,19 +593,20 @@ export default function Index({
       console.log('Top + height', windowHeight)
       // Позиция сверху или снизу от события
       let top = rect.top - 100; // Поповер ниже события
-      let arrowTop = '-16px'; // Стрелка сверху поповера
-      let arrowTransform = 'rotate(45deg)'; // Стрелка указывает вверх
+      // let arrowTop = '-16px'; // Стрелка сверху поповера
+      // let arrowTransform = 'rotate(45deg)'; // Стрелка указывает вверх
       if (top + popoverHeight > windowHeight) {
         top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
-        arrowTop = `${popoverHeight - 6}px`; // Стрелка снизу поповера
-        arrowTransform = 'rotate(225deg)'; // Стрелка указывает вниз
+        // arrowTop = `${popoverHeight - 6}px`; // Стрелка снизу поповера
+        // arrowTransform = 'rotate(225deg)'; // Стрелка указывает вниз
       }
 
       // Позиция стрелочки: указывает на середину события
-      const eventCenterX = rect.left + rect.width / 2;
-      const arrowLeft = eventCenterX - left - 6; // 6 - половина ширины стрелки
+      // const eventCenterX = rect.left + rect.width / 2;
+      // const arrowLeft = eventCenterX - left - 6; // 6 - половина ширины стрелки
       popoverEl.style.left = `${left}px`;
       popoverEl.style.top = `${top}px`;
+      // popoverEl.style.top = `${topValue}`;
       popoverEl.style.display = 'block';
       // setPopover({
       //   event,
@@ -709,9 +720,9 @@ export default function Index({
     return view === 'month' ? (
       <strong>{event.title}</strong>
     ) : (
-      <div className={'rbc-event-data relative bg-blue-100'}
-        // onMouseEnter={handleMouseEnter}
-        // onMouseLeave={handleMouseLeave}
+      <div className={'rbc-event-data bg-blue-100'}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
 
       >
         <p className={'block mb-1 pb-1'}>
@@ -846,7 +857,7 @@ export default function Index({
                 id="bigActionEventView"
                 ref={popoverRef}
                 style={{
-                  position: 'fixed',
+                  position: 'absolute',
                   width: '380px',
                   background: 'white',
                   border: '1px solid #ccc',
@@ -855,13 +866,8 @@ export default function Index({
                 }}
                 onClick={closePopover}
               >
-                <div
-                  className={`sch_arrow`}
-                  id="sch_arrow"
-                  ref={arrowRef}
-                />
-                <div id="arrow" className={'arrow-left'}></div>
-                <div className={'sc-arrow-right'}></div>
+                <div id="arrowLeft" className={'arrow-left'}></div>
+                <div id="arrowRight" className={'arrow-right'}></div>
                 <div
                   className="sch-content"
                   style={{
