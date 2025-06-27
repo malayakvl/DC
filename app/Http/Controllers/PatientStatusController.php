@@ -51,8 +51,8 @@ class PatientStatusController extends Controller
     public function edit(Request $request, $id) {
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $formData = Unit::find($id);
-            return Inertia::render('Unit/Edit', [
+            $formData = PatientStatus::find($id);
+            return Inertia::render('PatientStatus/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
             ]);

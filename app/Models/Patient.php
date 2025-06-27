@@ -29,6 +29,7 @@ class Patient extends Authenticatable
         'card_number',
         'notice',
         'curator_id',
+        'status_id',
         'contact',
         'payment',
         'birthday',

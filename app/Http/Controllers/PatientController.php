@@ -87,12 +87,16 @@ class PatientController extends Controller
                 ->select('users.*')
                 ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
                 ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
+            $statusesData = DB::table('patient_statuses')
+                ->select('patient_statuses.*')
+                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
             $contactData = DB::table('patients_contact')->get();
             $formData = Patient::where('id', '=', $id)->first();
             return Inertia::render('Patient/Edit', [
                 'formData' => $formData,
                 'customerData' => $customerData,
-                'contactData' => $contactData
+                'contactData' => $contactData,
+                'statusesData' => $statusesData
             ]);
 
         }
