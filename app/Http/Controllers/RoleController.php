@@ -44,7 +44,12 @@ class RoleController extends Controller implements HasMiddleware
 //         $request->user()->hasRole('Ceo Filial');
 //         dd($request->user()->hasRole('Ceo Filial'));exit;
 //dd(Auth::user()->hasRole('Admin'));
-//       $permission = Permission::create(['name' => 'patient-all']);
+//        $role = Role::where('name', 'Ceo')->first();
+//        $permission = Permission::where('name', 'patient-edit')->first();
+//        dd($permission);exit;
+//        $permission = Permission::where(['name' => 'patient-edit']);
+//        $permission->assignRole($role);
+//        exit;
 //       $permission = Permission::create(['name' => 'patient-create']);
 //       $permission = Permission::create(['name' => 'patient-edit']);
 //       $permission = Permission::create(['name' => 'patient-view']);
@@ -133,6 +138,8 @@ class RoleController extends Controller implements HasMiddleware
             function($value) { return (int)preg_replace('/[^0-9]/', '', $value); },
             $request->permissions
         );
+//        $permissions =
+//        $permission->assignRole($role);
         $role->syncPermissions($permissionsID);
 
         return Redirect::route('role.index');
@@ -149,13 +156,35 @@ class RoleController extends Controller implements HasMiddleware
     {
         $id = $request->id;
         $role = Role::find($id);
-        $role->name = $request->input('name');
-        $role->save();
+//        $role->name = $request->input('name');
+//        $role->save();
         $permissionsID = array_map(
             function($value) { return (int)preg_replace('/[^0-9]/', '', $value); },
             $request->permissions
         );
-        $role->syncPermissions($permissionsID);
+        $permissions = Permission::whereIn('id', $permissionsID)->get();
+        if ($permissions->isEmpty()) {
+            \Log::warning('Ни одно разрешение из массива не найдено', ['permissions_id' => $permissionsID]);
+            throw new \Exception('Ни одно разрешение не найдено для указанных ID');
+        }
+        // Назначаем роль каждому найденному разрешению
+        foreach ($permissions as $permission) {
+            try {
+                $permission->assignRole($role);
+                \Log::info("Роль {$role->name} (ID: {$role->id}) успешно назначена разрешению {$permission->name} (ID: {$permission->id})");
+            } catch (\Exception $e) {
+                \Log::error("Ошибка при назначении роли для разрешения ID {$permission->id}: {$e->getMessage()}");
+            }
+        }
+        // Проверяем, какие ID не были найдены (для отладки)
+        $foundPermissionIds = $permissions->pluck('id')->toArray();
+        $missingPermissions = array_diff($permissionsID, $foundPermissionIds);
+        if (!empty($missingPermissions)) {
+            \Log::warning('Следующие ID разрешений не найдены: ' . implode(', ', $missingPermissions));
+        }
+
+//        print_r($permissionsID);exit;
+//        $role->syncPermissions($permissionsID);
 
         return Redirect::route('role.index');
     }

@@ -13,6 +13,7 @@ export enum PaginationType {
   SERVCATEGORIES = 'servcategories',
   UNITS = 'units',
   PATIENTS = 'patients',
+  PATIENTSTATUSES = 'patientstatuses',
   STORES = 'stores',
 }
 export const TableHeaders = {
@@ -102,6 +103,11 @@ export const TableHeaders = {
   ],
   [PaginationType.SERVCATEGORIES]: [
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
+  [PaginationType.PATIENTSTATUSES]: [
+    { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.discount', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.UNITS]: [

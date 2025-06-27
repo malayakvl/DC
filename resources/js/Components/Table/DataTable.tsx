@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeaders from '../../Lang/Datatable/translation';
 import EmptyTable from '../../Components/Table/EmptyTable';
 import { TableHeaders, PaginationType } from '../../Constants';
-import classNames from 'classnames';
 import { setPaginationAction, setSwitchToggleAction } from '../../Redux/Layout';
 import {
   checkedIdsSelector,
@@ -13,20 +12,6 @@ import {
   switchHeaderSelector,
 } from '../../Redux/Layout/selectors';
 
-// interface Props {
-//     paginationType: Type.PaginationType;
-//     children: React.ReactNode[];
-//     totalAmount: number;
-//     sendRequest: () => Promise<void>;
-//     switcherOnClick?: any;
-//     hideBulk?: boolean;
-//     sendDeleteRequest?: () => Promise<void>;
-//     sendCopyRequest?: () => Promise<void>;
-//     sendShippedRequest?: () => Promise<void>;
-//     switcherRequest?: () => Promise<void>;
-//     sendStatusRequest?: (status: string) => Promise<void>;
-//     hidePaginationBar?: boolean;
-// }
 export default function DataTable({
   paginationType,
   children,
@@ -47,7 +32,9 @@ export default function DataTable({
   const [loading, setLoading] = useState(false);
   const switchAllHeader = false;
   const [allChecked, setAllChecked] = useState(false);
+  console.log(paginationType)
   const headers = TableHeaders[paginationType];
+  console.log(headers);
   const dispatch = useDispatch();
   const { includes } = [PRODUCTS];
   const { limit, sort, column, offset, query, filters }: Layouts.Pagination =

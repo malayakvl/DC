@@ -31,7 +31,7 @@ class PatientController extends Controller
                 ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
                 ->where('clinic_patient.clinic_id', $clinic->id);
             if ($request->filterName) {
-                $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . strtolower($request->filterName) . '%']);
+                $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
                 //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
             }
             if ($request->filterPhone) {
@@ -59,7 +59,7 @@ class PatientController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request) {
-        if ($request->user()->can('store-create')) {
+        if ($request->user()->can('patient-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $customerData = DB::table('users')
                 ->select('users.*')

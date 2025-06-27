@@ -14,7 +14,7 @@ declare namespace Layouts {
             mcategories: Pagination;
             cabinets: Pagination;
             materials: Pagination;
-            currencies: Pagination;
+            patientstatuses: Pagination;
             servcategories: Pagination;
         };
         filialName: string;

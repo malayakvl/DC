@@ -21,6 +21,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\PatientStatusController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -91,6 +92,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/patient/view/{id}', [PatientController::class, 'view'])->name('patient.view');
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');
+
+    Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
+    Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
+    Route::get('/patient-status/edit/{id}', [PatientStatusController::class, 'edit'])->name('patient-status.edit');
+    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient-status.update');
+
     Route::get('/formula/edit/{id}', [PatientController::class, 'formulaEdit'])->name('patient.formula.edit');
     Route::get('/formula/copy/{id}', [PatientController::class, 'formulaCopy'])->name('patient.formula.copy');
     Route::get('/perio/edit/{id}', [PatientController::class, 'perioEdit'])->name('patient.perio.edit');
