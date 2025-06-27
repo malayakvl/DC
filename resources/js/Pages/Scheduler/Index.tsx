@@ -33,9 +33,7 @@ import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Simulate } from 'react-dom/test-utils';
-import reset = Simulate.reset;
-import PrimaryButton from '../../Components/Form/PrimaryButton';
+
 
 const locales = {
   'uk': uk,
@@ -150,18 +148,18 @@ MyWeek.title = (date) => {
   return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 };
 
-let eventId = 0
-const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
-  const dayDiff = i % 7
-
-  return Array.from({ length: 2 }, (_, j) => ({
-    id: eventId++,
-    title: `Event ${i + j} _ 6`,
-    start: new Date(2025, 5, 24 + dayDiff, 9, 0, 0),
-    end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
-    resourceId: 6,
-  }))
-})
+// let eventId = 0
+// const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
+//   const dayDiff = i % 7
+//
+//   return Array.from({ length: 2 }, (_, j) => ({
+//     id: eventId++,
+//     title: `Event ${i + j} _ 6`,
+//     start: new Date(2025, 5, 24 + dayDiff, 9, 0, 0),
+//     end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
+//     resourceId: 6,
+//   }))
+// })
 const getCurrentWeekRange = () => {
   const now = new Date(); // Динамическое текущее время
   const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -199,7 +197,8 @@ export default function Index({
     locale: appLang,
   });
   const dispatch = useDispatch();
-  const clickRef = useRef(null);
+  // const clickRef = useRef(null);
+  const clickRef = useRef<number | null>(null);
   const [popoverContent, setPopoverContent] = useState('')
   const shBtnsTitles = {
     today: msg.get('scheduler.today'),
@@ -213,7 +212,7 @@ export default function Index({
   const now = new Date();
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState(eventsData);
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState<any>([]);
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
@@ -222,13 +221,12 @@ export default function Index({
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
   const [hoveredEvent, setHoveredEvent] = useState(null);
-  const [popover, setPopover] = useState(null);
+  const [showHower, setShowHover] = useState(true);
   const popoverRef = useRef(null);
-  const arrowRef = useRef(null);
   const [eventView, setEventView] = useState(null);
-  const { defaultDate, views } = useMemo(
+  const clickTimeout = useRef(null);
+  const { views } = useMemo(
     () => ({
-      defaultDate: new Date(2025, 5, 24),
       views: {
         day: true,
         week: MyWeek,
@@ -236,6 +234,19 @@ export default function Index({
     }),
     []
   )
+
+
+  useEffect(() => {
+    /**
+     * What Is This?
+     * This is to prevent a memory leak, in the off chance that you
+     * teardown your interface prior to the timed method being called.
+     */
+    return () => {
+      window.clearTimeout(clickRef?.current)
+    }
+  }, [])
+
   useEffect(() => {
     if (shEvents.length) {
       const _perfEvents = [];
@@ -538,101 +549,74 @@ export default function Index({
           <span class="p-cabinet block">${event.cabinet_name}</span> 
         </div>
       </div>
-
     `
-
-    setPopoverContent(pContent)
-
-    // document.getElementById('bigActionEventView').style.display = 'block';
-    // const rect = e.currentTarget.getBoundingClientRect();
-    // document.getElementById('bigActionEventView').style.top = `${rect.top - 128}px`;
-    // document.getElementById('bigActionEventView').style.left = `${rect.right - 70}px`;
-    // document.getElementById('bigActionEventView').style.display = 'block';
   }
 
-  const handleSelectEvent = (event, e) => {
-    const eventElement = e.target.closest('.rbc-event');
-    // console.log(eventElement)
-    const topValue = eventElement.style.top; // "12.5%"
-    // popoverEl.style.left = `${left}px`;
+  const onSelectEvent = useCallback((event, e) => {
+    /**
+     * Here we are waiting 250 milliseconds (use what you want) prior to firing
+     * our method. Why? Because both 'click' and 'doubleClick'
+     * would fire, in the event of a 'doubleClick'. By doing
+     * this, the 'click' handler is overridden by the 'doubleClick'
+     * action.
+     */
+    window.clearTimeout(clickRef?.current)
+    clickRef.current = window.setTimeout(() => {
+      const eventElement = e.target.closest('.rbc-event');
+      if (eventElement) {
+        setShowHover(false);
+        setEventView(event);
+        const rect = eventElement.getBoundingClientRect();
+        const popoverWidth = 380;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const popoverEl = document.getElementById('bigActionEventView');
+        const popoverArrowLeft = document.getElementById('arrowLeft');
+        const popoverArrowRight = document.getElementById('arrowRight');
+        const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
+        // Проверяем, выходит ли поповер за правую границу
+        let left = rect.left;
+        if (left + popoverWidth > windowWidth) {
+          left = rect.left - 300;
+          popoverArrowLeft.style.display = 'none';
+          popoverArrowRight.style.display = 'block';
+        } else {
+          popoverArrowLeft.style.display = 'block';
+          popoverArrowRight.style.display = 'none';
+        }
 
-    if (eventElement) {
-      setEventView(event);
-      const rect = eventElement.getBoundingClientRect();
-      const popoverWidth = 380;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      const popoverEl = document.getElementById('bigActionEventView');
-      const popoverArrowLeft = document.getElementById('arrowLeft');
-      const popoverArrowRight = document.getElementById('arrowRight');
-      const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
-      // Проверяем, выходит ли поповер за правую границу
-      let left = rect.left;
-      let arrowRight = false;
-      if (left + popoverWidth > windowWidth) {
-        // left = windowWidth - popoverWidth - 140; // Отступ от края
-        left = rect.left - 300;
-        arrowRight = true;
-        popoverArrowLeft.style.display = 'none';
-        popoverArrowRight.style.display = 'block';
+        // Проверяем, выходит ли поповер за левую границу
+        if (left < 10) {
+          left = 10; // Минимальный отступ слева
+        }
+        // Позиция сверху или снизу от события
+        let top = rect.top - 100; // Поповер ниже события
+        if (top + popoverHeight > windowHeight) {
+          top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
+        }
 
-        // показиваем стрелочку справа
-        // alert(document.getElementById('bigActionEventView'))
-        // document.getElementById('bigActionEventView').classList.add('popup-arrow-right')
-        // document.getElementById('arrow').style.right = '20px';
-        // document.getElementById('arrow').style.left = 'auto';
-      } else {
-        popoverArrowLeft.style.display = 'block';
-        popoverArrowRight.style.display = 'none';
+        // Позиция стрелочки: указывает на середину события
+        popoverEl.style.left = `${left}px`;
+        popoverEl.style.top = `${top}px`;
+        popoverEl.style.display = 'block';
+
+        // Вызываем вашу функцию showActionsEvent
+        showActionsEvent(eventElement.parentElement, event);
       }
+    }, 250)
+  }, [])
 
-      // Проверяем, выходит ли поповер за левую границу
-      if (left < 10) {
-        left = 10; // Минимальный отступ слева
-      }
-      console.log('Top + height', windowHeight)
-      // Позиция сверху или снизу от события
-      let top = rect.top - 100; // Поповер ниже события
-      // let arrowTop = '-16px'; // Стрелка сверху поповера
-      // let arrowTransform = 'rotate(45deg)'; // Стрелка указывает вверх
-      if (top + popoverHeight > windowHeight) {
-        top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
-        // arrowTop = `${popoverHeight - 6}px`; // Стрелка снизу поповера
-        // arrowTransform = 'rotate(225deg)'; // Стрелка указывает вниз
-      }
-
-      // Позиция стрелочки: указывает на середину события
-      // const eventCenterX = rect.left + rect.width / 2;
-      // const arrowLeft = eventCenterX - left - 6; // 6 - половина ширины стрелки
-      popoverEl.style.left = `${left}px`;
-      popoverEl.style.top = `${top}px`;
-      // popoverEl.style.top = `${topValue}`;
-      popoverEl.style.display = 'block';
-      // setPopover({
-      //   event,
-      //   style: {
-      //     left: `${left}px`,
-      //     top: `${top}px`,
-      //   },
-      // });
-
-      // Вызываем вашу функцию showActionsEvent
-      showActionsEvent(eventElement.parentElement, event);
-    }
-  };
-
-  const renderBtnsBlock = () => {
-    return (
-      <div className="row">
-        <PrimaryButton>
-          {msg.get('scheduler.save')}
-        </PrimaryButton>
-      </div>
-    )
-  }
+  const onDoubleClickEvent = useCallback((calEvent) => {
+    /**
+     * Notice our use of the same ref as above.
+     */
+    window.clearTimeout(clickRef?.current)
+    clickRef.current = window.setTimeout(() => {
+      window.alert('onDoubleClickEvent')
+    }, 250)
+  }, [])
 
   const renderViewEventBlock = () => {
-    console.log('Event View', eventView);
     return (
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
@@ -678,8 +662,8 @@ export default function Index({
   }
 
   const closePopover = () => {
-    setPopover(null);
   };
+
   /***** Render custom event view *****/
   const CustomEvent = ({ event, view }) => {
     let servicesData = '';
@@ -696,12 +680,38 @@ export default function Index({
     const handleMouseEnter = (e) => {
       // Calculate position based on event's bounding box
       const rect = e.currentTarget.getBoundingClientRect();
+      const popoverWidth = 380;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const popoverEl = document.getElementById('bigViewEvent');
+      const popoverArrowLeft = document.getElementById('arrowLeft');
+      const popoverArrowRight = document.getElementById('arrowRight');
+      const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
+      // Проверяем, выходит ли поповер за правую границу
+      let left = rect.left;
+      if (left + popoverWidth > windowWidth) {
+        left = rect.left - 85;
+        popoverArrowLeft.style.display = 'none';
+        popoverArrowRight.style.display = 'block';
+      } else {
+        popoverArrowLeft.style.display = 'block';
+        popoverArrowRight.style.display = 'none';
+      }
 
+      // Проверяем, выходит ли поповер за левую границу
+      if (left < 10) {
+        left = 10; // Минимальный отступ слева
+      }
+      // Позиция сверху или снизу от события
+      let top = rect.top - 100; // Поповер ниже события
+      if (top + popoverHeight > windowHeight) {
+        top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
+      }
 
-      document.getElementById('bigViewEvent').style.top = `${rect.top - 128}px`;
-      document.getElementById('bigViewEvent').style.left = `${rect.right - 70}px`;
-      document.getElementById('bigViewEvent').style.display = 'block';
-      document.getElementById('bigViewEvent').innerHTML = `
+      popoverEl.style.top = `${top}px`;
+      popoverEl.style.left = `${left}px`;
+      popoverEl.style.display = showHower ? 'block' : 'none';
+      popoverEl.innerHTML = `
         <div>
           <p class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></p>
           <span class="block mb-1">${msg.get('scheduler.from')}: ${event.event_time_from} - ${event.event_time_to}</span>
@@ -723,7 +733,6 @@ export default function Index({
       <div className={'rbc-event-data bg-blue-100'}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-
       >
         <p className={'block mb-1 pb-1'}>
           <strong style={{marginLeft: '20px'}}>{event.title}</strong>
@@ -798,28 +807,29 @@ export default function Index({
           <div className={'relative'}>
             <DnDCalendar
               culture="uk"
-              key={activePerson}
-              localizer={localizerFn}
+              localizer={localizerFn as any}
               events={filteredEvents}
               resources={cabinetData}
               resourceIdAccessor="resourceId"
               resourceTitleAccessor="resourceTitle"
               startAccessor="start"
-              step={15}
-              views={views}
-              defaultView={'week'}
-              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)}
-              min={minTime} // Начало с 8:00
-              max={maxTime}
-              messages={shBtnsTitles}
-              onEventResize={onEventResize}
-              onEventDrop={moveEvent}
-              onNavigate={handleNavigate}
-              onDropFromOutside={onDropFromOutside}
-              draggableAccessor={() => true}
-              dragFromOutsideItem={dragFromOutsideItem}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
+              step={15 as any}
+              views={views as any}
+              defaultView={'week' as any}
+              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)  as any}
+              min={minTime as any} // Начало с 8:00
+              max={maxTime as any}
+              messages={shBtnsTitles as any}
+              onEventResize={onEventResize as any}
+              onEventDrop={moveEvent as any}
+              onNavigate={handleNavigate as any}
+              onDropFromOutside={onDropFromOutside as any}
+              // draggableAccessor={() => true}
+              dragFromOutsideItem={dragFromOutsideItem as any}
+              onSelectSlot={handleSelectSlot as any}
+              onSelectEvent={onSelectEvent as any}
+              // onSelectEvent={onSelectEvent}
+              onDoubleClickEvent={onDoubleClickEvent as any}
               eventPropGetter={(event) => ({
                 style: {
                   borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
@@ -830,11 +840,11 @@ export default function Index({
                   zIndex: 10,
                   backgroundColor: '#fff'
                 },
-              })}
+              }) as any}
               //
               components={{
                 event: CustomEvent, // Override default event rendering
-              }}
+              } as any}
               resizable
               selectable
             />
