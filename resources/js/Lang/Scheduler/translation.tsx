@@ -48,7 +48,8 @@ const lngScheduler = {
     '3days': 'Тиждень',
     balance: 'Баланс',
     'sch.act': 'Швидкий акт',
-    'sch.payment' : 'Прийняти платіж'
+    'sch.payment' : 'Прийняти платіж',
+    age: 'років'
   },
 };
 export default lngScheduler;

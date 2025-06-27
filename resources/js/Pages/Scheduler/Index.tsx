@@ -33,7 +33,8 @@ import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import 'react-tooltip/dist/react-tooltip.css';
+import { Tooltip } from 'react-tooltip';
 
 const locales = {
   'uk': uk,
@@ -208,11 +209,9 @@ export default function Index({
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
-  const [hoveredEvent, setHoveredEvent] = useState(null);
   const [showHower, setShowHover] = useState(true);
   const popoverRef = useRef(null);
   const [eventView, setEventView] = useState(null);
-  const clickTimeout = useRef(null);
   const { views } = useMemo(
     () => ({
       views: {
@@ -520,25 +519,21 @@ export default function Index({
     return `${day} ${translations[locale].months[monthIndex]}, ${translations[locale].days[dayIndex]} ${timeFrom} - ${timeTo}`;
   }
 
-  const showActionsEvent = (el, event) => {
-    // update popover content
-    const pContent = `
-      <div class="grid grid-cols-[1fr_auto] items-baseline-last">  
-        <div>    
-          <p class="text-sm text-gray-500">
-            ${formatEventDateTime(event)}
-          </p>
-          <span class="block">${msg.get('scheduler.patient')}:${event.pl_name} ${event.p_name} ${event.birthday}</p>    
-          <span class="block">${msg.get('scheduler.form.doctor')}: ${event.last_name} ${event.first_name}</p>    
-        </div>  
-        <div>
-          <span class="block">Event status</span>
-          <span class="p-balance block ${event.dt_balance - event.kt_balance < 0 ? "red" : ''}">${msg.get('scheduler.balance')} ${event.dt_balance - event.kt_balance } ${clinicData.currency.symbol}</span>  
-          <span class="p-cabinet block">${event.cabinet_name}</span> 
-        </div>
-      </div>
-    `
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+
+    // Если месяц текущий меньше месяца рождения или
+    // если месяцы равны, но текущий день меньше дня рождения
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
   }
+
 
   const onSelectEvent = useCallback((event, e) => {
     /**
@@ -602,23 +597,35 @@ export default function Index({
   }, [])
 
   const renderViewEventBlock = () => {
+    let parsedData = JSON.parse(eventView.services) || [];
+
     return (
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
           <div className={'pt-2'}>
-            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
-            <span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
+            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name}</span>
+            <span className="block mb-1 font-bold">{moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)} {msg.get('scheduler.age')}</span>
+            <span className="block mb-1">{eventView.status_name ? `${eventView.status_name}` : ''} <em className={'sh-discount'}>{eventView.status_name ? `(-${eventView.status_discount}%)` : ''}</em></span>
+            {/*<span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>*/}
             <span className="block text-gray-500  mb-1">
               {formatEventDateTime(eventView)}
             </span>
           </div>
           <div className={'pt-2'}>
             <span className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}>{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
+            <span className="block mb-1 p-doctor">{shortenName(`${eventView.last_name } ${eventView.first_name}`)}</span>
             <span className="p-cabinet  mb-1 block">{eventView.cabinet_name}</span>
           </div>
         </div>
         <div>
-          <div className={'sch-services'}></div>
+          <div className={'sch-services'}>
+            {parsedData.map((_s, index) => (
+              <div className="flex justify-between">
+                <span>{_s.name}</span>
+                <span>{_s.price} {clinicData.currency.symbol}</span>
+              </div>
+            ))}
+          </div>
           <div className={'sh-btns-block'}>
             <span className={'btn-sch-act'}>{msg.get('scheduler.sch.act')}</span>
             <span className={'btn-sch-payment ml-2'}>{msg.get('scheduler.sch.payment')}</span>
@@ -646,6 +653,8 @@ export default function Index({
   }
 
   const closePopover = () => {
+    document.getElementById('bigActionEventView').style.display = 'none';
+    setShowHover(true);
   };
 
   /***** Render custom event view *****/
@@ -655,7 +664,7 @@ export default function Index({
       const parsedData = JSON.parse(event.services);
       if (Array.isArray(parsedData)) {
         parsedData.map((_s, index) => (
-          servicesData += `<span class="block"><i key=${index}>${_s.name}</i></span>`
+          servicesData += `<span class="block service-item"><em key=${index}>${_s.name}</em></span>`
         ))
       }
     } catch (error) {
@@ -663,7 +672,12 @@ export default function Index({
     }
     const handleMouseEnter = (e) => {
       // Calculate position based on event's bounding box
-      const rect = e.currentTarget.getBoundingClientRect();
+      // const rect = e.currentTarget.getBoundingClientRect();
+      // const parentElement = e.currentTarget.querySelector('.rbc-event-content')
+      const parentElement = e.target.closest('.rbc-event-content');
+      const rect = parentElement.getBoundingClientRect();
+      console.log(parentElement)
+      const width = parentElement.clientWidth;
       const popoverWidth = 380;
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
@@ -672,7 +686,7 @@ export default function Index({
       const popoverArrowRight = document.getElementById('arrowRight');
       const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
       // Проверяем, выходит ли поповер за правую границу
-      let left = rect.left;
+      let left = rect.left - width;
       if (left + popoverWidth > windowWidth) {
         left = rect.left - 85;
         popoverArrowLeft.style.display = 'none';
@@ -687,14 +701,16 @@ export default function Index({
         left = 10; // Минимальный отступ слева
       }
       // Позиция сверху или снизу от события
-      let top = rect.top - 100; // Поповер ниже события
+      let top = rect.top; // Поповер ниже события
       if (top + popoverHeight > windowHeight) {
         top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
       }
+console.log(top, left);
 
       popoverEl.style.top = `${top}px`;
       popoverEl.style.left = `${left}px`;
-      popoverEl.style.display = showHower ? 'block' : 'none';
+      // popoverEl.style.display = showHower ? 'block' : 'none';
+      popoverEl.style.display = 'block';
       popoverEl.innerHTML = `
         <div>
           <span class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></span>
@@ -716,12 +732,14 @@ export default function Index({
     ) : (
       <div className={'rbc-event-data bg-blue-100'}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        // onMouseLeave={handleMouseLeave}
       >
-        <p className={'block mb-1 pb-1'}>
-          <strong style={{marginLeft: '20px'}}>{event.title}</strong>
+        <span className={'block mb-1 pb-1 inline-block'}>
+          <strong style={{marginLeft: '20px'}}>
+            {event.title}
+          </strong>
           <div className={'sh-event-status'} style={{background: event.status_color}}></div>
-        </p>
+        </span>
         <span className={'block mb-2'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
         <span className={'block mb-2'}>{msg.get('scheduler.patient')}: {shortenName(`${event.p_name} ${event.pl_name}`)}</span>
         <div className={'block mb-2'}><strong>{event.description}</strong></div>
@@ -862,6 +880,7 @@ export default function Index({
               >
                 <div id="arrowLeft" className={'arrow-left'}></div>
                 <div id="arrowRight" className={'arrow-right'}></div>
+                <div className={'event-close'} onClick={() => closePopover()}></div>
                 <div
                   className="sch-content"
                   style={{
@@ -870,7 +889,6 @@ export default function Index({
                     borderRadius: '4px', // Скругление углов контента
                   }}
                 >
-                  {/*<div contentEditable='true' dangerouslySetInnerHTML={{ __html: popoverContent }}></div>*/}
                   <div>{eventView && renderViewEventBlock()}</div>
                 </div>
               </div>

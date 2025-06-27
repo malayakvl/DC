@@ -115,7 +115,7 @@ class SchedulerController extends Controller
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance',
-                'patients.kt_balance',
+                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
                 DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
                 DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
@@ -130,6 +130,7 @@ class SchedulerController extends Controller
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
             ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+            ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
