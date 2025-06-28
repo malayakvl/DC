@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Calendar, dateFnsLocalizer, Views, Navigate, DateLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, Navigate } from 'react-big-calendar';
 import TimeGrid from 'react-big-calendar/lib/TimeGrid';
 import * as dates from 'date-arithmetic'
 import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import DatePicker from 'react-datepicker';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -34,7 +33,6 @@ import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'react-tooltip/dist/react-tooltip.css';
-import { Tooltip } from 'react-tooltip';
 
 const locales = {
   'uk': uk,
@@ -186,9 +184,7 @@ export default function Index({
     locale: appLang,
   });
   const dispatch = useDispatch();
-  // const clickRef = useRef(null);
   const clickRef = useRef<number | null>(null);
-  const [popoverContent, setPopoverContent] = useState('')
   const shBtnsTitles = {
     today: msg.get('scheduler.today'),
     previous: msg.get('scheduler.prev'),
@@ -209,7 +205,6 @@ export default function Index({
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
-  const [showHower, setShowHover] = useState(true);
   const popoverRef = useRef(null);
   const [eventView, setEventView] = useState(null);
   const { views } = useMemo(
@@ -424,6 +419,7 @@ export default function Index({
     setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
   };
 
+
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
   }, []);
@@ -545,42 +541,33 @@ export default function Index({
      */
     window.clearTimeout(clickRef?.current)
     clickRef.current = window.setTimeout(() => {
-      const eventElement = e.target.closest('.rbc-event');
+      const eventElement = document.getElementById(`event-${event.event_id}`).closest('.rbc-event');
+      const styles = eventElement.style;
+      const extractedStyles = {
+        top: styles.top || '0%',
+        height: styles.height || '0%',
+        width: styles.width || '0%',
+        left: styles.left || '0%'
+      };
       if (eventElement) {
-        setShowHover(false);
         setEventView(event);
         const rect = eventElement.getBoundingClientRect();
         const popoverWidth = 380;
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
         const popoverEl = document.getElementById('bigActionEventView');
-        const popoverArrowLeft = document.getElementById('arrowLeft');
-        const popoverArrowRight = document.getElementById('arrowRight');
-        const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
         // Проверяем, выходит ли поповер за правую границу
         let left = rect.left;
         if (left + popoverWidth > windowWidth) {
-          left = rect.left - 300;
-          popoverArrowLeft.style.display = 'none';
-          popoverArrowRight.style.display = 'block';
+          left = rect.left - 380;
         } else {
-          popoverArrowLeft.style.display = 'block';
-          popoverArrowRight.style.display = 'none';
         }
-
         // Проверяем, выходит ли поповер за левую границу
         if (left < 10) {
           left = 10; // Минимальный отступ слева
         }
-        // Позиция сверху или снизу от события
-        let top = rect.top - 100; // Поповер ниже события
-        if (top + popoverHeight > windowHeight) {
-          top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
-        }
-
-        // Позиция стрелочки: указывает на середину события
         popoverEl.style.left = `${left}px`;
-        popoverEl.style.top = `${top}px`;
+        popoverEl.style.top = `${styles.top}`;
         popoverEl.style.display = 'block';
       }
     }, 250)
@@ -606,7 +593,6 @@ export default function Index({
             <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name}</span>
             <span className="block mb-1 font-bold">{moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)} {msg.get('scheduler.age')}</span>
             <span className="block mb-1">{eventView.status_name ? `${eventView.status_name}` : ''} <em className={'sh-discount'}>{eventView.status_name ? `(-${eventView.status_discount}%)` : ''}</em></span>
-            {/*<span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>*/}
             <span className="block text-gray-500  mb-1">
               {formatEventDateTime(eventView)}
             </span>
@@ -654,7 +640,6 @@ export default function Index({
 
   const closePopover = () => {
     document.getElementById('bigActionEventView').style.display = 'none';
-    setShowHover(true);
   };
 
   /***** Render custom event view *****/
@@ -670,83 +655,27 @@ export default function Index({
     } catch (error) {
       console.error("Ошибка парсинга JSON:", error);
     }
-    const handleMouseEnter = (e) => {
-      // Calculate position based on event's bounding box
-      // const rect = e.currentTarget.getBoundingClientRect();
-      // const parentElement = e.currentTarget.querySelector('.rbc-event-content')
-      const parentElement = e.target.closest('.rbc-event-content');
-      const rect = parentElement.getBoundingClientRect();
-      console.log(parentElement)
-      const width = parentElement.clientWidth;
-      const popoverWidth = 380;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      const popoverEl = document.getElementById('bigViewEvent');
-      const popoverArrowLeft = document.getElementById('arrowLeft');
-      const popoverArrowRight = document.getElementById('arrowRight');
-      const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
-      // Проверяем, выходит ли поповер за правую границу
-      let left = rect.left - width;
-      if (left + popoverWidth > windowWidth) {
-        left = rect.left - 85;
-        popoverArrowLeft.style.display = 'none';
-        popoverArrowRight.style.display = 'block';
-      } else {
-        popoverArrowLeft.style.display = 'block';
-        popoverArrowRight.style.display = 'none';
-      }
-
-      // Проверяем, выходит ли поповер за левую границу
-      if (left < 10) {
-        left = 10; // Минимальный отступ слева
-      }
-      // Позиция сверху или снизу от события
-      let top = rect.top; // Поповер ниже события
-      if (top + popoverHeight > windowHeight) {
-        top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
-      }
-console.log(top, left);
-
-      popoverEl.style.top = `${top}px`;
-      popoverEl.style.left = `${left}px`;
-      // popoverEl.style.display = showHower ? 'block' : 'none';
-      popoverEl.style.display = 'block';
-      popoverEl.innerHTML = `
-        <div>
-          <span class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></span>
-          <span class="block mb-1">${msg.get('scheduler.from')}: ${event.event_time_from} - ${event.event_time_to}</span>
-          <span class="block mb-1">${msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>${event.last_name} ${event.first_name}</strong></span>
-          <span class="block mb-1">${msg.get('scheduler.form.cabinet')}: ${event.cabinet_name}</span>
-          <span class="block mb-1">${msg.get('scheduler.patient')}: <strong className={'sh-patient'}>${event.p_name} ${event.pl_name}</strong></span>
-          ${servicesData ? '<span>'+msg.get('scheduler.manipulation')+'</span>' : ''}
-          ${servicesData ? servicesData : ''}
-        </div>
-      `;
-    };
-    const handleMouseLeave = (e) => {
-      document.getElementById('bigViewEvent').style.display = 'none'
-    };
 
     return view === 'month' ? (
       <strong>{event.title}</strong>
     ) : (
-      <div className={'rbc-event-data bg-blue-100'}
-        onMouseEnter={handleMouseEnter}
-        // onMouseLeave={handleMouseLeave}
-      >
-        <span className={'block mb-1 pb-1 inline-block'}>
-          <strong style={{marginLeft: '20px'}}>
-            {event.title}
-          </strong>
-          <div className={'sh-event-status'} style={{background: event.status_color}}></div>
-        </span>
-        <span className={'block mb-2'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
-        <span className={'block mb-2'}>{msg.get('scheduler.patient')}: {shortenName(`${event.p_name} ${event.pl_name}`)}</span>
-        <div className={'block mb-2'}><strong>{event.description}</strong></div>
-        <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+      <div className="">
+        <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
+          <span className={'block mb-1 inline-block'}>
+            <strong>
+              {shortenName(`${event.p_name} ${event.pl_name}`)}
+            </strong>
+            <div className={'sh-event-status'} style={{background: event.status_color}}></div>
+          </span>
+          <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
+          <span className={'block mb-1'}>{event.title}</span>
+          <div className={'block mb-1'}><strong>{event.description}</strong></div>
+          <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+        </div>
       </div>
     );
   };
+
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -826,21 +755,21 @@ console.log(top, left);
               onEventDrop={moveEvent as any}
               onNavigate={handleNavigate as any}
               onDropFromOutside={onDropFromOutside as any}
-              // draggableAccessor={() => true}
               dragFromOutsideItem={dragFromOutsideItem as any}
               onSelectSlot={handleSelectSlot as any}
+              tooltipAccessor={(event: any): any =>
+                `\n${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
+              }
               onSelectEvent={onSelectEvent as any}
-              // onSelectEvent={onSelectEvent}
               onDoubleClickEvent={onDoubleClickEvent as any}
               eventPropGetter={(event) => ({
                 style: {
-                  borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
                   borderRadius: '5px',
                   color: 'black',
-                  border: 'solid 1px #be21ea',
+                  border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
                   padding: '5px',
                   zIndex: 10,
-                  backgroundColor: '#fff'
+                  backgroundColor: `#fff`
                 },
               }) as any}
               //
@@ -851,9 +780,6 @@ console.log(top, left);
               selectable
             />
             <div
-              onMouseLeave={() => {
-                document.getElementById('bigViewEvent').style.display = 'none'
-              }}
               className={'event-big-content'} id={'bigViewEvent'}
               style={{
                 background: 'white',
@@ -878,8 +804,6 @@ console.log(top, left);
                 }}
                 onClick={closePopover}
               >
-                <div id="arrowLeft" className={'arrow-left'}></div>
-                <div id="arrowRight" className={'arrow-right'}></div>
                 <div className={'event-close'} onClick={() => closePopover()}></div>
                 <div
                   className="sch-content"
@@ -893,8 +817,6 @@ console.log(top, left);
                 </div>
               </div>
           </div>
-
-
 
           {showEventPopup && <SchedulerFormCreate
             formData={formData}

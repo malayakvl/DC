@@ -125,7 +125,7 @@ class SchedulerController extends Controller
                 DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
                 DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority',
             )
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')

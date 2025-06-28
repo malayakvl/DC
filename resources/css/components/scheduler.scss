@@ -234,9 +234,10 @@
 .sh-event-status {
     position: absolute;
     top: 6px;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
+    right: 6px;
+    //border-radius: 50%;
+    width: 13px;
+    height: 13px;
 }
 .rbc-active {
     background-image: none;
@@ -318,6 +319,9 @@
 .sch-content {
     padding: 10px;
     font-size: 14px;
+}
+.rbc-events-container {
+    width: 100% !important;
 }
 
 .sch_arrow {
