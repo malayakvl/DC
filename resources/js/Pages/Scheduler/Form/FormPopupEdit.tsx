@@ -39,7 +39,7 @@ import {
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '../../../Redux/Layout';
-import TextField from '@mui/material/TextField';
+import InputMask from 'react-input-mask';
 import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
@@ -59,6 +59,9 @@ export default function SchedulerFormEdit({
     locale: appLang,
   });
   const editEventData = useSelector(editEventSelector);
+  const [year, month, day] = editEventData.event_date.split('-'); // Split the input string
+  const formattedDate = `${day}.${month}.${year}`;
+
   const [values, setValues] = useState({
     title: editEventData.title,
     clinic_id: clinicData.id,
@@ -66,16 +69,15 @@ export default function SchedulerFormEdit({
     doctor_id: editEventData.doctor_id,
     comment: editEventData.comment,
     status_id: editEventData.status_id,
-    event_date: editEventData.event_date,
+    event_date: formattedDate,
     event_time_from: editEventData.event_time_from,
     event_time_to: editEventData.event_time_to,
   });
 
-
-console.log(JSON.parse(editEventData.services));
   const { processing, recentlySuccessful, errors } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
   const timeStart = useSelector(popupTimeSelector);
+  const timeEnd = useSelector(popupTimeSelector);
   const patientId = editEventData.patient_id;
   const eventStatus = editEventData.status_id;
   const dispatch = useDispatch();
@@ -83,11 +85,6 @@ console.log(JSON.parse(editEventData.services));
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showEditPopupSelector);
   const popupServices = useSelector(servicesSelector);
-
-  // if (editEventData.services) {
-  //   console.log(1);
-  //   dispatch(setExistServicesAction(JSON.parse(editEventData.services)));
-  // }
 
   const handleChangeSelect = e => {
     const key = e.target.id;
@@ -202,7 +199,6 @@ console.log(JSON.parse(editEventData.services));
       </div>
     )
   }
-console.log(`${editEventData.pl_name} ${editEventData.p_name}`)
   return (
     <section className={`px-5 max-h-[75vh] form-scheduler form-edit-schedulter bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
@@ -222,7 +218,7 @@ console.log(`${editEventData.pl_name} ${editEventData.p_name}`)
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 ">
             {msg.get('scheduler.patient')}
             <span className="text-discount float-right">
-              &nbsp;{editEventData.status_name && `${editEventData.status_name} (-${editEventData.discount}%)`}
+              &nbsp;{editEventData.status_name && `${editEventData.patient_status_name} (-${editEventData.discount}%)`}
             </span>
           </label>
           <div className={'sh-p-view'}>{editEventData.pl_name} {editEventData.p_name}</div>
@@ -265,45 +261,78 @@ console.log(`${editEventData.pl_name} ${editEventData.p_name}`)
           </div>
         </div>
         <div className={'clearfix'} />
-        {timeStart && (
-          <div className="flex flex-row pt-4">
-            <div className={'w-1/2'}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimePicker
-                  ampm={false}
-                  label={msg.get('scheduler.from')}
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      fullWidth: true,
-                    },
-                  }}
-                  defaultValue={parsedTime}
-                  name={'event_time_from'}
-                  onChange={(newValue) => handleChangeTimeFrom(newValue)}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
+        {formattedDate && (
+          <div className="flex">
+            <div className={'w-1/3 relative'}>
+              <span className={'block text-[14px]'}>{msg.get('scheduler.sch.date')}</span>
+              <InputMask
+                mask="99.99.9999"
+                name={'event_date'}
+                defaultValue={values.event_date}
+                className={'shc-form-date'}
+              />
+              <i className={'f-calendar'} />
             </div>
-            <div className={'w-1/2 ml-5'}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimePicker
-                  ampm={false}
-                  label={msg.get('scheduler.from')}
-                  slotProps={{
-                    textField: {
-                      size: 'small',
-                      fullWidth: true,
-                    },
-                  }}
-                  defaultValue={parsedTimePlus30}
-                  name={'event_time_to'}
-                  onChange={(newValue) => handleChangeTimeTo(newValue)}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
+            <div className={'w-1/3 relative'}>
+              <span className={'block text-[14px]'}>{msg.get('scheduler.time.from')}</span>
+              <InputMask mask="99:99"
+                         name={'event_time_from'}
+                         defaultValue={values.event_time_from ? values.event_time_from : timeStart}
+                         className={'shc-form-date'}
+                         onChange={(newValue) => handleChangeTimeFrom(newValue)}
+              />
+              <i className={'f-clock'} />
             </div>
+            <div className={'w-1/3 relative'}>
+              <span className={'block text-[14px]'}>{msg.get('scheduler.time.to')}</span>
+              <InputMask mask="99:99"
+                         name={'event_time_to'}
+                         defaultValue={values.event_time_to ? values.event_time_to : timeEnd}
+                         className={'shc-form-date'}
+                         onChange={(newValue) => handleChangeTimeTo(newValue)}
+              />
+              <i className={'f-clock'} />
+            </div>
+
           </div>
+          // <div className="flex flex-row pt-4">
+          //   <div className={'w-1/2'}>
+          //     <LocalizationProvider dateAdapter={AdapterDayjs}>
+          //       <TimePicker
+          //         ampm={false}
+          //         label={msg.get('scheduler.from')}
+          //         slotProps={{
+          //           textField: {
+          //             size: 'small',
+          //             fullWidth: true,
+          //           },
+          //         }}
+          //         defaultValue={parsedTime}
+          //         name={'event_time_from'}
+          //         onChange={(newValue) => handleChangeTimeFrom(newValue)}
+          //         renderInput={(params) => <TextField {...params} />}
+          //       />
+          //     </LocalizationProvider>
+          //   </div>
+          //   <div className={'w-1/2 ml-5'}>
+          //     <LocalizationProvider dateAdapter={AdapterDayjs}>
+          //       <TimePicker
+          //         ampm={false}
+          //         label={msg.get('scheduler.from')}
+          //         slotProps={{
+          //           textField: {
+          //             size: 'small',
+          //             fullWidth: true,
+          //           },
+          //         }}
+          //         defaultValue={parsedTimePlus30}
+          //         name={'event_time_to'}
+          //         onChange={(newValue) => handleChangeTimeTo(newValue)}
+          //         renderInput={(params) => <TextField {...params} />}
+          //       />
+          //     </LocalizationProvider>
+          //   </div>
+          // </div>
         )}
         <InputTextarea
           name={'comment'}
@@ -314,8 +343,7 @@ console.log(`${editEventData.pl_name} ${editEventData.p_name}`)
           label={msg.get('scheduler.form.comment')}
         />
         <div className={'manipulation flex'}>
-          <span className={'text-[14px]'}>{msg.get('scheduler.manipulation')}</span>
-          <div className={'add-services ml-3 btn-link font-bold'} onClick={() => {
+          <div className={'add-services ml-3 btn-link font-bold text-[14px]'} onClick={() => {
             dispatch(showPricePopupAction(true))
           }}> 📌 {msg.get('scheduler.btn.add')}
           </div>

@@ -50,8 +50,6 @@ export default function EventStatus() {
             borderColor: eventStatus.color,
           }}
         ></div>
-        {/*<DotsVerticalIcon width={16} height={16} style={{ color: eventStatus.color }} />*/}
-        {/*<BeakerIcon width={16} height={16} style={{ color: eventStatus.color }} />*/}
         {msg.get(`scheduler.statuses.${eventStatus.name}`)}
       </button>
 
@@ -69,12 +67,6 @@ export default function EventStatus() {
                   setShowStatus(false);
                   setEventStatus(status);
                   dispatch(setScheduleStatusAction(status));
-                  // dispatch(
-                  //     updateFormEventAction({
-                  //         type: 'status',
-                  //         modifier: status
-                  //     })
-                  // );
                 }}
               >
                 <span

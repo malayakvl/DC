@@ -78,11 +78,6 @@ class SchedulerController extends Controller
                 })->values()->toArray()
             ];
         })->values()->toArray();
-//        foreach ($customerData as $customer) {
-//            if ($customer->file) {
-//                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->file;
-//            }
-//        }
         if ($request->session()->get('filial_id')) {
             $listCabinets = DB::table('cabinets')
                 ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
@@ -116,7 +111,7 @@ class SchedulerController extends Controller
                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
                 'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-                'patient_statuses.discount', 'patient_statuses.name AS status_name',
+                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
                 DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
                 DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),

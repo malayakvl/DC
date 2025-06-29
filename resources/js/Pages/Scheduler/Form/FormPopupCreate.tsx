@@ -302,7 +302,6 @@ export default function SchedulerFormCreate({
           label={msg.get('scheduler.form.comment')}
         />
         <div className={'manipulation flex'}>
-          {/*<span className={'text-[14px]'}>{msg.get('scheduler.manipulation')}</span>*/}
           <div className={'add-services ml-3 btn-link font-bold text-[14px]'} onClick={() => {
             dispatch(showPricePopupAction(true))
           }}> 📌 {msg.get('scheduler.btn.add')}
