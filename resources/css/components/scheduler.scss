@@ -135,6 +135,7 @@
     position: fixed;
     top: 15%;
     left:29%;
+    border-radius: 5px;
     //background: palevioletred;
     z-index: 20;
     min-width: 610px;
@@ -321,7 +322,7 @@
     font-size: 14px;
 }
 .rbc-events-container {
-    width: 100% !important;
+    //width: 100% !important;
 }
 
 .sch_arrow {
@@ -469,4 +470,34 @@
     color: #f76ab0;
     font-size: 11px;
     font-weight: bolder;
+}
+.shc-form-date {
+    min-width: 120px;
+    width: 160px;
+    border-radius: 4px;
+    float: left;
+    margin-right: 10px;
+    border-color: #d1d5db;
+}
+.f-calendar {
+    background: url(../../images/action-icons/calendar.svg);
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    position: absolute;
+    top: 34px;
+    right: 41px;
+}
+.f-clock {
+    background: url(../../images/action-icons/clock.svg);
+    background-repeat: no-repeat;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    position: absolute;
+    top: 34px;
+    right: 41px;
 }

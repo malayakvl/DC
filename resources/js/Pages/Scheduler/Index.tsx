@@ -25,7 +25,7 @@ import {
   showScheduleEditPopupAction,
   showSchedulePopupAction,
   updateSchedulerPeriodAction,
-  setExistServicesAction
+  setExistServicesAction, setPopupCabinetAction,
 } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { showOverlayAction } from '../../Redux/Layout';
@@ -254,11 +254,6 @@ export default function Index({
           parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
       });
     }
-    // let filteredEvents;
-    // filteredEvents = {
-    //   shEvents
-    // };
-
     setFilteredEvents(shEvents)
   }, [shEvents])
 
@@ -277,10 +272,6 @@ export default function Index({
         _event.desc = 'Some description'
       });
     }
-    // let filteredEvents;
-    // filteredEvents = {
-    //   eventsData
-    // };
     setFilteredEvents(eventsData)
   }, [eventsData]);
 
@@ -446,7 +437,6 @@ export default function Index({
       dispatch(setEditEventAction(calEvent));
       dispatch(showOverlayAction(true));
       if (calEvent.services) {
-          console.log(1);
           dispatch(setExistServicesAction(JSON.parse(calEvent.services)));
         }
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
@@ -457,7 +447,7 @@ export default function Index({
 
   /***** Click on cell and show popup *****/
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
+    ({ start, end, resourceId }) => {
       // Текущее время
       const now = moment();
       dispatch(setExistServicesAction([]));
@@ -468,9 +458,9 @@ export default function Index({
         return;
       }
       dispatch(showSchedulePopupAction(true));
+      dispatch(setPopupCabinetAction(resourceId));
       dispatch(showOverlayAction(true));
-console.log(dayjs(start).format('YYYY-MM-DD HH:mm'))
-      dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
+      dispatch(setScheduleDateAction(dayjs(start).format('DD.MM.YYYY')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
@@ -531,9 +521,6 @@ console.log(dayjs(start).format('YYYY-MM-DD HH:mm'))
 
     // Парсимо дату
     const date = new Date(event.event_date);
-    // if (isNaN(date)) {
-    //   throw new Error('Invalid event_date format');
-    // }
 
     // Отримуємо день, місяць і день тижня
     const day = date.getDate();
@@ -671,7 +658,7 @@ console.log(dayjs(start).format('YYYY-MM-DD HH:mm'))
       const parsedData = JSON.parse(event.services);
       if (Array.isArray(parsedData)) {
         parsedData.map((_s, index) => (
-          servicesData += `<span class="block service-item"><em key=${index}>${_s.name}</em></span>`
+          servicesData += `<span class="block service-item"><em>${_s.name}</em></span>`
         ))
       }
     } catch (error) {

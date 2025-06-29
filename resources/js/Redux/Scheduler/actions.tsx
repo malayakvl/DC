@@ -22,6 +22,9 @@ export const setRemoteEventsAction = createAction('schedule/SET_REMOTE EVENTS');
 export const setServicesAction = createAction('schedule/SET_SERVICES_EVENTS');
 export const setExistServicesAction = createAction('schedule/SET_EXIST_SERVICES_EVENTS');
 export const setSchedulePatientIdAction = createAction('schedule/SET_PATIENT_ID');
+export const minusServiceAction = createAction('schedule/MINUS_SERVICE');
+export const plusServiceAction = createAction('schedule/PLUS_SERVICE');
+export const setPopupCabinetAction = createAction('schedule/SETUP_CABINET');
 
 export const fetchEventsAction: any = createAction(
   'scheduler/FIND_EVENTS',

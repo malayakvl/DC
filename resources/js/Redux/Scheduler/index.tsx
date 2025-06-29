@@ -16,7 +16,10 @@ import {
   setSchedulePatientIdAction,
   updateSchedulerPeriodAction,
   setEditEventAction,
-  setExistServicesAction
+  setExistServicesAction,
+  minusServiceAction,
+  plusServiceAction,
+  setPopupCabinetAction
 } from './actions';
 
 const initialState = {
@@ -129,12 +132,42 @@ const ACTION_HANDLERS = {
   [setServicesAction]: {
     next: (state, action) => {
       const exists = state.services.some(service => service.id === action.payload.id);
-
+      action.payload.qty = 1;
       return {
         ...state,
         services: exists
           ? state.services.filter(service => service.id !== action.payload.id) // удалить
           : [...state.services, action.payload] // добавить
+      };
+    },
+  },
+  [plusServiceAction]: {
+    next: (state, action) => {
+      const _s  = state.services.map(item =>
+        item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
+      );
+
+      return {
+        ...state,
+        services: _s
+      };
+    },
+  },
+  [minusServiceAction]: {
+    next: (state, action) => {
+      const _s =  state.services
+        .map(item =>
+          item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item
+        )
+        .filter(item => item.qty > 0);
+      // const _s  = state.services.map(item =>
+      //   item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
+      // );
+      // console.log(_s);
+
+      return {
+        ...state,
+        services: _s
       };
     },
   },
@@ -150,6 +183,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       eventsData: action.payload,
+    }),
+  },
+  [setPopupCabinetAction]: {
+    next: (state, action) => ({
+      ...state,
+      cabinetId: action.payload,
     }),
   },
 };
@@ -170,7 +209,10 @@ export {
   setSchedulePatientIdAction,
   updateSchedulerPeriodAction,
   setEditEventAction,
-  setExistServicesAction
+  setExistServicesAction,
+  plusServiceAction,
+  minusServiceAction,
+  setPopupCabinetAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

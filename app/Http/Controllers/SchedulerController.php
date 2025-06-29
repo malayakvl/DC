@@ -108,8 +108,8 @@ class SchedulerController extends Controller
                 })->values()->toArray()
             ];
         })->values()->toArray();
-        $weekStart = date("Y-m-d", strtotime('monday this week'));
-        $weekEnd = date("Y-m-d", strtotime('sunday this week'));
+        $weekStart = date("Y-m-d");
+        $weekEnd = date("Y-m-d", strtotime('+3 days'));
         $eventsData = DB::table('schedulers')
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
@@ -135,25 +135,6 @@ class SchedulerController extends Controller
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-//dd($eventsData);exit;
-//        $eventsData = DB::table('schedulers')
-//            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-//                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
-//                'schedulers.cabinet_id', 'schedulers.cabinet_id',
-//                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
-//            )
-//            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
-//            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-//            ->where('schedulers.clinic_id', $clinicData->id)
-//            ->whereBetween('event_date', [$weekStart, $weekEnd])
-//            ->get();
-//        $events = array();
-//        foreach ($eventsData as $event) {
-//            $event->startDate = date($event->event_date.' '.$event->event_time_from);
-//            $event->endDate = date($event->event_date.' '.$event->event_time_to);
-//            $event->cabinet = $event->cabinet_name;
-//            $events[] = (object) $event;
-//        }
         $formData = new Scheduler();
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
@@ -398,7 +379,7 @@ class SchedulerController extends Controller
                 $scheduler = new Scheduler();
                 $scheduler->title = $request->title;
                 $scheduler->event_date = $request->event_date;
-                $scheduler->event_time_from = $request->event_time_to;
+                $scheduler->event_time_from = $request->event_time_from;
                 $scheduler->event_time_to = $request->event_time_to;
                 $scheduler->clinic_id = $clinic->id;
                 $scheduler->cabinet_id = $request->cabinet_id;

@@ -51,7 +51,10 @@ const lngScheduler = {
     'sch.act': 'Швидкий акт',
     'sch.payment' : 'Прийняти платіж',
     age: 'років',
-    'btn.add': 'Додати'
+    'btn.add': 'Додати послугу',
+    'sch.date': 'Дата',
+    'time.from': 'Початок',
+    'time.to': 'Кінець'
   },
 };
 export default lngScheduler;
