@@ -10,7 +10,13 @@ import InputTextarea from '../../../Components/Form/InputTextarea';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngScheduler from '../../../Lang/Scheduler/translation';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
-import { setServicesAction, showPricePopupAction, showSchedulePopupAction } from '../../../Redux/Scheduler';
+import {
+  setExistServicesAction,
+  setServicesAction,
+  showPricePopupAction,
+  showScheduleEditPopupAction,
+  showSchedulePopupAction,
+} from '../../../Redux/Scheduler';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -19,12 +25,13 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import {
+  editEventSelector,
   newPatientDataSelector, patientIdSelector,
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
   popupTimeSelector,
-  servicesSelector,
+  servicesSelector, showEditPopupSelector,
   showSchedulePopupSelector,
 } from '../../../Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
@@ -35,8 +42,9 @@ import {
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import InputLabel from '../../../Components/Form/InputLabel';
 
-export default function SchedulerFormCreate({
+export default function SchedulerFormEdit({
   formData,
   clinicData,
   cabinetData,
@@ -48,27 +56,36 @@ export default function SchedulerFormCreate({
     messages: lngScheduler,
     locale: appLang,
   });
+  const editEventData = useSelector(editEventSelector);
   const [values, setValues] = useState({
-    title: formData.title,
+    title: editEventData.title,
     clinic_id: clinicData.id,
-    cabinet_id: formData.cabinet_id,
-    doctor_id: formData.doctor_id,
-    comment: formData.comment,
-    status_id: formData.status_id,
-    event_date: formData.event_date,
-    event_time_from: formData.event_time_from,
-    event_time_to: formData.event_time_to,
+    cabinet_id: editEventData.cabinet_id,
+    doctor_id: editEventData.doctor_id,
+    comment: editEventData.comment,
+    status_id: editEventData.status_id,
+    event_date: editEventData.event_date,
+    event_time_from: editEventData.event_time_from,
+    event_time_to: editEventData.event_time_to,
   });
+
+
+console.log(JSON.parse(editEventData.services));
   const { processing, recentlySuccessful, errors } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
   const timeStart = useSelector(popupTimeSelector);
-  const patientId = useSelector(patientIdSelector);
-  const eventStatus = useSelector(popupStatusSelector);
+  const patientId = editEventData.patient_id;
+  const eventStatus = editEventData.status_id;
   const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
-  const showPopup = useSelector(showSchedulePopupSelector);
+  const showPopup = useSelector(showEditPopupSelector);
   const popupServices = useSelector(servicesSelector);
+
+  // if (editEventData.services) {
+  //   console.log(1);
+  //   dispatch(setExistServicesAction(JSON.parse(editEventData.services)));
+  // }
 
   const handleChangeSelect = e => {
     const key = e.target.id;
@@ -106,7 +123,7 @@ export default function SchedulerFormCreate({
     setValues(values => ({
       ...values,
       ['event_time_from']: timeStart,
-      ['event_time_to']: parsedTimePlus30.format('HH:mm'),
+      ['event_time_to']: timeStart,
       ['status_id']: eventStatus,
     }));
   }, [timeStart]);
@@ -136,7 +153,6 @@ export default function SchedulerFormCreate({
     if (patientId) {
       values['patientId'] = patientId;
     }
-console.log(values);
     if (formData.id) {
       router.post(`/scheduler/update?id=${formData.id}`, values);
     } else {
@@ -178,20 +194,18 @@ console.log(values);
 
         <div className="w-[25px] text-right">
           <FontAwesomeIcon icon={faTrash} color={'#e13333'} className="mr-1" onClick={() => {
-            dispatch(setServicesAction(item));
+              dispatch(setServicesAction(item));
           }} />
         </div>
       </div>
     )
   }
-
+console.log(`${editEventData.pl_name} ${editEventData.p_name}`)
   return (
-    <section className={`px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`px-5 max-h-[75vh] form-scheduler form-edit-schedulter bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2 className={'pt-7 pb-7'}>
-          {formData?.id
-            ? msg.get('mCategories.pricing.edit')
-            : msg.get('scheduler.title.create.visit')}
+          {msg.get('scheduler.title.edit.visit')}
         </h2>
       </header>
 
@@ -202,7 +216,16 @@ console.log(values);
       >
         <EventStatus />
 
-        <EventPatient values={values} />
+        <div className={`relative`}>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 ">
+            {msg.get('scheduler.patient')}
+            <span className="text-discount float-right">
+              &nbsp;{editEventData.status_name && `${editEventData.status_name} (-${editEventData.discount}%)`}
+            </span>
+          </label>
+          <div className={'sh-p-view'}>{editEventData.pl_name} {editEventData.p_name}</div>
+
+        </div>
 
         <InputText
           name={'title'}
@@ -305,7 +328,7 @@ console.log(values);
             onClick={() => {
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
-              dispatch(showSchedulePopupAction(false));
+              dispatch(showScheduleEditPopupAction(false));
               dispatch(showOverlayAction(false));
               dispatch(setPopupAction(false));
             }}

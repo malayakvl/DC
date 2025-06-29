@@ -5,6 +5,7 @@ const lngScheduler = {
   'uk.scheduler': {
     'title.list': 'Розклад відвідувань',
     'title.create.visit': 'Створити новий запис',
+    'title.edit.visit': 'Редагувати запис',
     'form.title': 'Назва',
     close: 'Закрити',
     save: 'Зберегти',
@@ -49,7 +50,8 @@ const lngScheduler = {
     balance: 'Баланс',
     'sch.act': 'Швидкий акт',
     'sch.payment' : 'Прийняти платіж',
-    age: 'років'
+    age: 'років',
+    'btn.add': 'Додати'
   },
 };
 export default lngScheduler;

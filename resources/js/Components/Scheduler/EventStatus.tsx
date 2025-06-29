@@ -5,7 +5,7 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import StatusIcon from './StatusIcon';
 import { setScheduleStatusAction } from '../../Redux/Scheduler';
-import { SchedulerStatuses } from '../../Constants/index';
+import { SchedulerStatuses } from '../../Constants';
 // import { updateFormEventAction } from '../../redux/scheduler/actions';
 
 export default function EventStatus() {

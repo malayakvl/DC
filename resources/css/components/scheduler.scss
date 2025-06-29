@@ -137,7 +137,7 @@
     left:29%;
     //background: palevioletred;
     z-index: 20;
-    min-width: 560px;
+    min-width: 610px;
     min-height: 560px;
 }
 .rbc-event {
@@ -449,4 +449,24 @@
     overflow: hidden;
     width: 100px;
     white-space: nowrap;
+}
+.sh-p-view {
+    border: solid 1px ;
+    border-color: rgb(209, 213, 219);
+    border-radius: 4px;
+    padding: 8px 10px 8px 10px;
+    font-size: 14px;
+}
+.text-discount {
+    color: #f76ab0;
+    font-weight: bold;
+    float: right;
+    position: absolute;
+    right: 8px;
+    top: 29px;
+}
+.sh-discount {
+    color: #f76ab0;
+    font-size: 11px;
+    font-weight: bolder;
 }

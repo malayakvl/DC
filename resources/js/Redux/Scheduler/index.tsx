@@ -2,6 +2,7 @@ import { handleActions } from 'redux-actions';
 import {
   setSchedulePopupDoctorAction,
   showSchedulePopupAction,
+  showScheduleEditPopupAction,
   setScheduleTimeAction,
   showScheduleErrorPopupAction,
   setNewPatientAction,
@@ -13,11 +14,14 @@ import {
   setServicesAction,
   findPatientsAction,
   setSchedulePatientIdAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setEditEventAction,
+  setExistServicesAction
 } from './actions';
 
 const initialState = {
   showSchedulePopup: false,
+  showScheduleEditPopup: false,
   showPricePopup: false,
   showErrorSchedulePopup: false,
   popupDoctorId: '',
@@ -29,6 +33,7 @@ const initialState = {
   eventsData: [],
   patientsData: [],
   services: [],
+  editEvent: null,
   weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
   weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
 };
@@ -37,10 +42,22 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [setEditEventAction]: {
+    next: (state, action) => ({
+      ...state,
+      editEvent: action.payload,
+    }),
+  },
   [showSchedulePopupAction]: {
     next: (state, action) => ({
       ...state,
       showSchedulePopup: action.payload,
+    }),
+  },
+  [showScheduleEditPopupAction]: {
+    next: (state, action) => ({
+      ...state,
+      showScheduleEditPopup: action.payload,
     }),
   },
   [showPricePopupAction]: {
@@ -121,6 +138,14 @@ const ACTION_HANDLERS = {
       };
     },
   },
+  [setExistServicesAction]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        services: action.payload// добавить
+      };
+    },
+  },
   [updateSchedulerPeriodAction]: {
     next: (state, action) => ({
       ...state,
@@ -131,6 +156,7 @@ const ACTION_HANDLERS = {
 
 export {
   showSchedulePopupAction,
+  showScheduleEditPopupAction,
   setSchedulePopupDoctorAction,
   setScheduleTimeAction,
   setScheduleDateAction,
@@ -142,7 +168,9 @@ export {
   showPricePopupAction,
   setServicesAction,
   setSchedulePatientIdAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setEditEventAction,
+  setExistServicesAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

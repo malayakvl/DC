@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 
 export const showSchedulePopupAction = createAction('schedule/SHOW_POPUP');
+export const showScheduleEditPopupAction = createAction('schedule/SHOW_EDIT_POPUP');
+export const setEditEventAction = createAction('schedule/SET_EDIT_EVENT');
+
 export const showPricePopupAction = createAction('schedule/SHOW_PRICE_POPUP');
 
 export const showScheduleErrorPopupAction = createAction(
@@ -17,6 +20,7 @@ export const setScheduleStatusAction = createAction('schedule/SETUP_STATUS');
 export const setNewPatientAction = createAction('schedule/SETUP_NEW_PATIENT');
 export const setRemoteEventsAction = createAction('schedule/SET_REMOTE EVENTS');
 export const setServicesAction = createAction('schedule/SET_SERVICES_EVENTS');
+export const setExistServicesAction = createAction('schedule/SET_EXIST_SERVICES_EVENTS');
 export const setSchedulePatientIdAction = createAction('schedule/SET_PATIENT_ID');
 
 export const fetchEventsAction: any = createAction(

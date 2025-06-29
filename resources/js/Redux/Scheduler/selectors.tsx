@@ -9,8 +9,10 @@ const rootSelector = createSelector(
 
 export const showSchedulePopupSelector = state =>
   state.scheduler.showSchedulePopup;
-export const showErrorPopupSelector = state =>
-  state.scheduler.showErrorSchedulePopup;
+export const showEditPopupSelector = state =>
+  state.scheduler.showScheduleEditPopup;
+export const editEventSelector = state =>
+  state.scheduler.editEvent;
 
 export const popupDoctorSelector = state => state.scheduler.popupDoctorId;
 export const pricePopupSelector = state => state.scheduler.showPricePopup;

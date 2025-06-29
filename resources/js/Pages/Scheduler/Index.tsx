@@ -18,21 +18,30 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import {
+  setEditEventAction,
   setScheduleDateAction,
   setScheduleTimeAction,
   showPricePopupAction,
+  showScheduleEditPopupAction,
   showSchedulePopupAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setExistServicesAction
 } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { showOverlayAction } from '../../Redux/Layout';
 import Pricing from './Pricing';
-import { eventsDataSelector, pricePopupSelector, showSchedulePopupSelector } from '../../Redux/Scheduler/selectors';
+import {
+  eventsDataSelector,
+  pricePopupSelector,
+  showEditPopupSelector,
+  showSchedulePopupSelector,
+} from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'react-tooltip/dist/react-tooltip.css';
+import SchedulerFormEdit from './Form/FormPopupEdit';
 
 const locales = {
   'uk': uk,
@@ -203,6 +212,8 @@ export default function Index({
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
+  const editEventPopup = useSelector(showEditPopupSelector);
+
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
   const popoverRef = useRef(null);
@@ -424,11 +435,32 @@ export default function Index({
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
   }, []);
 
+  const onDoubleClickEvent = useCallback((calEvent) => {
+    /**
+     * Notice our use of the same ref as above.
+     */
+    window.clearTimeout(clickRef?.current)
+    clickRef.current = window.setTimeout(() => {
+      const now = moment(calEvent.event_date);
+      // Сравнение start с текущим временем
+      dispatch(setEditEventAction(calEvent));
+      dispatch(showOverlayAction(true));
+      if (calEvent.services) {
+          console.log(1);
+          dispatch(setExistServicesAction(JSON.parse(calEvent.services)));
+        }
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+
+      dispatch(showScheduleEditPopupAction(true))
+    }, 250)
+  }, [])
+
   /***** Click on cell and show popup *****/
   const handleSelectSlot = useCallback(
     ({ start, end }) => {
       // Текущее время
       const now = moment();
+      dispatch(setExistServicesAction([]));
       // Сравнение start с текущим временем
       if (moment(start).isBefore(now)) {
         dispatch(showOverlayAction(true));
@@ -437,6 +469,7 @@ export default function Index({
       }
       dispatch(showSchedulePopupAction(true));
       dispatch(showOverlayAction(true));
+console.log(dayjs(start).format('YYYY-MM-DD HH:mm'))
       dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
@@ -554,7 +587,6 @@ export default function Index({
         const rect = eventElement.getBoundingClientRect();
         const popoverWidth = 380;
         const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
         const popoverEl = document.getElementById('bigActionEventView');
         // Проверяем, выходит ли поповер за правую границу
         let left = rect.left;
@@ -570,16 +602,6 @@ export default function Index({
         popoverEl.style.top = `${styles.top}`;
         popoverEl.style.display = 'block';
       }
-    }, 250)
-  }, [])
-
-  const onDoubleClickEvent = useCallback((calEvent) => {
-    /**
-     * Notice our use of the same ref as above.
-     */
-    window.clearTimeout(clickRef?.current)
-    clickRef.current = window.setTimeout(() => {
-      window.alert('onDoubleClickEvent')
     }, 250)
   }, [])
 
@@ -657,13 +679,13 @@ export default function Index({
     }
 
     return view === 'month' ? (
-      <strong>{event.title}</strong>
+      <strong>{event.title} </strong>
     ) : (
       <div className="">
         <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
           <span className={'block mb-1 inline-block'}>
             <strong>
-              {shortenName(`${event.p_name} ${event.pl_name}`)}
+              {shortenName(`${event.p_name} ${event.pl_name}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
             </strong>
             <div className={'sh-event-status'} style={{background: event.status_color}}></div>
           </span>
@@ -767,6 +789,7 @@ export default function Index({
                   borderRadius: '5px',
                   color: 'black',
                   border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
+                  // background: `rgba(235, 157, 23, 0.1)`,
                   padding: '5px',
                   zIndex: 10,
                   backgroundColor: `#fff`
@@ -820,6 +843,12 @@ export default function Index({
 
           {showEventPopup && <SchedulerFormCreate
             formData={formData}
+            clinicData={clinicData}
+            cabinetData={cabinetData}
+            customerData={customerData}
+            currency={currency}
+          />}
+          {editEventPopup && <SchedulerFormEdit
             clinicData={clinicData}
             cabinetData={cabinetData}
             customerData={customerData}
