@@ -383,12 +383,6 @@ export default function Index({
         ev.id === eventId ? { ...ev, start: start, end: end } : ev
       )
     );
-    // setFilteredEvents((prev) => ({
-    //   ...prev,
-    //   all: prev.all.map((ev) =>
-    //     ev.id === eventId ? { ...ev, start: start, end: end } : ev
-    //   )
-    // }));
   };
   const onDropFromOutside = ({ start, allDay }) => {
     if (!draggedTask) {
