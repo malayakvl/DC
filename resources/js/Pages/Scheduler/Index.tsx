@@ -42,6 +42,7 @@ import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'react-tooltip/dist/react-tooltip.css';
 import SchedulerFormEdit from './Form/FormPopupEdit';
+import { ToastContainer, toast } from 'react-toastify';
 
 const locales = {
   'uk': uk,
@@ -227,6 +228,7 @@ export default function Index({
     }),
     []
   )
+  const notify = () => toast("Wow so easy!");
 
 
   useEffect(() => {
@@ -326,16 +328,45 @@ export default function Index({
   /**************************/
   /****** EVENTS ACTIONS */
   /**************************/
-  const moveEvent = ({ event, start, end, allDay }) => {
+  const moveEvent = ({
+   event,
+   start,
+   end,
+   resourceId,
+   isAllDay: droppedOnAllDaySlot = false, }) => {
     const eventId = event.id;
-    const currEvent = events.all.find(_event => _event.id === event.id)
+    // find place count in cabinet
+    const cabinetCntPlace = cabinetData.find(_cabinet => _cabinet.id === resourceId).place_count;
 
-    setFilteredEvents((prev) => ({
-      ...prev,
-      all: prev.all.map((ev) =>
-        ev.id === eventId ? { ...ev, start: start, end: end } : ev
-      )
-    }));
+    const startThreshold = start;
+    const filteredData = events.filter(_event => {
+      const threshold = new Date(startThreshold);
+      const eventStart = new Date(_event.start);
+      const eventEnd = new Date(_event.end);
+      return ((threshold >= eventStart && threshold <= eventEnd) && _event.id !== event.id);
+    });
+    if (filteredData.length >= cabinetCntPlace) {
+      toast.error(msg.get('scheduler.cabinet.full'), {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } else {
+      setFilteredEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
+        )
+      );
+    }
+    // setFilteredEvents((prev) => ({
+    //   ...prev,
+    //   all: prev.map((ev) =>
+    //     ev.id === eventId ? { ...ev, start: start, end: end } : ev
+    //   )
+    // }));
   };
   const onEventResize = ({ event, start, end }) => {
     const eventId = event.id;
@@ -691,6 +722,9 @@ export default function Index({
       <Head title={'Scheduler'} />
       <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
         {/* Кастомный алерт */}
+        <div>
+          <ToastContainer />
+        </div>
         {showAlert && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">

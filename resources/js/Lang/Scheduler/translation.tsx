@@ -54,7 +54,8 @@ const lngScheduler = {
     'btn.add': 'Додати послугу',
     'sch.date': 'Дата',
     'time.from': 'Початок',
-    'time.to': 'Кінець'
+    'time.to': 'Кінець',
+    'cabinet.full': 'Кабинет зайнятий!'
   },
 };
 export default lngScheduler;
