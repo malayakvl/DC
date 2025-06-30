@@ -373,12 +373,22 @@ export default function Index({
   };
   const onEventResize = ({ event, start, end }) => {
     const eventId = event.id;
-    setFilteredEvents((prev) => ({
-      ...prev,
-      all: prev.all.map((ev) =>
+    dispatch(updateEventsAction({
+      date: moment(start).format('YYYY-MM-DD'),
+      start: moment(start).format('HH:mm'),
+      end: moment(end).format('HH:mm'),
+      event_id: event.event_id}));
+    setFilteredEvents((prev) =>
+      prev.map((ev) =>
         ev.id === eventId ? { ...ev, start: start, end: end } : ev
       )
-    }));
+    );
+    // setFilteredEvents((prev) => ({
+    //   ...prev,
+    //   all: prev.all.map((ev) =>
+    //     ev.id === eventId ? { ...ev, start: start, end: end } : ev
+    //   )
+    // }));
   };
   const onDropFromOutside = ({ start, allDay }) => {
     if (!draggedTask) {
