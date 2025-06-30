@@ -377,6 +377,7 @@ export default function Index({
       date: moment(start).format('YYYY-MM-DD'),
       start: moment(start).format('HH:mm'),
       end: moment(end).format('HH:mm'),
+      resource_id: event.cabinet_id,
       event_id: event.event_id}));
     setFilteredEvents((prev) =>
       prev.map((ev) =>
@@ -730,8 +731,6 @@ export default function Index({
               onEventResize={onEventResize as any}
               onEventDrop={moveEvent as any}
               onNavigate={handleNavigate as any}
-              onDropFromOutside={onDropFromOutside as any}
-              dragFromOutsideItem={dragFromOutsideItem as any}
               onSelectSlot={handleSelectSlot as any}
               tooltipAccessor={(event: any): any =>
                 `\n${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
