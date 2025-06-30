@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
-import { router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import {
   setEditEventAction,
   setScheduleDateAction,
@@ -45,6 +45,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import SchedulerFormEdit from './Form/FormPopupEdit';
 import { ToastContainer, toast } from 'react-toastify';
 import { updateEventsAction } from '../../Redux/Scheduler/actions';
+import { setPatientTab } from '../../Redux/Patient';
 
 const locales = {
   'uk': uk,
@@ -587,7 +588,12 @@ export default function Index({
             ))}
           </div>
           <div className={'sh-btns-block'}>
-            <span className={'btn-sch-act'}>{msg.get('scheduler.sch.act')}</span>
+            <Link onClick={() => {
+              dispatch(setPatientTab('finances'));
+            }}
+              href={`/patient/view/${eventView.patient_id}/${eventView.event_id}`}>
+              <span className={'btn-sch-act cursor-pointer'}>{msg.get('scheduler.sch.act')}</span>
+            </Link>
             <span className={'btn-sch-payment ml-2'}>{msg.get('scheduler.sch.payment')}</span>
             <span className={'btn-sch-icon ml-5'}>
               <FontAwesomeIcon icon={faCopy} />

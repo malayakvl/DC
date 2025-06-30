@@ -156,3 +156,35 @@
     font-size: 14px;
     padding: 5px 5px;
 }
+
+.btn-quickact {
+    padding: 5px 10px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    background: palevioletred;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+.btn-quickact,.btn-acceptpayment, .btn-returnmoney {
+    padding: 10px 13px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+
+    background: palevioletred;
+}
+.btn-acceptpayment {
+    background: #078825;
+}
+.btn-returnmoney {
+    background: #7608ad;
+}

@@ -2,7 +2,7 @@ import { handleActions } from 'redux-actions';
 import { setPatientTab, setFilters, clearFilters } from './actions';
 
 const initialState = {
-  patientTab: '',
+  patientTab: 'history',
   isClear: false,
   filters: {
     filterName: '',

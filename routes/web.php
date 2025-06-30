@@ -22,6 +22,7 @@ use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PatientStatusController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -89,6 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/update-perio', [PatientController::class, 'updatePerio'])->name('patient.updatePerio');
     Route::post('/patient/update-psr', [PatientController::class, 'updatePSR'])->name('patient.updatePSR');
     Route::post('/patient/update', [PatientController::class, 'update'])->name('patient.update');
+    Route::get('/patient/view/{id}/{eventId}', [PatientController::class, 'view'])->name('patient.view');
     Route::get('/patient/view/{id}', [PatientController::class, 'view'])->name('patient.view');
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');

@@ -69,7 +69,11 @@ const lngPatient = {
     'list.edit': 'Редагувати',
     'list.visits': 'Візити',
     'list.documents': 'Документи',
-    status: 'Статус'
+    status: 'Статус',
+    finances: 'Фінанси',
+    quickact: 'Створити швидки акт',
+    acceptpayment: 'Прийняти платіж',
+    returnmoney: 'Повернути кошти'
   },
 };
 export default lngPatient;

@@ -74,7 +74,7 @@ export default function SchedulerFormEdit({
     event_time_to: editEventData.event_time_to,
   });
 
-  const { processing, recentlySuccessful, errors } = useForm();
+  const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = useSelector(popupTimeSelector);
@@ -295,44 +295,6 @@ export default function SchedulerFormEdit({
             </div>
 
           </div>
-          // <div className="flex flex-row pt-4">
-          //   <div className={'w-1/2'}>
-          //     <LocalizationProvider dateAdapter={AdapterDayjs}>
-          //       <TimePicker
-          //         ampm={false}
-          //         label={msg.get('scheduler.from')}
-          //         slotProps={{
-          //           textField: {
-          //             size: 'small',
-          //             fullWidth: true,
-          //           },
-          //         }}
-          //         defaultValue={parsedTime}
-          //         name={'event_time_from'}
-          //         onChange={(newValue) => handleChangeTimeFrom(newValue)}
-          //         renderInput={(params) => <TextField {...params} />}
-          //       />
-          //     </LocalizationProvider>
-          //   </div>
-          //   <div className={'w-1/2 ml-5'}>
-          //     <LocalizationProvider dateAdapter={AdapterDayjs}>
-          //       <TimePicker
-          //         ampm={false}
-          //         label={msg.get('scheduler.from')}
-          //         slotProps={{
-          //           textField: {
-          //             size: 'small',
-          //             fullWidth: true,
-          //           },
-          //         }}
-          //         defaultValue={parsedTimePlus30}
-          //         name={'event_time_to'}
-          //         onChange={(newValue) => handleChangeTimeTo(newValue)}
-          //         renderInput={(params) => <TextField {...params} />}
-          //       />
-          //     </LocalizationProvider>
-          //   </div>
-          // </div>
         )}
         <InputTextarea
           name={'comment'}
