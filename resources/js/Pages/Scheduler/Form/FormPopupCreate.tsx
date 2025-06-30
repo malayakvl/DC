@@ -16,7 +16,6 @@ import {
   showPricePopupAction,
   showSchedulePopupAction,
 } from '../../../Redux/Scheduler';
-import moment from 'moment';
 import 'rc-time-picker/assets/index.css';
 import InputMask from 'react-input-mask';
 import dayjs from 'dayjs';

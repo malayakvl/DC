@@ -25,6 +25,7 @@ export const setSchedulePatientIdAction = createAction('schedule/SET_PATIENT_ID'
 export const minusServiceAction = createAction('schedule/MINUS_SERVICE');
 export const plusServiceAction = createAction('schedule/PLUS_SERVICE');
 export const setPopupCabinetAction = createAction('schedule/SETUP_CABINET');
+export const setUpdateEventAction = createAction('schedule/SETUP_UPDATE_EVENT');
 
 export const fetchEventsAction: any = createAction(
   'scheduler/FIND_EVENTS',
@@ -65,6 +66,22 @@ export const updateSchedulerPeriodAction: any = createAction(
         )
         .then(async res => {
           return res.data.items;
+        });
+    }
+);
+export const updateEventsAction: any = createAction(
+  'scheduler/UPDATE_EVENT_DATA',
+  async (data: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+      const state = getState();
+      return axios
+        .post(
+          `/scheduler/update-event`,
+          data,
+          {}
+        )
+        .then(async res => {
+          return;
         });
     }
 );

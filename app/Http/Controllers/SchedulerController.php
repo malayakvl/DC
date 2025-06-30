@@ -214,16 +214,6 @@ class SchedulerController extends Controller
     public function fetchEvents(Request $request) {
         $qData = $request->all();
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-//        $eventsData = Scheduler::where('clinic_id', '=', $clinicData->id)->get();
-//        $eventsData = DB::table('schedulers')
-//            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-//                'schedulers.event_time_to',
-//                'schedulers.cabinet_id', 'schedulers.cabinet_id',
-//                'schedulers.doctor_id AS id'
-//            )
-//            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
-//            ->whereBetween('event_date', [$qData['start'], $qData['end']])
-//            ->get();
         $eventsData = DB::table('schedulers')
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
@@ -406,8 +396,18 @@ class SchedulerController extends Controller
         }
     }
 
+    public function updateEvent(Request $request) {
+        $event = Scheduler::where('id', $request->event_id)->get();
+        $event[0]->event_date = $request->date;
+        $event[0]->event_time_from = $request->start;
+        $event[0]->event_time_to = $request->end;
+        $event[0]->cabinet_id = $request->resource_id;
+        $event[0]->save();
+
+        return response()->json(['success' => true]);
+    }
+
     public function assign(Request $request, $id) {
-//        $clinic = $request->user()->clinic;
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
         $customer = User::where('id', $id)->get();

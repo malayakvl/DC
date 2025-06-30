@@ -177,6 +177,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/scheduler/fetchEvents', [SchedulerController::class, 'fetchEvents'])->name('scheduler.fetchEvents');
     Route::get('/scheduler/findPatients', [SchedulerController::class, 'fetchPatients'])->name('scheduler.fetchPatients');
     Route::get('/scheduler/updatePeriod', [SchedulerController::class, 'updatePeriod'])->name('scheduler.updatePeriod');
+    Route::post('/scheduler/update-event', [SchedulerController::class, 'updateEvent'])->name('scheduler.updateEvent');
 
     Route::get('/currency', [CurrencyController::class, 'index'])->name('currency.index');
     Route::get('/currency/edit/{id}', [CurrencyController::class, 'edit'])->name('currency.edit');

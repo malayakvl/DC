@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import { router } from '@inertiajs/react';
 import {
   setEditEventAction,
   setScheduleDateAction,
@@ -43,6 +44,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'react-tooltip/dist/react-tooltip.css';
 import SchedulerFormEdit from './Form/FormPopupEdit';
 import { ToastContainer, toast } from 'react-toastify';
+import { updateEventsAction } from '../../Redux/Scheduler/actions';
 
 const locales = {
   'uk': uk,
@@ -355,18 +357,19 @@ export default function Index({
         draggable: true,
       });
     } else {
+      dispatch(updateEventsAction({
+        date: moment(start).format('YYYY-MM-DD'),
+        start: moment(start).format('HH:mm'),
+        end: moment(end).format('HH:mm'),
+        resource_id: resourceId,
+        event_id: event.event_id}));
       setFilteredEvents((prev) =>
         prev.map((ev) =>
           ev.id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
         )
       );
+
     }
-    // setFilteredEvents((prev) => ({
-    //   ...prev,
-    //   all: prev.map((ev) =>
-    //     ev.id === eventId ? { ...ev, start: start, end: end } : ev
-    //   )
-    // }));
   };
   const onEventResize = ({ event, start, end }) => {
     const eventId = event.id;

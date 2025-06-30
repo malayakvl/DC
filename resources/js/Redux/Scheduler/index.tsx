@@ -19,7 +19,7 @@ import {
   setExistServicesAction,
   minusServiceAction,
   plusServiceAction,
-  setPopupCabinetAction
+  setPopupCabinetAction,
 } from './actions';
 
 const initialState = {
