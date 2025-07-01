@@ -108,7 +108,8 @@ class SchedulerController extends Controller
         $eventsData = DB::table('schedulers')
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'schedulers.patient_id',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
+                'schedulers.patient_id',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
                 'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
                 'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
@@ -163,7 +164,7 @@ class SchedulerController extends Controller
         $qData = $request->all();
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         $patientsQueryResults = DB::select('
-            SELECT patients.id, patients.first_name, patients.last_name 
+            SELECT patients.id, patients.first_name, patients.last_name, patients.patronomic_name 
             FROM patients
             LEFT JOIN clinic_patient ON clinic_patient.patient_id = patients.id
             WHERE clinic_patient.clinic_id = ? 
@@ -327,24 +328,21 @@ class SchedulerController extends Controller
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         if ($request->user()->can('schedule-create')) {
             if ($request->id) {
-//                $userId = $request->id;
-//                if ($request->file) {
-//                    $ext = $request->file->getClientOriginalExtension();
-//                    $photo = 'customer-' .$userId. '.'.$ext;
-//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-//                }
-//
-//                $user = User::find($request->id);
-//                $user->email = $request->email;
-//                $user->name = $request->name;
-//                $user->phone = $request->phone;
-//                $user->inn = $request->inn;
-//                if ($photo) {
-//                    $user->photo = $photo;
-//                }
-//                $user->save();
-
-                return Inertia::location(route('customer.index'));
+                $scheduler = Scheduler::find($request->id);
+                $scheduler->title = $request->title;
+                $scheduler->event_date = $request->fotmatted_date;
+                $scheduler->event_time_from = $request->event_time_from;
+                $scheduler->event_time_to = $request->event_time_to;
+                $scheduler->clinic_id = $clinic->id;
+                $scheduler->cabinet_id = $request->cabinet_id;
+                $scheduler->doctor_id = $request->doctor_id;
+                $scheduler->patient_id = $request->patientId;
+                $scheduler->description = $request->comment ?  $request->comment : '';
+                $scheduler->status_name = $request->status["name"];
+                $scheduler->status_color = $request->status["color"];
+                $scheduler->services = json_encode($request->services);
+                $scheduler->save();
+                return Inertia::location(route('scheduler.index'));
             }
             else {
                 if ($request->newPatientData) {
@@ -370,26 +368,11 @@ class SchedulerController extends Controller
                 $scheduler->cabinet_id = $request->cabinet_id;
                 $scheduler->doctor_id = $request->doctor_id;
                 $scheduler->patient_id = $patientId;
-                $scheduler->description = $request->comment;
+                $scheduler->description = $request->comment ?  $request->comment : '';
                 $scheduler->status_name = $request->status_id["name"];
                 $scheduler->status_color = $request->status_id["color"];
                 $scheduler->services = json_encode($request->services);
                 $scheduler->save();
-
-//                $userId = $user->id;
-//                if ($request->file) {
-//                    $ext = $request->file->getClientOriginalExtension();
-//                    $photo = 'customer-' .$userId. '.'.$ext;
-//                    $user->photo = $photo;
-//                    $user->save();
-//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-//                }
-//                $clinicUser = new ClinicUser();
-//                $clinicUser->user_id = $userId;
-//                $clinicUser->clinic_id = $request->clinic_id;
-//                $clinicUser->clinic_token = Str::random(60);
-//                $clinicUser->save();
-
 
                 return Inertia::location(route('scheduler.index'));
             }

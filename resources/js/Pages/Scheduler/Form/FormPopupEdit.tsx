@@ -61,7 +61,6 @@ export default function SchedulerFormEdit({
   const editEventData = useSelector(editEventSelector);
   const [year, month, day] = editEventData.event_date.split('-'); // Split the input string
   const formattedDate = `${day}.${month}.${year}`;
-
   const [values, setValues] = useState({
     title: editEventData.title,
     clinic_id: clinicData.id,
@@ -79,7 +78,7 @@ export default function SchedulerFormEdit({
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = useSelector(popupTimeSelector);
   const patientId = editEventData.patient_id;
-  const eventStatus = editEventData.status_id;
+  const eventStatus = useSelector(popupStatusSelector);
   const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
@@ -111,30 +110,32 @@ export default function SchedulerFormEdit({
     }));
   };
 
-  const handleChangeTimeTo = value => {
-    setValues(values => ({
-      ...values,
-      ['event_time_to']: value.format('HH:mm'),
-    }));
-  };
+  // const handleChangeTimeTo = value => {
+  //   setValues(values => ({
+  //     ...values,
+  //     ['event_time_to']: value.format('HH:mm'),
+  //   }));
+  // };
 
-  useEffect(() => {
-    setValues(values => ({
-      ...values,
-      ['event_time_from']: timeStart,
-      ['event_time_to']: timeStart,
-      ['status_id']: eventStatus,
-    }));
-  }, [timeStart]);
+  // useEffect(() => {
+  //   setValues(values => ({
+  //     ...values,
+  //     ['event_time_from']: timeStart,
+  //     ['event_time_to']: timeStart,
+  //     ['status_id']: eventStatus,
+  //   }));
+  // }, [timeStart]);
 
-  useEffect(() => {
-    setValues(values => ({
-      ...values,
-      ['event_date']: eventDate,
-      ['doctor_id']: doctorId,
-      ['status_id']: eventStatus,
-    }));
-  }, [eventDate, doctorId, eventStatus]);
+  // useEffect(() => {
+  //   setValues(values => ({
+  //     ...values,
+  //     // ['event_date']: eventDate,
+  //     ['doctor_id']: doctorId,
+  //     ['status_id']: eventStatus,
+  //     // ['event_time_from']: timeStart,
+  //     // ['event_time_to']: timeStart,
+  //   }));
+  // }, [eventDate, doctorId, eventStatus, timeStart]);
 
   const closeModal = () => {
     dispatch(showSchedulePopupAction(false));
@@ -146,18 +147,20 @@ export default function SchedulerFormEdit({
   const submit = e => {
     e.preventDefault();
     values['newPatientData'] = newPatientData;
-    values['event_date'] = eventDate;
-    // values['event_time_from'] = moment(timeStart).format('HH:mm');
+    values['status'] = eventStatus;
     values['services'] = popupServices;
     if (patientId) {
       values['patientId'] = patientId;
     }
-    if (formData.id) {
-      router.post(`/scheduler/update?id=${formData.id}`, values);
-    } else {
-      router.post('/scheduler/update', values);
-    }
-    dispatch(showOverlayAction(false));
+    const [day, month, year] = values['event_date'].split('.'); // Split the input string
+    values['fotmatted_date'] = `${year}-${month}-${day}`;
+    router.post(`/scheduler/update?id=${editEventData.event_id}`, values);
+    // if (formData.id) {
+    //   router.post(`/scheduler/update?id=${editEventData.event_id}`, values);
+    // } else {
+    //   router.post('/scheduler/update', values);
+    // }
+    // dispatch(showOverlayAction(false));
   };
 
   const parsedTime = useMemo(() => {
@@ -270,6 +273,12 @@ export default function SchedulerFormEdit({
                 name={'event_date'}
                 defaultValue={values.event_date}
                 className={'shc-form-date'}
+                onChange={(e) => {
+                  setValues(values => ({
+                    ...values,
+                    ['event_date']: e.target.value,
+                  }));
+                }}
               />
               <i className={'f-calendar'} />
             </div>
@@ -279,7 +288,12 @@ export default function SchedulerFormEdit({
                          name={'event_time_from'}
                          defaultValue={values.event_time_from ? values.event_time_from : timeStart}
                          className={'shc-form-date'}
-                         onChange={(newValue) => handleChangeTimeFrom(newValue)}
+                         onChange={(e) => {
+                           setValues(values => ({
+                             ...values,
+                             ['event_time_from']: e.target.value,
+                           }));
+                         }}
               />
               <i className={'f-clock'} />
             </div>
@@ -289,7 +303,12 @@ export default function SchedulerFormEdit({
                          name={'event_time_to'}
                          defaultValue={values.event_time_to ? values.event_time_to : timeEnd}
                          className={'shc-form-date'}
-                         onChange={(newValue) => handleChangeTimeTo(newValue)}
+                         onChange={(e) => {
+                           setValues(values => ({
+                             ...values,
+                             ['event_time_to']: e.target.value,
+                           }));
+                         }}
               />
               <i className={'f-clock'} />
             </div>

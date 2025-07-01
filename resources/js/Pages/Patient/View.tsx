@@ -141,15 +141,14 @@ export default function index({
             {tab === 'finances' && (
               <>
                 <Finances
+                  scheduleId={}
                   clinicData={clinicData}
                   patientData={patientData}
                   type={type}
-                  quickActData={quickActData}
                   discountStatus={discountStatus}
                   pDiscountValue={discountValue}
                   pServices={services}
                   tree={tree}
-                  categoriesData={categoriesData}
                 />
               </>
             )}

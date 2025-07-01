@@ -51,12 +51,12 @@ export default function EventPatient(values) {
           {patientsData.map((_p, _idx) => (
             <li key={_idx} onClick={() => {
               setShowPatientsList(false);
-              patientData.patient =  `${_p.last_name} ${_p.first_name}`;
+              patientData.patient =  `${_p.last_name} ${_p.first_name} ${_p.patronomic_name}`;
               patientData.patientExistId = _p.id;
               dispatch(setSchedulePatientIdAction(_p.id))
 
             }}>
-              {_p.last_name} {_p.first_name}
+              {_p.last_name} {_p.first_name} {_p.patronomic_name}
             </li>
           ))}
         </ul>

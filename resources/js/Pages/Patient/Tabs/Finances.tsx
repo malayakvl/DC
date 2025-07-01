@@ -15,10 +15,8 @@ import { patientServicesSelector } from '../../../Redux/Patient/selectors';
 
 export default function Finances({
   type,
-  quickActData,
-  discountStatus,
+  patientData,
   pDiscountValue,
-  categoriesData,
   pServices,
   tree,
   clinicData,
@@ -80,6 +78,13 @@ export default function Finances({
 
   const submit = e => {
     e.preventDefault();
+    router.post(`/patient/update-act`, {patient_id: patientData.id, services: initialServices});
+    // if (formData.id) {
+    //   router.post(`/scheduler/update?id=${formData.id}`, values);
+    // } else {
+    //   router.post('/scheduler/update', values);
+    // }
+    console.log(1);
   };
 
   // Применение массовой скидки

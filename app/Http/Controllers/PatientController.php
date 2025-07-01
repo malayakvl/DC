@@ -180,6 +180,12 @@ class PatientController extends Controller
     }
 
 
+    public function updateAct(Request $request) {
+        dd($request);
+        exit;
+    }
+
+
     /**
      * view patient clinic card
      */

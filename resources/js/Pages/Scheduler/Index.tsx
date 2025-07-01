@@ -565,7 +565,7 @@ export default function Index({
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
           <div className={'pt-2'}>
-            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name}</span>
+            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.patronomic_name}</span>
             <span className="block mb-1 font-bold">{moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)} {msg.get('scheduler.age')}</span>
             <span className="block mb-1">{eventView.status_name ? `${eventView.status_name}` : ''} <em className={'sh-discount'}>{eventView.status_name ? `(-${eventView.status_discount}%)` : ''}</em></span>
             <span className="block text-gray-500  mb-1">
@@ -635,6 +635,11 @@ export default function Index({
     } catch (error) {
       console.error("Ошибка парсинга JSON:", error);
     }
+    let color = '#000';
+    if (event.kt_balance > event.dt_balance) {
+      color = '#de1818';
+    } else if (event.kt_balance < event.dt_balance)
+      color = '#0c9407';
 
     return view === 'month' ? (
       <strong>{event.title} </strong>
@@ -642,8 +647,8 @@ export default function Index({
       <div className="">
         <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
           <span className={'block mb-1 inline-block'}>
-            <strong>
-              {shortenName(`${event.p_name} ${event.pl_name}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
+            <strong style={{color: color}}>
+              {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
             </strong>
             <div className={'sh-event-status'} style={{background: event.status_color}}></div>
           </span>
