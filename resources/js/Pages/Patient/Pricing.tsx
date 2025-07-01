@@ -26,32 +26,11 @@ export default function Pricing({ clinicData, tree, services, currency }) {
     messages: lngServiceCategories,
     locale: appLang,
   });
-  const [confirmingCategory, setConfirmingCategory] = useState(false);
-  const [categoryName, setCategoryName] = useState('');
   const {
-    data,
-    setData,
     delete: destroy,
-    processing,
-    reset,
-    errors,
-    clearErrors,
   } = useForm({
     password: '',
   });
-console.log(servicesPopup.find(_s => _s.id === 32))
-  const closeModal = () => {
-    clearErrors();
-    reset();
-  };
-
-  const submitForm = () => {
-    router.post(`/price-category/update`, {
-      name: categoryName,
-      clinic_id: clinicData.id,
-    });
-    setConfirmingCategory(false);
-  };
 
   const renderPriceBlock = (item, num) => {
     return (
@@ -60,7 +39,8 @@ console.log(servicesPopup.find(_s => _s.id === 32))
           <b className="mb-4 block">{item.name}</b>
           {services[item.id]?.map((_item, _index) => (
             <span className={`add-minpulation-row ${servicesPopup.find(_s => _s.id === _item.id)?.id ? 'selected' : ''}`} onClick={() => {
-              dispatch(setServicesAction(_item));
+              // dispatch(setServicesAction(_item));
+              console.log('tut')
             }}>
               <div
                 className={`mt-0 price-row ${_index === 0 ? 'first-child' : ''}`}

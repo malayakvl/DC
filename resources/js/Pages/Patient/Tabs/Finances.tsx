@@ -7,11 +7,12 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import { Link, router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { setPatientTab, setServicesAction } from '../../../Redux/Patient';
+import { setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { showOverlayAction } from '../../../Redux/Layout';
 import Pricing from '../Pricing';
+import { patientServicesSelector } from '../../../Redux/Patient/selectors';
 
 export default function Finances({
   type,
@@ -28,18 +29,32 @@ export default function Finances({
   const [tab, setTab] = useState(type || 'history');
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngPatient, locale: appLang });
-  const msgFormula = new Lang({ messages: lngFormula, locale: appLang });
-
-  // Парсим сервисы и применяем pDiscountValue и percent по умолчанию
-  const initialServices = JSON.parse(quickActData.services).map(service => ({
-    ...service,
-    discountValue: pDiscountValue || service.discountValue || '',
-    discountType: 'percent',
-  }));
+  const initialServices = useSelector(patientServicesSelector) || [];
+  const [sInit, setSInit] = useState(false);
+  // let initialServices = [];
+  // // // Парсим сервисы и применяем pDiscountValue и percent по умолчанию
+  // initialServices = JSON.parse(quickActData.services).map(service => ({
+  //   ...service,
+  //   discountValue: pDiscountValue || service.discountValue || '',
+  //   discountType: 'percent',
+  // }));
   const [services, setServices] = useState(initialServices);
   const [globalDiscount, setGlobalDiscount] = useState(pDiscountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
   const { processing, recentlySuccessful, errors } = useForm();
+console.log('initialServices', initialServices)
+  // Синхронизация services с initialServices и применение начальной скидки
+  // useEffect(() => {
+  //   console.log('tut');
+  //   const updatedServices = initialServices.map(service => ({
+  //     ...service,
+  //     discountValue: pDiscountValue || service.discountValue || '',
+  //     discountType: service.discountType || 'percent',
+  //   }));
+  //   setServices(updatedServices);
+  //   dispatch(setExistServicesAction(JSON.stringify(updatedServices)));
+  //   setSInit(true);
+  // }, [initialServices, pDiscountValue, dispatch]);
 
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
@@ -50,8 +65,9 @@ export default function Finances({
         discountType: 'percent',
       }));
       setServices(updatedServices);
-      dispatch(setServicesAction(JSON.stringify(updatedServices)));
+      // dispatch(setExistServicesAction(JSON.stringify(updatedServices)));
     }
+    setSInit(true);
   }, [pDiscountValue]);
 
   // Обработчик изменения скидки для конкретного сервиса
@@ -68,7 +84,7 @@ export default function Finances({
       return service;
     });
     setServices(updatedServices);
-    dispatch(setServicesAction(JSON.stringify(updatedServices)));
+    dispatch(setExistServicesAction((updatedServices)));
   };
 
   // Обработчик изменения типа скидки
@@ -79,33 +95,18 @@ export default function Finances({
         : service
     );
     setServices(updatedServices);
-    dispatch(setServicesAction(JSON.stringify(updatedServices)));
+    dispatch(setExistServicesAction((updatedServices)));
   };
 
   // Обработчик удаления сервиса
   const handleRemove = (serviceId) => {
     const updatedServices = services.filter(service => service.id !== serviceId);
     setServices(updatedServices);
-    dispatch(setServicesAction(JSON.stringify(updatedServices)));
+    dispatch(setExistServicesAction((updatedServices)));
   };
 
   const submit = e => {
     e.preventDefault();
-    // values['newPatientData'] = newPatientData;
-    // const inputDate = "01.07.2025"; // Input in DD.MM.YYYY format
-    // const [day, month, year] = eventDate.split('.'); // Split the input string
-    // const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    // values['event_date'] = formattedDate;
-    // values['services'] = popupServices;
-    // if (patientId) {
-    //   values['patientId'] = patientId;
-    // }
-    // if (formData.id) {
-    //   router.post(`/scheduler/update?id=${formData.id}`, values);
-    // } else {
-    //   router.post('/scheduler/update', values);
-    // }
-    // dispatch(showOverlayAction(false));
   };
 
   // Применение массовой скидки
@@ -119,7 +120,7 @@ export default function Finances({
       discountType: globalDiscountType,
     }));
     setServices(updatedServices);
-    dispatch(setServicesAction(JSON.stringify(updatedServices)));
+    dispatch(setExistServicesAction((updatedServices)));
     // Не очищаем globalDiscount, чтобы значение осталось в поле
   };
 
@@ -256,63 +257,66 @@ export default function Finances({
             {/* Таблица акта */}
             <div className="bg-white mt-4 rounded-md border shadow-lg w-[700px] min-h-[100px] p-10">
               <h1 className="text-center uppercase text-black mt-4">{msg.get('patient.workAct')}</h1>
-              <table className="w-full mt-10">
-                <thead>
-                <tr>
-                  <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
-                  <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
-                  <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
-                  <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
-                  <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
-                  <th className="text-right pb-3 px-2"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {services.map(service => (
-                  <tr key={service.id}>
-                    <td className="text-left text-[14px] px-2">{service.name}</td>
-                    <td className="text-center text-[14px] px-2">{service.price || ''}</td>
-                    <td className="text-center text-[14px] px-2">{service.qty || 1}</td>
-                    <td className="text-left text-[14px] pl-2">
-                  <span className="flex">
-                    <input
-                      id={`d-value${service.id}`}
-                      className="discount-input w-20"
-                      type="text"
-                      value={service.discountValue}
-                      onChange={(e) => handleDiscountChange(service.id, e.target.value)}
-                      placeholder="0"
-                    />
-                    <select
-                      id={`d-type-${service.id}`}
-                      className="discount-select inline-block"
-                      value={service.discountType}
-                      onChange={(e) => handleTypeChange(service.id, e.target.value)}
-                    >
-                      <option value="percent">%</option>
-                      <option value="absolute">₴</option>
-                    </select>
-                  </span>
-                    </td>
-                    <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
-                      {calculateDiscountedPrice(service)}
-                    </td>
-                    <td className="text-right text-[14px] pb-2 px-3">
-                      <FontAwesomeIcon
-                        icon={faClose}
-                        color="#e13333"
-                        className="cursor-pointer"
-                        onClick={() => handleRemove(service.id)}
-                      />
-                    </td>
+              {initialServices.length > 0 && (
+                <table className="w-full mt-10">
+                  <thead>
+                  <tr>
+                    <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
+                    <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
+                    <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
+                    <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
+                    <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
+                    <th className="text-right pb-3 px-2"></th>
                   </tr>
-                ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                  {initialServices.map(service => (
+                    <tr key={service.id}>
+                      <td className="text-left text-[14px] px-2">{service.name}</td>
+                      <td className="text-center text-[14px] px-2">{service.price || ''}</td>
+                      <td className="text-center text-[14px] px-2">{service.qty || 1}</td>
+                      <td className="text-left text-[14px] pl-2">
+                        <span className="flex">
+                          <input
+                            id={`d-value${service.id}`}
+                            className="discount-input w-20"
+                            type="text"
+                            value={service.discountValue}
+                            onChange={(e) => handleDiscountChange(service.id, e.target.value)}
+                            placeholder="0"
+                          />
+                          <select
+                            id={`d-type-${service.id}`}
+                            className="discount-select inline-block"
+                            value={service.discountType}
+                            onChange={(e) => handleTypeChange(service.id, e.target.value)}
+                          >
+                            <option value="percent">%</option>
+                            <option value="absolute">₴</option>
+                          </select>
+                        </span>
+                      </td>
+                      <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
+                        {calculateDiscountedPrice(service)}
+                      </td>
+                      <td className="text-right text-[14px] pb-2 px-3">
+                        <FontAwesomeIcon
+                          icon={faClose}
+                          color="#e13333"
+                          className="cursor-pointer"
+                          onClick={() => handleRemove(service.id)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                  </tbody>
+                </table>
+              )}
+
               <div className="text-right mt-4">
-          <span className="text-[16px] font-bold">
-            {msg.get('patient.total')}: {calculateTotal()} ₴
-          </span>
+              <span className="text-[16px] font-bold">
+                {msg.get('patient.total')}: {calculateTotal()} ₴
+              </span>
               </div>
               <div className="text-right mt-4">
                 <PrimaryButton disabled={processing}>

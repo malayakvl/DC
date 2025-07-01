@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,7 +15,7 @@ import { useState } from 'react';
 import History from './Tabs/History'
 import Finances from './Tabs/Finances'
 import { patientTabSelector } from '../../Redux/Patient/selectors';
-import { setPatientTab } from '../../Redux/Patient';
+import { setPatientTab, setExistServicesAction } from '../../Redux/Patient';
 
 
 export default function index({
@@ -41,6 +41,18 @@ export default function index({
     messages: lngPatient,
     locale: appLang,
   });
+  const [globalDiscount, setGlobalDiscount] = useState(discountValue || '');
+  const [globalDiscountType, setGlobalDiscountType] = useState('percent');
+
+
+  useEffect(() => {
+    const initialServices = JSON.parse(quickActData.services).map(service => ({
+      ...service,
+      discountValue: discountValue || 0,
+      discountType: globalDiscountType,
+    }));
+    dispatch(setExistServicesAction(initialServices));
+  }, [quickActData])
 
   const handleTabClick = tabName => {
     dispatch(setPatientTab(tabName));
