@@ -7,10 +7,9 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import { Link, router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { minusServiceAction, setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
+import { minusServiceAction, setExistServicesAction, plusServiceAction } from '../../../Redux/Patient';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { showOverlayAction } from '../../../Redux/Layout';
 import Pricing from '../Pricing';
 import { patientServicesSelector } from '../../../Redux/Patient/selectors';
 
@@ -125,7 +124,7 @@ export default function Finances({
   return (
     <>
       {/* TABS BLOCK */}
-      <div className="tabs-block w-full bg-white mt-10 flex">
+      <div className="tabs-block w-full bg-white mt-5 mb-3 flex">
         <div className="w-full flex">
           <div className="sh-btns-block">
             <div className="mt-2">
@@ -229,7 +228,7 @@ export default function Finances({
             </div>
 
             {/* Таблица акта */}
-            <div className="bg-white mt-4 rounded-md border shadow-lg w-[700px] min-h-[100px] p-10">
+            <div className="bg-white mt-4 rounded-md border shadow-lg w-[750px] min-h-[100px] p-10">
               <h1 className="text-center uppercase text-black mt-4">{msg.get('patient.workAct')}</h1>
               {initialServices.length > 0 && (
                 <table className="w-full mt-10">
@@ -248,7 +247,19 @@ export default function Finances({
                     <tr key={service.id}>
                       <td className="text-left text-[14px] px-2">{service.name}</td>
                       <td className="text-center text-[14px] px-2">{service.price || ''}</td>
-                      <td className="text-center text-[14px] px-2">{service.qty || 1}</td>
+                      <td className="text-center text-[14px] px-2">
+                        <button className="text-blue-500 hover:text-blue-700 mr-2" onClick={() => dispatch(minusServiceAction(service))}>
+                          <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
+                          </svg>
+                        </button>
+                        {service.qty || 1}
+                        <button className="text-blue-500 hover:text-blue-700 ml-2" onClick={() => dispatch(plusServiceAction(service))}>
+                          <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </td>
                       <td className="text-left text-[14px] pl-2">
                         <span className="flex">
                           <input
