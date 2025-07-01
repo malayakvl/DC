@@ -60,4 +60,9 @@ class Patient extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function discountStatus(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PatientStatus::class,'id','status_id');
+    }
 }

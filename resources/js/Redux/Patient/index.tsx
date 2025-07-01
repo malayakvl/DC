@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { setPatientTab, setFilters, clearFilters } from './actions';
+import { setPatientTab, setFilters, clearFilters, setServicesAction } from './actions';
 
 const initialState = {
   patientTab: 'history',
@@ -38,6 +38,6 @@ const ACTION_HANDLERS = {
   },
 };
 
-export { setPatientTab, setFilters, clearFilters };
+export { setPatientTab, setFilters, clearFilters, setServicesAction };
 
 export default handleActions(ACTION_HANDLERS, initialState);

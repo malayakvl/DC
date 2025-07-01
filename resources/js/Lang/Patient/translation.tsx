@@ -73,7 +73,16 @@ const lngPatient = {
     finances: 'Фінанси',
     quickact: 'Створити швидки акт',
     acceptpayment: 'Прийняти платіж',
-    returnmoney: 'Повернути кошти'
+    returnmoney: 'Повернути кошти',
+    usediscount: 'Використати загальну знижку',
+    service: 'Послуга',
+    price: 'Ціна',
+    quantity: 'К-ть',
+    discountedPrice: 'Зі знижкою',
+    workAct: 'Акт виконаних робіт',
+    total: 'Разом',
+    applyGlobal: 'Використати',
+    globalDiscount: 'Загальна знижка'
   },
 };
 export default lngPatient;

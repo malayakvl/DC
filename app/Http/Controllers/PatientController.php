@@ -7,6 +7,7 @@ use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Patient;
 use App\Models\Cabinet;
+use App\Models\Scheduler;
 use App\Models\Size;
 use App\Models\Store;
 use App\Models\PatientTreatment;
@@ -166,14 +167,23 @@ class PatientController extends Controller
     /**
      * view patient clinic card
      */
-    public function view(Request $request, $id) {
+    public function view(Request $request, $id, $scheduleId = '') {
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
         $patientData = Patient::where('id', '=', $id)->first();
         $type = $request->get('type');
+        $quickActData = '';
+        if ($scheduleId) {
+            $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
+        }
         return Inertia::render('Patient/View', [
             'patientData' => $patientData,
             'type' => $type,
             'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-            'clinicData' => Clinic::where('user_id', '=', $request->user()->id)->first(),
+            'clinicData' => $clinicData,
+            'quickActData' => $quickActData[0],
+            'currency' => $clinicData->currency->symbol,
+            'discountStatus' => $patientData->discountStatus->name,
+            'discountValue' => $patientData->discountStatus->discount
         ]);
     }
 

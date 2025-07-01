@@ -18,9 +18,20 @@ import { patientTabSelector } from '../../Redux/Patient/selectors';
 import { setPatientTab } from '../../Redux/Patient';
 
 
-export default function index({ patientData, type, treatmentData }) {
+export default function index({
+  clinicData,
+  patientData,
+  type,
+  treatmentData,
+  quickActData,
+  discountStatus,
+  discountValue
+}) {
   const tab = useSelector(patientTabSelector);
   const dispatch = useDispatch();
+  if (quickActData) {
+    dispatch(setPatientTab('finances'));
+  }
 
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -31,7 +42,6 @@ export default function index({ patientData, type, treatmentData }) {
   const handleTabClick = tabName => {
     dispatch(setPatientTab(tabName));
   };
-
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -56,6 +66,7 @@ export default function index({ patientData, type, treatmentData }) {
                     {patientData.first_name} {patientData.last_name}
                   </b>
                   <span className="block text-[11px]">{patientData.phone}</span>
+                  <span className="block text-[13px] p-discount">{patientData.discount ? `${discountStatus} -${discountValue}%` : '2'}</span>
                 </div>
               </div>
               <div className="icon-block">
@@ -114,7 +125,14 @@ export default function index({ patientData, type, treatmentData }) {
             </div>
             {tab === 'finances' && (
               <>
-                <Finances  patientData={patientData} type={type} financesData={[]} />
+                <Finances
+                  clinicData={clinicData}
+                  patientData={patientData}
+                  type={type}
+                  quickActData={quickActData}
+                  discountStatus={discountStatus}
+                  pDiscountValue={discountValue}
+                />
               </>
             )}
             {tab === 'history' && (
