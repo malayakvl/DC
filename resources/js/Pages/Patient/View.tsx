@@ -26,9 +26,9 @@ export default function index({
   quickActData,
   discountStatus,
   discountValue,
-  categoriesData,
   services,
-  tree
+  tree,
+  scheduleId
 }) {
   const tab = useSelector(patientTabSelector);
   const dispatch = useDispatch();
@@ -141,7 +141,7 @@ export default function index({
             {tab === 'finances' && (
               <>
                 <Finances
-                  scheduleId={}
+                  scheduleId={scheduleId}
                   clinicData={clinicData}
                   patientData={patientData}
                   type={type}

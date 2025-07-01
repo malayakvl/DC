@@ -213,11 +213,12 @@ class PatientController extends Controller
             'clinicData' => $clinicData,
             'quickActData' => $quickActData[0],
             'currency' => $clinicData->currency->symbol,
-            'discountStatus' => $patientData->discountStatus->name,
-            'discountValue' => $patientData->discountStatus->discount,
+            'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+            'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
             'categoriesData' => $categories,
             'services' => $arrServices,
             'tree' => $tree,
+            'scheduleId' => $scheduleId
         ]);
     }
 

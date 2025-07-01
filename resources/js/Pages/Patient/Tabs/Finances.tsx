@@ -20,7 +20,8 @@ export default function Finances({
   pServices,
   tree,
   clinicData,
-  currency
+  currency,
+  scheduleId
 }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type || 'history');
@@ -78,13 +79,11 @@ export default function Finances({
 
   const submit = e => {
     e.preventDefault();
-    router.post(`/patient/update-act`, {patient_id: patientData.id, services: initialServices});
-    // if (formData.id) {
-    //   router.post(`/scheduler/update?id=${formData.id}`, values);
-    // } else {
-    //   router.post('/scheduler/update', values);
-    // }
-    console.log(1);
+    router.post(`/patient/update-act`, {
+      patient_id: patientData.id,
+      services: initialServices,
+      schedule_id: scheduleId
+    });
   };
 
   // Применение массовой скидки
