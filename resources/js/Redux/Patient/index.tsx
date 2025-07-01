@@ -84,10 +84,6 @@ const ACTION_HANDLERS = {
           item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item
         )
         .filter(item => item.qty > 0);
-      // const _s  = state.services.map(item =>
-      //   item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
-      // );
-      // console.log(_s);
 
       return {
         ...state,
