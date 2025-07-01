@@ -7,7 +7,7 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import { Link, router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
+import { minusServiceAction, setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { showOverlayAction } from '../../../Redux/Layout';
@@ -31,30 +31,10 @@ export default function Finances({
   const msg = new Lang({ messages: lngPatient, locale: appLang });
   const initialServices = useSelector(patientServicesSelector) || [];
   const [sInit, setSInit] = useState(false);
-  // let initialServices = [];
-  // // // Парсим сервисы и применяем pDiscountValue и percent по умолчанию
-  // initialServices = JSON.parse(quickActData.services).map(service => ({
-  //   ...service,
-  //   discountValue: pDiscountValue || service.discountValue || '',
-  //   discountType: 'percent',
-  // }));
   const [services, setServices] = useState(initialServices);
   const [globalDiscount, setGlobalDiscount] = useState(pDiscountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
   const { processing, recentlySuccessful, errors } = useForm();
-console.log('initialServices', initialServices)
-  // Синхронизация services с initialServices и применение начальной скидки
-  // useEffect(() => {
-  //   console.log('tut');
-  //   const updatedServices = initialServices.map(service => ({
-  //     ...service,
-  //     discountValue: pDiscountValue || service.discountValue || '',
-  //     discountType: service.discountType || 'percent',
-  //   }));
-  //   setServices(updatedServices);
-  //   dispatch(setExistServicesAction(JSON.stringify(updatedServices)));
-  //   setSInit(true);
-  // }, [initialServices, pDiscountValue, dispatch]);
 
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
@@ -65,7 +45,7 @@ console.log('initialServices', initialServices)
         discountType: 'percent',
       }));
       setServices(updatedServices);
-      // dispatch(setExistServicesAction(JSON.stringify(updatedServices)));
+      dispatch(setExistServicesAction((updatedServices)));
     }
     setSInit(true);
   }, [pDiscountValue]);
@@ -98,12 +78,6 @@ console.log('initialServices', initialServices)
     dispatch(setExistServicesAction((updatedServices)));
   };
 
-  // Обработчик удаления сервиса
-  const handleRemove = (serviceId) => {
-    const updatedServices = services.filter(service => service.id !== serviceId);
-    setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
-  };
 
   const submit = e => {
     e.preventDefault();
@@ -139,7 +113,7 @@ console.log('initialServices', initialServices)
 
   // Расчёт общей суммы
   const calculateTotal = () => {
-    return services
+    return initialServices
       .reduce((sum, service) => sum + parseFloat(calculateDiscountedPrice(service)), 0)
       .toFixed(2);
   };
@@ -304,7 +278,9 @@ console.log('initialServices', initialServices)
                           icon={faClose}
                           color="#e13333"
                           className="cursor-pointer"
-                          onClick={() => handleRemove(service.id)}
+                          onClick={() => {
+                            dispatch(minusServiceAction(service))
+                          }}
                         />
                       </td>
                     </tr>

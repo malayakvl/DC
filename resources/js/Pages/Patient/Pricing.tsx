@@ -4,18 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngServiceCategories from '../../Lang/Services/translation';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
-import {
-  Dialog,
-  DialogPanel,
-  Transition,
-  TransitionChild,
-} from '@headlessui/react';
-import { Link } from '@inertiajs/react';
 import { pricePopupSelector, servicesSelector } from '../../Redux/Scheduler/selectors';
-import { setServicesAction, showPricePopupAction, showSchedulePopupAction } from '../../Redux/Scheduler';
-import { setPopupAction, showOverlayAction } from '../../Redux/Layout';
-import SecondaryButton from '../../Components/Form/SecondaryButton';
+import { setServicesAction } from '../../Redux/Patient';
 
 export default function Pricing({ clinicData, tree, services, currency }) {
   const dispatch = useDispatch();
@@ -39,8 +29,7 @@ export default function Pricing({ clinicData, tree, services, currency }) {
           <b className="mb-4 block">{item.name}</b>
           {services[item.id]?.map((_item, _index) => (
             <span className={`add-minpulation-row ${servicesPopup.find(_s => _s.id === _item.id)?.id ? 'selected' : ''}`} onClick={() => {
-              // dispatch(setServicesAction(_item));
-              console.log('tut')
+              dispatch(setServicesAction(_item));
             }}>
               <div
                 className={`mt-0 price-row ${_index === 0 ? 'first-child' : ''}`}
