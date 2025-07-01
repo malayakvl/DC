@@ -336,8 +336,10 @@ export default function Index({
    start,
    end,
    resourceId,
-   isAllDay: droppedOnAllDaySlot = false, }) => {
-    const eventId = event.id;
+   isAllDay:
+   droppedOnAllDaySlot = false
+  }) => {
+    const eventId = event.event_id;
     // find place count in cabinet
     const cabinetCntPlace = cabinetData.find(_cabinet => _cabinet.id === resourceId).place_count;
 
@@ -346,7 +348,7 @@ export default function Index({
       const threshold = new Date(startThreshold);
       const eventStart = new Date(_event.start);
       const eventEnd = new Date(_event.end);
-      return ((threshold >= eventStart && threshold <= eventEnd) && _event.id !== event.id);
+      return ((threshold >= eventStart && threshold <= eventEnd) && _event.event_id !== event.event_id);
     });
     if (filteredData.length >= cabinetCntPlace) {
       toast.error(msg.get('scheduler.cabinet.full'), {
@@ -366,23 +368,27 @@ export default function Index({
         event_id: event.event_id}));
       setFilteredEvents((prev) =>
         prev.map((ev) =>
-          ev.id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
+          ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
         )
       );
 
     }
   };
   const onEventResize = ({ event, start, end }) => {
-    const eventId = event.id;
+    const eventId = event.event_id;
+    console.log('Resize event', filteredEvents);
     dispatch(updateEventsAction({
       date: moment(start).format('YYYY-MM-DD'),
       start: moment(start).format('HH:mm'),
       end: moment(end).format('HH:mm'),
       resource_id: event.cabinet_id,
       event_id: event.event_id}));
+
+    console.log(filteredEvents.find(ev => ev.event_id === eventId));
+
     setFilteredEvents((prev) =>
       prev.map((ev) =>
-        ev.id === eventId ? { ...ev, start: start, end: end } : ev
+        ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: event.cabinet_id } : ev
       )
     );
   };
