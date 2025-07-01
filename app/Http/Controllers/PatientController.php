@@ -7,6 +7,8 @@ use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Patient;
 use App\Models\Cabinet;
+use App\Models\PriceCategory;
+use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\Size;
 use App\Models\Store;
@@ -164,12 +166,35 @@ class PatientController extends Controller
         }
     }
 
+    public function generateCategories($categories, &$arrCat, $level) {
+        foreach ($categories as $category) {
+            $category->level = $level;
+            $category->producerName = $category->producer();
+            $arrCat[] = $category;
+            if (count($category->children) > 0) {
+                $this->generateCategories($category->children, $arrCat, ($level+1));
+            }
+        }
+
+        return $arrCat;
+    }
+
+
     /**
      * view patient clinic card
      */
     public function view(Request $request, $id, $scheduleId = '') {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
         $patientData = Patient::where('id', '=', $id)->first();
+        $categories = PriceCategory::where('parent_id', null)
+            ->where('clinic_id', $clinicData->id)
+            ->get();
+        $arrServices = [];
+        foreach ($categories as $category) {
+            $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+        }
+        $arrCat = array();
+        $tree = $this->generateCategories($categories, $arrCat, 0);
         $type = $request->get('type');
         $quickActData = '';
         if ($scheduleId) {
@@ -183,7 +208,10 @@ class PatientController extends Controller
             'quickActData' => $quickActData[0],
             'currency' => $clinicData->currency->symbol,
             'discountStatus' => $patientData->discountStatus->name,
-            'discountValue' => $patientData->discountStatus->discount
+            'discountValue' => $patientData->discountStatus->discount,
+            'categoriesData' => $categories,
+            'services' => $arrServices,
+            'tree' => $tree,
         ]);
     }
 

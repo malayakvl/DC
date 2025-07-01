@@ -74,17 +74,17 @@
     font-size: 14px;
 }
 .btn-submit {
-    // background: #663399;
-    //background-image: linear-gradient(to left top, rgb(121, 40, 202), rgb(255, 0, 128)) !important;
     background-image: linear-gradient(to left top, #1b3c53, #c887d7) !important;
+    //background: #c887d7;
     display: inline-block;
     color: white;
-    padding: 10px 20px;
+    padding: 5px 20px;
     border-radius: 5px;
+    text-transform: uppercase;
     cursor: pointer;
     //margin-left: 10px;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 .btn-submit:hover {
     background-image: linear-gradient(to left top, rgb(92, 51, 133), rgb(225, 78, 151)) !important;
@@ -187,4 +187,17 @@
 }
 .btn-returnmoney {
     background: #7608ad;
+}
+.btn-white {
+    padding: 8px 13px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    background: #fff;
+    color: #000;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 4px;
+    border: solid 1px;
 }

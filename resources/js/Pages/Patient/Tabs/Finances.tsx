@@ -4,12 +4,26 @@ import lngPatient from '../../../Lang/Patient/translation';
 import lngFormula from '../../../Lang/Formula/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
-import { Link } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { setPatientTab, setServicesAction } from '../../../Redux/Patient';
+import PrimaryButton from '../../../Components/Form/PrimaryButton';
+import { Transition } from '@headlessui/react';
+import { showOverlayAction } from '../../../Redux/Layout';
+import Pricing from '../Pricing';
 
-export default function Finances({ type, quickActData, discountStatus, pDiscountValue }) {
+export default function Finances({
+  type,
+  quickActData,
+  discountStatus,
+  pDiscountValue,
+  categoriesData,
+  pServices,
+  tree,
+  clinicData,
+  currency
+}) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type || 'history');
   const appLang = useSelector(appLangSelector);
@@ -25,6 +39,7 @@ export default function Finances({ type, quickActData, discountStatus, pDiscount
   const [services, setServices] = useState(initialServices);
   const [globalDiscount, setGlobalDiscount] = useState(pDiscountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
+  const { processing, recentlySuccessful, errors } = useForm();
 
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
@@ -74,6 +89,25 @@ export default function Finances({ type, quickActData, discountStatus, pDiscount
     dispatch(setServicesAction(JSON.stringify(updatedServices)));
   };
 
+  const submit = e => {
+    e.preventDefault();
+    // values['newPatientData'] = newPatientData;
+    // const inputDate = "01.07.2025"; // Input in DD.MM.YYYY format
+    // const [day, month, year] = eventDate.split('.'); // Split the input string
+    // const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    // values['event_date'] = formattedDate;
+    // values['services'] = popupServices;
+    // if (patientId) {
+    //   values['patientId'] = patientId;
+    // }
+    // if (formData.id) {
+    //   router.post(`/scheduler/update?id=${formData.id}`, values);
+    // } else {
+    //   router.post('/scheduler/update', values);
+    // }
+    // dispatch(showOverlayAction(false));
+  };
+
   // Применение массовой скидки
   const applyGlobalDiscount = () => {
     const numValue = parseFloat(globalDiscount) || 0;
@@ -109,11 +143,15 @@ export default function Finances({ type, quickActData, discountStatus, pDiscount
       .toFixed(2);
   };
 
+  const handleTabClick = (tab) => {
+
+  }
+
   return (
     <>
       {/* TABS BLOCK */}
       <div className="tabs-block w-full bg-white mt-10 flex">
-        <div className="w-full">
+        <div className="w-full flex">
           <div className="sh-btns-block">
             <div className="mt-2">
               <Link href="/">
@@ -127,65 +165,115 @@ export default function Finances({ type, quickActData, discountStatus, pDiscount
               </Link>
             </div>
           </div>
+          <div className="tabls-list mt-2">
+            <ul>
+              <li
+                id="documents"
+                className={tab === 'documents' ? 'active' : ''}
+                onClick={() => handleTabClick('documents')}
+              >
+                <span className="btn-white cursor-pointer">Платежі та акти</span>
+
+              </li>
+              <li
+                id="visits"
+                className={tab === 'visits' ? 'active' : ''}
+                onClick={() => handleTabClick('visits')}
+              >
+                <span className="btn-white cursor-pointer">Виконані роботи</span>
+
+              </li>
+              <li
+                id="plans"
+                className={tab === 'plans' ? 'active' : ''}
+                onClick={() => handleTabClick('plans')}
+              >
+                <span className="btn-white cursor-pointer">Платежі</span>
+              </li>
+              <li
+                id="history"
+                className={tab === 'history' ? 'active' : ''}
+                onClick={() => handleTabClick('history')}
+              >
+                <span className="btn-white cursor-pointer">Акти</span>
+              </li>
+              <li
+                id="finances"
+                className={tab === 'finances' ? 'active' : ''}
+                onClick={() => handleTabClick('finances')}
+              >
+                <Link href="/">
+                  <span className="btn-quickact cursor-pointer">{msg.get('patient.quickact')}</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div className="clearfix" />
 
-      {/* Масовая скидка */}
-      <div className="mt-4 flex items-center gap-2 w-[700px] justify-end">
-        <label>{msg.get('patient.discount')}</label>
-        <input
-          type="text"
-          value={globalDiscount}
-          onChange={(e) => {
-            if (e.target.value === '' || (!isNaN(e.target.value) && e.target.value >= 0)) {
-              setGlobalDiscount(e.target.value);
-            }
-          }}
-          placeholder={msg.get('patient.globalDiscount')}
-          className="discount-input w-24"
-        />
-        <select
-          value={globalDiscountType}
-          onChange={(e) => {
-            setGlobalDiscountType(e.target.value);
-            setGlobalDiscount('');
-          }}
-          className="discount-select"
-        >
-          <option value="percent">%</option>
-          <option value="absolute">₴</option>
-        </select>
-        <button
-          onClick={applyGlobalDiscount}
-          className="bg-blue-500 text-white px-4 py-1 rounded disabled:bg-gray-300 uppercase text-[12px] font-bold"
-          disabled={!globalDiscount}
-        >
-          {msg.get('patient.applyGlobal')}
-        </button>
-      </div>
+      <div className={`w-full flex`}>
+        <div className={`w-1/2`}>
+          {/* Масовая скидка */}
+          <form
+            onSubmit={event => submit(event)}
+            className="mt-0 space-y-3 min-w-[350px]"
+            encType="multipart/form-data"
+          >
+            <div className="mt-4 flex items-center gap-2 w-[700px] justify-end">
+              <label>{msg.get('patient.discount')}</label>
+              <input
+                type="text"
+                value={globalDiscount}
+                onChange={(e) => {
+                  if (e.target.value === '' || (!isNaN(e.target.value) && e.target.value >= 0)) {
+                    setGlobalDiscount(e.target.value);
+                  }
+                }}
+                placeholder={msg.get('patient.globalDiscount')}
+                className="discount-input w-24"
+              />
+              <select
+                value={globalDiscountType}
+                onChange={(e) => {
+                  setGlobalDiscountType(e.target.value);
+                  setGlobalDiscount('');
+                }}
+                className="discount-select"
+              >
+                <option value="percent">%</option>
+                <option value="absolute">₴</option>
+              </select>
+              <button
+                onClick={applyGlobalDiscount}
+                className="bg-blue-500 text-white px-4 py-1 rounded disabled:bg-gray-300 uppercase text-[12px] font-bold"
+                disabled={!globalDiscount}
+              >
+                {msg.get('patient.applyGlobal')}
+              </button>
+            </div>
 
-      {/* Таблица акта */}
-      <div className="bg-white mt-4 rounded-md border shadow-lg w-[700px] min-h-[100px] p-10">
-        <h1 className="text-center uppercase text-black mt-4">{msg.get('patient.workAct')}</h1>
-        <table className="w-full mt-10">
-          <thead>
-          <tr>
-            <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
-            <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
-            <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
-            <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
-            <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
-            <th className="text-right pb-3 px-2"></th>
-          </tr>
-          </thead>
-          <tbody>
-          {services.map(service => (
-            <tr key={service.id}>
-              <td className="text-left text-[14px] px-2">{service.name}</td>
-              <td className="text-center text-[14px] px-2">{service.price || ''}</td>
-              <td className="text-center text-[14px] px-2">{service.qty || 1}</td>
-              <td className="text-left text-[14px] pl-2">
+            {/* Таблица акта */}
+            <div className="bg-white mt-4 rounded-md border shadow-lg w-[700px] min-h-[100px] p-10">
+              <h1 className="text-center uppercase text-black mt-4">{msg.get('patient.workAct')}</h1>
+              <table className="w-full mt-10">
+                <thead>
+                <tr>
+                  <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
+                  <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
+                  <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
+                  <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
+                  <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
+                  <th className="text-right pb-3 px-2"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {services.map(service => (
+                  <tr key={service.id}>
+                    <td className="text-left text-[14px] px-2">{service.name}</td>
+                    <td className="text-center text-[14px] px-2">{service.price || ''}</td>
+                    <td className="text-center text-[14px] px-2">{service.qty || 1}</td>
+                    <td className="text-left text-[14px] pl-2">
                   <span className="flex">
                     <input
                       id={`d-value${service.id}`}
@@ -205,29 +293,60 @@ export default function Finances({ type, quickActData, discountStatus, pDiscount
                       <option value="absolute">₴</option>
                     </select>
                   </span>
-              </td>
-              <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
-                {calculateDiscountedPrice(service)}
-              </td>
-              <td className="text-right text-[14px] pb-2 px-3">
-                <FontAwesomeIcon
-                  icon={faClose}
-                  color="#e13333"
-                  className="cursor-pointer"
-                  onClick={() => handleRemove(service.id)}
-                />
-              </td>
-            </tr>
-          ))}
-          </tbody>
-        </table>
-        <div className="text-right mt-4">
+                    </td>
+                    <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
+                      {calculateDiscountedPrice(service)}
+                    </td>
+                    <td className="text-right text-[14px] pb-2 px-3">
+                      <FontAwesomeIcon
+                        icon={faClose}
+                        color="#e13333"
+                        className="cursor-pointer"
+                        onClick={() => handleRemove(service.id)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+              <div className="text-right mt-4">
           <span className="text-[16px] font-bold">
             {msg.get('patient.total')}: {calculateTotal()} ₴
           </span>
+              </div>
+              <div className="text-right mt-4">
+                <PrimaryButton disabled={processing}>
+                  {msg.get('patient.save')}
+                </PrimaryButton>
+                <Transition
+                  show={recentlySuccessful}
+                  enter="transition ease-in-out"
+                  enterFrom="opacity-0"
+                  leave="transition ease-in-out"
+                  leaveTo="opacity-0"
+                >
+                  <p className="text-sm text-gray-600">
+                    {msg.get('patient.saved')}
+                  </p>
+                </Transition>
+              </div>
+            </div>
+            <div className="clearfix" />
+          </form>
+        </div>
+        {/*PRICING BLOCK*/}
+        <div className={`w-1/2 ml-20`}>
+          <div className={`p-pricing`}>
+            <Pricing
+              clinicData={clinicData}
+              tree={tree}
+              services={pServices}
+              currency={currency}
+            />
+          </div>
         </div>
       </div>
-      <div className="clearfix" />
+
     </>
   );
 }

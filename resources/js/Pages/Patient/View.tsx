@@ -25,7 +25,10 @@ export default function index({
   treatmentData,
   quickActData,
   discountStatus,
-  discountValue
+  discountValue,
+  categoriesData,
+  services,
+  tree
 }) {
   const tab = useSelector(patientTabSelector);
   const dispatch = useDispatch();
@@ -132,6 +135,9 @@ export default function index({
                   quickActData={quickActData}
                   discountStatus={discountStatus}
                   pDiscountValue={discountValue}
+                  pServices={services}
+                  tree={tree}
+                  categoriesData={categoriesData}
                 />
               </>
             )}

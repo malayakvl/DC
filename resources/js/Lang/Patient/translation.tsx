@@ -82,7 +82,7 @@ const lngPatient = {
     workAct: 'Акт виконаних робіт',
     total: 'Разом',
     applyGlobal: 'Використати',
-    globalDiscount: 'Загальна знижка'
+    globalDiscount: 'Загальна знижка',
   },
 };
 export default lngPatient;
