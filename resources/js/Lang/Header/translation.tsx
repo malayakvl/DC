@@ -59,7 +59,8 @@ const lngHeader = {
     units: 'Одиниці вимірювання',
     cabinets: 'Кабінети',
     patients: 'Пацієнти',
-    import: 'Імпорт'
+    import: 'Імпорт',
+    'patient.statuses': 'Статуси і знижки'
   },
 };
 export default lngHeader;

@@ -2,6 +2,7 @@ import { handleActions } from 'redux-actions';
 import {
   setSchedulePopupDoctorAction,
   showSchedulePopupAction,
+  showScheduleEditPopupAction,
   setScheduleTimeAction,
   showScheduleErrorPopupAction,
   setNewPatientAction,
@@ -13,11 +14,17 @@ import {
   setServicesAction,
   findPatientsAction,
   setSchedulePatientIdAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setEditEventAction,
+  setExistServicesAction,
+  minusServiceAction,
+  plusServiceAction,
+  setPopupCabinetAction,
 } from './actions';
 
 const initialState = {
   showSchedulePopup: false,
+  showScheduleEditPopup: false,
   showPricePopup: false,
   showErrorSchedulePopup: false,
   popupDoctorId: '',
@@ -29,6 +36,7 @@ const initialState = {
   eventsData: [],
   patientsData: [],
   services: [],
+  editEvent: null,
   weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
   weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
 };
@@ -37,10 +45,22 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [setEditEventAction]: {
+    next: (state, action) => ({
+      ...state,
+      editEvent: action.payload,
+    }),
+  },
   [showSchedulePopupAction]: {
     next: (state, action) => ({
       ...state,
       showSchedulePopup: action.payload,
+    }),
+  },
+  [showScheduleEditPopupAction]: {
+    next: (state, action) => ({
+      ...state,
+      showScheduleEditPopup: action.payload,
     }),
   },
   [showPricePopupAction]: {
@@ -112,12 +132,50 @@ const ACTION_HANDLERS = {
   [setServicesAction]: {
     next: (state, action) => {
       const exists = state.services.some(service => service.id === action.payload.id);
-
+      action.payload.qty = 1;
       return {
         ...state,
         services: exists
           ? state.services.filter(service => service.id !== action.payload.id) // удалить
           : [...state.services, action.payload] // добавить
+      };
+    },
+  },
+  [plusServiceAction]: {
+    next: (state, action) => {
+      const _s  = state.services.map(item =>
+        item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
+      );
+
+      return {
+        ...state,
+        services: _s
+      };
+    },
+  },
+  [minusServiceAction]: {
+    next: (state, action) => {
+      const _s =  state.services
+        .map(item =>
+          item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item
+        )
+        .filter(item => item.qty > 0);
+      // const _s  = state.services.map(item =>
+      //   item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
+      // );
+      // console.log(_s);
+
+      return {
+        ...state,
+        services: _s
+      };
+    },
+  },
+  [setExistServicesAction]: {
+    next: (state, action) => {
+      return {
+        ...state,
+        services: action.payload// добавить
       };
     },
   },
@@ -127,10 +185,17 @@ const ACTION_HANDLERS = {
       eventsData: action.payload,
     }),
   },
+  [setPopupCabinetAction]: {
+    next: (state, action) => ({
+      ...state,
+      cabinetId: action.payload,
+    }),
+  },
 };
 
 export {
   showSchedulePopupAction,
+  showScheduleEditPopupAction,
   setSchedulePopupDoctorAction,
   setScheduleTimeAction,
   setScheduleDateAction,
@@ -142,7 +207,12 @@ export {
   showPricePopupAction,
   setServicesAction,
   setSchedulePatientIdAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setEditEventAction,
+  setExistServicesAction,
+  plusServiceAction,
+  minusServiceAction,
+  setPopupCabinetAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

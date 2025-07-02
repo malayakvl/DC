@@ -25,6 +25,7 @@ class PatientUpdateRequest extends FormRequest
             'important_info' => ['string', 'nullable'],
             'notice' => ['string', 'nullable'],
             'curator_id' => ['numeric', 'nullable'],
+            'status_id' => ['numeric', 'nullable'],
             'contact' => ['string', 'nullable'],
             'card_number' => ['string', 'nullable'],
             'payment' => ['string', 'nullable'],

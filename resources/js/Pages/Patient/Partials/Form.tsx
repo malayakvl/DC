@@ -27,6 +27,7 @@ export default function Form({
   formData,
   customerData,
   contactData,
+  statusesData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
@@ -63,7 +64,7 @@ export default function Form({
         : new Date(),
       contact: formData.contact,
       payment: formData.payment,
-      status: formData.status_id,
+      status_id: formData.status_id,
       notice: formData.notice,
     });
   const { errors } = usePage().props;
@@ -288,6 +289,24 @@ export default function Form({
                   className={'input-text-noborder icon-input'}
                   onChange={handleChange}
                   showLabel={false}
+                  label={null}
+                />
+              </div>
+            </div>
+            {/* Statuses */}
+            <div className="md:flex md:items-center mb-6">
+              <div className="md:w-1/5">
+                <label className="inline-label">
+                  {msg.get('patient.status')}
+                </label>
+              </div>
+              <div className="md:w-4/5 relative">
+                <InputSelect
+                  name={'status_id'}
+                  values={data}
+                  value={data.status_id}
+                  options={statusesData}
+                  onChange={handleChange}
                   label={null}
                 />
               </div>

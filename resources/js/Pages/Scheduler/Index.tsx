@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Select from "react-select";
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Calendar, dateFnsLocalizer, Views, Navigate, DateLocalizer } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, Navigate } from 'react-big-calendar';
 import TimeGrid from 'react-big-calendar/lib/TimeGrid';
 import * as dates from 'date-arithmetic'
 import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
-import DatePicker from 'react-datepicker';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -18,24 +17,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
+import { Link } from '@inertiajs/react';
 import {
+  setEditEventAction,
   setScheduleDateAction,
   setScheduleTimeAction,
   showPricePopupAction,
+  showScheduleEditPopupAction,
   showSchedulePopupAction,
-  updateSchedulerPeriodAction
+  updateSchedulerPeriodAction,
+  setExistServicesAction, setPopupCabinetAction,
 } from '../../Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
 import { showOverlayAction } from '../../Redux/Layout';
 import Pricing from './Pricing';
-import { eventsDataSelector, pricePopupSelector, showSchedulePopupSelector } from '../../Redux/Scheduler/selectors';
+import {
+  eventsDataSelector,
+  pricePopupSelector,
+  showEditPopupSelector,
+  showSchedulePopupSelector,
+} from '../../Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Simulate } from 'react-dom/test-utils';
-import reset = Simulate.reset;
-import PrimaryButton from '../../Components/Form/PrimaryButton';
+import 'react-tooltip/dist/react-tooltip.css';
+import SchedulerFormEdit from './Form/FormPopupEdit';
+import { ToastContainer, toast } from 'react-toastify';
+import { updateEventsAction } from '../../Redux/Scheduler/actions';
+import { setPatientTab } from '../../Redux/Patient';
 
 const locales = {
   'uk': uk,
@@ -150,18 +160,6 @@ MyWeek.title = (date) => {
   return `${date.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 };
 
-let eventId = 0
-const defEvents = Array.from({ length: 5 }, (_, k) => k).flatMap((i) => {
-  const dayDiff = i % 7
-
-  return Array.from({ length: 2 }, (_, j) => ({
-    id: eventId++,
-    title: `Event ${i + j} _ 6`,
-    start: new Date(2025, 5, 24 + dayDiff, 9, 0, 0),
-    end: new Date(2025, 5, 24 + dayDiff, 11 + (j % 4), 0, 0),
-    resourceId: 6,
-  }))
-})
 const getCurrentWeekRange = () => {
   const now = new Date(); // Динамическое текущее время
   const dayOfWeek = now.getDay(); // 0 (воскресенье) - 6 (суббота)
@@ -199,8 +197,7 @@ export default function Index({
     locale: appLang,
   });
   const dispatch = useDispatch();
-  const clickRef = useRef(null);
-  const [popoverContent, setPopoverContent] = useState('')
+  const clickRef = useRef<number | null>(null);
   const shBtnsTitles = {
     today: msg.get('scheduler.today'),
     previous: msg.get('scheduler.prev'),
@@ -213,22 +210,20 @@ export default function Index({
   const now = new Date();
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState(eventsData);
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState<any>([]);
   const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
+  const editEventPopup = useSelector(showEditPopupSelector);
+
   const [dateRange, setDateRange] = useState(getCurrentWeekRange());
   const [draggedTask, setDraggedTask] = useState(null);
-  const [hoveredEvent, setHoveredEvent] = useState(null);
-  const [popover, setPopover] = useState(null);
   const popoverRef = useRef(null);
-  const arrowRef = useRef(null);
   const [eventView, setEventView] = useState(null);
-  const { defaultDate, views } = useMemo(
+  const { views } = useMemo(
     () => ({
-      defaultDate: new Date(2025, 5, 24),
       views: {
         day: true,
         week: MyWeek,
@@ -236,6 +231,20 @@ export default function Index({
     }),
     []
   )
+  const notify = () => toast("Wow so easy!");
+
+
+  useEffect(() => {
+    /**
+     * What Is This?
+     * This is to prevent a memory leak, in the off chance that you
+     * teardown your interface prior to the timed method being called.
+     */
+    return () => {
+      window.clearTimeout(clickRef?.current)
+    }
+  }, [])
+
   useEffect(() => {
     if (shEvents.length) {
       const _perfEvents = [];
@@ -250,11 +259,6 @@ export default function Index({
           parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
       });
     }
-    // let filteredEvents;
-    // filteredEvents = {
-    //   shEvents
-    // };
-
     setFilteredEvents(shEvents)
   }, [shEvents])
 
@@ -273,10 +277,6 @@ export default function Index({
         _event.desc = 'Some description'
       });
     }
-    // let filteredEvents;
-    // filteredEvents = {
-    //   eventsData
-    // };
     setFilteredEvents(eventsData)
   }, [eventsData]);
 
@@ -331,110 +331,98 @@ export default function Index({
   /**************************/
   /****** EVENTS ACTIONS */
   /**************************/
-  const moveEvent = ({ event, start, end, allDay }) => {
-    const eventId = event.id;
-    const currEvent = events.all.find(_event => _event.id === event.id)
+  const moveEvent = ({
+   event,
+   start,
+   end,
+   resourceId,
+   isAllDay:
+   droppedOnAllDaySlot = false
+  }) => {
+    const eventId = event.event_id;
+    // find place count in cabinet
+    const cabinetCntPlace = cabinetData.find(_cabinet => _cabinet.id === resourceId).place_count;
 
-    setFilteredEvents((prev) => ({
-      ...prev,
-      all: prev.all.map((ev) =>
-        ev.id === eventId ? { ...ev, start: start, end: end } : ev
-      )
-    }));
+    const startThreshold = start;
+    const filteredData = events.filter(_event => {
+      const threshold = new Date(startThreshold);
+      const eventStart = new Date(_event.start);
+      const eventEnd = new Date(_event.end);
+      return ((threshold >= eventStart && threshold <= eventEnd) && _event.event_id !== event.event_id);
+    });
+    if (filteredData.length >= cabinetCntPlace) {
+      toast.error(msg.get('scheduler.cabinet.full'), {
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } else {
+      dispatch(updateEventsAction({
+        date: moment(start).format('YYYY-MM-DD'),
+        start: moment(start).format('HH:mm'),
+        end: moment(end).format('HH:mm'),
+        resource_id: resourceId,
+        event_id: event.event_id}));
+      setFilteredEvents((prev) =>
+        prev.map((ev) =>
+          ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
+        )
+      );
+
+    }
   };
   const onEventResize = ({ event, start, end }) => {
-    const eventId = event.id;
-    setFilteredEvents((prev) => ({
-      ...prev,
-      all: prev.all.map((ev) =>
-        ev.id === eventId ? { ...ev, start: start, end: end } : ev
+    const eventId = event.event_id;
+    console.log('Resize event', filteredEvents);
+    dispatch(updateEventsAction({
+      date: moment(start).format('YYYY-MM-DD'),
+      start: moment(start).format('HH:mm'),
+      end: moment(end).format('HH:mm'),
+      resource_id: event.cabinet_id,
+      event_id: event.event_id}));
+
+    console.log(filteredEvents.find(ev => ev.event_id === eventId));
+
+    setFilteredEvents((prev) =>
+      prev.map((ev) =>
+        ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: event.cabinet_id } : ev
       )
-    }));
-  };
-  const onDropFromOutside = ({ start, allDay }) => {
-    if (!draggedTask) {
-      console.error('No dragged task found');
-      return;
-    }
-
-    console.log('Dropping task:', draggedTask);
-
-    const eventStart = new Date(start);
-    const eventEnd = new Date(
-      eventStart.getTime() + parseInt(draggedTask.duration.split(':')[0]) * 60 * 60 * 1000
     );
-
-    // Check date range
-    const rangeStart = moment(dateRange.start).startOf('day').toDate();
-    const rangeEnd = moment(dateRange.end || dateRange.start).endOf('day').toDate();
-    if (eventStart < rangeStart || eventEnd > rangeEnd) {
-      console.warn('Event is outside the selected date range:', { eventStart, eventEnd, dateRange });
-      alert('Please place the event within the selected date range (31 May - 6 June 2025).');
-      setDraggedTask(null);
-      return;
-    }
-
-    const newEvent = {
-      id: draggedTask.id,
-      title: `${people.find((p) => p.id === activePerson).name} - ${draggedTask.title}`,
-      start: eventStart,
-      end: eventEnd,
-      allDay: allDay || false,
-      priority: draggedTask.priority,
-      category: draggedTask.category,
-      description: draggedTask.description,
-    };
-
-    console.log('New event created:', newEvent);
-
-    // Delay state updates to avoid DOM conflicts
-    try {
-      setTimeout(() => {
-        setEvents((prev) => {
-          const updatedEvents = {
-            ...prev,
-            [activePerson]: [...(prev[activePerson] || []), newEvent],
-          };
-          console.log('Updated events:', updatedEvents);
-          return updatedEvents;
-        });
-
-        setTasks((prev) => {
-          const updatedTasks = prev.filter((task) => task.id !== draggedTask.id);
-          console.log('Updated tasks:', updatedTasks);
-          return updatedTasks;
-        });
-
-        setDraggedTask(null);
-      }, 100); // Increased delay to ensure library cleanup
-    } catch (error) {
-      console.error('Error during drop operation:', error);
-    }
   };
-  const dragFromOutsideItem = () => {
-    if (!draggedTask) return null;
-    console.log('Providing dragFromOutsideItem:', draggedTask);
-    // Minimal data to avoid library issues
-    return {
-      title: draggedTask.title,
-      start: new Date(),
-      end: new Date(new Date().getTime() + parseInt(draggedTask.duration.split(':')[0]) * 60 * 60 * 1000),
-    };
-  };
-  const handleDateRangeChange = (dates) => {
-    const [start, end] = dates;
-    setDateRange({ start, end: end || moment(start).add(6, 'days').toDate() });
-  };
+
 
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
   }, []);
 
+  const onDoubleClickEvent = useCallback((calEvent) => {
+    /**
+     * Notice our use of the same ref as above.
+     */
+    window.clearTimeout(clickRef?.current)
+    clickRef.current = window.setTimeout(() => {
+      const now = moment(calEvent.event_date);
+      // Сравнение start с текущим временем
+      dispatch(setEditEventAction(calEvent));
+      dispatch(showOverlayAction(true));
+      if (calEvent.services) {
+          dispatch(setExistServicesAction(JSON.parse(calEvent.services)));
+        }
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+
+      dispatch(showScheduleEditPopupAction(true))
+    }, 250)
+  }, [])
+
   /***** Click on cell and show popup *****/
   const handleSelectSlot = useCallback(
-    ({ start, end }) => {
+    ({ start, end, resourceId }) => {
       // Текущее время
       const now = moment();
+      dispatch(setExistServicesAction([]));
       // Сравнение start с текущим временем
       if (moment(start).isBefore(now)) {
         dispatch(showOverlayAction(true));
@@ -442,8 +430,9 @@ export default function Index({
         return;
       }
       dispatch(showSchedulePopupAction(true));
+      dispatch(setPopupCabinetAction(resourceId));
       dispatch(showOverlayAction(true));
-      dispatch(setScheduleDateAction(dayjs(start).format('YYYY-MM-DD HH:mm')));
+      dispatch(setScheduleDateAction(dayjs(start).format('DD.MM.YYYY')));
       dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
       dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
       document.getElementsByTagName('body')[0].style.overflow = 'hidden'
@@ -504,9 +493,6 @@ export default function Index({
 
     // Парсимо дату
     const date = new Date(event.event_date);
-    if (isNaN(date)) {
-      throw new Error('Invalid event_date format');
-    }
 
     // Отримуємо день, місяць і день тижня
     const day = date.getDate();
@@ -521,127 +507,99 @@ export default function Index({
     return `${day} ${translations[locale].months[monthIndex]}, ${translations[locale].days[dayIndex]} ${timeFrom} - ${timeTo}`;
   }
 
-  const showActionsEvent = (el, event) => {
-    // update popover content
-    const pContent = `
-      <div class="grid grid-cols-[1fr_auto] items-baseline-last">  
-        <div>    
-          <p class="text-sm text-gray-500">
-            ${formatEventDateTime(event)}
-          </p>
-          <span class="block">${msg.get('scheduler.patient')}:${event.pl_name} ${event.p_name} ${event.birthday}</p>    
-          <span class="block">${msg.get('scheduler.form.doctor')}: ${event.last_name} ${event.first_name}</p>    
-        </div>  
-        <div>
-          <span class="block">Event status</span>
-          <span class="p-balance block ${event.dt_balance - event.kt_balance < 0 ? "red" : ''}">${msg.get('scheduler.balance')} ${event.dt_balance - event.kt_balance } ${clinicData.currency.symbol}</span>  
-          <span class="p-cabinet block">${event.cabinet_name}</span> 
-        </div>
-      </div>
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
 
-    `
-
-    setPopoverContent(pContent)
-
-    // document.getElementById('bigActionEventView').style.display = 'block';
-    // const rect = e.currentTarget.getBoundingClientRect();
-    // document.getElementById('bigActionEventView').style.top = `${rect.top - 128}px`;
-    // document.getElementById('bigActionEventView').style.left = `${rect.right - 70}px`;
-    // document.getElementById('bigActionEventView').style.display = 'block';
-  }
-
-  const handleSelectEvent = (event, e) => {
-    const eventElement = e.target.closest('.rbc-event-data') || e.target.closest('.rbc-event');
-    if (eventElement) {
-      setEventView(event);
-      const rect = eventElement.getBoundingClientRect();
-      const popoverWidth = 380;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-      const popoverEl = document.getElementById('bigActionEventView');
-      const popoverHeight = 200; // Предполагаемая высота поповера, настройте по вашим нуждам
-      // Проверяем, выходит ли поповер за правую границу
-      let left = rect.left;
-      if (left + popoverWidth > windowWidth) {
-        // left = windowWidth - popoverWidth - 140; // Отступ от края
-        left = rect.left - 380;
-        // показиваем стрелочку справа
-        // alert(document.getElementById('bigActionEventView'))
-        // document.getElementById('bigActionEventView').classList.add('popup-arrow-right')
-        // document.getElementById('arrow').style.right = '20px';
-        // document.getElementById('arrow').style.left = 'auto';
-      } else {
-        console.log(document.getElementById('arrow'))
-        // document.getElementById('arrow').style.left = '20px';
-        // document.getElementById('arrow').style.right = 'auto';
-      }
-
-      // Проверяем, выходит ли поповер за левую границу
-      if (left < 10) {
-        left = 10; // Минимальный отступ слева
-      }
-      console.log('Top + height', windowHeight)
-      // Позиция сверху или снизу от события
-      let top = rect.top - 100; // Поповер ниже события
-      let arrowTop = '-16px'; // Стрелка сверху поповера
-      let arrowTransform = 'rotate(45deg)'; // Стрелка указывает вверх
-      if (top + popoverHeight > windowHeight) {
-        top = rect.top; // Поповер ниже собития ибо вилазит за границу екрана
-        arrowTop = `${popoverHeight - 6}px`; // Стрелка снизу поповера
-        arrowTransform = 'rotate(225deg)'; // Стрелка указывает вниз
-      }
-
-      // Позиция стрелочки: указывает на середину события
-      const eventCenterX = rect.left + rect.width / 2;
-      const arrowLeft = eventCenterX - left - 6; // 6 - половина ширины стрелки
-      popoverEl.style.left = `${left}px`;
-      popoverEl.style.top = `${top}px`;
-      popoverEl.style.display = 'block';
-      // setPopover({
-      //   event,
-      //   style: {
-      //     left: `${left}px`,
-      //     top: `${top}px`,
-      //   },
-      // });
-
-      // Вызываем вашу функцию showActionsEvent
-      showActionsEvent(eventElement.parentElement, event);
+    // Если месяц текущий меньше месяца рождения или
+    // если месяцы равны, но текущий день меньше дня рождения
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
     }
-  };
 
-  const renderBtnsBlock = () => {
-    return (
-      <div className="row">
-        <PrimaryButton>
-          {msg.get('scheduler.save')}
-        </PrimaryButton>
-      </div>
-    )
+    return age;
   }
+
+
+  const onSelectEvent = useCallback((event, e) => {
+    /**
+     * Here we are waiting 250 milliseconds (use what you want) prior to firing
+     * our method. Why? Because both 'click' and 'doubleClick'
+     * would fire, in the event of a 'doubleClick'. By doing
+     * this, the 'click' handler is overridden by the 'doubleClick'
+     * action.
+     */
+    window.clearTimeout(clickRef?.current)
+    clickRef.current = window.setTimeout(() => {
+      const eventElement = document.getElementById(`event-${event.event_id}`).closest('.rbc-event');
+      const styles = eventElement.style;
+      const extractedStyles = {
+        top: styles.top || '0%',
+        height: styles.height || '0%',
+        width: styles.width || '0%',
+        left: styles.left || '0%'
+      };
+      if (eventElement) {
+        setEventView(event);
+        const rect = eventElement.getBoundingClientRect();
+        const popoverWidth = 380;
+        const windowWidth = window.innerWidth;
+        const popoverEl = document.getElementById('bigActionEventView');
+        // Проверяем, выходит ли поповер за правую границу
+        let left = rect.left;
+        if (left + popoverWidth > windowWidth) {
+          left = rect.left - 380;
+        } else {
+        }
+        // Проверяем, выходит ли поповер за левую границу
+        if (left < 10) {
+          left = 10; // Минимальный отступ слева
+        }
+        popoverEl.style.left = `${left}px`;
+        popoverEl.style.top = `${styles.top}`;
+        popoverEl.style.display = 'block';
+      }
+    }, 250)
+  }, [])
 
   const renderViewEventBlock = () => {
-    console.log('Event View', eventView);
+    let parsedData = JSON.parse(eventView.services) || [];
+
     return (
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
           <div className={'pt-2'}>
+            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.patronomic_name}</span>
+            <span className="block mb-1 font-bold">{moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)} {msg.get('scheduler.age')}</span>
+            <span className="block mb-1">{eventView.status_name ? `${eventView.status_name}` : ''} <em className={'sh-discount'}>{eventView.status_name ? `(-${eventView.status_discount}%)` : ''}</em></span>
             <span className="block text-gray-500  mb-1">
               {formatEventDateTime(eventView)}
             </span>
-            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.birthday}</span>
-            <span className="block mb-1">{msg.get('scheduler.form.doctor')}: {eventView.last_name} {eventView.first_name}</span>
           </div>
           <div className={'pt-2'}>
-            <span className="block mb-1">Event status</span>
             <span className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}>{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
+            <span className="block mb-1 p-doctor">{shortenName(`${eventView.last_name } ${eventView.first_name}`)}</span>
             <span className="p-cabinet  mb-1 block">{eventView.cabinet_name}</span>
           </div>
         </div>
         <div>
-          <div className={'sch-services'}></div>
+          <div className={'sch-services'}>
+            {parsedData.map((_s, index) => (
+              <div className="flex justify-between">
+                <span>{_s.name}</span>
+                <span>{_s.total} {clinicData.currency.symbol}</span>
+              </div>
+            ))}
+          </div>
           <div className={'sh-btns-block'}>
-            <span className={'btn-sch-act'}>{msg.get('scheduler.sch.act')}</span>
+            <Link onClick={() => {
+              dispatch(setPatientTab('finances'));
+            }}
+              href={`/patient/view/${eventView.patient_id}/${eventView.event_id}`}>
+              <span className={'btn-sch-act cursor-pointer'}>{msg.get('scheduler.sch.act')}</span>
+            </Link>
             <span className={'btn-sch-payment ml-2'}>{msg.get('scheduler.sch.payment')}</span>
             <span className={'btn-sch-icon ml-5'}>
               <FontAwesomeIcon icon={faCopy} />
@@ -667,8 +625,9 @@ export default function Index({
   }
 
   const closePopover = () => {
-    setPopover(null);
+    document.getElementById('bigActionEventView').style.display = 'none';
   };
+
   /***** Render custom event view *****/
   const CustomEvent = ({ event, view }) => {
     let servicesData = '';
@@ -676,61 +635,47 @@ export default function Index({
       const parsedData = JSON.parse(event.services);
       if (Array.isArray(parsedData)) {
         parsedData.map((_s, index) => (
-          servicesData += `<span class="block"><i key=${index}>${_s.name}</i></span>`
+          servicesData += `<span class="block service-item"><em>${_s.name}</em></span>`
         ))
       }
     } catch (error) {
       console.error("Ошибка парсинга JSON:", error);
     }
-    const handleMouseEnter = (e) => {
-      // Calculate position based on event's bounding box
-      const rect = e.currentTarget.getBoundingClientRect();
-
-
-      document.getElementById('bigViewEvent').style.top = `${rect.top - 128}px`;
-      document.getElementById('bigViewEvent').style.left = `${rect.right - 70}px`;
-      document.getElementById('bigViewEvent').style.display = 'block';
-      document.getElementById('bigViewEvent').innerHTML = `
-        <div>
-          <p class="block mb-1"><strong className={'hover-event-title'}>${event.title}</strong></p>
-          <span class="block mb-1">${msg.get('scheduler.from')}: ${event.event_time_from} - ${event.event_time_to}</span>
-          <span class="block mb-1">${msg.get('scheduler.form.doctor')}: <strong className={'sh-doctor'}>${event.last_name} ${event.first_name}</strong></span>
-          <span class="block mb-1">${msg.get('scheduler.form.cabinet')}: ${event.cabinet_name}</span>
-          <span class="block mb-1">${msg.get('scheduler.patient')}: <strong className={'sh-patient'}>${event.p_name} ${event.pl_name}</strong></span>
-          ${servicesData ? '<span>'+msg.get('scheduler.manipulation')+'</span>' : ''}
-          ${servicesData ? servicesData : ''}
-        </div>
-      `;
-    };
-    const handleMouseLeave = (e) => {
-      document.getElementById('bigViewEvent').style.display = 'none'
-    };
+    let color = '#000';
+    if (event.kt_balance > event.dt_balance) {
+      color = '#de1818';
+    } else if (event.kt_balance < event.dt_balance)
+      color = '#0c9407';
 
     return view === 'month' ? (
-      <strong>{event.title}</strong>
+      <strong>{event.title} </strong>
     ) : (
-      <div className={'rbc-event-data relative bg-blue-100'}
-        // onMouseEnter={handleMouseEnter}
-        // onMouseLeave={handleMouseLeave}
-
-      >
-        <p className={'block mb-1 pb-1'}>
-          <strong style={{marginLeft: '20px'}}>{event.title}</strong>
-          <div className={'sh-event-status'} style={{background: event.status_color}}></div>
-        </p>
-        <span className={'block mb-2'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
-        <span className={'block mb-2'}>{msg.get('scheduler.patient')}: {shortenName(`${event.p_name} ${event.pl_name}`)}</span>
-        <div className={'block mb-2'}><strong>{event.description}</strong></div>
-        <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+      <div className="">
+        <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
+          <span className={'block mb-1 inline-block'}>
+            <strong style={{color: color}}>
+              {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
+            </strong>
+            <div className={'sh-event-status'} style={{background: event.status_color}}></div>
+          </span>
+          <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
+          <span className={'block mb-1 font-bold'}>{event.title}</span>
+          <div className={'block mb-1'}><strong>{event.description}</strong></div>
+          <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+        </div>
       </div>
     );
   };
+
 
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Scheduler'} />
       <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
         {/* Кастомный алерт */}
+        <div>
+          <ToastContainer />
+        </div>
         {showAlert && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
@@ -787,50 +732,47 @@ export default function Index({
           <div className={'relative'}>
             <DnDCalendar
               culture="uk"
-              key={activePerson}
-              localizer={localizerFn}
+              localizer={localizerFn as any}
               events={filteredEvents}
               resources={cabinetData}
               resourceIdAccessor="resourceId"
               resourceTitleAccessor="resourceTitle"
               startAccessor="start"
-              step={15}
-              views={views}
-              defaultView={'week'}
-              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)}
-              min={minTime} // Начало с 8:00
-              max={maxTime}
-              messages={shBtnsTitles}
-              onEventResize={onEventResize}
-              onEventDrop={moveEvent}
-              onNavigate={handleNavigate}
-              onDropFromOutside={onDropFromOutside}
-              draggableAccessor={() => true}
-              dragFromOutsideItem={dragFromOutsideItem}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
+              step={15 as any}
+              views={views as any}
+              defaultView={'week' as any}
+              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)  as any}
+              min={minTime as any} // Начало с 8:00
+              max={maxTime as any}
+              messages={shBtnsTitles as any}
+              onEventResize={onEventResize as any}
+              onEventDrop={moveEvent as any}
+              onNavigate={handleNavigate as any}
+              onSelectSlot={handleSelectSlot as any}
+              tooltipAccessor={(event: any): any =>
+                `\n${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
+              }
+              onSelectEvent={onSelectEvent as any}
+              onDoubleClickEvent={onDoubleClickEvent as any}
               eventPropGetter={(event) => ({
                 style: {
-                  borderColor: event.priority === 'high' ? '#be21ea' : '#8d71ef',
                   borderRadius: '5px',
                   color: 'black',
-                  border: 'solid 1px #be21ea',
+                  border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
+                  // background: `rgba(235, 157, 23, 0.1)`,
                   padding: '5px',
                   zIndex: 10,
-                  backgroundColor: '#fff'
+                  backgroundColor: `#fff`
                 },
-              })}
+              }) as any}
               //
               components={{
                 event: CustomEvent, // Override default event rendering
-              }}
+              } as any}
               resizable
               selectable
             />
             <div
-              onMouseLeave={() => {
-                document.getElementById('bigViewEvent').style.display = 'none'
-              }}
               className={'event-big-content'} id={'bigViewEvent'}
               style={{
                 background: 'white',
@@ -846,7 +788,7 @@ export default function Index({
                 id="bigActionEventView"
                 ref={popoverRef}
                 style={{
-                  position: 'fixed',
+                  position: 'absolute',
                   width: '380px',
                   background: 'white',
                   border: '1px solid #ccc',
@@ -855,13 +797,7 @@ export default function Index({
                 }}
                 onClick={closePopover}
               >
-                <div
-                  className={`sch_arrow`}
-                  id="sch_arrow"
-                  ref={arrowRef}
-                />
-                <div id="arrow" className={'arrow-left'}></div>
-                <div className={'sc-arrow-right'}></div>
+                <div className={'event-close'} onClick={() => closePopover()}></div>
                 <div
                   className="sch-content"
                   style={{
@@ -870,16 +806,19 @@ export default function Index({
                     borderRadius: '4px', // Скругление углов контента
                   }}
                 >
-                  {/*<div contentEditable='true' dangerouslySetInnerHTML={{ __html: popoverContent }}></div>*/}
                   <div>{eventView && renderViewEventBlock()}</div>
                 </div>
               </div>
           </div>
 
-
-
           {showEventPopup && <SchedulerFormCreate
             formData={formData}
+            clinicData={clinicData}
+            cabinetData={cabinetData}
+            customerData={customerData}
+            currency={currency}
+          />}
+          {editEventPopup && <SchedulerFormEdit
             clinicData={clinicData}
             cabinetData={cabinetData}
             customerData={customerData}

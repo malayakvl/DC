@@ -63,7 +63,27 @@ const lngPatient = {
     'search.clear': 'Очистити',
     'worked.at': 'Виконано на',
     'payed.at': 'Сплачено',
-    'dept.at': 'Борг'
+    'dept.at': 'Борг',
+    'list.history': 'Історвя лікування',
+    'list.payment': 'Платежі',
+    'list.edit': 'Редагувати',
+    'list.visits': 'Візити',
+    'list.documents': 'Документи',
+    status: 'Статус',
+    finances: 'Фінанси',
+    quickact: 'Створити швидки акт',
+    acceptpayment: 'Прийняти платіж',
+    returnmoney: 'Повернути кошти',
+    usediscount: 'Використати загальну знижку',
+    service: 'Послуга',
+    price: 'Ціна',
+    quantity: 'К-ть',
+    discountedPrice: 'Зі знижкою',
+    workAct: 'Акт виконаних робіт',
+    total: 'Разом',
+    applyGlobal: 'Використати',
+    globalDiscount: 'Загальна знижка',
+    createevent: 'Записати на прийом'
   },
 };
 export default lngPatient;
