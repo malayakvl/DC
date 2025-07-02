@@ -29,6 +29,7 @@ class Patient extends Authenticatable
         'card_number',
         'notice',
         'curator_id',
+        'status_id',
         'contact',
         'payment',
         'birthday',
@@ -58,5 +59,10 @@ class Patient extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function discountStatus(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PatientStatus::class,'id','status_id');
     }
 }

@@ -60,13 +60,10 @@ class AuthenticatedSessionController extends Controller
             ->select('role_id', 'roles.name', 'clinic_filial_user.clinic_id', 'clinic_filial_user.filial_id')
             ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
             ->where('user_id', $logUser->id)->get();
-//        dd($data);exit;
         if (count($data) > 1) {
-//            dd(1);
             return response()->json([
                 'dashboardSelect' => true,
             ]);
-//            return redirect()->intended(route('dashboard.select', absolute: false));
         } else {
             $data = DB::table('clinic_user')
                 ->select('role_id', 'roles.name', 'clinic_user.clinic_id')
@@ -74,10 +71,11 @@ class AuthenticatedSessionController extends Controller
                 ->where('user_id', $logUser->id)->get();
 
             $logUser->assignRole($data[0]->name);
+            $request->session()->put('clinic_id', $data[0]->clinic_id);
+            $request->session()->put('filial_id', $data[0]->filial_id);
             return response()->json([
                 'dashboardSelect' => false,
             ]);
-//            return redirect()->intended(route('dashboard.index', absolute: false));
         }
     }
 

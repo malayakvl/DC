@@ -52,9 +52,9 @@ export default function List({ clinicData, filialData, customerData }) {
               {customerData?.map(item => (
                 <tr className="" key={item.id}>
                   <td style={{ width: '100px' }}>
-                    {item.photo && (
+                    {item.file && (
                       <img
-                        src={`http://localhost:8000/storage/clinic/users/${item.photo}`}
+                        src={`/uploads/users/${item.file}`}
                         width={40}
                         className="float-left rounded"
                         height="auto"

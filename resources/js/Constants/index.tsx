@@ -13,6 +13,7 @@ export enum PaginationType {
   SERVCATEGORIES = 'servcategories',
   UNITS = 'units',
   PATIENTS = 'patients',
+  PATIENTSTATUSES = 'patientstatuses',
   STORES = 'stores',
 }
 export const TableHeaders = {
@@ -104,6 +105,11 @@ export const TableHeaders = {
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
+  [PaginationType.PATIENTSTATUSES]: [
+    { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.discount', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
   [PaginationType.UNITS]: [
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
@@ -121,12 +127,12 @@ export const SchedulerStatuses = [
   { name: 'planned', color: '#4c95f5' },
   { name: 'confirm', color: '#eb9d17' },
   { name: 'done', color: '#7d17eb' },
-  { name: 'missed', color: '#fae73c' },
-  { name: 'postponed', color: '#3cfafa' },
+  { name: 'missed', color: '#9a8d11' },
+  { name: 'postponed', color: '#17abab' },
   { name: 'noanswer', color: '#ff5722' },
   { name: 'late', color: '#ff21ed' },
   { name: 'inclicnic', color: '#2971ba' },
-  { name: 'incabinet', color: '#37ff21' },
+  { name: 'incabinet', color: '#188c0b' },
   { name: 'decline', color: '#222223' },
 ];
 

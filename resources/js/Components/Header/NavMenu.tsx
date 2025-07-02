@@ -7,10 +7,8 @@ import lngHeader from '../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import NavStores from './Menu/NavStores';
 import NavCustomers from './Menu/NavCustomers';
-import NavPrice from './Menu/NavPrice';
 import NavScheduler from './Menu/NavScheduler';
 import NavInvoices from './Menu/NavInvoices';
-import NavCabinets from './Menu/NavCabinets';
 import NavPatients from './Menu/NavPatients';
 
 export default function NavMenu(props) {

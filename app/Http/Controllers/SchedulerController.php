@@ -5,24 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SchedulerUpdateRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
-use App\Models\Customer;
 use App\Models\Filial;
 use App\Models\Patient;
+use App\Models\PriceCategory;
+use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\User;
-use App\Models\ClinicUser;
-use App\Notifications\CustomerInviteNotification;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use DateTime; // Import the DateTime class from the global namespace
 
 class SchedulerController extends Controller
 {
@@ -32,18 +28,59 @@ class SchedulerController extends Controller
     public function index(Request $request)
     {
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $filialId = $request->session()->get('filial_id');
+        $customerSelectData = DB::select('
+            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
+                   roles.name AS role_name
+            FROM users
+            LEFT JOIN clinic_user ON clinic_user.user_id = users.id
+            LEFT JOIN roles ON roles.id = clinic_user.role_id
+            WHERE clinic_user.clinic_id = ?
+            ORDER BY name
+        ', [$clinicData->id]);
+
         $customerData = DB::table('users')
-            ->select('users.*')
+            ->select([
+                'users.id',
+                'users.file',
+                'users.color',
+                'users.first_name',
+                'users.last_name',
+                'roles.name AS role_name'
+            ])
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-        foreach ($customerData as $customer) {
-            if ($customer->photo) {
-                $customer->avatar = 'http://localhost:8000/storage/clinic/users/'.$customer->photo;
-            }
+            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+            ->where('clinic_user.clinic_id', $clinicData->id)
+            ->orderBy('last_name')
+            ->get();
+
+        $categories = PriceCategory::where('parent_id', null)
+            ->where('clinic_id', $clinicData->id)
+            ->get();
+        $arrServices = [];
+        foreach ($categories as $category) {
+            $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
         }
+        $arrCat = array();
+        $tree = $this->generateCategories($categories, $arrCat, 0);
+
+        // Group users by role_name and format into groupedOptions
+        App::setLocale($request->user()->locale);
+        $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
+            return [
+                'label' => __('roles.'.$roleName),
+                'options' => $group->map(function ($user) {
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->first_name . ' ' . $user->last_name,
+                        'color' => $user->color
+                    ];
+                })->values()->toArray()
+            ];
+        })->values()->toArray();
         if ($request->session()->get('filial_id')) {
             $listCabinets = DB::table('cabinets')
-                ->select('cabinets.*', "clinic_filials.name AS filial_name")
+                ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
                 ->where('cabinets.clinic_id', $clinicData->id)
                 ->where('cabinets.filial_id', $request->session()->get('filial_id'))
@@ -55,52 +92,132 @@ class SchedulerController extends Controller
                 ->where('cabinets.clinic_id', $clinicData->id)
                 ->orderBy('name')->get();
         }
-        $weekStart = date("Y-m-d", strtotime('monday this week'));
-        $weekEnd = date("Y-m-d", strtotime('sunday this week'));
+        $groupedCabinets = $listCabinets->groupBy('filial_name')->map(function ($group, $roleName) {
+            return [
+                'label' => 'Кабінети',
+                'options' => $group->map(function ($user) {
+                    return [
+                        'value' => $user->id,
+                        'label' => $user->name,
+                    ];
+                })->values()->toArray()
+            ];
+        })->values()->toArray();
+        $weekStart = date("Y-m-d");
+        $weekEnd = date("Y-m-d", strtotime('+3 days'));
         $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id',
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
+                'schedulers.patient_id', 'schedulers.status_name AS event_status',
+                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
+                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
+                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
             )
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+            ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-        $events = array();
-        foreach ($eventsData as $event) {
-//            $event->title = $event->title;
-            $event->startDate = date($event->event_date.' '.$event->event_time_from);
-            $event->endDate = date($event->event_date.' '.$event->event_time_to);
-            $event->cabinet = $event->cabinet_name;
-            $events[] = (object) $event;
-        }
-//        dd($events);
-//        exit;
         $formData = new Scheduler();
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
-            'customerData' => $customerData,
+            'customerData' => $customerSelectData,
+            'customerGroupped' => $groupedOptions,
+            'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
             'formData' => $formData,
-            'eventsData' => $events
+            'eventsData' => $eventsData,
+            'categoriesData' => $categories,
+            'services' => $arrServices,
+            'tree' => $tree,
+            'currency' => $clinicData->currency->symbol
         ]);
     }
+
+    public function generateCategories($categories, &$arrCat, $level) {
+        foreach ($categories as $category) {
+            $category->level = $level;
+            $category->producerName = $category->producer();
+            $arrCat[] = $category;
+            if (count($category->children) > 0) {
+                $this->generateCategories($category->children, $arrCat, ($level+1));
+            }
+        }
+
+        return $arrCat;
+    }
+
+    public function fetchPatients(Request $request) {
+        $qData = $request->all();
+        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $patientsQueryResults = DB::select('
+            SELECT patients.id, patients.first_name, patients.last_name, patients.patronomic_name 
+            FROM patients
+            LEFT JOIN clinic_patient ON clinic_patient.patient_id = patients.id
+            WHERE clinic_patient.clinic_id = ? 
+            AND (patients.first_name LIKE ? OR patients.last_name LIKE ?)
+        ', [$clinicData->id, '%' .$qData['strFind']. '%', '%' .$qData['strFind']. '%']);
+
+        return response()->json([
+            'items' => $patientsQueryResults
+        ]);
+    }
+
+    public function updatePeriod(Request $request) {
+        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $qData = $request->all();
+//        $weekStart = $qData['newDate'];
+        $decodedQueryData = (json_decode($qData['data']));
+        $weekStart = $decodedQueryData->newDate;
+        $date = new DateTime($weekStart);
+        $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
+        $eventsData = DB::table('schedulers')
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
+                'schedulers.patient_id', 'schedulers.status_name AS event_status',
+                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
+                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
+                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
+            )
+            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
+            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+            ->where('schedulers.clinic_id', $clinicData->id)
+            ->whereBetween('event_date', [$weekStart, $weekEnd])
+            ->get();
+        return response()->json([
+            'items' => $eventsData
+        ]);
+    }
+
 
     public function fetchEvents(Request $request) {
         $qData = $request->all();
         $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $eventsData = Scheduler::where('clinic_id', '=', $clinicData->id)->get();
-//        $eventsData = DB::table('schedulers')
-//            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-//                'schedulers.event_time_to',
-//                'schedulers.cabinet_id', 'schedulers.cabinet_id',
-//                'schedulers.doctor_id AS id'
-//            )
-//            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
-//            ->whereBetween('event_date', [$qData['start'], $qData['end']])
-//            ->get();
         $eventsData = DB::table('schedulers')
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
@@ -212,27 +329,23 @@ class SchedulerController extends Controller
      */
     public function update(SchedulerUpdateRequest $request) {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-//        dd($request->status_id["name"]);exit;
         if ($request->user()->can('schedule-create')) {
             if ($request->id) {
-//                $userId = $request->id;
-//                if ($request->file) {
-//                    $ext = $request->file->getClientOriginalExtension();
-//                    $photo = 'customer-' .$userId. '.'.$ext;
-//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-//                }
-//
-//                $user = User::find($request->id);
-//                $user->email = $request->email;
-//                $user->name = $request->name;
-//                $user->phone = $request->phone;
-//                $user->inn = $request->inn;
-//                if ($photo) {
-//                    $user->photo = $photo;
-//                }
-//                $user->save();
-
-                return Inertia::location(route('customer.index'));
+                $scheduler = Scheduler::find($request->id);
+                $scheduler->title = $request->title;
+                $scheduler->event_date = $request->fotmatted_date;
+                $scheduler->event_time_from = $request->event_time_from;
+                $scheduler->event_time_to = $request->event_time_to;
+                $scheduler->clinic_id = $clinic->id;
+                $scheduler->cabinet_id = $request->cabinet_id;
+                $scheduler->doctor_id = $request->doctor_id;
+                $scheduler->patient_id = $request->patientId;
+                $scheduler->description = $request->comment ?  $request->comment : '';
+                $scheduler->status_name = $request->status["name"];
+                $scheduler->status_color = $request->status["color"];
+                $scheduler->services = json_encode($request->services);
+                $scheduler->save();
+                return Inertia::location(route('scheduler.index'));
             }
             else {
                 if ($request->newPatientData) {
@@ -246,43 +359,41 @@ class SchedulerController extends Controller
                     $patient->save();
 
                     $patientId = $patient->id;
+                } else {
+                    $patientId = $request->patientId;
                 }
                 $scheduler = new Scheduler();
                 $scheduler->title = $request->title;
                 $scheduler->event_date = $request->event_date;
-                $scheduler->event_time_from = $request->event_time_to;
+                $scheduler->event_time_from = $request->event_time_from;
                 $scheduler->event_time_to = $request->event_time_to;
                 $scheduler->clinic_id = $clinic->id;
                 $scheduler->cabinet_id = $request->cabinet_id;
                 $scheduler->doctor_id = $request->doctor_id;
                 $scheduler->patient_id = $patientId;
-                $scheduler->description = $request->description;
+                $scheduler->description = $request->comment ?  $request->comment : '';
                 $scheduler->status_name = $request->status_id["name"];
                 $scheduler->status_color = $request->status_id["color"];
+                $scheduler->services = json_encode($request->services);
                 $scheduler->save();
-
-//                $userId = $user->id;
-//                if ($request->file) {
-//                    $ext = $request->file->getClientOriginalExtension();
-//                    $photo = 'customer-' .$userId. '.'.$ext;
-//                    $user->photo = $photo;
-//                    $user->save();
-//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-//                }
-//                $clinicUser = new ClinicUser();
-//                $clinicUser->user_id = $userId;
-//                $clinicUser->clinic_id = $request->clinic_id;
-//                $clinicUser->clinic_token = Str::random(60);
-//                $clinicUser->save();
-
 
                 return Inertia::location(route('scheduler.index'));
             }
         }
     }
 
+    public function updateEvent(Request $request) {
+        $event = Scheduler::where('id', $request->event_id)->get();
+        $event[0]->event_date = $request->date;
+        $event[0]->event_time_from = $request->start;
+        $event[0]->event_time_to = $request->end;
+        $event[0]->cabinet_id = $request->resource_id;
+        $event[0]->save();
+
+        return response()->json(['success' => true]);
+    }
+
     public function assign(Request $request, $id) {
-//        $clinic = $request->user()->clinic;
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
         $customer = User::where('id', $id)->get();

@@ -21,6 +21,8 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\PatientStatusController;
+use App\Http\Controllers\DocumentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,7 +35,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
-Route::get('/clinic-new', [ClinicController::class, 'new'])
+Route::get('/clinic-new', [ClinicController::class, 'create'])
     ->name('clinic.new');
 
 Route::get('/dashboard', function () {
@@ -81,22 +83,35 @@ Route::middleware('auth')->group(function () {
     Route::post('/filial/update', [FilialController::class, 'update'])->name('filial.update');
 
     Route::get('/patients', [PatientController::class, 'index'])->name('patient.index');
+    Route::post('/patients', [PatientController::class, 'index'])->name('patient.index');
     Route::get('/patient/create', [PatientController::class, 'create'])->name('patient.create');
     Route::get('/patient/edit/{id}', [PatientController::class, 'edit'])->name('patient.edit');
     Route::post('/patient/update-formula', [PatientController::class, 'updateFormula'])->name('patient.updateFormula');
     Route::post('/patient/update-perio', [PatientController::class, 'updatePerio'])->name('patient.updatePerio');
     Route::post('/patient/update-psr', [PatientController::class, 'updatePSR'])->name('patient.updatePSR');
     Route::post('/patient/update', [PatientController::class, 'update'])->name('patient.update');
+    Route::get('/patient/view/{id}/{eventId}', [PatientController::class, 'view'])->name('patient.view');
     Route::get('/patient/view/{id}', [PatientController::class, 'view'])->name('patient.view');
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');
+    Route::post('/patient/update-act', [PatientController::class, 'updateAct'])->name('patient.updateAct');
+    Route::get('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.finances');
+    Route::post('/patient/finances', [PatientController::class, 'view'])->name('patient.');
+    Route::post('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.viewFinances');
+
+    Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
+    Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
+    Route::get('/patient-status/edit/{id}', [PatientStatusController::class, 'edit'])->name('patient-status.edit');
+    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient-status.update');
+
     Route::get('/formula/edit/{id}', [PatientController::class, 'formulaEdit'])->name('patient.formula.edit');
     Route::get('/formula/copy/{id}', [PatientController::class, 'formulaCopy'])->name('patient.formula.copy');
     Route::get('/perio/edit/{id}', [PatientController::class, 'perioEdit'])->name('patient.perio.edit');
     Route::get('/perio/copy/{id}', [PatientController::class, 'perioCopy'])->name('patient.perio.copy');
     Route::get('/psr/edit/{id}', [PatientController::class, 'psrEdit'])->name('patient.psr.edit');
     Route::get('/psr/copy/{id}', [PatientController::class, 'psrCopy'])->name('patient.psr.copy');
-    Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+    Route::get('/import-data', [ImportController::class, 'index'])->name('import.index');
+    Route::post('/import/save', [ImportController::class, 'update'])->name('import.update');
 
     Route::get('/stores', [StoreController::class, 'index'])->name('store.index');
     Route::get('/store/create', [StoreController::class, 'create'])->name('store.create');
@@ -166,6 +181,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');
     Route::get('/scheduler/fetchEvents', [SchedulerController::class, 'fetchEvents'])->name('scheduler.fetchEvents');
+    Route::get('/scheduler/findPatients', [SchedulerController::class, 'fetchPatients'])->name('scheduler.fetchPatients');
+    Route::get('/scheduler/updatePeriod', [SchedulerController::class, 'updatePeriod'])->name('scheduler.updatePeriod');
+    Route::post('/scheduler/update-event', [SchedulerController::class, 'updateEvent'])->name('scheduler.updateEvent');
 
     Route::get('/currency', [CurrencyController::class, 'index'])->name('currency.index');
     Route::get('/currency/edit/{id}', [CurrencyController::class, 'edit'])->name('currency.edit');

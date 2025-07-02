@@ -13,7 +13,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Raleway', ...defaultTheme.fontFamily.sans],
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
             },
         },
     },
@@ -34,6 +34,9 @@ export default {
             },
             fukcia: {
                 100: '#f76ab0'
+            },
+            red: {
+                550: '#860000'
             }
         }
     },

@@ -1,7 +1,7 @@
-import InputLabel from '../../../Components/Form/InputLabel';
+// import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
@@ -21,12 +21,13 @@ import {
 import InputTextarea from '../../../Components/Form/InputTextarea';
 import { InputMask } from '@react-input/mask';
 import moment from 'moment';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default function Form({
   formData,
   customerData,
   contactData,
+  statusesData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
@@ -35,16 +36,12 @@ export default function Form({
     locale: appLang,
   });
 
-  const [_, setUploadedFile] = useState();
+  const [uploadedFile, setUploadedFile] = useState();
 
   const onDrop = useCallback(acceptedFiles => {
     // Do something with the files
     setUploadedFile(acceptedFiles);
-    console.log(acceptedFiles);
   }, []);
-
-  // const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
-  // const { files } = usePage().props
 
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
@@ -67,12 +64,12 @@ export default function Form({
         : new Date(),
       contact: formData.contact,
       payment: formData.payment,
-      status: formData.status_id,
+      status_id: formData.status_id,
       notice: formData.notice,
     });
   const { errors } = usePage().props;
   const [selectedFile, setSelectedFile] = useState();
-  const [preview, setPreview] = useState('/images/no-photo.jpg');
+  const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-photo.jpg');
 
   const handleChange = e => {
     const key = e.target.id;
@@ -133,8 +130,14 @@ export default function Form({
           <div className="w-1/3">
             <div className="flex flex-row relative">
               <div className="file-preview inline-block">
-                {!selectedFile && (
+                {(!selectedFile && !formData.avatar) && (
                   <img src="/images/no-photo.png" width={197} height={244} />
+                )}
+                {(!selectedFile && formData.avatar) &&  (
+                  <div className={'patient-avatar'} style={{
+                    background: `url(/uploads/patients/${formData.avatar})`
+                  }}></div>
+                  // <img src={`/uploads/patients/${formData.avatar}`} width={197} height={244} />
                 )}
                 {selectedFile && (
                   <div
@@ -286,6 +289,24 @@ export default function Form({
                   className={'input-text-noborder icon-input'}
                   onChange={handleChange}
                   showLabel={false}
+                  label={null}
+                />
+              </div>
+            </div>
+            {/* Statuses */}
+            <div className="md:flex md:items-center mb-6">
+              <div className="md:w-1/5">
+                <label className="inline-label">
+                  {msg.get('patient.status')}
+                </label>
+              </div>
+              <div className="md:w-4/5 relative">
+                <InputSelect
+                  name={'status_id'}
+                  values={data}
+                  value={data.status_id}
+                  options={statusesData}
+                  onChange={handleChange}
                   label={null}
                 />
               </div>

@@ -33,3 +33,7 @@ export const checkedIdsSelector = createSelector(
   rootSelector,
   (layout: State.Layouts): Layouts.checkedIds[] => layout.checkedIds
 );
+export const isShowOverlaySelector = createSelector(
+  rootSelector,
+  (layout: State.Layouts): Layouts.checkedIds[] => layout.showOverlay
+);

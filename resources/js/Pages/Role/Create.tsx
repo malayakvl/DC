@@ -26,6 +26,20 @@ export default function Create({ clinicData, permissionData }) {
     permissions: [],
   });
 
+  const permCol = [
+    'clinic',
+    'filial',
+    'customer',
+    'store',
+    'invoice-incoming',
+    'invoice-outgoing',
+    'invoice-exchange',
+    'schedule',
+    'price',
+    'cabinet',
+    'import'
+  ];
+
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -65,94 +79,93 @@ export default function Create({ clinicData, permissionData }) {
           className="mt-0 space-y-4"
           encType="multipart/form-data"
         >
-          <div>
-            <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-              <section>
-                <header>
-                  <div className="flex inline-flex">
-                    <h2>
-                      <Link className="icon-back" href={'/roles'}>
-                        &nbsp;
-                      </Link>
-                      {msg.get('role.title.create')}
-                    </h2>
-                  </div>
-                </header>
-              </section>
-              <div>
-                <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-                  <div className="row">
-                    <InputText
-                      name={'name'}
-                      values={values}
-                      value={values.name}
-                      onChange={handleChange}
-                      required
-                      label={msg.get('role.name')}
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-xs-12 col-sm-12 col-md-12 mt-4">
-                      <div className="form-group">
-                        <InputLabel value={msg.get('role.permission')} />
-                        <br />
-                        <div className="columns-4">
-                          {permissionData &&
-                            permissionData.map((item, i) => (
+          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+            <section>
+              <header>
+                <div className="flex inline-flex">
+                  <h2>
+                    <Link className="icon-back" href={'/roles'}>
+                      &nbsp;
+                    </Link>
+                    {msg.get('role.title.create')}
+                  </h2>
+                </div>
+              </header>
+            </section>
+            <div>
+              <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+                <div className={'w-full mb-5'}>
+                  <InputText
+                    name={'name'}
+                    values={values}
+                    value={values.name}
+                    onChange={handleChange}
+                    required
+                    label={msg.get('role.name')}
+                  />
+                </div>
+                <div>
+                  <div className="grid-p">
+                    {permCol.map((colName, i) => (
+                      <div className="mb-[20px]">
+                        {permissionData &&
+                          permissionData
+                            .filter(item => item.name.includes(colName))
+                            .map(_p => (
                               <div
                                 key={i}
                                 className={
-                                  item.name === 'clinic-delete'
-                                    ? 'disabled-content'
+                                  _p.name === 'clinic-delete'
+                                    ? 'disabled-content-block'
                                     : ''
                                 }
                               >
-                                <div key={item.id}>
-                                  <Checkbox
-                                    id={`${item.id}`}
-                                    name={`remember[${item.id}]`}
-                                    // checked={values['permissions'].includes(item.id)}
-                                    onChange={e => {
-                                      handlePermission(e.target);
-                                    }}
-                                  />
-                                  <label htmlFor={`${item.id}`}>
-                                    <span className="ms-2 text-sm text-gray-600">
-                                      {msg.get(`role.${item.name}`)}
-                                    </span>
-                                  </label>
-                                </div>
+                                <Checkbox
+                                  id={`${_p.id}`}
+                                  name={`remember[${_p.id}]`}
+                                  checked={values['permissions'].includes(
+                                    _p.id
+                                  )}
+                                  onChange={e => {
+                                    handlePermission(e.target);
+                                  }}
+                                />
+                                <label htmlFor={`${_p.id}`}>
+                                  <span className="ms-2 text-sm text-gray-600">
+                                    {msg.get(`role.${_p.name}`)}
+                                  </span>
+                                </label>
                               </div>
                             ))}
-                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center mt-5">
-                      <Link
-                        className="btn-back"
-                        title={msg.get('role.back')}
-                        href={`/roles`}
-                      >
-                        {msg.get('role.back')}
-                      </Link>
-                      <PrimaryButton disabled={processing}>
-                        {msg.get('role.save')}
-                      </PrimaryButton>
-
-                      <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                      >
-                        <p className="text-sm text-gray-600">
-                          {msg.get('filial.saved')}
-                        </p>
-                      </Transition>
-                    </div>
+                    ))}
                   </div>
                 </div>
+                <div className="flex items-center mt-5">
+                  <Link
+                    className="btn-back"
+                    title={msg.get('role.back')}
+                    href={`/roles`}
+                  >
+                    {msg.get('role.back')}
+                  </Link>
+                  <PrimaryButton disabled={processing}>
+                    {msg.get('role.save')}
+                  </PrimaryButton>
+
+                  <Transition
+                    show={recentlySuccessful}
+                    enter="transition ease-in-out"
+                    enterFrom="opacity-0"
+                    leave="transition ease-in-out"
+                    leaveTo="opacity-0"
+                  >
+                    <p className="text-sm text-gray-600">
+                      {msg.get('filial.saved')}
+                    </p>
+                  </Transition>
+                </div>
+
               </div>
             </div>
           </div>

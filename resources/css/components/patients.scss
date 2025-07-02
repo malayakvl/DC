@@ -153,3 +153,42 @@
     border-bottom: solid 2px;
     margin: 0 3px;
 }
+.patient-avatar {
+    width: 197px;
+    height: 244px;
+    background-size: cover !important;
+    background-position: center !important;
+    border: solid 3px #ab7ac1;
+    background-repeat: no-repeat;
+}
+.p-photo {
+    width: auto;
+    height: 50px !important;
+}
+.text-kt {
+    color: #ef1e1e;
+    font-weight: bold;
+}
+.text-dt {
+    color: #0c1ab6;
+    font-weight: bold;
+}
+.text-debt {
+    color: #000;
+    font-weight: bold;
+    font-size: 15px;
+}
+.p-dept {
+    border: solid 1px #e00fb5;
+    background: #fde8f9;
+    padding: 2px;
+}
+.p-discount {
+    font-weight: bolder;
+    color: #f76ab0;
+}
+.p-pricing {
+    max-height: 600px;
+    overflow: hidden;
+    overflow-y: scroll;
+}

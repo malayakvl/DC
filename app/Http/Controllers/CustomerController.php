@@ -104,21 +104,22 @@ class CustomerController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        $serverFilePath = public_path('storage/clinic/users/customer-' .$id. '.png');
-        $imagePath = '';
-        if (file_exists($serverFilePath)) {
-            $imagePath = asset('storage/clinic/users/customer-' .$id. '.png');
-        }
         if ($request->user()->can('customer-edit')) {
 //            $clinicData = $request->user()->clinic;
             $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));;
             $formData = User::where('id', $id)->get();
+            $serverFilePath = public_path('/uploads/users/' .$formData[0]->file);
+            $photoPath = '';
+            if (file_exists($serverFilePath)) {
+                $photoPath = asset('uploads/users/' .$formData[0]->file);
+            }
+
             $rolesData = Role::all();
             return Inertia::render('Customer/CustomerEdit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData[0],
                 'roleData' => $rolesData,
-                'imagePath' => $imagePath
+                'photoPath' => $photoPath
             ]);
         }
     }
@@ -133,11 +134,12 @@ class CustomerController extends Controller
             $photo = '';
             if ($request->id) {
                 $userId = $request->id;
-                if ($request->file) {
-                    $ext = $request->file->getClientOriginalExtension();
-                    $photo = 'customer-' .$userId. '.'.$ext;
-                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-                }
+
+//                if ($request->file) {
+//                    $ext = $request->file->getClientOriginalExtension();
+//                    $photo = 'customer-' .$userId. '.'.$ext;
+//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
+//                }
 
                 $user = User::find($request->id);
                 $user->email = $request->email;
@@ -145,11 +147,14 @@ class CustomerController extends Controller
                 $user->phone = $request->phone;
                 $user->inn = $request->inn;
                 $user->color = $request->color;
-                if ($photo) {
-                    $user->photo = $photo;
-                }
                 $user->save();
-
+                if ($request->file) {
+                    $fileName = 'Patient'.$request->id.'.'.$request->file->extension();
+                    $user->file = $fileName;
+//                    $patient->avatar = $fileName;
+                    $user->save();
+                    $request->file->move(public_path('uploads/users'), $fileName);
+                }
                 return Inertia::location(route('customer.index'));
             }
             else {
@@ -186,7 +191,6 @@ class CustomerController extends Controller
     }
 
     public function assign(Request $request, $id) {
-//        $clinic = $request->user()->clinic;
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
         $customer = User::where('id', $id)->get();
@@ -197,7 +201,6 @@ class CustomerController extends Controller
             ->where('user_id', $id)
             ->where('clinic_id', $clinic->id)
             ->get();
-
         if (count($assignedData) > 0) {
             return Inertia::render('Customer/AssignFilialEdit', [
                 'rolesData' => $rolesData,

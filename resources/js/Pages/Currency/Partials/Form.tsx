@@ -1,14 +1,12 @@
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCurrency from '../../../Lang/Currrency/translation';
 import InputText from '../../../Components/Form/InputText';
-import InputSelect from '../../../Components/Form/InputSelect';
 
 export default function Form({ clinicData, formData, className = '' }) {
   const appLang = useSelector(appLangSelector);
@@ -103,7 +101,7 @@ export default function Form({ clinicData, formData, className = '' }) {
           <Link
             className="btn-back"
             title={msg.get('currency.back')}
-            href={`/producers`}
+            href={`/currency`}
           >
             {msg.get('currency.back')}
           </Link>
