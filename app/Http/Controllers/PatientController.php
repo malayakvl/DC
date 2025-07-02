@@ -203,6 +203,7 @@ class PatientController extends Controller
         $doc->save();
 
         $schedule->services = json_encode($request->services);
+        $schedule->save();
 
         return redirect()->route('patient.view', ['id' => $schedule->patient_id]);
     }

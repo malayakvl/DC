@@ -109,7 +109,7 @@ class SchedulerController extends Controller
             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
                 'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
-                'schedulers.patient_id',
+                'schedulers.patient_id', 'schedulers.status_name AS event_status',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
                 'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
                 'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
@@ -122,7 +122,7 @@ class SchedulerController extends Controller
                 DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
                 DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority',
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
             )
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
@@ -185,10 +185,13 @@ class SchedulerController extends Controller
         $date = new DateTime($weekStart);
         $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
         $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'schedulers.cabinet_id AS resourceId',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name',
-                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services',
+            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
+                'schedulers.patient_id', 'schedulers.status_name AS event_status',
+                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
+                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
                 DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
                 DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
@@ -198,7 +201,7 @@ class SchedulerController extends Controller
                 DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
                 DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name'
+                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
             )
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')

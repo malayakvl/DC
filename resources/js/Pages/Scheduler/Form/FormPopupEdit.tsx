@@ -135,7 +135,6 @@ export default function SchedulerFormEdit({
   }, [timeStart]);
   const parsedTimePlus30 = parsedTime ? parsedTime.add(30, 'minute') : null;
 
-
   const renderService = (item, num) => {
     return (
       <div className="flex items-center justify-between px-2 py-1 bg-gray-100 mb-1 text-[12px] w-[405px]">
@@ -182,7 +181,7 @@ export default function SchedulerFormEdit({
         className="mt-0 space-y-3 min-w-[350px]"
         encType="multipart/form-data"
       >
-        <EventStatus />
+        <EventStatus defaultStatus={editEventData.event_status} defaultColor={editEventData.status_color} />
 
         <div className={`relative`}>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 ">
