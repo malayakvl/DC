@@ -7,11 +7,17 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import { Link, router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { minusServiceAction, setExistServicesAction, plusServiceAction } from '../../../Redux/Patient';
+import {
+  minusServiceAction,
+  setExistServicesAction,
+  plusServiceAction,
+  setPatientSubTab,
+} from '../../../Redux/Patient';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import Pricing from '../Pricing';
-import { patientServicesSelector } from '../../../Redux/Patient/selectors';
+import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
+import SecondaryButton from '../../../Components/Form/SecondaryButton';
 
 export default function Finances({
   type,
@@ -27,6 +33,7 @@ export default function Finances({
   const [tab, setTab] = useState(type || 'history');
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngPatient, locale: appLang });
+  const subTab = useSelector(patientSubTabSelector);
   const initialServices = useSelector(patientServicesSelector) || [];
   const [sInit, setSInit] = useState(false);
   const [services, setServices] = useState(initialServices);
@@ -37,20 +44,24 @@ export default function Finances({
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
     if (pDiscountValue) {
-      const updatedServices = services.map(service => ({
+      const updatedServices = initialServices.map(service => ({
         ...service,
         discountValue: pDiscountValue,
         discountType: 'percent',
       }));
-      setServices(updatedServices);
+      // setServices(updatedServices);
       dispatch(setExistServicesAction((updatedServices)));
     }
     setSInit(true);
   }, [pDiscountValue]);
 
+  useEffect(() => {
+    applyGlobalDiscount();
+  }, [initialServices.length])
+
   // Обработчик изменения скидки для конкретного сервиса
   const handleDiscountChange = (serviceId, value) => {
-    const updatedServices = services.map(service => {
+    const updatedServices = initialServices.map(service => {
       if (service.id === serviceId) {
         const numValue = parseFloat(value) || 0;
         if (value === '' || (!isNaN(value) && numValue >= 0)) {
@@ -61,18 +72,18 @@ export default function Finances({
       }
       return service;
     });
-    setServices(updatedServices);
+    // setServices(updatedServices);
     dispatch(setExistServicesAction((updatedServices)));
   };
 
   // Обработчик изменения типа скидки
   const handleTypeChange = (serviceId, newType) => {
-    const updatedServices = services.map(service =>
+    const updatedServices = initialServices.map(service =>
       service.id === serviceId
         ? { ...service, discountType: newType, discountValue: '' }
         : service
     );
-    setServices(updatedServices);
+    // setServices(updatedServices);
     dispatch(setExistServicesAction((updatedServices)));
   };
 
@@ -82,7 +93,12 @@ export default function Finances({
     router.post(`/patient/update-act`, {
       patient_id: patientData.id,
       services: initialServices,
-      schedule_id: scheduleId
+      schedule_id: scheduleId,
+      clinic_id: clinicData.id,
+      discount: globalDiscount,
+      discountType: globalDiscountType,
+      total: calculateFullTotal(),
+      total_with_discount: calculateTotal()
     });
   };
 
@@ -91,19 +107,19 @@ export default function Finances({
     const numValue = parseFloat(globalDiscount) || 0;
     if (numValue < 0) return;
 
-    const updatedServices = services.map(service => ({
+    const updatedServices = initialServices.map(service => ({
       ...service,
       discountValue: globalDiscountType === 'percent' && numValue > 100 ? '' : globalDiscount,
       discountType: globalDiscountType,
     }));
-    setServices(updatedServices);
+    // setServices(updatedServices);
     dispatch(setExistServicesAction((updatedServices)));
     // Не очищаем globalDiscount, чтобы значение осталось в поле
   };
 
   // Расчёт итоговой цены для сервиса
   const calculateDiscountedPrice = (service) => {
-    const price = service.price || 0;
+    const price = service.total || 0;
     const qty = service.qty || 1;
     const discount = parseFloat(service.discountValue) || 0;
     const total = price * qty;
@@ -114,6 +130,19 @@ export default function Finances({
     return (total - discount).toFixed(2);
   };
 
+  // Расчёт итоговой цены для сервиса
+  const calculateFullPrice = (service) => {
+    const price = service.total || 0;
+    const qty = service.qty || 1;
+    const discount = parseFloat(service.discountValue) || 0;
+    const total = price * qty;
+
+    if (service.discountType === 'percent') {
+      return (total).toFixed(2);
+    }
+    return (total).toFixed(2);
+  };
+
   // Расчёт общей суммы
   const calculateTotal = () => {
     return initialServices
@@ -121,10 +150,16 @@ export default function Finances({
       .toFixed(2);
   };
 
+  const calculateFullTotal = () => {
+    return initialServices
+      .reduce((sum, service) => sum + parseFloat(calculateFullPrice(service)), 0)
+      .toFixed(2);
+  };
+
   const handleTabClick = (tab) => {
-
+    dispatch(setPatientSubTab(tab));
   }
-
+console.log('Fin', subTab);
   return (
     <>
       {/* TABS BLOCK */}
@@ -146,11 +181,10 @@ export default function Finances({
           <div className="tabls-list mt-2">
             <ul>
               <li
-                id="documents"
-                className={tab === 'documents' ? 'active' : ''}
-                onClick={() => handleTabClick('documents')}
+                id="actpayment"
+                onClick={() => handleTabClick('actpayment')}
               >
-                <span className="btn-white cursor-pointer">Платежі та акти</span>
+                <span className={`btn-white cursor-pointer ${subTab === 'actpayment' ? 'active' : ''}`}>Платежі та акти</span>
 
               </li>
               <li
@@ -181,7 +215,7 @@ export default function Finances({
                 onClick={() => handleTabClick('finances')}
               >
                 <Link href="/">
-                  <span className="btn-quickact cursor-pointer">{msg.get('patient.quickact')}</span>
+                  <span className="btn-quickact cursor-pointer">{msg.get('patient.createevent')}</span>
                 </Link>
               </li>
             </ul>
@@ -190,14 +224,13 @@ export default function Finances({
       </div>
       <div className="clearfix" />
 
-      <div className={`w-full flex`}>
+      <div className={`w-full flex ${subTab === 'actpayment' ? '' : 'hidden'}`}>
+        AAAAAAAA
+      </div>
+      <div className={`w-full flex ${subTab === 'act' ? '' : 'hidden'}`}>
         <div className={`w-1/2`}>
           {/* Масовая скидка */}
-          <form
-            onSubmit={event => submit(event)}
-            className="mt-0 space-y-3 min-w-[350px]"
-            encType="multipart/form-data"
-          >
+
             <div className="mt-4 flex items-center gap-2 w-[700px] justify-end">
               <label>{msg.get('patient.discount')}</label>
               <input
@@ -250,7 +283,7 @@ export default function Finances({
                   {initialServices.map(service => (
                     <tr key={service.id}>
                       <td className="text-left text-[14px] px-2">{service.name}</td>
-                      <td className="text-center text-[14px] px-2">{service.price || ''}</td>
+                      <td className="text-center text-[14px] px-2">{service.total || ''}</td>
                       <td className="text-center text-[14px] px-2">
                         <button className="text-blue-500 hover:text-blue-700 mr-2" onClick={() => dispatch(minusServiceAction(service))}>
                           <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,16 +336,20 @@ export default function Finances({
                   </tbody>
                 </table>
               )}
-
+              {/*<form*/}
+              {/*  onSubmit={event => submit(event)}*/}
+              {/*  className="mt-0 space-y-3 min-w-[350px]"*/}
+              {/*  encType="multipart/form-data"*/}
+              {/*>*/}
               <div className="text-right mt-4">
               <span className="text-[16px] font-bold">
                 {msg.get('patient.total')}: {calculateTotal()} ₴
               </span>
               </div>
               <div className="text-right mt-4">
-                <PrimaryButton disabled={processing}>
+                <SecondaryButton disabled={processing} onClick={(e) => submit(e)}>
                   {msg.get('patient.save')}
-                </PrimaryButton>
+                </SecondaryButton>
                 <Transition
                   show={recentlySuccessful}
                   enter="transition ease-in-out"
@@ -327,7 +364,7 @@ export default function Finances({
               </div>
             </div>
             <div className="clearfix" />
-          </form>
+          {/*</form>*/}
         </div>
         {/*PRICING BLOCK*/}
         <div className={`w-1/2 ml-20`}>

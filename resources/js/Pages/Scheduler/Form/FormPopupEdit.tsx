@@ -110,33 +110,6 @@ export default function SchedulerFormEdit({
     }));
   };
 
-  // const handleChangeTimeTo = value => {
-  //   setValues(values => ({
-  //     ...values,
-  //     ['event_time_to']: value.format('HH:mm'),
-  //   }));
-  // };
-
-  // useEffect(() => {
-  //   setValues(values => ({
-  //     ...values,
-  //     ['event_time_from']: timeStart,
-  //     ['event_time_to']: timeStart,
-  //     ['status_id']: eventStatus,
-  //   }));
-  // }, [timeStart]);
-
-  // useEffect(() => {
-  //   setValues(values => ({
-  //     ...values,
-  //     // ['event_date']: eventDate,
-  //     ['doctor_id']: doctorId,
-  //     ['status_id']: eventStatus,
-  //     // ['event_time_from']: timeStart,
-  //     // ['event_time_to']: timeStart,
-  //   }));
-  // }, [eventDate, doctorId, eventStatus, timeStart]);
-
   const closeModal = () => {
     dispatch(showSchedulePopupAction(false));
     const element = document.getElementsByTagName('body')[0];
@@ -155,12 +128,6 @@ export default function SchedulerFormEdit({
     const [day, month, year] = values['event_date'].split('.'); // Split the input string
     values['fotmatted_date'] = `${year}-${month}-${day}`;
     router.post(`/scheduler/update?id=${editEventData.event_id}`, values);
-    // if (formData.id) {
-    //   router.post(`/scheduler/update?id=${editEventData.event_id}`, values);
-    // } else {
-    //   router.post('/scheduler/update', values);
-    // }
-    // dispatch(showOverlayAction(false));
   };
 
   const parsedTime = useMemo(() => {

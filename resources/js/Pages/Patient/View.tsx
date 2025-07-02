@@ -15,7 +15,7 @@ import { useState } from 'react';
 import History from './Tabs/History'
 import Finances from './Tabs/Finances'
 import { patientTabSelector } from '../../Redux/Patient/selectors';
-import { setPatientTab, setExistServicesAction } from '../../Redux/Patient';
+import { setPatientTab, setExistServicesAction, setPatientSubTab } from '../../Redux/Patient';
 
 
 export default function index({
@@ -32,8 +32,13 @@ export default function index({
 }) {
   const tab = useSelector(patientTabSelector);
   const dispatch = useDispatch();
-  if (quickActData) {
+  if (quickActData ) {
     dispatch(setPatientTab('finances'));
+  }
+  if (scheduleId) {
+    dispatch(setPatientSubTab('act'));
+  } else {
+    dispatch(setPatientSubTab('actpayment'));
   }
 
   const appLang = useSelector(appLangSelector);
@@ -46,17 +51,23 @@ export default function index({
 
 
   useEffect(() => {
-    const initialServices = JSON.parse(quickActData.services).map(service => ({
-      ...service,
-      discountValue: discountValue || 0,
-      discountType: globalDiscountType,
-    }));
-    dispatch(setExistServicesAction(initialServices));
+    if (quickActData.services) {
+      const initialServices = JSON.parse(quickActData.services).map(service => ({
+        ...service,
+        discountValue: discountValue || 0,
+        discountType: globalDiscountType,
+      }));
+      dispatch(setExistServicesAction(initialServices));
+    } else {
+      dispatch(setExistServicesAction([]));
+    }
   }, [quickActData])
 
   const handleTabClick = tabName => {
     dispatch(setPatientTab(tabName));
   };
+
+console.log('TAB', tab);
 
   return (
     <AuthenticatedLayout header={<Head />}>

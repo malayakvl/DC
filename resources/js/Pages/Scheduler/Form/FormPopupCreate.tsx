@@ -188,7 +188,7 @@ export default function SchedulerFormCreate({
         </div>
 
         <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
-          {item.price} {currency}
+          {item.total} {currency}
         </div>
 
         <div className="w-[25px] text-right">

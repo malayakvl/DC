@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');
     Route::post('/patient/update-act', [PatientController::class, 'updateAct'])->name('patient.updateAct');
+    Route::get('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.finances');
+    Route::post('/patient/finances', [PatientController::class, 'view'])->name('patient.');
+    Route::post('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.viewFinances');
 
     Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
     Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');

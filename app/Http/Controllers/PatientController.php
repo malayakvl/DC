@@ -6,6 +6,7 @@ use App\Http\Requests\PatientUpdateRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Patient;
+use App\Models\ActDocument;
 use App\Models\Cabinet;
 use App\Models\PriceCategory;
 use App\Models\Pricing;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
+use DateTime;
 
 class PatientController extends Controller
 {
@@ -181,8 +183,28 @@ class PatientController extends Controller
 
 
     public function updateAct(Request $request) {
-        dd($request);
-        exit;
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        $schedule = Scheduler::find($request->schedule_id);
+
+        $doc = new ActDocument();
+        $date = new DateTime();
+        $doc->doc_number = date("dmyHis");
+        $doc->doc_date = $date->format('Y-m-d H:i:s');;
+        $doc->clinic_id = $clinicData->id;
+        $doc->filial_id = $request->session()->get('filial_id');
+        $doc->doctor_id = $schedule->doctor_id;
+        $doc->patient_id = $schedule->patient_id;
+        $doc->schedule_id = $schedule->id;
+        $doc->currency_id = $clinicData->currency->id;
+        $doc->services = json_encode($request->services);
+        $doc->discount = $request->discount;
+        $doc->total = $request->total;
+        $doc->total_with_discount = $request->total_with_discount;
+        $doc->save();
+
+        $schedule->services = json_encode($request->services);
+
+        return redirect()->route('patient.view', ['id' => $schedule->patient_id]);
     }
 
 
@@ -205,21 +227,38 @@ class PatientController extends Controller
         $quickActData = '';
         if ($scheduleId) {
             $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
+
+            return Inertia::render('Patient/View', [
+                'patientData' => $patientData,
+                'type' => $type,
+                'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                'clinicData' => $clinicData,
+                'quickActData' => $quickActData[0],
+                'currency' => $clinicData->currency->symbol,
+                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
+                'categoriesData' => $categories,
+                'services' => $arrServices,
+                'tree' => $tree,
+                'scheduleId' => $scheduleId
+            ]);
+        } else {
+            return Inertia::render('Patient/View', [
+                'patientData' => $patientData,
+                'type' => 'documents',
+                'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                'clinicData' => $clinicData,
+                'quickActData' => [],
+                'currency' => $clinicData->currency->symbol,
+                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
+                'categoriesData' => $categories,
+                'services' => $arrServices,
+                'tree' => $tree,
+                'scheduleId' => $scheduleId
+            ]);
         }
-        return Inertia::render('Patient/View', [
-            'patientData' => $patientData,
-            'type' => $type,
-            'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-            'clinicData' => $clinicData,
-            'quickActData' => $quickActData[0],
-            'currency' => $clinicData->currency->symbol,
-            'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
-            'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
-            'categoriesData' => $categories,
-            'services' => $arrServices,
-            'tree' => $tree,
-            'scheduleId' => $scheduleId
-        ]);
+
     }
 
     /**

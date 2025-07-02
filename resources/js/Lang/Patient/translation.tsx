@@ -83,6 +83,7 @@ const lngPatient = {
     total: 'Разом',
     applyGlobal: 'Використати',
     globalDiscount: 'Загальна знижка',
+    createevent: 'Записати на прийом'
   },
 };
 export default lngPatient;

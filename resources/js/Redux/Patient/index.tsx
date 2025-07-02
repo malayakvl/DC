@@ -1,6 +1,7 @@
 import { handleActions } from 'redux-actions';
 import {
   setPatientTab,
+  setPatientSubTab,
   setFilters,
   clearFilters,
   setServicesAction,
@@ -11,6 +12,7 @@ import {
 
 const initialState = {
   patientTab: 'history',
+  patientSubTab: '',
   isClear: false,
   filters: {
     filterName: '',
@@ -27,6 +29,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       patientTab: action.payload,
+    }),
+  },
+  [setPatientSubTab.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      patientSubTab: action.payload,
     }),
   },
   [setFilters.toString()]: {
@@ -95,6 +103,7 @@ const ACTION_HANDLERS = {
 
 export {
   setPatientTab,
+  setPatientSubTab,
   setFilters,
   clearFilters,
   setServicesAction,

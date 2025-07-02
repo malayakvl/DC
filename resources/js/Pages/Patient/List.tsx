@@ -107,7 +107,7 @@ export default function List({ listData, clinicData, currency }) {
                     <Link href={`/patient/view/${item.id}`}>
                       <FontAwesomeIcon icon={faTooth} className="mr-5" title={msg.get('patient.list.history')} />
                     </Link>
-                    <Link href="/patient/finance">
+                    <Link href={`/patient/finances/${item.id}`}>
                       <FontAwesomeIcon icon={faEuro} className="mr-5" title={msg.get('patient.list.payment')} />
                     </Link>
                     <Link href={`patient/edit/${item.id}`}>

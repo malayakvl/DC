@@ -1,6 +1,7 @@
 import { createAction } from 'redux-actions';
 
 export const setPatientTab = createAction('patient/SET_TAB');
+export const setPatientSubTab = createAction('patient/SET_SUB_TAB');
 
 export const setFilters = createAction('patient/SET_FILTERS');
 

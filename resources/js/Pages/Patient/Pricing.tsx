@@ -1,16 +1,15 @@
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngServiceCategories from '../../Lang/Services/translation';
-import { pricePopupSelector, servicesSelector } from '../../Redux/Scheduler/selectors';
 import { setServicesAction } from '../../Redux/Patient';
+import { patientServicesSelector } from '../../Redux/Patient/selectors';
 
 export default function Pricing({ clinicData, tree, services, currency }) {
   const dispatch = useDispatch();
-  const priceShow = useSelector(pricePopupSelector);
-  const servicesPopup = useSelector(servicesSelector);
+  const servicesPopup = useSelector(patientServicesSelector);
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngServiceCategories,

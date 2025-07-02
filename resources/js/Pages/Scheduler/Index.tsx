@@ -589,7 +589,7 @@ export default function Index({
             {parsedData.map((_s, index) => (
               <div className="flex justify-between">
                 <span>{_s.name}</span>
-                <span>{_s.price} {clinicData.currency.symbol}</span>
+                <span>{_s.total} {clinicData.currency.symbol}</span>
               </div>
             ))}
           </div>
@@ -659,7 +659,7 @@ export default function Index({
             <div className={'sh-event-status'} style={{background: event.status_color}}></div>
           </span>
           <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
-          <span className={'block mb-1'}>{event.title}</span>
+          <span className={'block mb-1 font-bold'}>{event.title}</span>
           <div className={'block mb-1'}><strong>{event.description}</strong></div>
           <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
         </div>
