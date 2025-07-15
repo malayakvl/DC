@@ -83,6 +83,7 @@ const lngRole = {
     Therapist: 'Терапевт',
     Surgeon: 'Хірург',
     Receptionist: 'Приймач клініки',
+    Assistent: 'Асистент',
 
     'clinic-create': 'Створити Клініку',
     'clinic-edit': 'Редагувати Клініку',

@@ -184,6 +184,7 @@ export default function Index({
   clinicData,
   cabinetData,
   customerGroupped,
+  assistantData,
   cabinetGroupped,
   eventsData,
   currency,
@@ -392,7 +393,7 @@ export default function Index({
       )
     );
   };
-
+console.log('ass', assistantData)
 
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
@@ -815,12 +816,14 @@ export default function Index({
             formData={formData}
             clinicData={clinicData}
             cabinetData={cabinetData}
+            assistantData={assistantData}
             customerData={customerData}
             currency={currency}
           />}
           {editEventPopup && <SchedulerFormEdit
             clinicData={clinicData}
             cabinetData={cabinetData}
+            assistantData={assistantData}
             customerData={customerData}
             currency={currency}
           />}

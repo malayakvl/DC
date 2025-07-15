@@ -32,9 +32,7 @@ export default function DataTable({
   const [loading, setLoading] = useState(false);
   const switchAllHeader = false;
   const [allChecked, setAllChecked] = useState(false);
-  console.log(paginationType)
   const headers = TableHeaders[paginationType];
-  console.log(headers);
   const dispatch = useDispatch();
   const { includes } = [PRODUCTS];
   const { limit, sort, column, offset, query, filters }: Layouts.Pagination =

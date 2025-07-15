@@ -44,6 +44,7 @@ export default function SchedulerFormCreate({
   clinicData,
   cabinetData,
   customerData,
+  assistantData,
   currency
 }) {
   const appLang = useSelector(appLangSelector);
@@ -64,6 +65,7 @@ export default function SchedulerFormCreate({
     clinic_id: clinicData.id,
     cabinet_id: formData.cabinet_id,
     doctor_id: formData.doctor_id,
+    assistent: formData.assistent_id,
     comment: formData.comment,
     status_id: formData.status_id,
     event_date: formData.event_date,
@@ -199,7 +201,7 @@ export default function SchedulerFormCreate({
       </div>
     )
   }
-
+console.log(customerData, assistantData)
   return (
     <section className={`px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
@@ -219,30 +221,34 @@ export default function SchedulerFormCreate({
 
         <EventPatient values={values} />
 
-        <InputText
-          name={'title'}
-          values={values}
-          dataValue={values.title}
-          value={values.title}
-          onChange={handleChange}
-          required
-          label={msg.get('scheduler.form.title')}
-        />
         <div className={'flex w-full'}>
           <div className={'w-1/2'}>
+            <InputText
+              name={'title'}
+              values={values}
+              dataValue={values.title}
+              value={values.title}
+              onChange={handleChange}
+              required
+              label={msg.get('scheduler.form.title')}
+            />
+          </div>
+          <div className={'w-1/2 ml-3'}>
             <InputSelect
               name={'cabinet_id'}
               className={'w-1/2'}
               values={values}
               value={values.cabinet_id}
-              defaultValue={cabinetId}
               options={cabinetData}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.cabinet')}
             />
           </div>
-          <div className={'w-1/2 ml-3'}>
+        </div>
+
+        <div className={'flex w-full'}>
+          <div className={'w-1/2'}>
             <InputSelect
               name={'doctor_id'}
               values={values}
@@ -254,7 +260,57 @@ export default function SchedulerFormCreate({
               label={msg.get('scheduler.form.doctor')}
             />
           </div>
+          <div className={'w-1/2 ml-3'}>
+            <InputSelect
+              name={'assistent_id'}
+              values={values}
+              value={values.assistent}
+              options={assistantData}
+              defaultValue={doctorId}
+              onChange={handleChangeSelect}
+              required
+              label={msg.get('scheduler.form.assistent')}
+            />
+          </div>
         </div>
+        <div className={'clearfix'} />
+
+        {/*<InputText*/}
+        {/*  name={'title'}*/}
+        {/*  values={values}*/}
+        {/*  dataValue={values.title}*/}
+        {/*  value={values.title}*/}
+        {/*  onChange={handleChange}*/}
+        {/*  required*/}
+        {/*  label={msg.get('scheduler.form.title')}*/}
+        {/*/>*/}
+        {/*<div className={'flex w-full'}>*/}
+        {/*  <div className={'w-1/2'}>*/}
+        {/*    <InputSelect*/}
+        {/*      name={'cabinet_id'}*/}
+        {/*      className={'w-1/2'}*/}
+        {/*      values={values}*/}
+        {/*      value={values.cabinet_id}*/}
+        {/*      defaultValue={cabinetId}*/}
+        {/*      options={cabinetData}*/}
+        {/*      onChange={handleChangeSelect}*/}
+        {/*      required*/}
+        {/*      label={msg.get('scheduler.form.cabinet')}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*  <div className={'w-1/2 ml-3'}>*/}
+        {/*    <InputSelect*/}
+        {/*      name={'doctor_id'}*/}
+        {/*      values={values}*/}
+        {/*      value={values.doctor_id}*/}
+        {/*      options={customerData}*/}
+        {/*      defaultValue={doctorId}*/}
+        {/*      onChange={handleChangeSelect}*/}
+        {/*      required*/}
+        {/*      label={msg.get('scheduler.form.doctor')}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
         <div className={'clearfix'} />
         {timeStart && (

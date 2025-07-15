@@ -152,7 +152,7 @@ export default function QuickAct({
   const handleTabClick = (tab) => {
     dispatch(setPatientSubTab(tab));
   }
-  console.log('Fin', subTab);
+
   return (
     <>
       <div className={`w-full flex ${subTab === 'act' ? '' : 'hidden'}`}>

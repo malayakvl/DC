@@ -33,11 +33,45 @@ class SchedulerController extends Controller
             SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
                    roles.name AS role_name
             FROM users
-            LEFT JOIN clinic_user ON clinic_user.user_id = users.id
-            LEFT JOIN roles ON roles.id = clinic_user.role_id
-            WHERE clinic_user.clinic_id = ?
+            LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = users.id
+            LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
+            WHERE clinic_filial_user.role_id != 20 
+            AND clinic_filial_user.clinic_id = ? AND clinic_filial_user.filial_id =?
             ORDER BY name
-        ', [$clinicData->id]);
+        ', [$clinicData->id, $filialId]);
+
+        $assistantSelectData = DB::select('
+            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
+                   roles.name AS role_name
+            FROM users
+            LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = users.id
+            LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
+            WHERE clinic_filial_user.role_id = 20 
+              AND clinic_filial_user.clinic_id = ?
+                AND clinic_filial_user.filial_id =?
+            ORDER BY name
+        ', [$clinicData->id, $filialId]);
+
+//        $tmp = DB::table('users')
+//            ->select('users.id', "users.file", 'users.color', '(users.first_name || \' \' || users.last_name) AS name',
+//            'roles.name AS role_name')
+//            ->leftJoin('clinic_filials', 'clinic_user.user_id', '=', 'users.id')
+//            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+//            ->where('clinic_user.clinic_id', $clinicData->id)
+//            ->where('clinic_user.role_id', 20)
+//            ->orderBy('name')->get();
+//        dd($tmp[0]);exit;
+
+//        $assistantSelectData = DB::select('
+//            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
+//                   roles.name AS role_name
+//            FROM users
+//            LEFT JOIN clinic_user ON clinic_user.user_id = users.id
+//            LEFT JOIN roles ON roles.id = clinic_user.role_id
+//            WHERE clinic_user.role_id = 20 AND clinic_user.clinic_id = ?
+//            ORDER BY name
+//        ');
+//        dd($assistantSelectData);exit;
 
         $customerData = DB::table('users')
             ->select([
@@ -51,6 +85,7 @@ class SchedulerController extends Controller
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
             ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
             ->where('clinic_user.clinic_id', $clinicData->id)
+            ->where('clinic_user.role_id', '!=', 20)
             ->orderBy('last_name')
             ->get();
 
@@ -135,6 +170,7 @@ class SchedulerController extends Controller
         return Inertia::render('Scheduler/Index', [
             'clinicData' => $clinicData,
             'customerData' => $customerSelectData,
+            'assistantData' => $assistantSelectData,
             'customerGroupped' => $groupedOptions,
             'cabinetGroupped' => $groupedCabinets,
             'cabinetData' => $listCabinets,
@@ -206,6 +242,7 @@ class SchedulerController extends Controller
             ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
             ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+            ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();

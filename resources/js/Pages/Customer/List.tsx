@@ -62,6 +62,7 @@ export default function List({ clinicData, filialData, customerData }) {
                     )}
                   </td>
                   <td className="">{item.name}</td>
+                  <td className="">{item.role_name}</td>
                   <td className="">{item.phone}</td>
                   <td className="">{item.inn}</td>
                   <td className="text-right">

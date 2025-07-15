@@ -53,12 +53,13 @@
     background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
     display: inline-block;
     color: white;
-    padding: 10px 20px;
+    padding: 5px 20px;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
     font-size: 14px;
     margin-right: 10px;
+    text-transform: uppercase;
 }
 .btn-back:hover {
     background-image: linear-gradient(to left top, rgb(155, 141, 151), rgb(137, 108, 122)) !important;

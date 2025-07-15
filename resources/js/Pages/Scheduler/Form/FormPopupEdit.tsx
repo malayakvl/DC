@@ -51,6 +51,7 @@ export default function SchedulerFormEdit({
   clinicData,
   cabinetData,
   customerData,
+  assistantData,
   currency
 }) {
   const appLang = useSelector(appLangSelector);
@@ -66,6 +67,7 @@ export default function SchedulerFormEdit({
     clinic_id: clinicData.id,
     cabinet_id: editEventData.cabinet_id,
     doctor_id: editEventData.doctor_id,
+    assistent_id: editEventData.doctor_id,
     comment: editEventData.comment,
     status_id: editEventData.status_id,
     event_date: formattedDate,
@@ -193,18 +195,19 @@ export default function SchedulerFormEdit({
           <div className={'sh-p-view'}>{editEventData.pl_name} {editEventData.p_name}</div>
 
         </div>
-
-        <InputText
-          name={'title'}
-          values={values}
-          dataValue={values.title}
-          value={values.title}
-          onChange={handleChange}
-          required
-          label={msg.get('scheduler.form.title')}
-        />
         <div className={'flex w-full'}>
           <div className={'w-1/2'}>
+            <InputText
+              name={'title'}
+              values={values}
+              dataValue={values.title}
+              value={values.title}
+              onChange={handleChange}
+              required
+              label={msg.get('scheduler.form.title')}
+            />
+          </div>
+          <div className={'w-1/2 ml-3'}>
             <InputSelect
               name={'cabinet_id'}
               className={'w-1/2'}
@@ -216,7 +219,10 @@ export default function SchedulerFormEdit({
               label={msg.get('scheduler.form.cabinet')}
             />
           </div>
-          <div className={'w-1/2 ml-3'}>
+        </div>
+
+        <div className={'flex w-full'}>
+          <div className={'w-1/2'}>
             <InputSelect
               name={'doctor_id'}
               values={values}
@@ -226,6 +232,18 @@ export default function SchedulerFormEdit({
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.doctor')}
+            />
+          </div>
+          <div className={'w-1/2 ml-3'}>
+            <InputSelect
+              name={'assistent_id'}
+              values={values}
+              value={values.assistent_id}
+              options={assistantData}
+              defaultValue={doctorId}
+              onChange={handleChangeSelect}
+              required
+              label={msg.get('scheduler.form.assistent')}
             />
           </div>
         </div>

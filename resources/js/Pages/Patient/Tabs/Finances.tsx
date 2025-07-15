@@ -19,6 +19,7 @@ import Pricing from '../Pricing';
 import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import QuickAct from '../FinanceTabs/QuickAct';
+import ActPayment from '../FinanceTabs/ActPayment';
 
 export default function Finances({
   type,
@@ -28,7 +29,8 @@ export default function Finances({
   tree,
   clinicData,
   currency,
-  scheduleId
+  scheduleId,
+  actData
 }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type || 'history');
@@ -240,7 +242,16 @@ console.log('Fin', subTab);
         />
       )}
       {subTab === 'actpayment' && (
-        <>Act and payment coming here</>
+        <ActPayment
+          patientData={patientData}
+          pDiscountValue={pDiscountValue}
+          pServices={pServices}
+          tree={tree}
+          clinicData={clinicData}
+          currency={currency}
+          scheduleId={scheduleId}
+          actData={actData}
+        />
       )}
     </>
   );

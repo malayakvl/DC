@@ -225,6 +225,11 @@ class PatientController extends Controller
         $arrCat = array();
         $tree = $this->generateCategories($categories, $arrCat, 0);
         $type = $request->get('type');
+
+        //get acts
+        $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
+
+
         $quickActData = '';
         if ($scheduleId) {
             $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
@@ -241,7 +246,8 @@ class PatientController extends Controller
                 'categoriesData' => $categories,
                 'services' => $arrServices,
                 'tree' => $tree,
-                'scheduleId' => $scheduleId
+                'scheduleId' => $scheduleId,
+                'actData' => $actData
             ]);
         } else {
             return Inertia::render('Patient/View', [
@@ -256,7 +262,8 @@ class PatientController extends Controller
                 'categoriesData' => $categories,
                 'services' => $arrServices,
                 'tree' => $tree,
-                'scheduleId' => $scheduleId
+                'scheduleId' => $scheduleId,
+                'actData' => $actData
             ]);
         }
 

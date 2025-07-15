@@ -32,9 +32,10 @@ class CustomerController extends Controller
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         $filialData = ClinicFilial::where('clinic_id', '=', $clinic->id)->get();
         $customerData = DB::table('users')
-            ->select('users.*')
+            ->select('users.*', 'roles.name AS role_name')
             ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            ->where('clinic_id', $clinic->id)->orderBy('name')->get();
+            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+            ->where('clinic_user.clinic_id', $clinic->id)->orderBy('name')->get();
         return Inertia::render('Customer/List', [
             'clinicData' => $clinic,
             'filialData' => $filialData,
@@ -105,7 +106,6 @@ class CustomerController extends Controller
      */
     public function edit(Request $request, $id) {
         if ($request->user()->can('customer-edit')) {
-//            $clinicData = $request->user()->clinic;
             $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));;
             $formData = User::where('id', $id)->get();
             $serverFilePath = public_path('/uploads/users/' .$formData[0]->file);
@@ -131,19 +131,12 @@ class CustomerController extends Controller
     public function update(CustomerUpdateRequest $request) {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         if ($request->user()->can('customer-create')) {
-            $photo = '';
             if ($request->id) {
-                $userId = $request->id;
-
-//                if ($request->file) {
-//                    $ext = $request->file->getClientOriginalExtension();
-//                    $photo = 'customer-' .$userId. '.'.$ext;
-//                    Storage::disk('public')->put('clinic/users/customer-' .$userId. '.'.$ext, file_get_contents($request->file));
-//                }
-
                 $user = User::find($request->id);
                 $user->email = $request->email;
-                $user->name = $request->name;
+                $user->name = $request->email;
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
                 $user->phone = $request->phone;
                 $user->inn = $request->inn;
                 $user->color = $request->color;
@@ -160,7 +153,9 @@ class CustomerController extends Controller
             else {
                 $user = new User();
                 $user->email = $request->email;
-                $user->name = $request->name;
+                $user->name = $request->email;
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
                 $user->password = Hash::make('password_invite');
                 $user->inn = $request->inn;
                 $user->phone = $request->phone;
@@ -224,10 +219,10 @@ class CustomerController extends Controller
             ->where('user_id', $request->customerId)
             ->where('clinic_id', $request->clinicId)
             ->delete();
-
         foreach ($request->values as $values) {
             foreach ($values as $value) {
                 if (intval($value['role_id']) > 0) {
+//                    dd($value['role_id']);exit;
                     DB::table('clinic_filial_user')->insert(
                         [
                             'user_id' => $request->customerId,

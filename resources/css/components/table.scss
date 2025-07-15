@@ -62,3 +62,41 @@
     text-align: right;
 }
 
+.act-payment-tbl {
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+.act-payment-tbl th {
+    border-bottom-width: 1px;
+    border-left: 1px solid #dddddd;
+    padding: 5px 10px;
+}
+.act-payment-tbl tbody th, .act-payment-tbl tbody td {
+    border-bottom-width: 1px;
+    border-left: 1px solid #dddddd;
+}
+.act-payment-tbl td {
+    padding: 5px 10px;
+    vertical-align: middle;
+    line-height: 16px;
+}
+.act-payment-tbl .sep {
+    background-color: #eeeeee !important;
+    border-top: none !important;
+    /* border-bottom: none !important; */
+    border-bottom: 1px solid #eeeeee !important;
+    width: 6px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.act-payment-tbl .icon-btn {
+    display: inline-block;
+    background: #7608ad;
+    color: white;
+    border-radius: 5px;
+    width: 23px;
+    height: 23px;
+}
+.red-btn {
+    background: #ec0580 !important;
+}

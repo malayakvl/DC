@@ -13,6 +13,7 @@ const lngScheduler = {
     'form.doctor': 'Лікар',
     'form.comment': 'Коментар',
     'calendar.view': 'Режим відображення',
+    'form.assistent': 'Ассистент',
     next: 'Наступний',
     prev: 'Попередній',
     month: 'Місяць',
