@@ -48,7 +48,7 @@ export default function ProfileMenu() {
                     <span className="truncate text-white">{fioResult}</span>
                     <small className="user-profile-role">
                       {usePage().props.auth.role.length > 0
-                        ? `[${usePage().props.auth.role}]`
+                        ? `${localStorage.getItem('filialName')} [${usePage().props.auth.role}]`
                         : ''}
                     </small>
                     {!localStorage.getItem('filialName') && (

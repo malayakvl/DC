@@ -1,6 +1,8 @@
 h2 {
-    @apply font-semibold leading-tight text-purple-800 py-4 ;
-    font-weight: normal !important;
+    @apply font-semibold leading-tight py-4 ;
+    //font-weight: normal !important;
+    color: #600a49;
+    font-weight: bold;
 }
 
 h3 {

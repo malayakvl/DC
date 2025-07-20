@@ -4,6 +4,7 @@ import {
   addUploadedFile,
   emptyUserAutocompleteAction,
   emptyProducersAutocompleteAction,
+  emptyMaterialsAutocompleteAction,
   findUserByEmailAction,
   findProducersAction,
   findMaterialAction,
@@ -55,6 +56,12 @@ const ACTION_HANDLERS = {
       searchItems: [],
     }),
   },
+  [emptyMaterialsAutocompleteAction]: {
+    next: (state, action) => ({
+      ...state,
+      searchItems: [],
+    }),
+  },
 };
 
 export {
@@ -63,6 +70,7 @@ export {
   findProducersAction,
   emptyUserAutocompleteAction,
   emptyProducersAutocompleteAction,
+  emptyMaterialsAutocompleteAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

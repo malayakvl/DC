@@ -6,17 +6,17 @@ export default function GuestLayout({ children }) {
     <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0 bg-main">
       <div>
         <div className="flex min-w-[400px]">
-          <div>
+          <div className="mx-auto">
             <img
-              src="../../images/header/logo-t.svg"
+              src="../../images/header/2.png"
               className="logo logo-main logo-m-new"
             />
           </div>
-          <div>
-            <span className="logo-title-new">
-              DenTal <span className="logo-title-p">Care</span>
-            </span>
-          </div>
+          {/*<div>*/}
+          {/*  <span className="logo-title-new">*/}
+          {/*    DenTal <span className="logo-title-p">Care</span>*/}
+          {/*  </span>*/}
+          {/*</div>*/}
         </div>
       </div>
 

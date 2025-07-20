@@ -6,7 +6,7 @@ const lngScheduler = {
     'title.list': 'Розклад відвідувань',
     'title.create.visit': 'Створити новий запис',
     'title.edit.visit': 'Редагувати запис',
-    'form.title': 'Назва',
+    'form.title': 'Тип послуги',
     close: 'Закрити',
     save: 'Зберегти',
     'form.cabinet': 'Кабінет',

@@ -50,7 +50,8 @@
 }
 .btn-back {
     // background: #343335;
-    background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
+    //background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
+    background-image: linear-gradient(to left top, #484f52, #e4eff3) !important;
     display: inline-block;
     color: white;
     padding: 5px 20px;
@@ -75,20 +76,25 @@
     font-size: 14px;
 }
 .btn-submit {
-    background-image: linear-gradient(to left top, #1b3c53, #c887d7) !important;
+    //background-image: linear-gradient(to left top, #1b3c53, #c887d7) !important;
+    //background-image: linear-gradient(to left top, rgb(72, 4, 62), rgb(223, 44, 134)) !important;
+    background-image: linear-gradient(to left top, #0e3446, #4c8ea6) !important;
     //background: #c887d7;
     display: inline-block;
     color: white;
-    padding: 5px 20px;
+    padding: 7px 20px;
     border-radius: 5px;
     text-transform: uppercase;
     cursor: pointer;
     //margin-left: 10px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px !important;
+}
+.btn-dash {
+    background-image: linear-gradient(to left top, #0e3446, #4c8ea6) !important;
 }
 .btn-submit:hover {
-    background-image: linear-gradient(to left top, rgb(92, 51, 133), rgb(225, 78, 151)) !important;
+    background-image: linear-gradient(to left top, #316177, #6ea5b9) !important;
 }
 .btn-plus {
     background-image: url('../../images/action-icons/plus.svg');
@@ -105,7 +111,7 @@
 }
 
 
-.btn-grad {background-image: linear-gradient(to right, #E55D87 0%, #5FC3E4  51%, #E55D87  100%)}
+.btn-grad {background-image: linear-gradient(to right, #0e3446 0%, #5FC3E4  51%, #6ea5b9  100%)}
 .btn-grad {
     //margin: 10px;
     padding: 5px 10px;

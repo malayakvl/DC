@@ -37,7 +37,7 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl btn-dash">
                       <i className="icon-money" />
                     </div>
                   </div>
@@ -61,7 +61,7 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl btn-dash">
                       <i className="icon-users"></i>
                     </div>
                   </div>
@@ -85,7 +85,7 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl btn-dash">
                       <i className="icon-patients"></i>
                     </div>
                   </div>
@@ -109,7 +109,7 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl btn-dash">
                       <i className="icon-patients"></i>
                     </div>
                   </div>
