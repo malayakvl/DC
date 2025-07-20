@@ -224,6 +224,31 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                 </div>
               </div>
 
+              <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 mt-16">
+                <div className="flex items-start gap-4 rounded-lg ">
+                  {/*BG IMG BLOCK*/}
+                  <div className="pt-3 sm:pt-5 main-img-3"></div>
+                </div>
+                <div className="flex items-start gap-4 rounded-lg bg-white p-6 shadow-[0px_14px_34px_0px_rgba(0,0,0,0.08)]">
+
+                  <div className="pt-3 sm:pt-5">
+                    <h2 className="text-2xl font-semibold text-black dark:text-white">
+                      Візуальне сприйняття історії лікування
+                    </h2>
+
+                    <p className="mt-4 text-sm/relaxed">
+                      <span className="text-[19px]">
+                        Динамічна історія лікування пацієнта, яка в хронологічному порядку та необмеженій кількості зберігає файли всіх форматів. Знімки рентгену та періо карти. <br/><br/>
+                      </span>
+
+                      <br/>
+
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
             </main>
           </div>
         </div>
