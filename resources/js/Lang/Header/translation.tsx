@@ -60,7 +60,9 @@ const lngHeader = {
     cabinets: 'Кабінети',
     patients: 'Пацієнти',
     import: 'Імпорт',
-    'patient.statuses': 'Статуси і знижки'
+    'patient.statuses': 'Статуси і знижки',
+    login: 'Увійти',
+    register: 'Зареєструватись'
   },
 };
 export default lngHeader;

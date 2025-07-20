@@ -12,11 +12,6 @@ export default function GuestLayout({ children }) {
               className="logo logo-main logo-m-new"
             />
           </div>
-          {/*<div>*/}
-          {/*  <span className="logo-title-new">*/}
-          {/*    DenTal <span className="logo-title-p">Care</span>*/}
-          {/*  </span>*/}
-          {/*</div>*/}
         </div>
       </div>
 

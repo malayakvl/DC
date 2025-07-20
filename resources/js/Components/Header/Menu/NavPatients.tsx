@@ -4,7 +4,6 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
-import NavLink from '../../Links/NavLink';
 
 export default function NavPatients(props) {
   const appLang = useSelector(appLangSelector);
