@@ -44,7 +44,7 @@ const lngHeader = {
     'material.categories': 'Категорі матеріалів',
     materials: 'Витратні матеріали',
     invoice: 'Накладні',
-    'material.brands': 'Постачальники',
+    'material.brands': 'Виробники/Постачальники',
     clinic: 'Моя Кліника',
     currencies: 'Валюти',
     taxes: 'Ставки податку',

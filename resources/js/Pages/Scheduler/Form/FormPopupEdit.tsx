@@ -137,6 +137,11 @@ export default function SchedulerFormEdit({
   }, [timeStart]);
   const parsedTimePlus30 = parsedTime ? parsedTime.add(30, 'minute') : null;
 
+  const plusService = () => {
+    console.log('service plus');
+    return;
+  }
+
   const renderService = (item, num) => {
     return (
       <div className="flex items-center justify-between px-2 py-1 bg-gray-100 mb-1 text-[12px] w-[405px]">
@@ -145,17 +150,26 @@ export default function SchedulerFormEdit({
         </div>
 
         <div className="w-[80px] text-center text-gray-600">
-          <button className="text-blue-500 hover:text-blue-700 mr-1" onClick={() => dispatch(minusServiceAction(item))}>
+          <span onClick={() => {
+            dispatch(minusServiceAction(item))
+          }}>
             <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
             </svg>
-          </button>
+          </span>
           <span className="mr-2 font-bold bg-white px-2 text-[10px]">{ item.qty ?  item.qty : 1}</span>
-          <button className="text-blue-500 hover:text-blue-700" onClick={() => dispatch(plusServiceAction(item))}>
+          <span onClick={() => dispatch(plusServiceAction(item))}>
             <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+          </span>
+          {/*<button className="text-blue-500 hover:text-blue-700" onClick={() => {*/}
+          {/*  dispatch(plusServiceAction(item))*/}
+          {/*}}>*/}
+          {/*  <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+          {/*    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />*/}
+          {/*  </svg>*/}
+          {/*</button>*/}
         </div>
 
         <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
