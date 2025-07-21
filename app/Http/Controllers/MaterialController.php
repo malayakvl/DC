@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
+use DateTime;
 
 class MaterialController extends Controller
 {
@@ -136,16 +136,17 @@ class MaterialController extends Controller
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $storeId = $request->get('storeId');
-            $results = DB::select('
-                        SELECT store_materials.*, materials.name,
-                               producers.name AS producerName,
-                               uw.name AS unitSizeName, um.name AS unitName
-                        FROM store_materials
-                        LEFT JOIN materials ON materials.id = store_materials.material_id
-                        LEFT JOIN producers ON producers.id = store_materials.producer_id
-                        LEFT JOIN units um ON um.id = materials.unit_id
-                        LEFT JOIN units uw ON uw.id = materials.weightunit_id
-                        WHERE store_materials.store_id = ' .$storeId. ' ORDER BY materials.name');
+            $reportDate = $request->get('reportDate');
+            $date = new DateTime($reportDate);
+            $formattedDate = $date->format('Y-m-d');
+            $results = DB::select("SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name, 
+                SUM(quantity) AS total_quantity, u.name AS unit_name, p.name AS producer_name
+                FROM document_operations 
+                    JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id 
+                    JOIN units u ON m.unit_id = u.id
+                    JOIN producers p ON m.producer_id = p.id
+                WHERE (subconto_dt->>'store_id')::text = '" .$storeId. "' AND DATE(operation_date) <= '" .$formattedDate. "'::date
+                GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name");
             return response()->json([
                 'results' => $results,
                 'clinicData' => $clinicData

@@ -47,7 +47,8 @@ const lngHeaders = {
     storefrom: 'Зі складу',
     storeto: 'На склад',
     symbol: 'Позначення',
-    discount: 'Знижка'
+    discount: 'Знижка',
+    role: 'Роль'
   },
 };
 export default lngHeaders;

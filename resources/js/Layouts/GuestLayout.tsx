@@ -1,28 +1,22 @@
-import ApplicationLogo from '../Components/Header/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import Footer from '../Components/Footer/Footer';
+import Header from '../Components/Header/Header';
+import { Head } from '@inertiajs/react';
 
-export default function GuestLayout({ children }) {
+
+export default function GuestLayout({ children, auth }) {
   return (
-    <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0 bg-main">
-      <div>
-        <div className="flex min-w-[400px]">
-          <div>
-            <img
-              src="../../images/header/logo-t.svg"
-              className="logo logo-main logo-m-new"
-            />
-          </div>
-          <div>
-            <span className="logo-title-new">
-              DenTal <span className="logo-title-p">Care</span>
-            </span>
+    <>
+      <Head title="Welcome" />
+      <Header auth={auth} />
+      <div className="body min-h-screen">
+        <div className=" flex-col items-center pt-6 sm:justify-center sm:pt-0 bg-main login-content">
+          <div className="mt-6 bg-white px-6 py-4 sm:max-w-[24rem] rounded-lg mx-auto">
+            {children}
           </div>
         </div>
+        <Footer type={'absolute'}  />
       </div>
+    </>
 
-      <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-[24rem] sm:rounded-lg relative">
-        {children}
-      </div>
-    </div>
   );
 }

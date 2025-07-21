@@ -13,6 +13,9 @@ export const emptyUserAutocompleteAction = createAction(
 export const emptyProducersAutocompleteAction = createAction(
   'clinic/REMOVE_PRODUCERS_AUTOCOMPLETE'
 );
+export const emptyMaterialsAutocompleteAction = createAction(
+  'clinic/REMOVE_MATERIALS_AUTOCOMPLETE'
+);
 
 export const findUserByEmailAction: any = createAction(
   'clinic/FIND_IF_USER_EXIST',

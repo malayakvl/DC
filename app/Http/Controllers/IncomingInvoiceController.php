@@ -24,6 +24,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
 
+
 class IncomingInvoiceController extends Controller
 {
     /**
@@ -84,9 +85,11 @@ class IncomingInvoiceController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request): Response {
+//        dd($request->session()->get('filial_id'));
+
         if ($request->user()->can('invoice-incoming-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
             $statusData = InvoiceStatus::all();
             $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
             $taxData = Tax::where('clinic_id', $clinicData->id)->get();

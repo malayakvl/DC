@@ -13,6 +13,9 @@ import {
   emptyStoreReportAction,
 } from '../../Redux/Material';
 import { reportResultSelector } from '../../Redux/Material/selectors';
+import InputCalendar from '../../Components/Form/InputCalendar';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default function List({ storesData }) {
   const dispatch = useDispatch();
@@ -25,6 +28,7 @@ export default function List({ storesData }) {
     store_id: '',
   });
   const [storeError, setStoreError] = useState('');
+  const [reportDate, setReportDate] = useState(new Date());
   const reportResult = useSelector(reportResultSelector);
 
   const handleChangeSelect = e => {
@@ -44,7 +48,7 @@ export default function List({ storesData }) {
       setStoreError(msg.get('material.report.error.store'));
     } else {
       setStoreError('');
-      dispatch(generateStoreReportAction(values['store_id']));
+      dispatch(generateStoreReportAction(values['store_id'], reportDate));
     }
     return;
   };
@@ -77,10 +81,10 @@ export default function List({ storesData }) {
               {reportResult.map(_data => (
                 <tr>
                   <td>
-                    {_data.name} ({_data.producername})
+                    {_data.product_name} ({_data.producer_name})
                   </td>
                   <td className="tqty">
-                    {_data.quantity} {_data.unitname}
+                    {_data.total_quantity} {_data.unit_name}
                   </td>
                   <td className="tqty">
                     {_data.weight > 0 ? _data.weight : ''}{' '}
@@ -95,6 +99,10 @@ export default function List({ storesData }) {
     }
   };
 
+  const changeReportDate = (date) => {
+    console.log('Date change', date)
+  }
+
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Store Report'} />
@@ -107,6 +115,17 @@ export default function List({ storesData }) {
                   <h2>{msg.get('material.title.report')}</h2>
                   <div className="pl-5 mt-2">
                     <div className="flex">
+                      <div className="mr-3">
+                        <DatePicker
+                          id={'report_date'}
+                          name={`report_date`}
+                          selected={reportDate}
+                          className={`input-text`}
+                          onChange={date => {
+                            setReportDate(date)
+                          }}
+                        />
+                      </div>
                       <InputSelect
                         translatable={false}
                         name={'store_id'}

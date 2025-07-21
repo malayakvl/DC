@@ -3,6 +3,7 @@
 @use "tailwindcss/utilities";
 @use "tailwindcss/screens";
 
+@use "components/index";
 @use "components/header";
 @use "components/typography";
 @use "components/icons";
@@ -23,6 +24,8 @@
 @use "components/formula";
 @use "components/perio";
 @use "components/psr";
+@use "components/tooltips";
+@use "components/footer";
 
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300..800;1,300..800&display=swap');
@@ -33,7 +36,8 @@ body {
     font-family: "Manrope", sans-serif;
 }
 .bg-main {
-    background-image: url(../images/bg/1.jpeg);
+    //background-image: url(../images/bg/1.jpeg);
+    background-image: url(../images/bg/3.png);
     background-repeat: no-repeat;
     background-size: cover;
     background-color: #000a22;
@@ -97,5 +101,30 @@ body {
 .content-data {
     border-radius: 4px;
 }
-
+.strech-block {
+    display: table-row;
+    width: 100%;
+}
+.body {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.login-content {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding-top: 90px;
+    //padding-top: calc(30% - 300px)
+}
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.box div {
+    width: 100px;
+    height: 100px;
+    background: red;
+}
 

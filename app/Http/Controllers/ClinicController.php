@@ -103,6 +103,7 @@ class ClinicController extends Controller
             ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
             ->where('filial_id', $filialId)
             ->where('user_id', $request->user()->id)->get();
+
         // assign role for current filial
         foreach ($request->user()->roles as $role) {
             $request->user()->removeRole($role->name);

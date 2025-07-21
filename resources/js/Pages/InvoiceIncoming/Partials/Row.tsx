@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import InputText from '../../../Components/Form/InputText';
 import {
   emptyProducersAutocompleteAction,
   findProducersAction,
 } from '../../../Redux/Clinic';
 import { useDispatch, useSelector } from 'react-redux';
-import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
 import {
   emptyMaterialsAutocompleteAction,
   findMaterialAction,
@@ -53,9 +51,10 @@ export default function AddDynamicInputFields({
     setNumRow(index);
     if (name === 'product') {
       if (value.length > 3) {
+        dispatch(emptyMaterialsAutocompleteAction());
         dispatch(findMaterialAction(value));
       } else {
-        dispatch(emptyProducersAutocompleteAction());
+        dispatch(emptyMaterialsAutocompleteAction());
         setHideFields(false);
       }
     } else if (name === 'plusBtn') {
@@ -102,17 +101,27 @@ export default function AddDynamicInputFields({
     dispatch(setInvoiceItems(inputs));
   }, [inputs]);
 
+  const calcPos = (index) => {
+    console.log('Pos', index);
+    if (index >= 1) {
+      return (70 + index*10) + 33*index;
+    } else {
+      return (index + 1)*70;
+    }
+
+  }
+
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
       return (
         <div
           className="absolute autocomplete"
-          style={{ top: index * 50 + 75 + 'px', width: '500px' }}
+          style={{ top: calcPos(index) + 'px', width: '500px' }}
         >
           <ul>
             {serchResults.map(_res => (
               <li
-                className="cursor-pointer py-1"
+                className="cursor-pointer py-0.5"
                 onClick={() => {
                   setHideFields(true);
                   dispatch(emptyMaterialsAutocompleteAction());
@@ -145,7 +154,7 @@ export default function AddDynamicInputFields({
             <div className="relative">
               <input
                 name="product"
-                className="input-text"
+                className="input-text input-invoice material-input"
                 type="text"
                 value={item.product}
                 onChange={event => handleChange(event, index)}
@@ -153,7 +162,7 @@ export default function AddDynamicInputFields({
             </div>
           </td>
           <td className="w-qty pb-2 mx-auto">
-            <div className="row flex ml-[40px]">
+            <div className="row flex ml-[40px] pl-[7px]">
               <button
                 name="minusBtn"
                 onClick={event => {
@@ -186,7 +195,7 @@ export default function AddDynamicInputFields({
           </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text price input-invoice text-center"
               name="price"
               type="text"
               value={item.price}
@@ -195,7 +204,7 @@ export default function AddDynamicInputFields({
           </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text price input-invoice text-center"
               name="total"
               type="text"
               value={item.tax_amount}
@@ -204,7 +213,7 @@ export default function AddDynamicInputFields({
           </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text price input-invoice text-center"
               name="total"
               type="text"
               value={item.total}
