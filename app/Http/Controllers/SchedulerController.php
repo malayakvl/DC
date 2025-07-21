@@ -147,7 +147,7 @@ class SchedulerController extends Controller
                 'schedulers.patient_id', 'schedulers.status_name AS event_status',
                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
                 'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
+                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name', 'patients.avatar',
                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
                 DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
                 DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),

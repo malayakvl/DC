@@ -212,13 +212,20 @@
     color: palevioletred;
 }
 .rbc-event-data {
-    padding: 5px;
+    padding: 0px;
     width: 100%;
     flex: 1 1 0;
     word-wrap: break-word;
     line-height: 1;
     height: 100%;
     min-height: 1em;
+}
+.sch-time {
+    padding-left: 5px;
+    padding-top: 4px;
+    display: inline-block;
+    color: #9b0660;
+    font-weight: bold;
 }
 .rbc-event-label {
     display: none !important;
@@ -234,11 +241,15 @@
 }
 .sh-event-status {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 3px;
+    right: 3px;
     //border-radius: 50%;
     width: 13px;
     height: 13px;
+}
+.sch-title {
+    background: #e8e8de;
+    padding: 2px 0;
 }
 .rbc-active {
     background-image: none;

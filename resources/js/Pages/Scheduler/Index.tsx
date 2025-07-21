@@ -393,7 +393,6 @@ export default function Index({
       )
     );
   };
-console.log('ass', assistantData)
 
   const handleNavigate = useCallback((newDate, view, action) => {
     dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
@@ -647,6 +646,7 @@ console.log('ass', assistantData)
       color = '#de1818';
     } else if (event.kt_balance < event.dt_balance)
       color = '#0c9407';
+console.log(event)
 
     return view === 'month' ? (
       <strong>{event.title} </strong>
@@ -654,15 +654,28 @@ console.log('ass', assistantData)
       <div className="">
         <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
           <span className={'block mb-1 inline-block'}>
-            <strong style={{color: color}}>
-              {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
-            </strong>
+            <div className="flex flex-row">
+              <img
+                className='sch-p-photo'
+                src={`/uploads/patients/${event.avatar}`}
+                width="auto"
+                height="15"
+              />
+              <div className="pt-[3px]">
+                <strong style={{color: color, marginLeft: '5px', marginTop: '2px'}}>
+                  {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
+                </strong>
+                <span className="sch-time">{event.hour_from}:{event.minute_from} - {event.hour_to}:{event.minute_to}</span>
+              </div>
+            </div>
             <div className={'sh-event-status'} style={{background: event.status_color}}></div>
           </span>
-          <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
-          <span className={'block mb-1 font-bold'}>{event.title}</span>
-          <div className={'block mb-1'}><strong>{event.description}</strong></div>
-          <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+          <div className="ml-[4px] mr-[4px]">
+            <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
+            <span className={'block mb-1 font-bold sch-title'}>{event.title}</span>
+            <div className={'block mb-1'}><strong>{event.description}</strong></div>
+            <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+          </div>
         </div>
       </div>
     );
