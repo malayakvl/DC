@@ -121,7 +121,7 @@ class MaterialController extends Controller
                 $filialId = $request->session()->get('filial_id');
                 $filialdData = ClinicFilial::where('id', '=', $filialId)->first();
                 $storeId = $filialdData->store_id;
-                $stores = Store::where('id', '=', $filialdData->store_id)->get();
+                $stores = Store::where('filial_id', '=', $filialdData->id)->get();
             } else {
                 $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
                 $stores = Store::where('clinic_id', '=', $clinicData->id)->get();
@@ -136,19 +136,39 @@ class MaterialController extends Controller
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $storeId = $request->get('storeId');
+
             $reportDate = $request->get('reportDate');
             $date = new DateTime($reportDate);
             $formattedDate = $date->format('Y-m-d');
-            $results = DB::select("SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name, 
-                SUM(quantity) AS total_quantity, u.name AS unit_name, p.name AS producer_name
-                FROM document_operations 
-                    JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id 
-                    JOIN units u ON m.unit_id = u.id
-                    JOIN producers p ON m.producer_id = p.id
-                WHERE (subconto_dt->>'store_id')::text = '" .$storeId. "' AND DATE(operation_date) <= '" .$formattedDate. "'::date
-                GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name");
+            $arrReminders = array();
+            if (!$storeId) {
+                $dataStores = Store::where('filial_id', '=', $request->session()->get('filial_id'))->get();
+                foreach ($dataStores as $store) {
+                    $results = DB::select("SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name, 
+                        SUM(quantity) AS total_quantity, u.name AS unit_name, p.name AS producer_name
+                        FROM document_operations 
+                            JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id 
+                            JOIN units u ON m.unit_id = u.id
+                            JOIN producers p ON m.producer_id = p.id
+                        WHERE (subconto_dt->>'store_id')::text = '" .$store->id. "' 
+                            AND DATE(operation_date) <= '" .$formattedDate. "'::date
+                        GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name");
+                    $arrReminders[$store->name] = $results;
+                }
+            } else {
+                $dataStores = Store::where('id', '=', $storeId)->get();
+                $results = DB::select("SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name, 
+                    SUM(quantity) AS total_quantity, u.name AS unit_name, p.name AS producer_name
+                    FROM document_operations 
+                        JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id 
+                        JOIN units u ON m.unit_id = u.id
+                        JOIN producers p ON m.producer_id = p.id
+                    WHERE (subconto_dt->>'store_id')::text = '" .$storeId. "' AND DATE(operation_date) <= '" .$formattedDate. "'::date
+                    GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name");
+                $arrReminders[$dataStores[0]->name] = $results;
+            }
             return response()->json([
-                'results' => $results,
+                'results' => $arrReminders,
                 'clinicData' => $clinicData
             ]);
         }

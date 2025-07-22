@@ -45,7 +45,8 @@ export default function List({ storesData }) {
 
   const generateReport = () => {
     if (!values['store_id']) {
-      setStoreError(msg.get('material.report.error.store'));
+      // setStoreError(msg.get('material.report.error.store'));
+      dispatch(generateStoreReportAction(null, reportDate));
     } else {
       setStoreError('');
       dispatch(generateStoreReportAction(values['store_id'], reportDate));
@@ -53,46 +54,55 @@ export default function List({ storesData }) {
     return;
   };
 
-  useEffect(() => {
-    if (!values['store_id']) {
-      dispatch(emptyStoreReportAction());
-    }
-  }, [reportResult]);
+  // useEffect(() => {
+  //   if (!values['store_id']) {
+  //     dispatch(emptyStoreReportAction());
+  //   }
+  // }, [reportResult]);
 
   const renderReportReult = () => {
+    console.log('renderReportReult');
+
     if (reportResult) {
+      for (const key in reportResult) {
+        console.log('Store Id', key);
+      }
+
       return (
         <div className="mt-4">
           <table className="table">
-            <thead>
+          <thead>
+          <tr>
+            <td>
+              <b>Материал</b>
+            </td>
+            <td className="tqty">
+              <b>Количество</b>
+            </td>
+            <td className="tqty">
+              <b>Фактична кількість</b>
+            </td>
+          </tr>
+          </thead>
+          <tbody>
+          {Object.keys(reportResult).map((key) => (
+            <React.Fragment key={key}>
               <tr>
-                <td>
-                  <b>Материал</b>
-                </td>
-                <td className="tqty">
-                  <b>Количество</b>
-                </td>
-                <td className="tqty">
-                  <b>Фактична кількість</b>
+                <td colSpan="3" style={{background: '#aeaeae'}}>
+                  <strong>{key}</strong>
                 </td>
               </tr>
-            </thead>
-            <tbody>
-              {reportResult.map(_data => (
-                <tr>
-                  <td>
-                    {_data.product_name} ({_data.producer_name})
-                  </td>
-                  <td className="tqty">
-                    {_data.total_quantity} {_data.unit_name}
-                  </td>
-                  <td className="tqty">
-                    {_data.weight > 0 ? _data.weight : ''}{' '}
-                    {_data.weight > 0 ? _data.unitsizename : ''}
-                  </td>
+              {reportResult[key].map((item) => (
+                <tr key={item.product_id}>
+                  <td>{item.product_name}</td>
+                  <td>{item.total_quantity} {item.unit_name}</td>
+                  <td></td>
+                  {/*<td>{item.producer_name}</td>*/}
                 </tr>
               ))}
-            </tbody>
+            </React.Fragment>
+          ))}
+          </tbody>
           </table>
         </div>
       );
@@ -102,7 +112,7 @@ export default function List({ storesData }) {
   const changeReportDate = (date) => {
     console.log('Date change', date)
   }
-
+console.log('Result data', reportResult)
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Store Report'} />
@@ -154,7 +164,14 @@ export default function List({ storesData }) {
                 </div>
               </header>
             </section>
-            <div>{renderReportReult()}</div>
+            <div>
+              {reportResult && (
+                <>
+                  {renderReportReult()}
+                </>
+              )}
+
+            </div>
           </div>
         </div>
       </div>
