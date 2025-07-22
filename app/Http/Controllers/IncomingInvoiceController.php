@@ -32,14 +32,18 @@ class IncomingInvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $filialId = '';
-        if ($request->user()->roles[0]->name != 'Admin') {
-            // get store filial
-            $filialId = $request->session()->get('filial_id');
-            $filialdData = ClinicFilial::where('id', '=', $filialId)->first();
-            $storeId = $filialdData->store_id;
-        }
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $arrStores = array();
+        if ($request->user()->roles[0]->name != 'Admin') {
+            // get stores filial
+            $filialId = $request->session()->get('filial_id');
+            $storesData = Store::where('filial_id', '=', $filialId)->get();
+
+            foreach ($storesData as $store) {
+                $arrStores[] = $store->id;
+            }
+        }
+
         if ($request->user()->roles[0]->name == 'Admin') {
             $invoiceData = DB::table('invoices')
                 ->select('invoices.*',
@@ -71,8 +75,9 @@ class IncomingInvoiceController extends Controller
                 ->leftJoin('invoice_types', 'invoice_types.id', '=', 'invoices.type_id')
                 ->leftJoin('producers', 'producers.id', '=', 'invoices.producer_id')
                 ->leftJoin('users', 'users.id', '=', 'invoices.customer_id')
-                ->where('invoices.store_id', $storeId)
+                ->whereIn('invoices.store_id', $arrStores)
                 ->where('invoices.type_id', 1)
+                ->where('invoices.clinic_id', $clinic->id)
                 ->orderBy('invoice_number', 'DESC')->get();
         }
         return Inertia::render('InvoiceIncoming/List', [
