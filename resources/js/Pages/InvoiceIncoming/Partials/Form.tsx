@@ -150,7 +150,7 @@ export default function Form({
       >
         <div className="flex flex-col md:flex-row w-full">
           <div className="flex flex-col md:flex-row w-full">
-            <div className="w-full md:w-1/2 px-2">
+            <div className="w-full md:w-1/2">
               <div className="mb-2 flex gap-2">
                 <div className="w-1/4">
                   <InputText
@@ -289,14 +289,15 @@ export default function Form({
             </tbody>
           </table>
         </div>
-        <div>
+        <div className="bg-blue-100 align-items-end">
           <div style={{ clear: 'both' }}></div>
           <div
             className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}
           >
             {msg.get('invoice.rows.error')}
           </div>
-          <div className="row w-full">
+          <hr/>
+          <div className="float-right pt-3">
             <Link
               className="btn-back"
               title={msg.get('invoice.back')}
