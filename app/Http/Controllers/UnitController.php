@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UnitUpdateRequest;
 use App\Models\Clinic;
+use App\Models\MaterialCategories;
 use App\Models\Unit;
 use App\Models\Filial;
 use Illuminate\Http\Request;
@@ -82,10 +83,18 @@ class UnitController extends Controller
         }
     }
 
+
+    public function delete(Request $request) {
+        $unit = Unit::where('id', '=', $request->id)->get();
+        $unit[0]->delete();
+
+        return Redirect::route('unit.index');
+    }
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Filial $filial) {
+    public function destroy(Unit $unit) {
         //
     }
 }
