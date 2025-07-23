@@ -32,6 +32,7 @@ export default function Form({
   formData,
   formRowData = null,
   currencyData,
+  unitsData,
   taxData,
   className = '',
 }) {
@@ -258,11 +259,13 @@ export default function Form({
         </div>
 
         <div className="relative">
-          <table className="w-full">
+          <table className="w-full invoice-table">
             <thead>
               <tr>
                 <th className="pb-3">{msg.get('invoice.product')}</th>
                 <th className="pb-3 w-qty">{msg.get('invoice.qty')}</th>
+                <th className="pb-3">{msg.get('invoice.unit')}</th>
+                <th className="pb-3">{msg.get('invoice.factqty')}</th>
                 <th className="pb-3 w-price">{msg.get('invoice.price')}</th>
                 <th className="pb-3 w-price">{msg.get('invoice.tax')}</th>
                 <th className="pb-3 w-price">{msg.get('invoice.total')}</th>
@@ -272,13 +275,15 @@ export default function Form({
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} />
+                <AddDynamicInputFields formRowData={formRowData} unitsData={unitsData} />
               ) : (
                 <AddDynamicInputFields
+                  unitsData={unitsData}
                   formRowData={[
                     {
                       product_id: '',
                       product: '',
+                      unit_id: '',
                       quantity: '',
                       price: '',
                       total: '',

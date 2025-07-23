@@ -41,6 +41,8 @@ const lngInvoice = {
     currency: 'Валюта',
     'rows.error': 'Заповніть табличну частину',
     cancelissue: 'Відмінити проведення',
+    factqty: 'Фактична кіл-ть',
+    unit: 'Од. вим.'
   },
 };
 export default lngInvoice;

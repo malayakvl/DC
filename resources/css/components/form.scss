@@ -105,12 +105,21 @@
         text-align: center;
     }
     .w-product {
-        width: 750px !important;
+        width: 550px !important;
         text-align: center;
     }
     .w-unit {
-        width: 350px !important;
+        width: 100px !important;
     }
+    .factqty {
+        width: 100px !important;
+        border: solid 1px black;
+        border-radius: 0.125rem;
+        @apply border-gray-300;
+    }
+    //.w-unit {
+    //    width: 350px !important;
+    //}
     .w-btns-block {
         width: 200px !important;
         text-align: center;

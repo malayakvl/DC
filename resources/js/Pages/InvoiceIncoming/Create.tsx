@@ -11,6 +11,7 @@ export default function Create({
   storeData,
   formData,
   currencyData,
+  unitsData,
   taxData,
 }) {
   return (
@@ -28,6 +29,7 @@ export default function Create({
               storeData={storeData}
               formData={formData}
               currencyData={currencyData}
+              unitsData={unitsData}
               taxData={taxData}
               className="w-full"
             />

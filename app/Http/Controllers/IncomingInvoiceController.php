@@ -17,6 +17,7 @@ use App\Models\Store;
 use App\Models\Invoice;
 use App\Models\StoreMaterials;
 use App\Models\Tax;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -97,6 +98,7 @@ class IncomingInvoiceController extends Controller
             $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
             $statusData = InvoiceStatus::all();
             $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
+            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
             $taxData = Tax::where('clinic_id', $clinicData->id)->get();
             $typeData = InvoiceType::all();
             $formData = new Invoice();
@@ -129,6 +131,7 @@ class IncomingInvoiceController extends Controller
                 'statusData' => $statusData,
                 'typeData' => $typeData,
                 'currencyData' => $currencyData,
+                'unitsData' => $unitsData,
                 'taxData' => $taxData
             ]);
         }

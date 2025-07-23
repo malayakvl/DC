@@ -14,10 +14,12 @@ import {
 } from '../../../Redux/Incominginvoice';
 import { invoiceTaxSelector } from '../../../Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '../../../Redux/Material/selectors';
+import InputSelect from '../../../Components/Form/InputSelect';
 
 export default function AddDynamicInputFields({
   formRowData = null,
   lastRow = null,
+  unitsData
 }) {
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useDispatch();
@@ -33,15 +35,15 @@ export default function AddDynamicInputFields({
       {
         product_id: '',
         product: '',
+        unit_id: '',
         quantity: 0,
+        fact_qty: 0,
         price: 0,
         tax: 0,
         total: 0,
       },
     ]);
   };
-
-  // if (rowData)
 
   const handleChange = (event, index, type = '') => {
     dispatch(setShowTableError(false));
@@ -102,7 +104,6 @@ export default function AddDynamicInputFields({
   }, [inputs]);
 
   const calcPos = (index) => {
-    console.log('Pos', index);
     if (index >= 1) {
       return (70 + index*10) + 33*index;
     } else {
@@ -129,6 +130,8 @@ export default function AddDynamicInputFields({
                   inputs[index].product = _res.name;
                   inputs[index].product_id = _res.id;
                   inputs[index].price = _res.retail_price;
+                  inputs[index].unit_id = _res.unit_id;
+                  inputs[index].fact_qty = _res.weight;
                   inputs[index].tax_amount = documentTax
                     ? (_res.retail_price * taxData[1]) / 100
                     : 0;
@@ -192,6 +195,28 @@ export default function AddDynamicInputFields({
                 +
               </button>
             </div>
+          </td>
+          <td className="w-unit text-center pb-2">
+            <InputSelect
+              translatable={false}
+              name={'unit_id'}
+              className={'w-unit'}
+              values={item.unit_id}
+              value={item.unit_id}
+              defaultValue={item.unit_id}
+              options={unitsData}
+              required
+              label={null}
+            />
+          </td>
+          <td className="w-price text-center pb-2">
+            <input
+              className="input-text factqty text-center"
+              name="fact_qty"
+              type="fact_qty"
+              value={item.fact_qty}
+              onChange={event => handleChange(event, index)}
+            />
           </td>
           <td className="w-price text-center pb-2">
             <input

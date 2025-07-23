@@ -23,6 +23,7 @@ export default function InputSelect({
     messages: lngDropdown,
     locale: appLang,
   });
+
   return (
     <div className={`relative`}>
       <InputLabel htmlFor={name} value={label} children={null} />
@@ -36,7 +37,7 @@ export default function InputSelect({
         >
           <option value="">{msg.get('dropdown.select')}</option>
           {props.options.map((option: any) => (
-            <option key={option.id} value={option.id}>
+            <option key={option.id} value={option.id} selected={option.id === defaultValue}>
               {translatable ? msg.get('dropdown.' + option.name) : option.name}
             </option>
           ))}
