@@ -41,7 +41,6 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useDispatch();
-
   const [values, setValues] = useState({
     name: formData.name,
     price: formData.price,
@@ -65,7 +64,7 @@ export default function Form({
 
   useEffect(() => {
     if (categoryPercent) {
-      dispatch(setPercentAction(categoryPercent));
+      dispatch(setPercentAction(parseFloat(categoryPercent).toFixed(2)));
     }
   }, [categoryPercent]);
 
@@ -73,15 +72,14 @@ export default function Form({
     const key = e.target.id;
     const value = e.target.value;
     dispatch(findPercentAction(e.target.value));
-    // dispatch(setPercentAction)
     setValues(values => ({
       ...values,
       [key]: value,
     }));
-    if (values['weight']) {
-      values['price_per_unit'] = parseFloat(
-        String(values['retail_price'] / values['weight'])
-      ).toFixed(2);
+    if (key === 'unit_id') {
+      const _fUnit = unitsData.find(_d => _d.id == value);
+      values['weight'] = _fUnit.unit_qty;
+      values['price_per_unit'] = parseFloat(values['retail_price'])/parseFloat(_fUnit.unit_qty ? _fUnit.unit_qty : 1).toFixed(2);
     }
   };
 
@@ -92,6 +90,7 @@ export default function Form({
       ...values,
       [key]: value,
     }));
+
   };
 
   useEffect(() => {
@@ -104,6 +103,12 @@ export default function Form({
         ...values,
         [keyRetail]: retailValue,
       }));
+      values['price_per_unit'] = (parseFloat(retailValue) / parseFloat(values['weight'] ? values['weight'] : 1)).toFixed(2)
+
+      // calcPricePerUnit();
+    } else {
+      const _cat = categoryData.find(_d => _d.id == values['category_id']);
+      dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
     }
   }, [values.price]);
 
@@ -114,7 +119,9 @@ export default function Form({
       ...values,
       [key]: value,
     }));
+
   };
+
   const handleChangeRetailPrice = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -168,16 +175,18 @@ export default function Form({
       dispatch(emptySizeAction());
       setHideFields(false);
     }
-    // reaclulate price per unit
-    values['price_per_unit'] = parseFloat(
-      String(values['retail_price'] / values['weight'])
-    ).toFixed(2);
+    calcPricePerUnit();
 
     setValues(values => ({
       ...values,
       [key]: value,
     }));
   };
+
+  const calcPricePerUnit = () => {
+    // пересчитиваем в одно функции для всех вариантов изменения цени, ретейл цени, еденици измерения
+    values['price_per_unit'] = (parseFloat(values['retail_price']) / parseFloat(values['weight'] ? values['weight'] : 1)).toFixed(2)
+  }
 
   const submit = e => {
     e.preventDefault();
