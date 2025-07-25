@@ -12,8 +12,10 @@ export default function Edit({
   formData,
   formRowData,
   currencyData,
+  unitsData,
   taxData,
 }) {
+  console.log(unitsData)
   return (
     <AuthenticatedLayout header={<Head title="Invoice" />}>
       <Head title="Invoice" />
@@ -31,6 +33,7 @@ export default function Edit({
               formRowData={formRowData}
               currencyData={currencyData}
               taxData={taxData}
+              unitsData={unitsData}
               className="w-full"
             />
           </div>

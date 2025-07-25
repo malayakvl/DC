@@ -95,9 +95,8 @@ export default function List({ storesData }) {
               {reportResult[key].map((item) => (
                 <tr key={item.product_id}>
                   <td>{item.product_name}</td>
-                  <td>{item.total_quantity} {item.unit_name}</td>
-                  <td></td>
-                  {/*<td>{item.producer_name}</td>*/}
+                  <td style={{textAlign: 'right'}}>{item.total_quantity} {item.unit_name}</td>
+                  <td style={{textAlign: 'right'}}>{item.total_fact} {item.unit_weightname}</td>
                 </tr>
               ))}
             </React.Fragment>

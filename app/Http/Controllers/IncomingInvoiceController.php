@@ -146,6 +146,7 @@ class IncomingInvoiceController extends Controller
             $storeData = Store::where('clinic_id', $clinicData->id)->get();
             $statusData = InvoiceStatus::all();
             $typeData = InvoiceType::all();
+            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
             $formData = Invoice::find($id);
             $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
             $taxData = Tax::where('clinic_id', $clinicData->id)->get();
@@ -168,6 +169,7 @@ class IncomingInvoiceController extends Controller
                 'statusData' => $statusData,
                 'typeData' => $typeData,
                 'currencyData' => $currencyData,
+                'unitsData' => $unitsData,
                 'taxData' => $taxData
             ]);
 
@@ -203,7 +205,6 @@ class IncomingInvoiceController extends Controller
         } else {
             $data = $request->values;
         }
-
         if ($request->user()->can('invoice-incoming-edit')) {
             if ($request->id) {
                 $invoice = Invoice::find($data->id);
@@ -240,6 +241,9 @@ class IncomingInvoiceController extends Controller
                 $invoiceItem = new InvoiceItems();
                 $invoiceItem->invoice_id = $invoiceId;
                 $invoiceItem->product_id = $row["product_id"];
+                $invoiceItem->unit_id = $row["unit_id"];
+                $invoiceItem->fact_qty = $row["fact_qty"];
+                $invoiceItem->price_per_unit = $row["total"]/$row["fact_qty"];
                 $invoiceItem->quantity = $row["quantity"];
                 $invoiceItem->price = $row["price"];
                 $invoiceItem->total = ($row["quantity"])*floatval($row["price"]);
@@ -256,7 +260,9 @@ class IncomingInvoiceController extends Controller
                         'store_id' => $request->store_id,
                         'name' => $store->name,
                         'product_id' => $row["product_id"],
-                        'product_name' => $row['product']
+                        'product_name' => $row['product'],
+                        'fact_qty' => $row['fact_qty'],
+                        'price_per_unit' => number_format(($row['total']/$row['fact_qty']), 2)
                     ));
                     // get weight if exist
                     $material = Material::find($row["product_id"]);
@@ -274,6 +280,7 @@ class IncomingInvoiceController extends Controller
                         'producer_id' => $request->producer_id,
                         'name' => $producer->name
                     ));
+//                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
                     $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
                     $documentOperation->quantity = $row["quantity"];
                     $documentOperation->comment = 'income_products';

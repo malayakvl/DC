@@ -65,15 +65,24 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
+      inputs[index].fact_qty = (
+        parseFloat(String(inputs[index].quantity)) *
+        parseFloat(String(inputs[index].fact_qty))
+      ).toFixed(2);
     } else if (name === 'minusBtn') {
+      const _factPerUnit = inputs[index].fact_qty/inputs[index].quantity;
       inputs[index].quantity =
         inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
       inputs[index].total = (
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
-    } else {
-      inputs[index].quantity = event.target.value;
+      inputs[index].fact_qty = (
+        parseFloat(String(inputs[index].quantity)) *
+        parseFloat(String(_factPerUnit))
+      ).toFixed(2);
+    } else if (name === 'price') {
+      inputs[index].price = event.target.value;
       inputs[index].total = (
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
@@ -98,6 +107,14 @@ export default function AddDynamicInputFields({
     setInputs(newArray);
     return;
   };
+
+  const handleChangeFactQty = (event, index) => {
+    dispatch(setShowTableError(false));
+    let { name, value } = event.target;
+    let onChangeValue = [...inputs];
+    onChangeValue[index][name] = value;
+    setInputs(onChangeValue);
+  }
 
   useEffect(() => {
     dispatch(setInvoiceItems(inputs));
@@ -131,7 +148,7 @@ export default function AddDynamicInputFields({
                   inputs[index].product_id = _res.id;
                   inputs[index].price = _res.retail_price;
                   inputs[index].unit_id = _res.unit_id;
-                  inputs[index].fact_qty = _res.weight;
+                  inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
                   inputs[index].tax_amount = documentTax
                     ? (_res.retail_price * taxData[1]) / 100
                     : 0;
@@ -215,7 +232,7 @@ export default function AddDynamicInputFields({
               name="fact_qty"
               type="fact_qty"
               value={item.fact_qty}
-              onChange={event => handleChange(event, index)}
+              onChange={event => handleChangeFactQty(event, index)}
             />
           </td>
           <td className="w-price text-center pb-2">
