@@ -37,6 +37,7 @@ export default function AddDynamicInputFields({
         product: '',
         unit_id: '',
         quantity: 0,
+        pack_qty: 0,
         fact_qty: 0,
         price: 0,
         tax: 0,
@@ -67,7 +68,7 @@ export default function AddDynamicInputFields({
       ).toFixed(2);
       inputs[index].fact_qty = (
         parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(inputs[index].fact_qty))
+        parseFloat(String(inputs[index].pack_qty))
       ).toFixed(2);
     } else if (name === 'minusBtn') {
       const _factPerUnit = inputs[index].fact_qty/inputs[index].quantity;
@@ -148,6 +149,7 @@ export default function AddDynamicInputFields({
                   inputs[index].product_id = _res.id;
                   inputs[index].price = _res.retail_price;
                   inputs[index].unit_id = _res.unit_id;
+                  inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
                   inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
                   inputs[index].tax_amount = documentTax
                     ? (_res.retail_price * taxData[1]) / 100
