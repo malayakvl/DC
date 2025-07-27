@@ -262,7 +262,7 @@ class MaterialController extends Controller
         $storeId = $request->storeId;
 
         $resData = DB::table('materials')
-            ->select('materials.name', 'producers.name AS producerName', 'materials.price',
+            ->select('materials.name', 'producers.name AS producerName', 'materials.price', 'store_materials.weight',
                 'store_materials.quantity', 'units.name AS unitName', 'materials.id', 'materials.producer_id')
             ->leftJoin('store_materials', 'store_materials.material_id', '=', 'materials.id')
             ->leftJoin('producers', 'producers.id', '=', 'store_materials.producer_id')

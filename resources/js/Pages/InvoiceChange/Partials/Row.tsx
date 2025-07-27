@@ -32,6 +32,7 @@ export default function AddDynamicInputFields({
         producer_id: 0,
         product: '',
         quantity: 0,
+        fact_qty: 0,
         maxQty: 0,
       },
     ]);
@@ -77,6 +78,8 @@ export default function AddDynamicInputFields({
 
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
+      console.log(serchResults);
+
       return (
         <div
           className="absolute autocomplete"
@@ -96,7 +99,7 @@ export default function AddDynamicInputFields({
                   inputs[index].producer_id = _res.producer_id;
                 }}
               >
-                {_res.name} {_res.producerName} ({_res.quantity} {_res.unitName}
+                {_res.name} {_res.producerName} ({_res.quantity} [{_res.weight}] {_res.unitName}
                 )
               </li>
             ))}

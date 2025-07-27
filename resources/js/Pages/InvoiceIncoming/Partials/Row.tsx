@@ -114,6 +114,9 @@ export default function AddDynamicInputFields({
     let { name, value } = event.target;
     let onChangeValue = [...inputs];
     onChangeValue[index][name] = value;
+    // recalculate total
+    let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
+    inputs[index].total = total.toFixed(2)
     setInputs(onChangeValue);
   }
 

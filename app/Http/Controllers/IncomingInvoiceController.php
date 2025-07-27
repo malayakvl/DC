@@ -269,7 +269,7 @@ class IncomingInvoiceController extends Controller
                     DB::select('
                         INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
                         VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
-                        '.$row["quantity"].', '.($material->weight*$row["quantity"]). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
+                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
                         ON CONFLICT ON CONSTRAINT store_materials_pkey
                         DO UPDATE SET
                         quantity = sm.quantity + ' .$row["quantity"]. ';
