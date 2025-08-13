@@ -16,6 +16,7 @@ use App\Models\Material;
 use App\Models\Producer;
 use App\Models\Store;
 use App\Models\Invoice;
+use App\Models\StoreMaterials;
 use App\Models\Tax;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -216,55 +217,138 @@ class DisplacementInvoiceController extends Controller
             $storeFrom = Store::find($request->storefrom_id);
             $storeTo = Store::find($request->storeto_id);
             foreach ($request->rows as $row) {
-                $invoiceItem = new DisplacementItems();
-                $invoiceItem->invoice_id = $invoiceId;
-                $invoiceItem->product_id = $row["product_id"];
-                $invoiceItem->quantity = $row["quantity"];
-                $invoiceItem->save();
-
+                $materialQty = floatval($row["fact_qty"]);
                 $material = Material::find($row["product_id"]);
 
-                DB::select('
-                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id)
-                        VALUES ('.$request->storefrom_id.', '.$row["product_id"].', '.$row["producer_id"].')
-                        ON CONFLICT ON CONSTRAINT store_materials_pkey
-                        DO UPDATE SET
-                        weight = sm.weight - '.($material->weight*$row["quantity"]). ',
-                        quantity = sm.quantity - ' .$row["quantity"]. ';
-                    ');
-                DB::select('
-                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight)
-                        VALUES ('.$request->storeto_id.', '.$row["product_id"].', '.$row["producer_id"].', '.$row["quantity"].', '.($material->weight*$row["quantity"]).')
-                        ON CONFLICT ON CONSTRAINT store_materials_pkey
-                        DO UPDATE SET
-                        weight = sm.weight + '.($material->weight*$row["quantity"]). ',
-                        quantity = sm.quantity + ' .$row["quantity"]. ';
-                    ');
-                if (intval($request->status_id) === 2) {
+                // делаем перемещение в табличке остатков
+                // находим в остатках позиции у котороих не нулевое значение на остатке склада
+                $storeQuery = 'SELECT sm.*, m.name AS material_name,
+	                    sm.unit_id, sm.fact_unit_id, sm.material_id, m.producer_id 
+                    FROM store_materials sm
+                    LEFT JOIN materials m ON m.id = sm.material_id
+                    LEFT JOIN units u ON u.id = sm.unit_id
+                    LEFT JOIN units u2 ON u2.id = sm.fact_unit_id
+                    WHERE  sm.material_id = ' .$row["product_id"]. ' AND  store_id = ' .$request->storefrom_id. ' AND sm.store_fact_qty > 0
+                    ORDER BY doc_date ASC';
+                $storeRes = DB::select($storeQuery);
+                foreach ($storeRes as $storeData) {
+                    $storeDataM = StoreMaterials::find($storeData->id);
+                    if ($storeData->store_fact_qty > $materialQty) {
+                        $storeDataM->store_fact_qty = $storeData->store_fact_qty - $materialQty;
+                        $unitPrice = $storeData->price_per_unit;
+                        $qtyD = $materialQty;
+                        $materialQty = 0;
+                    } else {
+                        $materialQty = $materialQty - $storeDataM->store_fact_qty;
+                        $unitPrice = $storeData->price_per_unit;
+                        $qtyD = $storeDataM->store_fact_qty;
+                        $storeDataM->store_fact_qty = 0;
+                    }
+                    $dStoreMaterials = new StoreMaterials();
+                    $dStoreMaterials->doc_date = $request->invoice_date;
+                    $dStoreMaterials->document_type = 'echinv';
+                    $dStoreMaterials->document_id = $invoiceId;
+                    $dStoreMaterials->store_id = $request->storeto_id;
+                    $dStoreMaterials->material_id = $row["product_id"];
+                    $dStoreMaterials->qty = $row["quantity"];
+                    $dStoreMaterials->store_qty = $qtyD;
+                    $dStoreMaterials->unit_id = $storeData->unit_id;
+                    $dStoreMaterials->fact_qty = $qtyD;
+                    $dStoreMaterials->store_fact_qty = $qtyD;
+                    $dStoreMaterials->fact_unit_id = $storeData->fact_unit_id;
+                    $dStoreMaterials->price_per_unit = $unitPrice;
+                    $dStoreMaterials->producer_id = $storeData->producer_id;
+                    $dStoreMaterials->save();
+
+                    $invoiceItem = new DisplacementItems();
+                    $invoiceItem->invoice_id = $invoiceId;
+                    $invoiceItem->product_id = $row["product_id"];
+                    $invoiceItem->quantity = $row["quantity"];
+                    $invoiceItem->price = $qtyD;
+                    $invoiceItem->total = $qtyD*$unitPrice;
+                    $invoiceItem->fact_qty = $row["quantity"];
+                    $invoiceItem->unit_id = $material->unit_id;
+                    $invoiceItem->price_per_unit = $unitPrice;
+                    $invoiceItem->save();
+
+
                     $documentOperation  = new DocumentOperations();
                     $documentOperation->operation_date = $request->invoice_date;
                     $documentOperation->operation_number = $request->invoice_number;
                     $documentOperation->document_id = $invoiceId;
-                    $documentOperation->amount = 0;
+                    $documentOperation->amount = $qtyD*$unitPrice;
                     $documentOperation->document_type = 'displacements';
                     $documentOperation->operation_dt = '281';
                     $documentOperation->subconto_dt = json_encode(array(
                         'store_id' => $request->storeto_id,
                         'name' => $storeTo->name,
                         'product_id' => $row["product_id"],
-                        'product_name' => $row['product']
+                        'product_name' => $row['product'],
+                        'price_per_unit' => $unitPrice,
+                        'fact_qty' => $qtyD
                     ));
                     $documentOperation->operation_kt = '281';
                     $documentOperation->subconto_kt = json_encode(array(
                         'store_id' => $request->storefrom_id,
                         'name' => $storeFrom->name,
                         'product_id' => $row["product_id"],
-                        'product_name' => $row['product']
+                        'product_name' => $row['product'],
+                        'price_per_unit' => $unitPrice,
+                        'fact_qty' => $qtyD
                     ));
                     $documentOperation->quantity = $row["quantity"];
                     $documentOperation->comment = 'move_products';
                     $documentOperation->save();
+
+                    $storeDataM->save();
+                    if ($materialQty === 0) {
+                        break;
+                    }
                 }
+//                dd($materialQty);exit;
+
+
+//                DB::select('
+//                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id)
+//                        VALUES ('.$request->storefrom_id.', '.$row["product_id"].', '.$row["producer_id"].')
+//                        ON CONFLICT ON CONSTRAINT store_materials_pkey
+//                        DO UPDATE SET
+//                        weight = sm.weight - '.($material->weight*$row["quantity"]). ',
+//                        quantity = sm.quantity - ' .$row["quantity"]. ';
+//                    ');
+//                DB::select('
+//                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight)
+//                        VALUES ('.$request->storeto_id.', '.$row["product_id"].', '.$row["producer_id"].', '.$row["quantity"].', '.($material->weight*$row["quantity"]).')
+//                        ON CONFLICT ON CONSTRAINT store_materials_pkey
+//                        DO UPDATE SET
+//                        weight = sm.weight + '.($material->weight*$row["quantity"]). ',
+//                        quantity = sm.quantity + ' .$row["quantity"]. ';
+//                    ');
+//                if (intval($request->status_id) === 2) {
+//                    $documentOperation  = new DocumentOperations();
+//                    $documentOperation->operation_date = $request->invoice_date;
+//                    $documentOperation->operation_number = $request->invoice_number;
+//                    $documentOperation->document_id = $invoiceId;
+//                    $documentOperation->amount = 0;
+//                    $documentOperation->document_type = 'displacements';
+//                    $documentOperation->operation_dt = '281';
+//                    $documentOperation->subconto_dt = json_encode(array(
+//                        'store_id' => $request->storeto_id,
+//                        'name' => $storeTo->name,
+//                        'product_id' => $row["product_id"],
+//                        'product_name' => $row['product']
+//                    ));
+//                    $documentOperation->operation_kt = '281';
+//                    $documentOperation->subconto_kt = json_encode(array(
+//                        'store_id' => $request->storefrom_id,
+//                        'name' => $storeFrom->name,
+//                        'product_id' => $row["product_id"],
+//                        'product_name' => $row['product']
+//                    ));
+//                    $documentOperation->quantity = $row["quantity"];
+//                    $documentOperation->comment = 'move_products';
+//                    $documentOperation->save();
+//                }
             }
 
             return Redirect::route('invoice.change.index');

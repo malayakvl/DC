@@ -64,9 +64,7 @@ export default function List({ storesData }) {
     console.log('renderReportReult');
 
     if (reportResult) {
-      for (const key in reportResult) {
-        console.log('Store Id', key);
-      }
+      console.log(reportResult);
 
       return (
         <div className="mt-4">

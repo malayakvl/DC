@@ -254,7 +254,7 @@ class IncomingInvoiceController extends Controller
                     $documentOperation->operation_date = $request->invoice_date;
                     $documentOperation->operation_number = $request->invoice_number;
                     $documentOperation->document_id = $invoiceId;
-                    $documentOperation->document_type = 'invoice';
+                    $documentOperation->document_type = 'iinv';
                     $documentOperation->operation_dt = '281';
                     $documentOperation->subconto_dt = json_encode(array(
                         'store_id' => $request->store_id,
@@ -277,11 +277,15 @@ class IncomingInvoiceController extends Controller
 //                    ');
                     $storeMaterials = new StoreMaterials();
                     $storeMaterials->doc_date = $request->invoice_date;
+                    $storeMaterials->document_type = 'iinv';
+                    $storeMaterials->document_id = $invoiceId;
                     $storeMaterials->store_id = $request->store_id;
                     $storeMaterials->material_id = $row["product_id"];
                     $storeMaterials->qty = $row["quantity"];
+                    $storeMaterials->store_qty = $row["quantity"];
                     $storeMaterials->unit_id = $material->unit_id;
                     $storeMaterials->fact_qty = $row['fact_qty'];
+                    $storeMaterials->store_fact_qty = $row['fact_qty'];
                     $storeMaterials->fact_unit_id = $material->weightunit_id;
                     $storeMaterials->price_per_unit = number_format(($row['total']/$row['fact_qty']), 2);
                     $storeMaterials->producer_id = $request->producer_id;

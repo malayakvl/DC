@@ -264,17 +264,31 @@ class MaterialController extends Controller
 //            ->whereRaw('LOWER(m.name) LIKE ?', '%' .mb_strtolower($name). '%')
 //            ->where('store_id', $storeId)
 //            ->get();
+//        $resData = DB::select('
+//            SELECT m.name, m.unit_id, m.fact_unit_id, u.name AS packunit_name, u2.name as perunit_name,
+//                m.id AS product_id,
+//                m.price, sm.fact_qty, sm.quantity
+//            FROM materials m
+//            LEfT JOIN store_materials sm ON sm.material_id = m.id
+//            LEFT JOIN units u ON u.id = sm.unit_id
+//            LEFT JOIN units u2 ON u2.id = sm.fact_unit_id
+//            WHERE
+//              LOWER(m.name) LIKE \'%' .mb_strtolower($name). '%\'
+//        ');
         $resData = DB::select('
-            SELECT m.name, m.unit_id, m.weightunit_id, u.name AS packunit_name, u2.name as perunit_name,
-                m.id AS product_id,   
-                m.price, sm.weight, sm.quantity, m.weight AS material_weight
-            FROM materials m
-            LEfT JOIN store_materials sm ON sm.material_id = m.id 
-            LEFT JOIN units u ON u.id = m.unit_id
-            LEFT JOIN units u2 ON u2.id = m.weightunit_id
-            WHERE  
-              LOWER(m.name) LIKE \'%' .mb_strtolower($name). '%\'
+            SELECT SUM(sm.fact_qty) AS unit_total, SUM(sm.qty) AS pack_total, u.name AS pack_name, 
+                   u2.name as unit_name, sm.material_id, m.name AS material_name,
+                   sm.unit_id, sm.fact_unit_id, sm.material_id 
+            FROM store_materials sm
+                LEFT JOIN materials m ON m.id = sm.material_id
+                LEFT JOIN units u ON u.id = sm.unit_id
+                LEFT JOIN units u2 ON u2.id = sm.fact_unit_id
+            WHERE LOWER(m.name) LIKE \'%' .mb_strtolower($name). '%\' AND store_id = ' .$storeId. '
+                    AND fact_unit_id > 0
+            GROUP BY material_id, store_id, u.name, u2.name, sm.material_id, m.name,
+                sm.unit_id, sm.fact_unit_id, sm.material_id            
         ');
+
 
 
         return response()->json([

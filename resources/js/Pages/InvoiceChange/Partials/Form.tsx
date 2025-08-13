@@ -79,11 +79,23 @@ export default function Form({
     }));
   };
 
+  const handleChangeCalendar = data => {
+    console.log(data);
+    const key = 'invoice_date';
+    const value = data;
+    setValues(values => ({
+      ...values,
+      [key]: data,
+    }));
+  };
+
   const submit = e => {
     e.preventDefault();
-console.log(invoiceItems);
     values['rows'] = invoiceItems;
-    values['invoice_date'] = new Date();
+    if (!values['invoice_date']) {
+      values['invoice_date'] = new Date();
+    }
+    // values['invoice_date'] = new Date();
     let haveErrorInRow = false;
     invoiceItems.forEach(_row => {
       if (!_row.product_id) {
@@ -158,7 +170,7 @@ console.log(invoiceItems);
                     values={values}
                     dataValue={values.invoice_date}
                     value={values.invoice_date}
-                    onChange={handleChange}
+                    onChange={handleChangeCalendar}
                     required
                     label={msg.get('invoice.date')}
                   />

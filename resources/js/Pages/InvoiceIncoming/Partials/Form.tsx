@@ -76,7 +76,6 @@ export default function Form({
   };
 
   const handleChangeCalendar = data => {
-    console.log(data);
     const key = 'invoice_date';
     const value = data;
     setValues(values => ({
@@ -96,6 +95,9 @@ export default function Form({
 
   const submit = e => {
     e.preventDefault();
+    if (!values['invoice_date']) {
+      values['invoice_date'] = new Date();
+    }
 
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;

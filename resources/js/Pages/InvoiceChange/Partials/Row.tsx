@@ -118,18 +118,18 @@ export default function AddDynamicInputFields({
                 onClick={() => {
                   setHideFields(true);
                   dispatch(emptyMaterialsQtyAutocompleteAction());
-                  inputs[index].product = _res.name;
-                  inputs[index].product_id = _res.product_id;
+                  inputs[index].product = _res.material_name;
+                  inputs[index].product_id = _res.material_id;
                   inputs[index].quantity = 1;
                   inputs[index].unit_id = _res.unit_id;
-                  inputs[index].maxQty = _res.quantity;
-                  inputs[index].maxFactQty = _res.material_weight;
-                  inputs[index].pack_qty = _res.material_weight;
-                  inputs[index].fact_qty = _res.material_weight;
-                  inputs[index].producer_id = _res.producer_id;
+                  inputs[index].maxQty = _res.pack_total;
+                  inputs[index].maxFactQty = _res.unit_total;
+                  inputs[index].pack_qty = _res.pack_total;
+                  inputs[index].fact_qty = _res.unit_total;
+                  // inputs[index].producer_id = _res.producer_id;
                 }}
               >
-                {_res.name} ({_res.packunit_name} - {msg.get('invoice.factqty')}: {_res.weight} {_res.perunit_name}]
+                {_res.material_name} ({_res.pack_total} {_res.unit_name} - {msg.get('invoice.factqty')}: {_res.unit_total}]
                 )
               </li>
             ))}
