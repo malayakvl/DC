@@ -655,12 +655,21 @@ console.log(event)
         <div id={`event-${event.event_id}`} className={'rbc-event-data'}>
           <span className={'block mb-1 inline-block'}>
             <div className="flex flex-row">
-              <img
-                className='sch-p-photo'
-                src={`/uploads/patients/${event.avatar}`}
-                width="auto"
-                height="15"
-              />
+              {event.avatar ? (
+                <img
+                  className='sch-p-photo'
+                  src={`/uploads/patients/${event.avatar}`}
+                  width="auto"
+                  height="15"
+                />
+              ) : (
+                <img
+                  className='sch-p-photo'
+                  src={`/images/hause.png`}
+                  width="auto"
+                  height="15"
+                />
+              )}
               <div className="pt-[3px]">
                 <strong style={{color: color, marginLeft: '5px', marginTop: '2px'}}>
                   {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>

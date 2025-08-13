@@ -75,6 +75,16 @@ export default function Form({
     }
   };
 
+  const handleChangeCalendar = data => {
+    console.log(data);
+    const key = 'invoice_date';
+    const value = data;
+    setValues(values => ({
+      ...values,
+      [key]: data,
+    }));
+  };
+
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -88,7 +98,6 @@ export default function Form({
     e.preventDefault();
 
     values['rows'] = invoiceItems;
-    values['invoice_date'] = new Date();
     let haveErrorInRow = false;
     invoiceItems.forEach(_row => {
       if (!_row.product_id) {
@@ -170,7 +179,7 @@ export default function Form({
                     values={values}
                     dataValue={values.invoice_date}
                     value={values.invoice_date}
-                    onChange={handleChange}
+                    onChange={handleChangeCalendar}
                     required
                     label={msg.get('invoice.date')}
                   />

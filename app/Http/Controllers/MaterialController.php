@@ -202,21 +202,12 @@ class MaterialController extends Controller
             }
             // find unit
 //            $unit = Unit::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->unit). '%')->get();
-
             $unit = Unit::where('id', '=', $request->unit_id)->first();
             $unitWeight = '';
             if ($request->weightunit_id) {
                 $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
             }
 
-//            if (count($unit) > 0) {
-//                $unitId = $unit[0]->id;
-//            } else {
-//                $unitNew = new Unit();
-//                $unitNew->name = $request->unit	;
-//                $unitNew->save();
-//                $unitId = $unitNew->id;
-//            }
             // find size
             $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->size). '%')->get();
             if (count($size) > 0) {
@@ -261,15 +252,31 @@ class MaterialController extends Controller
         $name = $request->searchName;
         $storeId = $request->storeId;
 
-        $resData = DB::table('materials')
-            ->select('materials.name', 'producers.name AS producerName', 'materials.price', 'store_materials.weight',
-                'store_materials.quantity', 'units.name AS unitName', 'materials.id', 'materials.producer_id')
-            ->leftJoin('store_materials', 'store_materials.material_id', '=', 'materials.id')
-            ->leftJoin('producers', 'producers.id', '=', 'store_materials.producer_id')
-            ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
-            ->whereRaw('LOWER(materials.name) LIKE ?', '%' .mb_strtolower($name). '%')
-            ->where('store_id', $storeId)
-            ->get();
+//        $resData = DB::table('materials m')
+//            ->select('m.name', 'producers.name AS producerName', 'm.price', 'store_materials.weight',
+//                'store_materials.quantity', 'units.name AS unitName', 'materials.id', 'materials.producer_id',
+//                'materials.unit_id', 'materials.weight AS material_weight', 'material.weightunit_id'
+//            )
+//            ->leftJoin('store_materials', 'store_materials.material_id', '=', 'm.id')
+//            ->leftJoin('producers', 'producers.id', '=', 'store_materials.producer_id')
+//            ->leftJoin('units u', 'u.id', '=', 'm.unit_id')
+//            ->leftJoin('units u2', 'u2.id', '=', 'm.weightunit_id')
+//            ->whereRaw('LOWER(m.name) LIKE ?', '%' .mb_strtolower($name). '%')
+//            ->where('store_id', $storeId)
+//            ->get();
+        $resData = DB::select('
+            SELECT m.name, m.unit_id, m.weightunit_id, u.name AS packunit_name, u2.name as perunit_name,
+                m.id AS product_id,   
+                m.price, sm.weight, sm.quantity, m.weight AS material_weight
+            FROM materials m
+            LEfT JOIN store_materials sm ON sm.material_id = m.id 
+            LEFT JOIN units u ON u.id = m.unit_id
+            LEFT JOIN units u2 ON u2.id = m.weightunit_id
+            WHERE  
+              LOWER(m.name) LIKE \'%' .mb_strtolower($name). '%\'
+        ');
+
+
         return response()->json([
             'items' => $resData
         ]);

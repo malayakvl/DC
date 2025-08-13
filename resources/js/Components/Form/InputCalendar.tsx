@@ -27,7 +27,7 @@ export default function InputCalendar({
         selected={startDate}
         onChange={date => {
           setStartDate(date);
-          onChange;
+          onChange(date);
         }}
       />
       {/*<input*/}

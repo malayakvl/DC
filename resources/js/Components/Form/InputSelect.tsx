@@ -9,6 +9,7 @@ import Lang from 'lang.js';
 
 export default function InputSelect({
   className = '',
+  elId = '',
   name,
   label,
   values,
@@ -23,13 +24,12 @@ export default function InputSelect({
     messages: lngDropdown,
     locale: appLang,
   });
-
   return (
     <div className={`relative`}>
       <InputLabel htmlFor={name} value={label} children={null} />
       {props.options.length > 0 && (
         <select
-          id={name}
+          id={`${elId || name}`}
           name={name}
           className={`input-text`}
           defaultValue={`${defaultValue ? defaultValue : values[name]}`}

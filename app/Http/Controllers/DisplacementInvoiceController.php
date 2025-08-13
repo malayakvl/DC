@@ -17,6 +17,7 @@ use App\Models\Producer;
 use App\Models\Store;
 use App\Models\Invoice;
 use App\Models\Tax;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -32,7 +33,6 @@ class DisplacementInvoiceController extends Controller
     public function index(Request $request)
     {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $filialId = '';
         if ($request->user()->roles[0]->name != 'Admin') {
             // get store filial
             $filialId = $request->session()->get('filial_id');
@@ -76,7 +76,9 @@ class DisplacementInvoiceController extends Controller
     public function create(Request $request): Response {
         if ($request->user()->can('invoice-exchange-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+//            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
+            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
             $statusData = InvoiceStatus::all();
             $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
             $taxData = Tax::where('clinic_id', $clinicData->id)->get();
@@ -111,7 +113,8 @@ class DisplacementInvoiceController extends Controller
                 'statusData' => $statusData,
                 'typeData' => $typeData,
                 'currencyData' => $currencyData,
-                'taxData' => $taxData
+                'taxData' => $taxData,
+                'unitsData' => $unitsData
             ]);
         }
     }

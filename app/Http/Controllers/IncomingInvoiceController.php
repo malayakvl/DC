@@ -143,7 +143,8 @@ class IncomingInvoiceController extends Controller
     public function edit(Request $request, $id) {
         if ($request->user()->can('invoice-incoming-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+//            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
             $statusData = InvoiceStatus::all();
             $typeData = InvoiceType::all();
             $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
@@ -213,7 +214,6 @@ class IncomingInvoiceController extends Controller
             else {
                 $invoice = new Invoice();
             }
-
             $invoice->fill($request->validated());
             $invoice->invoice_number = $request->invoice_number;
             $invoice->invoice_date = $request->invoice_date;
@@ -266,14 +266,35 @@ class IncomingInvoiceController extends Controller
                     ));
                     // get weight if exist
                     $material = Material::find($row["product_id"]);
-                    DB::select('
-                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
-                        VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
-                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
-                        ON CONFLICT ON CONSTRAINT store_materials_pkey
-                        DO UPDATE SET
-                        quantity = sm.quantity + ' .$row["quantity"]. ';
-                    ');
+//                    DB::select('
+//                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
+//                        VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
+//                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
+//                        ON CONFLICT ON CONSTRAINT store_materials_pkey
+//                        DO UPDATE SET
+//                        weight = sm.weight  + ' .$row["fact_qty"]. ',
+//                        quantity = sm.quantity + ' .$row["quantity"]. ';
+//                    ');
+                    $storeMaterials = new StoreMaterials();
+                    $storeMaterials->doc_date = $request->invoice_date;
+                    $storeMaterials->store_id = $request->store_id;
+                    $storeMaterials->material_id = $row["product_id"];
+                    $storeMaterials->qty = $row["quantity"];
+                    $storeMaterials->unit_id = $material->unit_id;
+                    $storeMaterials->fact_qty = $row['fact_qty'];
+                    $storeMaterials->fact_unit_id = $material->weightunit_id;
+                    $storeMaterials->price_per_unit = number_format(($row['total']/$row['fact_qty']), 2);
+                    $storeMaterials->producer_id = $request->producer_id;
+                    $storeMaterials->save();
+
+//                    DB::select('
+//                        INSERT INTO store_materials AS sm (doc_date, store_id, material_id, qty, unit_id, fact_qty, fact_unit_id, price_per_unit, producer_id)
+//                        VALUES (\''.$request->invoice_date. '\',  '.$request->store_id.', '.$row["product_id"].',
+//                        '.$row["quantity"].', ' .$material->unit_id. ', '. $row['fact_qty'].',
+//                        ' .$material->weightunit_id. ',
+//                        '.number_format(($row['total']/$row['fact_qty']), 2).',
+//                        ' .$request->producer_id. '
+//                    ');
 
                     $documentOperation->operation_kt = '631';
                     $documentOperation->subconto_kt = json_encode(array(

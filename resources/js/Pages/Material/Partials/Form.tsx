@@ -69,6 +69,7 @@ export default function Form({
   }, [categoryPercent]);
 
   const handleChangeSelect = e => {
+    console.log('key', e.target)
     const key = e.target.id;
     const value = e.target.value;
     dispatch(findPercentAction(e.target.value));
@@ -81,8 +82,9 @@ export default function Form({
       values['weight'] = _fUnit.unit_qty;
       values['price_per_unit'] = parseFloat(values['retail_price'])/parseFloat(_fUnit.unit_qty ? _fUnit.unit_qty : 1).toFixed(2);
     }
-  };
 
+  };
+console.log(values)
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;

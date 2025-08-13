@@ -31,6 +31,7 @@ export default function Form({
   formData,
   formRowData = null,
   className = '',
+  unitsData
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -80,7 +81,7 @@ export default function Form({
 
   const submit = e => {
     e.preventDefault();
-
+console.log(invoiceItems);
     values['rows'] = invoiceItems;
     values['invoice_date'] = new Date();
     let haveErrorInRow = false;
@@ -213,24 +214,31 @@ export default function Form({
           </div>
         </div>
         <div className="relative">
-          <table className="w-full1">
+          <table className="invoice-table">
             <thead>
               <tr>
                 <th className="pb-3">{msg.get('invoice.product')}</th>
                 <th className="pb-3 w-qty">{msg.get('invoice.qty')}</th>
+                <th className="pb-3">{msg.get('invoice.unit')}</th>
+                <th className="pb-3">{msg.get('invoice.factqty')}</th>
+                {/*<th className="pb-3 w-price">{msg.get('invoice.price')}</th>*/}
+                {/*<th className="pb-3 w-price">{msg.get('invoice.tax')}</th>*/}
+                {/*<th className="pb-3 w-price">{msg.get('invoice.total')}</th>*/}
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} />
+                <AddDynamicInputFields unitsData={unitsData} formRowData={formRowData} />
               ) : (
                 <AddDynamicInputFields
+                  unitsData={unitsData}
                   formRowData={[
                     {
                       product_id: '',
                       product: '',
+                      unit_id: '',
                       quantity: '',
                       price: '',
                       total: '',

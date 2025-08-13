@@ -205,7 +205,6 @@ export default function AddDynamicInputFields({
                 value={item.quantity}
                 onChange={event => handleChange(event, index)}
               />
-
               <button
                 name="plusBtn"
                 onClick={event => {
@@ -218,7 +217,7 @@ export default function AddDynamicInputFields({
               </button>
             </div>
           </td>
-          <td className="w-unit text-center pb-2">
+          <td className="w-unit text-center pb-2 min-w-[120px]">
             <InputSelect
               translatable={false}
               name={'unit_id'}
