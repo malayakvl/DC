@@ -28,7 +28,8 @@ export default function List({ storesData }) {
     store_id: '',
   });
   const [storeError, setStoreError] = useState('');
-  const [reportDate, setReportDate] = useState(new Date());
+  const [reportFromDate, setReportFromDate] = useState(new Date());
+  const [reportToDate, setReportToDate] = useState(new Date());
   const reportResult = useSelector(reportResultSelector);
 
   const handleChangeSelect = e => {
@@ -46,10 +47,10 @@ export default function List({ storesData }) {
   const generateReport = () => {
     if (!values['store_id']) {
       // setStoreError(msg.get('material.report.error.store'));
-      dispatch(generateStoreReportAction(null, reportDate));
+      dispatch(generateStoreReportAction(null, reportFromDate, reportToDate));
     } else {
       setStoreError('');
-      dispatch(generateStoreReportAction(values['store_id'], reportDate));
+      dispatch(generateStoreReportAction(values['store_id'], reportFromDate, reportToDate));
     }
     return;
   };
@@ -61,7 +62,7 @@ export default function List({ storesData }) {
   // }, [reportResult]);
 
   const renderReportReult = () => {
-    console.log('renderReportReult');
+    // console.log('renderReportReult');
 
     if (reportResult) {
       console.log(reportResult);
@@ -124,19 +125,31 @@ console.log('Result data', reportResult)
                     <div className="flex">
                       <div className="mr-3">
                         <DatePicker
-                          id={'report_date'}
-                          name={`report_date`}
-                          selected={reportDate}
-                          className={`input-text`}
+                          id={'report_from_date'}
+                          name={`report_from_date`}
+                          selected={reportFromDate}
+                          className={`input-text input-report-date`}
                           onChange={date => {
-                            setReportDate(date)
+                            setReportFromDate(date)
                           }}
                         />
                       </div>
+                      <div className="mr-3">
+                        <DatePicker
+                          id={'report_to_date'}
+                          name={`report_to_date`}
+                          selected={reportToDate}
+                          className={`input-text input-report-date`}
+                          onChange={date => {
+                            setReportToDate(date)
+                          }}
+                        />
+                      </div>
+                      <div className="mx-2 font-bold pt-[5px]">{msg.get('material.store')}</div>
                       <InputSelect
                         translatable={false}
                         name={'store_id'}
-                        className={'mb-1'}
+                        className={'mb-1 input-report-store'}
                         values={values}
                         value={values.store_id}
                         options={storesData}

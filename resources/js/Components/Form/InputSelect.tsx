@@ -31,7 +31,7 @@ export default function InputSelect({
         <select
           id={`${elId || name}`}
           name={name}
-          className={`input-text`}
+          className={`input-text ${className}`}
           defaultValue={`${defaultValue ? defaultValue : values[name]}`}
           onChange={onChange}
         >
