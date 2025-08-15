@@ -219,7 +219,6 @@ class DisplacementInvoiceController extends Controller
             foreach ($request->rows as $row) {
                 $materialQty = floatval($row["fact_qty"]);
                 $material = Material::find($row["product_id"]);
-
                 // делаем перемещение в табличке остатков
                 // находим в остатках позиции у котороих не нулевое значение на остатке склада
                 $storeQuery = 'SELECT sm.*, m.name AS material_name,
@@ -233,7 +232,8 @@ class DisplacementInvoiceController extends Controller
                 $storeRes = DB::select($storeQuery);
                 foreach ($storeRes as $storeData) {
                     $storeDataM = StoreMaterials::find($storeData->id);
-                    if ($storeData->store_fact_qty > $materialQty) {
+
+                    if ($storeData->store_fact_qty >= $materialQty) {
                         $storeDataM->store_fact_qty = $storeData->store_fact_qty - $materialQty;
                         $unitPrice = $storeData->price_per_unit;
                         $qtyD = $materialQty;
@@ -281,18 +281,18 @@ class DisplacementInvoiceController extends Controller
                     $documentOperation->operation_dt = '281';
                     $documentOperation->subconto_dt = json_encode(array(
                         'store_id' => $request->storeto_id,
-                        'name' => $storeTo->name,
-                        'product_id' => $row["product_id"],
-                        'product_name' => $row['product'],
+                        'store_name' => $storeTo->name,
+                        'product_id' => $material->id,
+                        'product_name' => $material->name,
                         'price_per_unit' => $unitPrice,
                         'fact_qty' => $qtyD
                     ));
                     $documentOperation->operation_kt = '281';
                     $documentOperation->subconto_kt = json_encode(array(
                         'store_id' => $request->storefrom_id,
-                        'name' => $storeFrom->name,
-                        'product_id' => $row["product_id"],
-                        'product_name' => $row['product'],
+                        'store_name' => $storeFrom->name,
+                        'product_id' => $material->id,
+                        'product_name' => $material->name,
                         'price_per_unit' => $unitPrice,
                         'fact_qty' => $qtyD
                     ));

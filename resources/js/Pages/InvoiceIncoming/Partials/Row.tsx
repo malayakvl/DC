@@ -40,7 +40,7 @@ export default function AddDynamicInputFields({
         pack_qty: 0,
         fact_qty: 0,
         price: 0,
-        tax: 0,
+        tax_amount: 0,
         total: 0,
       },
     ]);
@@ -88,7 +88,18 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
+      inputs[index].tax_amount = inputs[index].total*20/100;
+      console.log('reaclc tax', inputs[index].total, inputs[index].tax_amount)
+      // inputs[index].total = (
+      //   parseFloat(String(inputs[index].quantity)) *
+      //   parseFloat(String(inputs[index].price))
+      // ).toFixed(2);
     }
+    console.log(inputs[index].total)
+    inputs[index].tax = (
+      parseFloat(String(inputs[index].total)) *
+      20/100
+    ).toFixed(2);
     setInputs(onChangeValue);
   };
 
@@ -116,7 +127,9 @@ export default function AddDynamicInputFields({
     onChangeValue[index][name] = value;
     // recalculate total
     let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
-    inputs[index].total = total.toFixed(2)
+    inputs[index].total = total.toFixed(2);
+    inputs[index].tax_amount = total*20/100;
+    console.log('reaclc tax', total, inputs[index].tax_amount)
     setInputs(onChangeValue);
   }
 

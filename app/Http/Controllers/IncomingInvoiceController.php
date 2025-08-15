@@ -214,6 +214,7 @@ class IncomingInvoiceController extends Controller
             else {
                 $invoice = new Invoice();
             }
+//            dd($request);exit;
             $invoice->fill($request->validated());
             $invoice->invoice_number = $request->invoice_number;
             $invoice->invoice_date = $request->invoice_date;
@@ -246,8 +247,8 @@ class IncomingInvoiceController extends Controller
                 $invoiceItem->price_per_unit = $row["total"]/$row["fact_qty"];
                 $invoiceItem->quantity = $row["quantity"];
                 $invoiceItem->price = $row["price"];
-                $invoiceItem->total = ($row["quantity"])*floatval($row["price"]);
-                $total = $total + $row["quantity"]*floatval($row["price"]);
+                $invoiceItem->total = $row["total"];
+                $total = $total + $row["total"];
                 $invoiceItem->save();
                 if (intval($request->status_id) === 2) {
                     $documentOperation  = new DocumentOperations();
@@ -258,9 +259,11 @@ class IncomingInvoiceController extends Controller
                     $documentOperation->operation_dt = '281';
                     $documentOperation->subconto_dt = json_encode(array(
                         'store_id' => $request->store_id,
-                        'name' => $store->name,
+                        'store_name' => $store->name,
                         'product_id' => $row["product_id"],
                         'product_name' => $row['product'],
+                        'producer_id' => $producer->id,
+                        'producer_name' => $producer->name,
                         'fact_qty' => $row['fact_qty'],
                         'price_per_unit' => number_format(($row['total']/$row['fact_qty']), 2)
                     ));
@@ -303,10 +306,10 @@ class IncomingInvoiceController extends Controller
                     $documentOperation->operation_kt = '631';
                     $documentOperation->subconto_kt = json_encode(array(
                         'producer_id' => $request->producer_id,
-                        'name' => $producer->name
+                        'producer_name' => $producer->name
                     ));
 //                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
-                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
+                    $documentOperation->amount = $row["total"];
                     $documentOperation->quantity = $row["quantity"];
                     $documentOperation->comment = 'income_products';
                     $documentOperation->save();
@@ -318,12 +321,12 @@ class IncomingInvoiceController extends Controller
                 $documentOperation->operation_date = $request->invoice_date;
                 $documentOperation->operation_number = $request->invoice_number;
                 $documentOperation->document_id = $invoiceId;
-                $documentOperation->document_type = 'invoice';
+                $documentOperation->document_type = 'iinv';
                 $documentOperation->operation_dt = '6442';
                 $documentOperation->subconto_dt = json_encode(array('name' => 'nds'));
                 $documentOperation->operation_kt = '631';
                 $documentOperation->subconto_kt = json_encode(array('producer_id' => $request->producer_id, 'name' => $producer->name));
-                $documentOperation->amount = $total;
+                $documentOperation->amount = $total*20/100;
                 $documentOperation->quantity = 0;
                 $documentOperation->comment = 'nds';
                 $documentOperation->save();

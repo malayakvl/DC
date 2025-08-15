@@ -233,58 +233,176 @@ class MaterialController extends Controller
                                 ORDER BY document_operations.operation_date;"
                     ;
                     $results = DB::select($query);
+//                    dd($resultsStartPeriod);exit;
                     $arrReminders[$store->name] = $results;
                 }
             } else {
-
-
-                $dataStores = Store::where('id', '=', $storeId)->get();
-                $query =
-                    "SELECT
-                                    (subconto_dt->>'product_id')::integer AS product_id,
-                                    (subconto_dt->>'product_name') AS product_name,
-                                    SUM(CASE
-                                        WHEN (subconto_dt->>'store_id')::text = '12' THEN quantity
-                                        WHEN (subconto_kt->>'store_id')::text = '12' THEN -quantity
-                                        ELSE 0
-                                    END) AS total_quantity,
-                                    u.name AS unit_name,
-                                    p.name AS producer_name,
-                                    document_operations.document_type,
-                                    SUM(CASE
-                                        WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN CAST(subconto_dt->>'fact_qty' AS NUMERIC)
-                                        WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -CAST(subconto_dt->>'fact_qty' AS NUMERIC)
-                                        ELSE 0
-                                    END) AS total_fact,
-                                    um.name AS unit_weightname,
-                                    document_operations.operation_date,
-                                    COALESCE(i.invoice_number, d.invoice_number) AS invoice_number
-                                FROM document_operations
-                                    JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id
-                                    JOIN units u ON m.unit_id = u.id
-                                    LEFT JOIN units um ON m.weightunit_id = um.id
-                                    JOIN producers p ON m.producer_id = p.id
-                                    LEFT JOIN invoices i ON document_operations.document_id = i.id
-                                        AND (subconto_dt->>'store_id')::text = '" .$storeId. "'
-                                    LEFT JOIN displacements d ON document_operations.document_id = d.id
-                                        AND (subconto_kt->>'store_id')::text = '" .$storeId. "'
-                                WHERE (
-                                    (subconto_dt->>'store_id')::text = '" .$storeId. "' AND (operation_date >= '" .$formattedFromDate. "' AND operation_date <= '" .$formattedToDate. "') 
-                                        OR
-                                    (subconto_kt->>'store_id')::text = '" .$storeId. "' AND (operation_date >= '" .$formattedFromDate. "' AND operation_date <= '" .$formattedToDate. "')
-                                )
-                                GROUP BY
-                                    (subconto_dt->>'product_id')::integer,
-                                    (subconto_dt->>'product_name'),
-                                    u.name,
-                                    um.name,
-                                    p.name,
-                                    document_operations.document_type,
-                                    document_operations.operation_date,
-                                    COALESCE(i.invoice_number, d.invoice_number)
-                                ORDER BY document_operations.operation_date;"
-                ;
+                $endOfPreviousDay = (new DateTime($formattedFromDate))->modify('-1 day')->setTime(23, 59, 59)->format('Y-m-d H:i:s');
+                $queryPeriodStart = "
+                        SELECT
+                            (subconto_dt->>'product_id')::integer AS product_id,
+                            (subconto_dt->>'product_name') AS product_name,
+                            SUM(CASE
+                                WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN quantity
+                                WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -quantity
+                                ELSE 0
+                            END) AS balance_quantity,
+                            SUM(CASE
+                                WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN (subconto_dt->>'fact_qty')::float
+                                WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -1*(subconto_dt->>'fact_qty')::float
+                                ELSE 0
+                            END) AS balance_fact_quantity
+                        FROM document_operations
+                        WHERE (
+                            (subconto_dt->>'store_id')::text = '12' OR (subconto_kt->>'store_id')::text = '" .$storeId. "') 
+                                AND 
+                            operation_date <= '" .$endOfPreviousDay. "'
+                        GROUP BY
+                            (subconto_dt->>'product_id')::integer,
+                            (subconto_dt->>'product_name')
+                        ORDER BY product_id;
+                        ";
+                $resultsStartPeriod = DB::select($queryPeriodStart);
+                $balanceData = array();
+                foreach ($resultsStartPeriod as $storeData) {
+                    $balanceData[$storeData->product_id] = array(
+                        'startPeriod' => $storeData
+                    );
+                }
+//                $query =
+//                    "SELECT
+//                                    (subconto_dt->>'product_id')::integer AS product_id,
+//                                    (subconto_dt->>'product_name') AS product_name,
+//                                    SUM(CASE
+//                                        WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN quantity
+//                                        WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -quantity
+//                                        ELSE 0
+//                                    END) AS total_quantity,
+//                                    u.name AS unit_name,
+//                                    p.name AS producer_name,
+//                                    document_operations.document_type,
+//                                    SUM(CASE
+//                                        WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN CAST(subconto_dt->>'fact_qty' AS NUMERIC)
+//                                        WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -CAST(subconto_dt->>'fact_qty' AS NUMERIC)
+//                                        ELSE 0
+//                                    END) AS total_fact,
+//                                    um.name AS unit_weightname,
+//                                    document_operations.operation_date,
+//                                    COALESCE(i.invoice_number, d.invoice_number) AS invoice_number
+//                                FROM document_operations
+//                                    JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id
+//                                    JOIN units u ON m.unit_id = u.id
+//                                    LEFT JOIN units um ON m.weightunit_id = um.id
+//                                    JOIN producers p ON m.producer_id = p.id
+//                                    LEFT JOIN invoices i ON document_operations.document_id = i.id
+//                                        AND (subconto_dt->>'store_id')::text = '" .$storeId. "'
+//                                    LEFT JOIN displacements d ON document_operations.document_id = d.id
+//                                        AND (subconto_kt->>'store_id')::text = '" .$storeId. "'
+//                                WHERE (
+//                                    (subconto_dt->>'store_id')::text = '" .$storeId. "' AND (operation_date >= '" .$formattedFromDate. "' AND operation_date <= '" .$formattedToDate. "')
+//                                        OR
+//                                    (subconto_kt->>'store_id')::text = '" .$storeId. "' AND (operation_date >= '" .$formattedFromDate. "' AND operation_date <= '" .$formattedToDate. "')
+//                                )
+//                                GROUP BY
+//                                    (subconto_dt->>'product_id')::integer,
+//                                    (subconto_dt->>'product_name'),
+//                                    u.name,
+//                                    um.name,
+//                                    p.name,
+//                                    document_operations.document_type,
+//                                    document_operations.operation_date,
+//                                    COALESCE(i.invoice_number, d.invoice_number)
+//                                ORDER BY document_operations.operation_date;"
+//                ;
+                $query = "
+                    SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name, 
+                        SUM(quantity) AS total_quantity, 
+                        u.name AS unit_name, p.name AS producer_name, document_operations.document_type,
+                        document_operations.operation_number,
+                        SUM(CAST(subconto_dt->>'fact_qty' AS NUMERIC)) as total_fact_dt,
+                        SUM(CAST(subconto_kt->>'fact_qty' AS NUMERIC)) as total_fact_kt, 
+                        SUM(CASE 
+                            WHEN (subconto_dt->>'store_id')::text = '" .$storeId. "' THEN quantity 
+                            WHEN (subconto_kt->>'store_id')::text = '" .$storeId. "' THEN -quantity 
+                            ELSE 0 
+                        END) AS total_quantity,
+                        um.name as unit_weightname, document_operations.operation_date
+                    FROM document_operations 
+                        JOIN materials m ON (subconto_dt->>'product_id')::integer = m.id 
+                        JOIN units u ON m.unit_id = u.id
+                        LEFT JOIN units um ON m.weightunit_id = um.id
+                        JOIN producers p ON m.producer_id = p.id
+                    WHERE (
+                        (subconto_dt->>'store_id')::text = '" .$storeId. "' AND (DATE(operation_date) >= '" .$formattedFromDate. "' AND DATE(operation_date) <= '" .$formattedToDate. "') OR
+                        (subconto_kt->>'store_id')::text = '" .$storeId. "' AND (DATE(operation_date) >= '" .$formattedFromDate. "') AND DATE(operation_date) <= '" .$formattedToDate. "')
+                    GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name, 
+                        unit_weightname, document_operations.document_type,document_operations.operation_number,
+                        document_operations.operation_date
+                    ORDER BY document_operations.operation_date                
+                ";
+//                dd($query);exit;
                 $results = DB::select($query);
+                foreach ($results as $storeData) {
+                    $balanceData[$storeData->product_id]['movement'][] = [
+                        'total_quantity' => $storeData->total_quantity,
+                        'total_fact_kt' => $storeData->total_fact_kt,
+                        'total_fact_dt' => $storeData->total_fact_dt,
+                        'unit_name' => $storeData->unit_name,
+                        'producer_name' => $storeData->producer_name,
+                        'document_type' => $storeData->document_type,
+                        'invoice_number' => $storeData->operation_number,
+                        'operation_date' => $storeData->operation_date,
+                        'unit_weightname' => $storeData->unit_weightname
+                    ];
+                }
+
+dd($balanceData);exit;
+
+                foreach ($balanceData as $productId => &$data) {
+                    // Инициализируем пустой массив movement
+                    $data['movement'] = [];
+
+                    // Фильтруем записи movement для текущего product_id
+                    foreach ($results as $movement) {
+//                        dd($movement->product_id);exit;
+                        // Если товара нет в $result, инициализируем его с пустым startPeriod
+                        $moveProductId = $movement->product_id;
+                        if (!isset($balanceData[$moveProductId])) {
+                            $data[$moveProductId] = [
+                                'startPeriod' => [
+                                    'product_id' => $moveProductId,
+                                    'product_name' => $movement->product_name,
+                                    'balance_quantity' => '0',
+                                    'balance_fact_quantity' => '0'
+                                ],
+                                'movement' => []
+                            ];
+                        }
+
+                        if ($movement->product_id == $productId) {
+
+                            $data['movement'][] = [
+
+                                'total_quantity' => $movement->total_quantity,
+                                'total_fact' => $movement->total_fact,
+                                'unit_name' => $movement->unit_name,
+                                'producer_name' => $movement->producer_name,
+                                'document_type' => $movement->document_type,
+                                'invoice_number' => $movement->invoice_number,
+                                'operation_date' => $movement->operation_date,
+                                'unit_weightname' => $movement->unit_weightname
+                            ];
+                        }
+                    }
+                }
+                dd($balanceData);exit;
+//                dd($reportResults);exit;
+//                foreach ($results as $storeData) {
+//                    $reportResults[$storeData->product_id] = array(
+//                        'movement' => $storeData
+//                    );
+//                }
+//                dd($reportResults);exit;
 //                $results = DB::select("SELECT (subconto_dt->>'product_id')::integer AS product_id, (subconto_dt->>'product_name') AS product_name,
 //                    SUM(quantity) AS total_quantity, u.name AS unit_name, p.name AS producer_name,
 //                    SUM(CAST(subconto_dt->>'fact_qty' AS NUMERIC)) as total_fact,

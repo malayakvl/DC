@@ -11,6 +11,7 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
+import { format } from 'date-fns';
 
 export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ export default function List({ listData, permissions }) {
               {listData?.map(item => (
                 <tr className="" key={item.id}>
                   <td className="">{item.invoice_number}</td>
-                  <td className="">{item.invoice_date}</td>
+                  <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
                       src={`../../images/document-icons/${item.statusName}.svg`}
