@@ -136,6 +136,7 @@ class MaterialController extends Controller
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $storeId = $request->get('storeId');
+            $balanceData = array();
 
             $reportDate = $request->get('reportFromDate');
             $dateFrom = new DateTime($reportDate);
@@ -356,46 +357,45 @@ class MaterialController extends Controller
                     ];
                 }
 
-dd($balanceData);exit;
 
-                foreach ($balanceData as $productId => &$data) {
-                    // Инициализируем пустой массив movement
-                    $data['movement'] = [];
-
-                    // Фильтруем записи movement для текущего product_id
-                    foreach ($results as $movement) {
-//                        dd($movement->product_id);exit;
-                        // Если товара нет в $result, инициализируем его с пустым startPeriod
-                        $moveProductId = $movement->product_id;
-                        if (!isset($balanceData[$moveProductId])) {
-                            $data[$moveProductId] = [
-                                'startPeriod' => [
-                                    'product_id' => $moveProductId,
-                                    'product_name' => $movement->product_name,
-                                    'balance_quantity' => '0',
-                                    'balance_fact_quantity' => '0'
-                                ],
-                                'movement' => []
-                            ];
-                        }
-
-                        if ($movement->product_id == $productId) {
-
-                            $data['movement'][] = [
-
-                                'total_quantity' => $movement->total_quantity,
-                                'total_fact' => $movement->total_fact,
-                                'unit_name' => $movement->unit_name,
-                                'producer_name' => $movement->producer_name,
-                                'document_type' => $movement->document_type,
-                                'invoice_number' => $movement->invoice_number,
-                                'operation_date' => $movement->operation_date,
-                                'unit_weightname' => $movement->unit_weightname
-                            ];
-                        }
-                    }
-                }
-                dd($balanceData);exit;
+//                foreach ($balanceData as $productId => &$data) {
+//                    // Инициализируем пустой массив movement
+//                    $data['movement'] = [];
+//
+//                    // Фильтруем записи movement для текущего product_id
+//                    foreach ($results as $movement) {
+////                        dd($movement->product_id);exit;
+//                        // Если товара нет в $result, инициализируем его с пустым startPeriod
+//                        $moveProductId = $movement->product_id;
+//                        if (!isset($balanceData[$moveProductId])) {
+//                            $data[$moveProductId] = [
+//                                'startPeriod' => [
+//                                    'product_id' => $moveProductId,
+//                                    'product_name' => $movement->product_name,
+//                                    'balance_quantity' => '0',
+//                                    'balance_fact_quantity' => '0'
+//                                ],
+//                                'movement' => []
+//                            ];
+//                        }
+//
+//                        if ($movement->product_id == $productId) {
+//
+//                            $data['movement'][] = [
+//
+//                                'total_quantity' => $movement->total_quantity,
+//                                'total_fact' => $movement->total_fact,
+//                                'unit_name' => $movement->unit_name,
+//                                'producer_name' => $movement->producer_name,
+//                                'document_type' => $movement->document_type,
+//                                'invoice_number' => $movement->invoice_number,
+//                                'operation_date' => $movement->operation_date,
+//                                'unit_weightname' => $movement->unit_weightname
+//                            ];
+//                        }
+//                    }
+//                }
+//                dd($balanceData);exit;
 //                dd($reportResults);exit;
 //                foreach ($results as $storeData) {
 //                    $reportResults[$storeData->product_id] = array(
@@ -425,10 +425,11 @@ dd($balanceData);exit;
 //                        JOIN producers p ON m.producer_id = p.id
 //                    WHERE (subconto_dt->>'store_id')::text = '" .$storeId. "' AND DATE(operation_date) <= '" .$formattedDate. "'::date
 //                    GROUP BY (subconto_dt->>'product_id')::integer, (subconto_dt->>'product_name'), unit_name, producer_name, unit_weightname");exit;
-                $arrReminders[$dataStores[0]->name] = $results;
+//                $arrReminders[$dataStores[0]->name] = $results;
             }
+//            dd($balanceData);exit;
             return response()->json([
-                'results' => $arrReminders,
+                'results' => $balanceData,
                 'clinicData' => $clinicData
             ]);
         }

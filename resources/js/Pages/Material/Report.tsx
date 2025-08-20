@@ -62,45 +62,77 @@ export default function List({ storesData }) {
   // }, [reportResult]);
 
   const renderReportReult = () => {
-    // console.log('renderReportReult');
+    console.log(reportResult);
 
     if (reportResult) {
-      console.log(reportResult);
+      // console.log(reportResult);
 
       return (
         <div className="mt-4">
           <table className="table">
           <thead>
           <tr>
-            <td>
-              <b>Материал</b>
-            </td>
-            <td className="tqty">
-              <b>Количество</b>
-            </td>
-            <td className="tqty">
-              <b>Фактична кількість</b>
-            </td>
+            <th rowSpan="2">Материал</th>
+            <th rowSpan="2">Од виміру</th>
+            <th colSpan="4">Склад 1/1</th>
+            <th colSpan="4">Склад 1/2</th>
+          </tr>
+          <tr>
+            <th>Нач. остаток</th>
+            <th>Приход</th>
+            <th>Расход</th>
+            <th>Кон периода</th>
+            {/*Новий склад*/}
+            <th>Нач. остаток</th>
+            <th>Приход</th>
+            <th>Расход</th>
+            <th>Кон периода</th>
           </tr>
           </thead>
-          <tbody>
-          {Object.keys(reportResult).map((key) => (
-            <React.Fragment key={key}>
-              <tr>
-                <td colSpan="3" style={{background: '#aeaeae'}}>
-                  <strong>{key}</strong>
-                </td>
-              </tr>
-              {reportResult[key].map((item) => (
-                <tr key={item.product_id}>
-                  <td>{item.product_name}</td>
-                  <td style={{textAlign: 'right'}}>{item.total_quantity} {item.unit_name}</td>
-                  <td style={{textAlign: 'right'}}>{item.total_fact} {item.unit_weightname}</td>
-                </tr>
-              ))}
-            </React.Fragment>
-          ))}
-          </tbody>
+            <tbody>
+            <tr>
+              <td>Материал A</td>
+              <td>шт</td>
+              <td className="a-right">100</td>
+              <td className="a-right">50</td>
+              <td className="a-right">30</td>
+              <td className="a-right">120</td>
+              <td className="a-right">10</td>
+              <td className="a-right">5</td>
+              <td className="a-right">3</td>
+              <td className="a-right">12</td>
+            </tr>
+            <tr>
+              <td>Материал B</td>
+              <td>шт</td>
+              <td className="a-right">200</td>
+              <td className="a-right">80</td>
+              <td className="a-right">60</td>
+              <td className="a-right">220</td>
+              <td className="a-right">20</td>
+              <td className="a-right">8</td>
+              <td className="a-right">6</td>
+              <td className="a-right">22</td>
+            </tr>
+            </tbody>
+          {/*<tbody>*/}
+          {/*{Object.keys(reportResult).map((key) => (*/}
+          {/*  <React.Fragment key={key}>*/}
+          {/*    <tr>*/}
+          {/*      <td colSpan="3" style={{background: '#aeaeae'}}>*/}
+          {/*        <strong>{key}</strong>*/}
+          {/*      </td>*/}
+          {/*    </tr>*/}
+          {/*    {reportResult[key].map((item) => (*/}
+          {/*      <tr key={item.product_id}>*/}
+          {/*        <td>{item.product_name}</td>*/}
+          {/*        <td style={{textAlign: 'right'}}>{item.total_quantity} {item.unit_name}</td>*/}
+          {/*        <td style={{textAlign: 'right'}}>{item.total_fact} {item.unit_weightname}</td>*/}
+          {/*      </tr>*/}
+          {/*    ))}*/}
+          {/*  </React.Fragment>*/}
+          {/*))}*/}
+          {/*</tbody>*/}
           </table>
         </div>
       );
