@@ -63,7 +63,7 @@ export default function List({ listData, permissions }) {
                   <td className="">{item.producerName}</td>
                   <td className="text-left">{item.unitName}</td>
                   <td className="text-left">{item.weight}</td>
-                  <td className="text-right">
+                  <td className="text-right w-[100px]">
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}

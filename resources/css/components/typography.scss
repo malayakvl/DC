@@ -1,7 +1,7 @@
 h2 {
     @apply font-semibold leading-tight py-4 ;
     //font-weight: normal !important;
-    color: #000;
+    color: #FFF;
     font-weight: bold;
 }
 
@@ -18,9 +18,10 @@ h5 {
 
 .dropdown-span {
     @apply block text-sm px-4 py-2 cursor-pointer;
+    font-weight: normal;
 }
 .dropdown-span:hover {
-    background-color: #e7dcfd;
+    background-color: #01bff8;
 }
 .text-orange-700 {
     color: #e0187b;

@@ -8,5 +8,6 @@ class Unit extends Model
 {
     protected $fillable = [
         'name',
+        'unit_qty'
     ];
 }

@@ -129,6 +129,8 @@ export default function Form({
                 <th className="pb-3 w-qty">{msg.get('mCategories.qty')}</th>
                 <th className="pb-3 w-btn">{msg.get('mCategories.price')}</th>
                 <th className="pb-3 w-btn">{msg.get('mCategories.total')}</th>
+                <th className="pb-3 w-btn">&nbsp;</th>
+                <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
             </thead>
             <tbody>

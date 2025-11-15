@@ -60,7 +60,7 @@ export default function Login({ status, canResetPassword }) {
         <div className="mb-4 text-sm font-medium text-green-600">{status}</div>
       )}
 
-      <form onSubmit={submit}>
+      <form onSubmit={submit} className="dark-form">
         <div>
           <InputText
             name={'email'}
@@ -70,7 +70,9 @@ export default function Login({ status, canResetPassword }) {
             label={msg.get('auth.email')}
             required
           />
-
+          
+        </div>
+        <div className="mt-2">
           <InputText
             name={'password'}
             type="password"
@@ -91,7 +93,7 @@ export default function Login({ status, canResetPassword }) {
                 // setData('remember', e.target.checked)
               }
             />
-            <span className="ms-2 text-sm text-gray-600">
+            <span className="ms-2 text-sm text-[#01bffb]">
               {msg.get('auth.remember')}
             </span>
           </label>
@@ -102,7 +104,7 @@ export default function Login({ status, canResetPassword }) {
             <Link
               // href={route('password.request')}
               href={'/reset'}
-              className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="rounded-md text-sm text-[#01bffb] underline hover:text-[#9562dd] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               {msg.get('auth.forgot')}
             </Link>

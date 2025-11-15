@@ -31,6 +31,7 @@ export default function Form({
   formData,
   formRowData = null,
   className = '',
+  unitsData
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -78,11 +79,23 @@ export default function Form({
     }));
   };
 
+  const handleChangeCalendar = data => {
+    console.log(data);
+    const key = 'invoice_date';
+    const value = data;
+    setValues(values => ({
+      ...values,
+      [key]: data,
+    }));
+  };
+
   const submit = e => {
     e.preventDefault();
-
     values['rows'] = invoiceItems;
-    values['invoice_date'] = new Date();
+    if (!values['invoice_date']) {
+      values['invoice_date'] = new Date();
+    }
+    // values['invoice_date'] = new Date();
     let haveErrorInRow = false;
     invoiceItems.forEach(_row => {
       if (!_row.product_id) {
@@ -157,7 +170,7 @@ export default function Form({
                     values={values}
                     dataValue={values.invoice_date}
                     value={values.invoice_date}
-                    onChange={handleChange}
+                    onChange={handleChangeCalendar}
                     required
                     label={msg.get('invoice.date')}
                   />
@@ -213,24 +226,31 @@ export default function Form({
           </div>
         </div>
         <div className="relative">
-          <table className="w-full1">
+          <table className="invoice-table">
             <thead>
               <tr>
                 <th className="pb-3">{msg.get('invoice.product')}</th>
                 <th className="pb-3 w-qty">{msg.get('invoice.qty')}</th>
+                <th className="pb-3">{msg.get('invoice.unit')}</th>
+                <th className="pb-3">{msg.get('invoice.factqty')}</th>
+                {/*<th className="pb-3 w-price">{msg.get('invoice.price')}</th>*/}
+                {/*<th className="pb-3 w-price">{msg.get('invoice.tax')}</th>*/}
+                {/*<th className="pb-3 w-price">{msg.get('invoice.total')}</th>*/}
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} />
+                <AddDynamicInputFields unitsData={unitsData} formRowData={formRowData} />
               ) : (
                 <AddDynamicInputFields
+                  unitsData={unitsData}
                   formRowData={[
                     {
                       product_id: '',
                       product: '',
+                      unit_id: '',
                       quantity: '',
                       price: '',
                       total: '',

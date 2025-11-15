@@ -136,6 +136,7 @@ class MaterialCategoresController extends Controller
             }
             $data->fill($request->validated());
             $data->save();
+            $data->producer_id = $request->producer_id;
             if ($request->parent_id) {
                 $data->parent_id = $request->parent_id;
                 $data->save();
@@ -147,6 +148,17 @@ class MaterialCategoresController extends Controller
 
             return Redirect::route('material.categories.index');
         }
+    }
+
+    public function delete(Request $request) {
+        $mCategory = MaterialCategories::where('id', '=', $request->id)->get();
+        $child = MaterialCategories::where('parent_id', '=', $request->id)->get();
+        if (count($child)) {
+
+        } else {
+            $mCategory[0]->delete();
+        }
+        return Redirect::route('material.categories.index');
     }
 
     /**

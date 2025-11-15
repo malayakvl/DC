@@ -36,7 +36,7 @@ export default function InputTaxSelect({
         >
           <option>{msg.get('dropdown.select')}</option>
           {props.options.map((option: any) => (
-            <option key={option.id} value={`${option.id}_${option.value}`}>
+            <option key={option.id} value={translatable ? `${option.id}_${option.value}` : parseInt(option.id)}>
               {translatable ? msg.get('dropdown.' + option.name) : option.name}
             </option>
           ))}

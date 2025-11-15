@@ -39,7 +39,7 @@ const Trigger = ({ children }) => {
 const Content = ({
   align = 'right',
   width = '48',
-  contentClasses = 'py-1 bg-white',
+  contentClasses = 'py-1 dropdown-menu',
   children,
 }) => {
   const { open, setOpen } = useContext(DropDownContext);

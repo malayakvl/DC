@@ -12,17 +12,27 @@ import {
   warehouseSelector,
 } from '../../../Redux/Changeinvoice/selectors';
 import { emptyMaterialsQtyAutocompleteAction } from '../../../Redux/Material/actions';
+import InputSelect from '../../../Components/Form/InputSelect';
+import Lang from 'lang.js';
+import lngInvoice from '../../../Lang/Invoice/translation';
+import { appLangSelector } from '../../../Redux/Layout/selectors';
 
 export default function AddDynamicInputFields({
   formRowData = null,
   lastRow = null,
+  unitsData
 }) {
+  const appLang = useSelector(appLangSelector);
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useDispatch();
   const [hideFields, setHideFields] = useState(false);
   const serchResults = useSelector(searchResultMaterialsQtySelector);
   const [numRow, setNumRow] = useState(0);
   const wherehouseId = useSelector(warehouseSelector);
+  const msg = new Lang({
+    messages: lngInvoice,
+    locale: appLang,
+  });
 
   const handleAddInput = () => {
     setInputs([
@@ -32,7 +42,11 @@ export default function AddDynamicInputFields({
         producer_id: 0,
         product: '',
         quantity: 0,
+        fact_qty: 0,
+        unit_id: '',
+        pack_qty: 0,
         maxQty: 0,
+        maxFactQty: 0
       },
     ]);
   };
@@ -75,6 +89,21 @@ export default function AddDynamicInputFields({
     dispatch(setInvoiceItems(inputs));
   }, [inputs]);
 
+  const handleChangeFactQty = (event, index) => {
+    dispatch(setShowTableError(false));
+    let { name, value } = event.target;
+    let onChangeValue = [...inputs];
+    if (parseFloat(value) <= parseFloat(inputs[index].maxFactQty)) {
+      onChangeValue[index]['fact_qty'] = value;
+    } else {
+      onChangeValue[index]['fact_qty'] = inputs[index].maxFactQty;
+    }
+    // // recalculate total
+    // let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
+    // inputs[index].total = total.toFixed(2)
+    setInputs(onChangeValue);
+  }
+
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
       return (
@@ -89,14 +118,18 @@ export default function AddDynamicInputFields({
                 onClick={() => {
                   setHideFields(true);
                   dispatch(emptyMaterialsQtyAutocompleteAction());
-                  inputs[index].product = _res.name;
-                  inputs[index].product_id = _res.id;
+                  inputs[index].product = _res.material_name;
+                  inputs[index].product_id = _res.material_id;
                   inputs[index].quantity = 1;
-                  inputs[index].maxQty = _res.quantity;
-                  inputs[index].producer_id = _res.producer_id;
+                  inputs[index].unit_id = _res.unit_id;
+                  inputs[index].maxQty = _res.pack_total;
+                  inputs[index].maxFactQty = _res.unit_total;
+                  inputs[index].pack_qty = _res.pack_total;
+                  inputs[index].fact_qty = _res.unit_total;
+                  // inputs[index].producer_id = _res.producer_id;
                 }}
               >
-                {_res.name} {_res.producerName} ({_res.quantity} {_res.unitName}
+                {_res.material_name} ({_res.pack_total} {_res.unit_name} - {msg.get('invoice.factqty')}: {_res.unit_total}]
                 )
               </li>
             ))}
@@ -153,6 +186,28 @@ export default function AddDynamicInputFields({
                 +
               </button>
             </div>
+          </td>
+          <td className="w-unit text-center pb-2" style={{paddingLeft: '20px', width: '140px !important'}}>
+            <InputSelect
+              translatable={false}
+              name={'unit_id'}
+              className={'w-unit'}
+              values={item.unit_id}
+              value={item.unit_id}
+              defaultValue={item.unit_id}
+              options={unitsData}
+              required
+              label={null}
+            />
+          </td>
+          <td className="w-price text-center pb-2">
+            <input
+              className="input-text factqty text-center"
+              name="fact_qty"
+              type="fact_qty"
+              value={item.fact_qty}
+              onChange={event => handleChangeFactQty(event, index)}
+            />
           </td>
           <td className="w-btn pb-2">
             {inputs.length > 1 && (

@@ -109,7 +109,7 @@ class CurrencyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Producer $producer) {
+    public function destroy(Currency $currency) {
         //
     }
 }

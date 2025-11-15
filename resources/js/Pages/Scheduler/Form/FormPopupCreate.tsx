@@ -103,17 +103,26 @@ export default function SchedulerFormCreate({
   };
 
   const handleChangeTimeFrom = value => {
-    setValues(values => ({
-      ...values,
-      ['event_time_from']: value.format('HH:mm'),
-    }));
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    const isValid =  regex.test(value);
+    if (isValid) {
+      setValues(values => ({
+        ...values,
+        ['event_time_from']: value,
+      }));
+    }
   };
 
   const handleChangeTimeTo = value => {
-    setValues(values => ({
-      ...values,
-      ['event_time_to']: value.format('HH:mm'),
-    }));
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    const isValid =  regex.test(value);
+    if (isValid) {
+      setValues(values => ({
+        ...values,
+        ['event_time_to']: value,
+      }));
+    }
+
   };
 
   useEffect(() => {
@@ -201,9 +210,9 @@ export default function SchedulerFormCreate({
       </div>
     )
   }
-console.log(customerData, assistantData)
+
   return (
-    <section className={`px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2 className={'pt-7 pb-7'}>
           {formData?.id
@@ -321,6 +330,7 @@ console.log(customerData, assistantData)
                   mask="99.99.9999"
                   name={'event_date'}
                   defaultValue={eventDate}
+                  onChange={(newValue) => handleChangeTimeFrom(newValue)}
                   className={'shc-form-date'}
                 />
                 <i className={'f-calendar'} />
@@ -341,7 +351,7 @@ console.log(customerData, assistantData)
                            name={'event_time_to'}
                            defaultValue={formData.event_time_to ? formData.event_time_to : timeEnd}
                            className={'shc-form-date'}
-                           onChange={(newValue) => handleChangeTimeTo(newValue)}
+                           onChange={(e) => handleChangeTimeTo(e.target.value)}
                 />
                 <i className={'f-clock'} />
               </div>

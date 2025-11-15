@@ -6,6 +6,7 @@ import Dropdown from '../../Components/Form/Dropdown';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
+import LangMenu from './LangMenu';
 
 export default function Header({auth}) {
   const user = usePage().props.auth.user;
@@ -16,14 +17,78 @@ export default function Header({auth}) {
   });
 
   return (
-    <header className="bg-white">
-      <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between py-1 lg:px-0">
+    <>
+    <header className="flex items-center justify-between py-6 neon-header">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-white">
+                <img src="../../images/new-diz/logo-e.png" className="h-[50px]" />
+            </Link>
+            <div className="flex lg:hidden">
+              <button type="button"
+                      className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+                <span className="sr-only">Open main menu</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon"
+                    aria-hidden="true" className="size-6">
+                  <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+            <div>
+              <Link href="/" className="text-white">
+              <div className="text-md font-bold leading-tight gradient-text-h">DentalCare</div>
+              <div className="slogan">Автоматизація обліку</div>
+              </Link>
+            </div>
+          </div>
+          
+
+          <nav className="hidden md:flex items-center gap-8 text-sm text-white">
+            {/* <a className="hover:text-white" href="#">Features</a> */}
+            <a className="hover:text-white" href="#">Прайс</a>
+            <a className="hover:text-white" href="#">Інтеграція</a>
+            <a className="hover:text-white" href="#">Піддтримка</a>
+            {/* <a className="hover:text-white" href="#">Blog</a> */}
+          </nav>
+
+          <div className="flex items-center gap-3 relative">
+            <LangMenu />
+            {auth?.user ? (
+              <Link href="/dashboard" className="text-white">
+                Dashboard1
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm text-slate-300 px-3 py-2 rounded-md hover:bg-white/2 rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold"
+                >
+                  {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
+                </Link>
+                <Link
+                  href="/register"
+                  className="reg-btn"
+                >
+                  {lng.get('menu.register')}
+                </Link>
+                {/* <div className="mt-1">
+                  <Link
+                    href="/login"
+                    className="rounded-md px-4 py-2 text-black ring-1 ring-transparent transition focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
+                  >
+                    {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
+                  </Link>
+                </div> */}
+              </>
+            )}
+          </div>
+        </header>
+    
+    {/* OLD HEADER */}
+    {/* <header className="flex items-center justify-between py-6 neon-header">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between py-1 lg:px-0">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <img
-              src="../../images/header/2.png"
-              className="mx-auto logo-main logo-invite"
-            />
+          <a href="/" className="-m-1.5 p-1.5">
+            <img src="../../images/new-diz/logo-e.png" className="h-[50px]" />
           </a>
         </div>
         <div className="flex lg:hidden">
@@ -57,28 +122,7 @@ export default function Header({auth}) {
           <a href="#" className="text-sm/6 font-semibold text-gray-900">Новини</a>
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {auth?.user ? (
-            <Link href="/dashboard" className="text-white">
-              Dashboard1
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/register"
-                className="btn-submit"
-              >
-                {lng.get('menu.register')}
-              </Link>
-              <div className="mt-1">
-                <Link
-                  href="/login"
-                  className="rounded-md px-4 py-2 text-black ring-1 ring-transparent transition focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                >
-                  {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
-                </Link>
-              </div>
-            </>
-          )}
+          
         </div>
       </nav>
       <div role="dialog" aria-modal="true" className="lg:hidden">
@@ -149,6 +193,7 @@ export default function Header({auth}) {
           </div>
         </div>
       </div>
-    </header>
+    </header> */}
+    </>
   );
 }

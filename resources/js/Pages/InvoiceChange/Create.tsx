@@ -12,7 +12,9 @@ export default function Create({
   formData,
   currencyData,
   taxData,
+  unitsData
 }) {
+
   return (
     <AuthenticatedLayout header={<Head title="Invoice" />}>
       <Head title="Invoice" />
@@ -29,6 +31,7 @@ export default function Create({
               formData={formData}
               currencyData={currencyData}
               taxData={taxData}
+              unitsData={unitsData}
               className="w-full"
             />
           </div>

@@ -84,11 +84,11 @@ export const findMaterialQtyAction: any = createAction(
 );
 export const generateStoreReportAction: any = createAction(
   'material/FIND_UNIT_EXIST',
-  async (storeId: any, reportDate: any) =>
+  async (storeId: any, reportFromDate: any, reportToDate: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
       return axios
-        .post(`/material/generateStoreReport`, { storeId: storeId, reportDate: reportDate }, {})
+        .post(`/material/generateStoreReport`, { storeId: storeId, reportFromDate: reportFromDate, reportToDate: reportToDate }, {})
         .then(async res => {
           return res.data.results;
         });

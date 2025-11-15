@@ -9,6 +9,7 @@ import Lang from 'lang.js';
 
 export default function InputSelect({
   className = '',
+  elId = '',
   name,
   label,
   values,
@@ -28,15 +29,15 @@ export default function InputSelect({
       <InputLabel htmlFor={name} value={label} children={null} />
       {props.options.length > 0 && (
         <select
-          id={name}
+          id={`${elId || name}`}
           name={name}
-          className={`input-text`}
+          className={`input-text ${className}`}
           defaultValue={`${defaultValue ? defaultValue : values[name]}`}
           onChange={onChange}
         >
           <option value="">{msg.get('dropdown.select')}</option>
           {props.options.map((option: any) => (
-            <option key={option.id} value={option.id}>
+            <option key={option.id} value={option.id} selected={option.id === defaultValue}>
               {translatable ? msg.get('dropdown.' + option.name) : option.name}
             </option>
           ))}

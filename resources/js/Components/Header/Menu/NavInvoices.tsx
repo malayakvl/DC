@@ -46,6 +46,13 @@ export default function NavInvoices(props) {
                   </Link>
                 </MenuItem>
               )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/store-report'}>
+                    {lng.get('menu.material.report')}
+                  </Link>
+                </MenuItem>
+              )}
               {permissions['invoice-incoming-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/invoice-incoming'}>
@@ -64,13 +71,6 @@ export default function NavInvoices(props) {
                 <MenuItem>
                   <Link className="submenu" href={'/invoice-change'}>
                     {lng.get('menu.invoice-change')}
-                  </Link>
-                </MenuItem>
-              )}
-              {permissions['store-create'] && (
-                <MenuItem>
-                  <Link className="submenu" href={'/store-report'}>
-                    {lng.get('menu.material.report')}
                   </Link>
                 </MenuItem>
               )}

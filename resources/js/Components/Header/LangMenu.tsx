@@ -22,12 +22,12 @@ export default function LangMenu() {
             <button
               type="button"
               className="inline-flex items-center
-                                bg-white px-2 text-sm lng-menu
-                                font-medium leading-4 text-gray-500
-                                transition duration-150
-                                ease-in-out hover:text-gray-700 focus:outline-none"
+                        bg-[#111b30] px-2 text-sm lng-menu
+                        font-medium leading-4 text-gray-500
+                        transition duration-150
+                        ease-in-out hover:text-gray-700 focus:outline-none"
             >
-              <b className="uppercase text-white">{appLang}</b>
+              <b className="selected-lang">{appLang}</b>
               <span className="icon-arrow-down" />
             </button>
           </span>

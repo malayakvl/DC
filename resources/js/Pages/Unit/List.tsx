@@ -57,11 +57,10 @@ export default function List({ listData, permissions }) {
                       href={`unit/edit/${item.id}`}
                       // active={route().current('filial.edit')}
                     />
-                    <NavLink
+                    <Link
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
                       href={`unit/delete/${item.id}`}
-                      // active={route().current('filial.view')}
                     />
                   </td>
                 </tr>

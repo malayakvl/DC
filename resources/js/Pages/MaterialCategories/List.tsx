@@ -65,7 +65,7 @@ export default function List({ storeData, categoriesData, tree }) {
                           title={msg.get('mCategories.edit')}
                           href={`material-category/edit/${item.id}`}
                         />
-                        <NavLink
+                        <Link
                           className="btn-delete"
                           title={msg.get('mCategories.delete')}
                           href={`material-category/delete/${item.id}`}

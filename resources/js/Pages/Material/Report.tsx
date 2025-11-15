@@ -28,7 +28,8 @@ export default function List({ storesData }) {
     store_id: '',
   });
   const [storeError, setStoreError] = useState('');
-  const [reportDate, setReportDate] = useState(new Date());
+  const [reportFromDate, setReportFromDate] = useState(new Date());
+  const [reportToDate, setReportToDate] = useState(new Date());
   const reportResult = useSelector(reportResultSelector);
 
   const handleChangeSelect = e => {
@@ -45,54 +46,93 @@ export default function List({ storesData }) {
 
   const generateReport = () => {
     if (!values['store_id']) {
-      setStoreError(msg.get('material.report.error.store'));
+      // setStoreError(msg.get('material.report.error.store'));
+      dispatch(generateStoreReportAction(null, reportFromDate, reportToDate));
     } else {
       setStoreError('');
-      dispatch(generateStoreReportAction(values['store_id'], reportDate));
+      dispatch(generateStoreReportAction(values['store_id'], reportFromDate, reportToDate));
     }
     return;
   };
 
-  useEffect(() => {
-    if (!values['store_id']) {
-      dispatch(emptyStoreReportAction());
-    }
-  }, [reportResult]);
+  // useEffect(() => {
+  //   if (!values['store_id']) {
+  //     dispatch(emptyStoreReportAction());
+  //   }
+  // }, [reportResult]);
 
   const renderReportReult = () => {
+    console.log(reportResult);
+
     if (reportResult) {
+      // console.log(reportResult);
+
       return (
         <div className="mt-4">
           <table className="table">
-            <thead>
-              <tr>
-                <td>
-                  <b>Материал</b>
-                </td>
-                <td className="tqty">
-                  <b>Количество</b>
-                </td>
-                <td className="tqty">
-                  <b>Фактична кількість</b>
-                </td>
-              </tr>
-            </thead>
+          <thead>
+          <tr>
+            <th rowSpan="2">Материал</th>
+            <th rowSpan="2">Од виміру</th>
+            <th colSpan="4">Склад 1/1</th>
+            <th colSpan="4">Склад 1/2</th>
+          </tr>
+          <tr>
+            <th>Нач. остаток</th>
+            <th>Приход</th>
+            <th>Расход</th>
+            <th>Кон периода</th>
+            {/*Новий склад*/}
+            <th>Нач. остаток</th>
+            <th>Приход</th>
+            <th>Расход</th>
+            <th>Кон периода</th>
+          </tr>
+          </thead>
             <tbody>
-              {reportResult.map(_data => (
-                <tr>
-                  <td>
-                    {_data.product_name} ({_data.producer_name})
-                  </td>
-                  <td className="tqty">
-                    {_data.total_quantity} {_data.unit_name}
-                  </td>
-                  <td className="tqty">
-                    {_data.weight > 0 ? _data.weight : ''}{' '}
-                    {_data.weight > 0 ? _data.unitsizename : ''}
-                  </td>
-                </tr>
-              ))}
+            <tr>
+              <td>Материал A</td>
+              <td>шт</td>
+              <td className="a-right">100</td>
+              <td className="a-right">50</td>
+              <td className="a-right">30</td>
+              <td className="a-right">120</td>
+              <td className="a-right">10</td>
+              <td className="a-right">5</td>
+              <td className="a-right">3</td>
+              <td className="a-right">12</td>
+            </tr>
+            <tr>
+              <td>Материал B</td>
+              <td>шт</td>
+              <td className="a-right">200</td>
+              <td className="a-right">80</td>
+              <td className="a-right">60</td>
+              <td className="a-right">220</td>
+              <td className="a-right">20</td>
+              <td className="a-right">8</td>
+              <td className="a-right">6</td>
+              <td className="a-right">22</td>
+            </tr>
             </tbody>
+          {/*<tbody>*/}
+          {/*{Object.keys(reportResult).map((key) => (*/}
+          {/*  <React.Fragment key={key}>*/}
+          {/*    <tr>*/}
+          {/*      <td colSpan="3" style={{background: '#aeaeae'}}>*/}
+          {/*        <strong>{key}</strong>*/}
+          {/*      </td>*/}
+          {/*    </tr>*/}
+          {/*    {reportResult[key].map((item) => (*/}
+          {/*      <tr key={item.product_id}>*/}
+          {/*        <td>{item.product_name}</td>*/}
+          {/*        <td style={{textAlign: 'right'}}>{item.total_quantity} {item.unit_name}</td>*/}
+          {/*        <td style={{textAlign: 'right'}}>{item.total_fact} {item.unit_weightname}</td>*/}
+          {/*      </tr>*/}
+          {/*    ))}*/}
+          {/*  </React.Fragment>*/}
+          {/*))}*/}
+          {/*</tbody>*/}
           </table>
         </div>
       );
@@ -102,7 +142,7 @@ export default function List({ storesData }) {
   const changeReportDate = (date) => {
     console.log('Date change', date)
   }
-
+console.log('Result data', reportResult)
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Store Report'} />
@@ -117,19 +157,31 @@ export default function List({ storesData }) {
                     <div className="flex">
                       <div className="mr-3">
                         <DatePicker
-                          id={'report_date'}
-                          name={`report_date`}
-                          selected={reportDate}
-                          className={`input-text`}
+                          id={'report_from_date'}
+                          name={`report_from_date`}
+                          selected={reportFromDate}
+                          className={`input-text input-report-date`}
                           onChange={date => {
-                            setReportDate(date)
+                            setReportFromDate(date)
                           }}
                         />
                       </div>
+                      <div className="mr-3">
+                        <DatePicker
+                          id={'report_to_date'}
+                          name={`report_to_date`}
+                          selected={reportToDate}
+                          className={`input-text input-report-date`}
+                          onChange={date => {
+                            setReportToDate(date)
+                          }}
+                        />
+                      </div>
+                      <div className="mx-2 font-bold pt-[5px]">{msg.get('material.store')}</div>
                       <InputSelect
                         translatable={false}
                         name={'store_id'}
-                        className={'mb-1'}
+                        className={'mb-1 input-report-store'}
                         values={values}
                         value={values.store_id}
                         options={storesData}
@@ -154,7 +206,14 @@ export default function List({ storesData }) {
                 </div>
               </header>
             </section>
-            <div>{renderReportReult()}</div>
+            <div>
+              {reportResult && (
+                <>
+                  {renderReportReult()}
+                </>
+              )}
+
+            </div>
           </div>
         </div>
       </div>

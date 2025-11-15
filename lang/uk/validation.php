@@ -72,7 +72,7 @@ return [
     'image' => 'The :attribute field must be an image.',
     'in' => 'The selected :attribute is invalid.',
     'in_array' => 'The :attribute field must exist in :other.',
-    'integer' => 'The :attribute field must be an integer.',
+    'integer' => 'Поле :attribute повинно бути цілим числом.',
     'ip' => 'The :attribute field must be a valid IP address.',
     'ipv4' => 'The :attribute field must be a valid IPv4 address.',
     'ipv6' => 'The :attribute field must be a valid IPv6 address.',
@@ -160,6 +160,7 @@ return [
     'url' => 'The :attribute field must be a valid URL.',
     'ulid' => 'The :attribute field must be a valid ULID.',
     'uuid' => 'The :attribute field must be a valid UUID.',
+    'The unit qty field must be an integer.' => 'Повинно бути числовим',
 
     /*
     |--------------------------------------------------------------------------

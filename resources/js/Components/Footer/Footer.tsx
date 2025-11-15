@@ -16,18 +16,18 @@ export default function Footer({type = 'relative'}) {
   });
 
   return (
-    <footer className={`bg-white dark:bg-gray-900 w-full ${type === 'absolute' ? 'footer-bottom' : ''}`}>
-      <div className="mx-auto w-full max-w-screen-xl p-12 py-6 lg:py-8">
+    <footer className={`footer-content w-full ${type === 'absolute' ? 'footer-bottom' : ''}`}>
+      <div className="mx-auto w-full max-w-screen-xl p-12 py-6">
         <div className="md:flex md:justify-between">
-          <div className="mb-6 md:mb-0 w-1/3">
-            <a href="https://flowbite.com/" className="flex items-center">
-              <img src="../../images/header/2.png" className="w-[250px] me-3" alt="DentalCare" />
+          <div className="mb-6 md:mb-0 w-1/6">
+            <a href="/" className="flex items-center">
+              <img src="../../images/new-diz/logo-e.png" className="w-[70px] me-3" alt="DentalCare" />
             </a>
           </div>
-          <div className="w-2/3 grid grid-cols-2 gap-6 sm:gap-6 sm:grid-cols-4">
+          <div className="w-5/6 grid grid-cols-2 gap-2 sm:gap-6 sm:grid-cols-4">
             <div>
-              <h2 className="mb-0 text-sm font-semibold text-gray-900 uppercase dark:text-white">Акаунт</h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <h2 className="mb-0 text-sm font-semibold text-white uppercase dark:text-white">Акаунт</h2>
+              <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-0">
                   <a href="#" className="hover:underline">Вхід</a>
                 </li>
@@ -40,8 +40,8 @@ export default function Footer({type = 'relative'}) {
               </ul>
             </div>
             <div>
-              <h2 className="mb-0 text-sm font-semibold text-gray-900 uppercase dark:text-white">Мова</h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <h2 className="mb-0 text-sm font-semibold text-white">Мова</h2>
+              <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-0">
                   <a href="https://github.com/themesberg/flowbite" className="hover:underline ">Украінська</a>
                 </li>
@@ -52,8 +52,8 @@ export default function Footer({type = 'relative'}) {
               </ul>
             </div>
             <div>
-              <h2 className="mb-0 text-sm font-semibold text-gray-900 uppercase dark:text-white">Документи</h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <h2 className="mb-0 text-sm font-semibold text-white">Документи</h2>
+              <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-0">
                   <a href="#" className="hover:underline">Правила Користування</a>
                 </li>
@@ -66,8 +66,8 @@ export default function Footer({type = 'relative'}) {
               </ul>
             </div>
             <div>
-              <h2 className="mb-0 text-sm font-semibold text-gray-900 uppercase dark:text-white">Посилання</h2>
-              <ul className="text-gray-500 dark:text-gray-400 font-medium">
+              <h2 className="mb-0 text-sm font-semibold text-white">Посилання</h2>
+              <ul className="text-white dark:text-gray-400 font-medium">
                 <li className="mb-0">
                   <a href="#" className="hover:underline">Privacy Policy</a>
                 </li>
@@ -78,9 +78,9 @@ export default function Footer({type = 'relative'}) {
             </div>
           </div>
         </div>
-        <hr className="my-1 border-gray-200 sm:mx-auto dark:border-gray-700" />
+        <hr className="my-6 border-[#6d7de6] sm:mx-auto dark:border-gray-700" />
         <div className="sm:flex sm:items-center sm:justify-between mx-1">
-          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2025 <a
+          <span className="text-sm text-white sm:text-center dark:text-gray-400">© 2025 <a
             href="https://flowbite.com/" className="hover:underline">DentalCare™</a>. All Rights Reserved.
           </span>
         </div>
