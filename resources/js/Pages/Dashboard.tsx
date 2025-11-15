@@ -20,7 +20,7 @@ export default function Dashboard(clinicName) {
         <div className="p-4 sm:p-8 mb-8 content-data bg-content">
           <h2>{msg.get('dashboard.title')}&nbsp;</h2>
           <div className="grid grid-cols-4 gap-4">
-            <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="dashboard-block">
               <div className="flex-auto p-4">
                 <div className="flex flex-row -mx-3">
                   <div className="flex-none w-2/3 max-w-full px-3">
@@ -37,14 +37,14 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="dashboard-icon">
                       <i className="icon-money" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="dashboard-block">
               <div className="flex-auto p-4">
                 <div className="flex flex-row -mx-3">
                   <div className="flex-none w-2/3 max-w-full px-3">
@@ -61,14 +61,14 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="dashboard-icon">
                       <i className="icon-users"></i>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="dashboard-block">
               <div className="flex-auto p-4">
                 <div className="flex flex-row -mx-3">
                   <div className="flex-none w-2/3 max-w-full px-3">
@@ -85,14 +85,14 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="dashboard-icon">
                       <i className="icon-patients"></i>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="relative flex flex-col min-w-0 break-words bg-white shadow-soft-xl rounded-2xl bg-clip-border">
+            <div className="dashboard-block">
               <div className="flex-auto p-4">
                 <div className="flex flex-row -mx-3">
                   <div className="flex-none w-2/3 max-w-full px-3">
@@ -109,7 +109,7 @@ export default function Dashboard(clinicName) {
                     </div>
                   </div>
                   <div className="px-3 text-right basis-1/3">
-                    <div className="inline-block w-12 h-12 text-center rounded-lg bg-gradient-to-tl from-purple-700 to-pink-500">
+                    <div className="dashboard-icon">
                       <i className="icon-patients"></i>
                     </div>
                   </div>

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import InputText from '../../../Components/Form/InputText';
 import {
   emptyProducersAutocompleteAction,
   findProducersAction,
 } from '../../../Redux/Clinic';
 import { useDispatch, useSelector } from 'react-redux';
-import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
 import {
   emptyMaterialsAutocompleteAction,
   findMaterialAction,
@@ -16,10 +14,12 @@ import {
 } from '../../../Redux/Incominginvoice';
 import { invoiceTaxSelector } from '../../../Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '../../../Redux/Material/selectors';
+import InputSelect from '../../../Components/Form/InputSelect';
 
 export default function AddDynamicInputFields({
   formRowData = null,
   lastRow = null,
+  unitsData
 }) {
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useDispatch();
@@ -35,15 +35,16 @@ export default function AddDynamicInputFields({
       {
         product_id: '',
         product: '',
+        unit_id: '',
         quantity: 0,
+        pack_qty: 0,
+        fact_qty: 0,
         price: 0,
-        tax: 0,
+        tax_amount: 0,
         total: 0,
       },
     ]);
   };
-
-  // if (rowData)
 
   const handleChange = (event, index, type = '') => {
     dispatch(setShowTableError(false));
@@ -53,9 +54,10 @@ export default function AddDynamicInputFields({
     setNumRow(index);
     if (name === 'product') {
       if (value.length > 3) {
+        dispatch(emptyMaterialsAutocompleteAction());
         dispatch(findMaterialAction(value));
       } else {
-        dispatch(emptyProducersAutocompleteAction());
+        dispatch(emptyMaterialsAutocompleteAction());
         setHideFields(false);
       }
     } else if (name === 'plusBtn') {
@@ -64,20 +66,40 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
+      inputs[index].fact_qty = (
+        parseFloat(String(inputs[index].quantity)) *
+        parseFloat(String(inputs[index].pack_qty))
+      ).toFixed(2);
     } else if (name === 'minusBtn') {
+      const _factPerUnit = inputs[index].fact_qty/inputs[index].quantity;
       inputs[index].quantity =
         inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
       inputs[index].total = (
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
-    } else {
-      inputs[index].quantity = event.target.value;
+      inputs[index].fact_qty = (
+        parseFloat(String(inputs[index].quantity)) *
+        parseFloat(String(_factPerUnit))
+      ).toFixed(2);
+    } else if (name === 'price') {
+      inputs[index].price = event.target.value;
       inputs[index].total = (
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
+      inputs[index].tax_amount = inputs[index].total*20/100;
+      console.log('reaclc tax', inputs[index].total, inputs[index].tax_amount)
+      // inputs[index].total = (
+      //   parseFloat(String(inputs[index].quantity)) *
+      //   parseFloat(String(inputs[index].price))
+      // ).toFixed(2);
     }
+    console.log(inputs[index].total)
+    inputs[index].tax = (
+      parseFloat(String(inputs[index].total)) *
+      20/100
+    ).toFixed(2);
     setInputs(onChangeValue);
   };
 
@@ -98,21 +120,43 @@ export default function AddDynamicInputFields({
     return;
   };
 
+  const handleChangeFactQty = (event, index) => {
+    dispatch(setShowTableError(false));
+    let { name, value } = event.target;
+    let onChangeValue = [...inputs];
+    onChangeValue[index][name] = value;
+    // recalculate total
+    let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
+    inputs[index].total = total.toFixed(2);
+    inputs[index].tax_amount = total*20/100;
+    console.log('reaclc tax', total, inputs[index].tax_amount)
+    setInputs(onChangeValue);
+  }
+
   useEffect(() => {
     dispatch(setInvoiceItems(inputs));
   }, [inputs]);
+
+  const calcPos = (index) => {
+    if (index >= 1) {
+      return (70 + index*10) + 33*index;
+    } else {
+      return (index + 1)*70;
+    }
+
+  }
 
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
       return (
         <div
           className="absolute autocomplete"
-          style={{ top: index * 50 + 75 + 'px', width: '500px' }}
+          style={{ top: calcPos(index) + 'px', width: '500px' }}
         >
           <ul>
             {serchResults.map(_res => (
               <li
-                className="cursor-pointer py-1"
+                className="cursor-pointer py-0.5"
                 onClick={() => {
                   setHideFields(true);
                   dispatch(emptyMaterialsAutocompleteAction());
@@ -120,6 +164,9 @@ export default function AddDynamicInputFields({
                   inputs[index].product = _res.name;
                   inputs[index].product_id = _res.id;
                   inputs[index].price = _res.retail_price;
+                  inputs[index].unit_id = _res.unit_id;
+                  inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
+                  inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
                   inputs[index].tax_amount = documentTax
                     ? (_res.retail_price * taxData[1]) / 100
                     : 0;
@@ -145,7 +192,7 @@ export default function AddDynamicInputFields({
             <div className="relative">
               <input
                 name="product"
-                className="input-text"
+                className="input-text input-invoice material-input"
                 type="text"
                 value={item.product}
                 onChange={event => handleChange(event, index)}
@@ -153,7 +200,7 @@ export default function AddDynamicInputFields({
             </div>
           </td>
           <td className="w-qty pb-2 mx-auto">
-            <div className="row flex ml-[40px]">
+            <div className="row flex ml-[40px] pl-[7px]">
               <button
                 name="minusBtn"
                 onClick={event => {
@@ -171,7 +218,6 @@ export default function AddDynamicInputFields({
                 value={item.quantity}
                 onChange={event => handleChange(event, index)}
               />
-
               <button
                 name="plusBtn"
                 onClick={event => {
@@ -184,9 +230,31 @@ export default function AddDynamicInputFields({
               </button>
             </div>
           </td>
+          <td className="w-unit text-center pb-2 min-w-[120px]">
+            <InputSelect
+              translatable={false}
+              name={'unit_id'}
+              className={'w-unit'}
+              values={item.unit_id}
+              value={item.unit_id}
+              defaultValue={item.unit_id}
+              options={unitsData}
+              required
+              label={null}
+            />
+          </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text factqty text-center"
+              name="fact_qty"
+              type="fact_qty"
+              value={item.fact_qty}
+              onChange={event => handleChangeFactQty(event, index)}
+            />
+          </td>
+          <td className="w-price text-center pb-2">
+            <input
+              className="input-text price input-invoice text-center"
               name="price"
               type="text"
               value={item.price}
@@ -195,7 +263,7 @@ export default function AddDynamicInputFields({
           </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text price input-invoice text-center"
               name="total"
               type="text"
               value={item.tax_amount}
@@ -204,7 +272,7 @@ export default function AddDynamicInputFields({
           </td>
           <td className="w-price text-center pb-2">
             <input
-              className="input-text price text-center"
+              className="input-text price input-invoice text-center"
               name="total"
               type="text"
               value={item.total}

@@ -20,11 +20,11 @@ export default function Form({ clinicData, formData, className = '' }) {
 
   const [values, setValues] = useState({
     name: formData.name,
+    unit_qty: formData.unit_qty,
     clinic_id: clinicData.id,
   });
 
   const { processing, recentlySuccessful, errors } = useForm();
-  console.log('formData', formData);
   const handleChangeSelect = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -83,11 +83,20 @@ export default function Form({ clinicData, formData, className = '' }) {
           required
           label={msg.get('unit.name')}
         />
+        <InputText
+          name={'unit_qty'}
+          values={values}
+          dataValue={values.unit_qty}
+          value={values.unit_qty}
+          onChange={handleChange}
+          required
+          label={msg.get('unit.fact_qty')}
+        />
         <div className="flex items-center">
           <Link
             className="btn-back"
             title={msg.get('unit.back')}
-            href={`/stores`}
+            href={`/units`}
           >
             {msg.get('unit.back')}
           </Link>

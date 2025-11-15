@@ -14,7 +14,7 @@ export default function Dashboard({ filialData }) {
     locale: appLang,
   });
   const dispatch = useDispatch();
-  console.log('Here');
+
   const renderFilialData = data => {
     return (
       <>
@@ -29,6 +29,7 @@ export default function Dashboard({ filialData }) {
                 className="btn-grad"
                 onClick={() => {
                   localStorage.setItem('filialName', _res.filialName);
+                  localStorage.setItem('filialId', _res.id);
                 }}
                 title={msg.get('customer.back')}
                 href={`/enter-filial/${_res.filialId}`}

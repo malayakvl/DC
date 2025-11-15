@@ -31,6 +31,7 @@ export const TableHeaders = {
   [PaginationType.CUSTOMERS]: [
     { titleKey: 'datatable.photo', className: '' },
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.role', className: '' },
     { titleKey: 'datatable.phone', className: '' },
     { titleKey: 'datatable.inn', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
@@ -74,7 +75,7 @@ export const TableHeaders = {
     { titleKey: 'datatable.status', className: '' },
     { titleKey: 'datatable.store', className: '' },
     { titleKey: 'datatable.producer', className: '' },
-    { titleKey: 'datatable.customer', className: '' },
+    { titleKey: 'datatable.customercreate', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.CHANGEINVOICES]: [

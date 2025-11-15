@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="uk"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DentalCare — Exact Replica (Tailwind)</title>
+  <script src="DentalCare%20%E2%80%94%20Exact%20Replica%20(Tailwind)_files/3.4.17"></script>
+  <style>
+    /* Small helpers for exact-ish glow effects */
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      backdrop-filter: blur(6px);
+    }
+    /* custom font fallback stack close to the mock */
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    body {
+  background: linear-gradient(135deg, #0a0f2c, #071225);
+  /* альтернативный вариант с синим и фиолетовым оттенками */
+  /* background: linear-gradient(135deg, #0b1d3a, #0f0f1f); */
+  color: white;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: 'Arial', sans-serif;
+}
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.absolute{position:absolute}.relative{position:relative}.-bottom-6{bottom:-1.5rem}.-left-20{left:-5rem}.-left-28{left:-7rem}.-top-16{top:-4rem}.-top-20{top:-5rem}.bottom-10{bottom:2.5rem}.bottom-4{bottom:1rem}.left-6{left:1.5rem}.right-40{right:10rem}.right-6{right:1.5rem}.right-8{right:2rem}.top-10{top:2.5rem}.top-4{top:1rem}.z-10{z-index:10}.mx-auto{margin-left:auto;margin-right:auto}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mt-10{margin-top:2.5rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.mt-6{margin-top:1.5rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-2{height:0.5rem}.h-2\.5{height:0.625rem}.h-20{height:5rem}.h-28{height:7rem}.h-44{height:11rem}.h-64{height:16rem}.h-72{height:18rem}.h-8{height:2rem}.h-\[170px\]{height:170px}.h-\[360px\]{height:360px}.h-\[50px\]{height:50px}.h-\[60px\]{height:60px}.h-full{height:100%}.w-12{width:3rem}.w-2\.5{width:0.625rem}.w-20{width:5rem}.w-28{width:7rem}.w-44{width:11rem}.w-64{width:16rem}.w-72{width:18rem}.w-8{width:2rem}.w-\[120px\]{width:120px}.w-\[420px\]{width:420px}.max-w-6xl{max-width:72rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.flex-shrink-0{flex-shrink:0}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-cyan-400\/30{border-color:rgb(34 211 238 / 0.3)}.border-green-400\/30{border-color:rgb(74 222 128 / 0.3)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.bg-\[\#05060b\]{--tw-bg-opacity:1;background-color:rgb(5 6 11 / var(--tw-bg-opacity, 1))}.bg-\[\#06111a\]{--tw-bg-opacity:1;background-color:rgb(6 17 26 / var(--tw-bg-opacity, 1))}.bg-\[\#061226\]{--tw-bg-opacity:1;background-color:rgb(6 18 38 / var(--tw-bg-opacity, 1))}.bg-\[\#071122\]{--tw-bg-opacity:1;background-color:rgb(7 17 34 / var(--tw-bg-opacity, 1))}.bg-\[\#0b1220\]{--tw-bg-opacity:1;background-color:rgb(11 18 32 / var(--tw-bg-opacity, 1))}.bg-green-400{--tw-bg-opacity:1;background-color:rgb(74 222 128 / var(--tw-bg-opacity, 1))}.bg-red-400{--tw-bg-opacity:1;background-color:rgb(248 113 113 / var(--tw-bg-opacity, 1))}.bg-slate-700{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}.bg-yellow-400{--tw-bg-opacity:1;background-color:rgb(250 204 21 / var(--tw-bg-opacity, 1))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.from-cyan-400{--tw-gradient-from:#22d3ee var(--tw-gradient-from-position);--tw-gradient-to:rgb(34 211 238 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-emerald-400{--tw-gradient-from:#34d399 var(--tw-gradient-from-position);--tw-gradient-to:rgb(52 211 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-purple-400{--tw-gradient-from:#c084fc var(--tw-gradient-from-position);--tw-gradient-to:rgb(192 132 252 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-slate-700{--tw-gradient-from:#334155 var(--tw-gradient-from-position);--tw-gradient-to:rgb(51 65 85 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.via-fuchsia-500{--tw-gradient-to:rgb(217 70 239 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #d946ef var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-green-500{--tw-gradient-to:rgb(34 197 94 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #22c55e var(--tw-gradient-via-position), var(--tw-gradient-to)}.via-sky-500{--tw-gradient-to:rgb(14 165 233 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), #0ea5e9 var(--tw-gradient-via-position), var(--tw-gradient-to)}.to-blue-400{--tw-gradient-to:#60a5fa var(--tw-gradient-to-position)}.to-blue-500{--tw-gradient-to:#3b82f6 var(--tw-gradient-to-position)}.to-lime-400{--tw-gradient-to:#a3e635 var(--tw-gradient-to-position)}.to-pink-500{--tw-gradient-to:#ec4899 var(--tw-gradient-to-position)}.to-slate-600{--tw-gradient-to:#475569 var(--tw-gradient-to-position)}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-\[1px\]{padding:1px}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.py-8{padding-top:2rem;padding-bottom:2rem}.text-center{text-align:center}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-extrabold{font-weight:800}.font-semibold{font-weight:600}.leading-tight{line-height:1.25}.tracking-wide{letter-spacing:0.025em}.text-emerald-300{--tw-text-opacity:1;color:rgb(110 231 183 / var(--tw-text-opacity, 1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.shadow-\[0_10px_30px_rgba\(21\2c 195\2c 255\2c 0\.12\)\]{--tw-shadow:0 10px 30px rgba(21,195,255,0.12);--tw-shadow-colored:0 10px 30px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_12px_40px_rgba\(21\2c 195\2c 255\2c 0\.12\)\]{--tw-shadow:0 12px 40px rgba(21,195,255,0.12);--tw-shadow-colored:0 12px 40px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.blur-2xl{--tw-blur:blur(40px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.blur-3xl{--tw-blur:blur(64px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.blur-xl{--tw-blur:blur(24px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 768px){.md\:flex{display:flex}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:text-5xl{font-size:3rem;line-height:1}}</style></head>
+<body class="bg-[#05060b] text-slate-100 antialiased">
+
+  <!-- Decorative global neon blobs (to emulate reference) -->
+  <div aria-hidden="" class="pointer-events-none">
+    <div class="absolute -left-20 -top-16 w-72 h-72 rounded-full blur-3xl" style="background: radial-gradient(circle,#08f6ff55,transparent 35%); mix-blend-mode:screen; opacity:0.14;"></div>
+    <div class="absolute right-8 top-10 w-44 h-44 rounded-full blur-2xl" style="background: radial-gradient(circle,#c96cff44,transparent 35%); mix-blend-mode:screen; opacity:0.10;"></div>
+    <div class="absolute right-40 bottom-10 w-64 h-64 rounded-full blur-3xl" style="background: radial-gradient(circle,#53ff8a33,transparent 35%); mix-blend-mode:screen; opacity:0.09;"></div>
+  </div>
+
+  <!-- Container -->
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+
+    <!-- Top nav -->
+    <header class="flex items-center justify-between py-6">
+      <div class="flex items-center gap-4">
+        <div class="">
+            <img src="DentalCare%20%E2%80%94%20Exact%20Replica%20(Tailwind)_files/logo-e.png" class="h-[50px]">
+        </div>
+        <!-- <div>
+          <div class="text-lg font-bold leading-tight">DentalCare</div>
+          <div class="text-xs text-slate-400 -mt-1">Dental Accounting</div>
+        </div> -->
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm text-slate-300">
+        <a class="hover:text-white" href="#">Features</a>
+        <a class="hover:text-white" href="#">Pricing</a>
+        <a class="hover:text-white" href="#">Integrations</a>
+        <a class="hover:text-white" href="#">Support</a>
+        <a class="hover:text-white" href="#">Blog</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button class="text-sm text-slate-300 px-3 py-2 rounded-md hover:bg-white/2">Log in</button>
+        <button class="text-sm font-semibold px-4 py-2 rounded-md bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 shadow-[0_10px_30px_rgba(21,195,255,0.12)]">Sign Up</button>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="grid md:grid-cols-2 gap-8 items-center mt-6">
+      <!-- Left column -->
+      <div class="space-y-5">
+        <div class="text-xs font-semibold tracking-wide text-slate-400">FEATURES</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">DENTALCARE — DENTAL ACCOUNTING</h1>
+        <p class="text-slate-300 max-w-xl">Автоматизовані рішення для 
+клінік: запис пацієнтів, білінг, медичні записи й аналітика. Точна копія
+ стилю з ескізу: темне неонове оформлення, м’які розмиті плями та скляні
+ картки.</p>
+
+        <div class="flex gap-4 mt-2">
+          <button class="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 font-semibold shadow-[0_12px_40px_rgba(21,195,255,0.12)]">Learn more</button>
+          <button class="px-5 py-3 rounded-lg border border-slate-700 text-slate-300 hover:bg-white/2">Watch demo</button>
+        </div>
+
+        <!-- small stats row similar to eскіз -->
+        <div class="flex gap-4 mt-6">
+          <div class="glass px-4 py-3 rounded-xl flex flex-col">
+            <div class="text-xs text-slate-400">Clinics</div>
+            <div class="font-bold text-lg">1,200+</div>
+          </div>
+          <div class="glass px-4 py-3 rounded-xl flex flex-col">
+            <div class="text-xs text-slate-400">Patients / mo</div>
+            <div class="font-bold text-lg">28k</div>
+          </div>
+          <div class="glass px-4 py-3 rounded-xl flex flex-col">
+            <div class="text-xs text-slate-400">Avg. rating</div>
+            <div class="font-bold text-lg">4.8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: frame with "tooth" and UI inside -->
+      <div class="relative flex items-center justify-center">
+        <!-- Outer rounded panel -->
+        <div class="w-[420px] h-[360px] rounded-2xl glass p-6 relative overflow-hidden" style="box-shadow: 0 20px 60px rgba(2,6,23,0.8);">
+          <!-- small decorative strokes like in reference -->
+          <div class="absolute -left-28 -top-20 w-64 h-64 rounded-full blur-2xl" style="background: radial-gradient(circle,#0ff 0%, transparent 60%); opacity:0.06;"></div>
+          <div class="absolute right-6 top-4 w-28 h-28 rounded-full blur-xl" style="background: radial-gradient(circle,#c96cff 0%, transparent 60%); opacity:0.06;"></div>
+
+          <!-- top bar with small pills -->
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
+            </div>
+            <div class="text-xs text-slate-400">Patient — ID #4392</div>
+          </div>
+
+          <div class="flex gap-5 items-center">
+            <!-- Left inside: tooth (big) -->
+            <div class="flex-1 flex items-center justify-center">
+              <!-- Tooth SVG (customized, gradient) -->
+              <img src="DentalCare%20%E2%80%94%20Exact%20Replica%20(Tailwind)_files/222.png">
+            </div>
+
+            <!-- Right inside: dashboard snippet -->
+            <div class="w-[120px] flex-shrink-0">
+              <div class="h-[60px] rounded-lg bg-[#06111a] border border-slate-700 p-3 mb-3">
+                <div class="text-xs text-slate-400">Revenue</div>
+                <div class="flex items-end justify-between mt-2">
+                  <div class="text-lg font-bold">₴12.4k</div>
+                  <div class="text-xs text-emerald-300">+8%</div>
+                </div>
+              </div>
+              <div class="h-[170px] rounded-lg bg-[#06111a] border border-slate-700 p-3 flex flex-col justify-between">
+                <!-- small bar chart -->
+                <div class="space-y-2">
+                  <div class="h-2 bg-slate-700 rounded" style="width:80%"></div>
+                  <div class="h-2 bg-slate-700 rounded" style="width:60%"></div>
+                  <div class="h-2 bg-slate-700 rounded" style="width:92%"></div>
+                  <div class="h-2 bg-slate-700 rounded" style="width:48%"></div>
+                  <div class="h-2 bg-slate-700 rounded" style="width:70%"></div>
+                </div>
+                <div class="text-xs text-slate-400">Monthly appointments</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- bottom small caption -->
+          <div class="absolute left-6 bottom-4 text-xs text-slate-400">Preview: patient dashboard • live demo</div>
+        </div>
+
+        <!-- small screen overlaid glow -->
+        <div class="absolute right-6 -bottom-6 w-20 h-20 rounded-lg" style="background: linear-gradient(135deg,#15c3ff33,#c96cff33); filter: blur(10px); opacity:0.45;"></div>
+      </div>
+    </section>
+
+    <!-- Features row (neon cards) -->
+    <section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- Card 1 -->
+  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500">
+    <div class="bg-[#071122] rounded-2xl p-6 h-full">
+      <div class="text-sm font-semibold mb-2">Automated Scheduling</div>
+      <div class="text-slate-400 text-sm">
+        Reminders &amp; confirmations — reduces no-shows. Smart appointment booking for clinics of any size.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-emerald-400 via-green-500 to-lime-400">
+    <div class="bg-[#071122] rounded-2xl p-6 h-full">
+      <div class="text-sm font-semibold mb-2">Patient Records &amp; Charting</div>
+      <div class="text-slate-400 text-sm">
+        Secure patient profiles, treatment timelines, and clinical notes.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500">
+    <div class="bg-[#071122] rounded-2xl p-6 h-full">
+      <div class="text-sm font-semibold mb-2">Billing &amp; Accounting</div>
+      <div class="text-slate-400 text-sm">
+        Treatment tracking, invoicing and financial reports to keep your practice profitable.
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- How it works + testimonials -->
+    <section class="mt-10 grid md:grid-cols-2 gap-6">
+      <div class="glass p-6 rounded-2xl">
+        <div class="text-sm font-semibold mb-3">HOW IT WORKS</div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">1. Sign up</div>
+          <div class="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">2. Set up clinic</div>
+          <div class="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">3. Automate &amp; Grow</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        <div class="glass p-4 rounded-xl text-center">
+          <div class="w-12 h-12 rounded-full mx-auto bg-gradient-to-br from-slate-700 to-slate-600 mb-3"></div>
+          <div class="font-semibold">Basic</div>
+          <div class="text-xs text-slate-400">Essentials • $9.99/mo</div>
+        </div>
+        <div class="glass p-4 rounded-xl text-center">
+          <div class="w-12 h-12 rounded-full mx-auto border border-cyan-400/30 mb-3"></div>
+          <div class="font-semibold">Automated Imaging</div>
+          <div class="text-xs text-slate-400">Advanced processing</div>
+        </div>
+        <div class="glass p-4 rounded-xl text-center">
+          <div class="w-12 h-12 rounded-full mx-auto border border-green-400/30 mb-3"></div>
+          <div class="font-semibold">Enterprise</div>
+          <div class="text-xs text-slate-400">Custom integrations</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-12 py-8 flex items-center justify-between text-sm text-slate-400">
+      <div>© 2025 DentalCare — Demo</div>
+      <div class="flex gap-3">
+        <div class="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">f</div>
+        <div class="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">t</div>
+        <div class="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">in</div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Responsive adjustments -->
+  <style>
+    @media (max-width: 768px) {
+      .w-\[420px\] { width: 100% !important; }
+      .h-\[360px\] { height: auto !important; }
+    }
+  </style>
+
+
+</body></html>

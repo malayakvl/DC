@@ -46,6 +46,8 @@ const lngCustomer = {
     back: 'Повернутись',
     invite: 'Запросити',
     color: 'Колір',
+    last_name: 'Прізвище',
+    first_name: 'Ім`я'
   },
 };
 export default lngCustomer;

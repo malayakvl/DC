@@ -18,6 +18,8 @@ import { Transition } from '@headlessui/react';
 import Pricing from '../Pricing';
 import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
+import QuickAct from '../FinanceTabs/QuickAct';
+import ActPayment from '../FinanceTabs/ActPayment';
 
 export default function Finances({
   type,
@@ -27,7 +29,8 @@ export default function Finances({
   tree,
   clinicData,
   currency,
-  scheduleId
+  scheduleId,
+  actData
 }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type || 'history');
@@ -225,160 +228,31 @@ console.log('Fin', subTab);
       <div className="clearfix" />
 
       <div className={`w-full flex ${subTab === 'actpayment' ? '' : 'hidden'}`}>
-        AAAAAAAA
+
       </div>
-      <div className={`w-full flex ${subTab === 'act' ? '' : 'hidden'}`}>
-        <div className={`w-1/2`}>
-          {/* Масовая скидка */}
-
-            <div className="mt-4 flex items-center gap-2 w-[700px] justify-end">
-              <label>{msg.get('patient.discount')}</label>
-              <input
-                type="text"
-                value={globalDiscount}
-                onChange={(e) => {
-                  if (e.target.value === '' || (!isNaN(e.target.value) && e.target.value >= 0)) {
-                    setGlobalDiscount(e.target.value);
-                  }
-                }}
-                placeholder={msg.get('patient.globalDiscount')}
-                className="discount-input w-24"
-              />
-              <select
-                value={globalDiscountType}
-                onChange={(e) => {
-                  setGlobalDiscountType(e.target.value);
-                  setGlobalDiscount('');
-                }}
-                className="discount-select"
-              >
-                <option value="percent">%</option>
-                <option value="absolute">₴</option>
-              </select>
-              <button
-                onClick={applyGlobalDiscount}
-                className="bg-blue-500 text-white px-4 py-1 rounded disabled:bg-gray-300 uppercase text-[12px] font-bold"
-                disabled={!globalDiscount}
-              >
-                {msg.get('patient.applyGlobal')}
-              </button>
-            </div>
-
-            {/* Таблица акта */}
-            <div className="bg-white mt-4 rounded-md border shadow-lg w-[750px] min-h-[100px] p-10">
-              <h1 className="text-center uppercase text-black mt-4">{msg.get('patient.workAct')}</h1>
-              {initialServices.length > 0 && (
-                <table className="w-full mt-10">
-                  <thead>
-                  <tr>
-                    <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
-                    <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
-                    <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
-                    <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
-                    <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
-                    <th className="text-right pb-3 px-2"></th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {initialServices.map(service => (
-                    <tr key={service.id}>
-                      <td className="text-left text-[14px] px-2">{service.name}</td>
-                      <td className="text-center text-[14px] px-2">{service.total || ''}</td>
-                      <td className="text-center text-[14px] px-2">
-                        <button className="text-blue-500 hover:text-blue-700 mr-2" onClick={() => dispatch(minusServiceAction(service))}>
-                          <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
-                          </svg>
-                        </button>
-                        {service.qty || 1}
-                        <button className="text-blue-500 hover:text-blue-700 ml-2" onClick={() => dispatch(plusServiceAction(service))}>
-                          <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                          </svg>
-                        </button>
-                      </td>
-                      <td className="text-left text-[14px] pl-2">
-                        <span className="flex">
-                          <input
-                            id={`d-value${service.id}`}
-                            className="discount-input w-20"
-                            type="text"
-                            value={service.discountValue}
-                            onChange={(e) => handleDiscountChange(service.id, e.target.value)}
-                            placeholder="0"
-                          />
-                          <select
-                            id={`d-type-${service.id}`}
-                            className="discount-select inline-block"
-                            value={service.discountType}
-                            onChange={(e) => handleTypeChange(service.id, e.target.value)}
-                          >
-                            <option value="percent">%</option>
-                            <option value="absolute">₴</option>
-                          </select>
-                        </span>
-                      </td>
-                      <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
-                        {calculateDiscountedPrice(service)}
-                      </td>
-                      <td className="text-right text-[14px] pb-2 px-3">
-                        <FontAwesomeIcon
-                          icon={faClose}
-                          color="#e13333"
-                          className="cursor-pointer"
-                          onClick={() => {
-                            dispatch(minusServiceAction(service))
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-              )}
-              {/*<form*/}
-              {/*  onSubmit={event => submit(event)}*/}
-              {/*  className="mt-0 space-y-3 min-w-[350px]"*/}
-              {/*  encType="multipart/form-data"*/}
-              {/*>*/}
-              <div className="text-right mt-4">
-              <span className="text-[16px] font-bold">
-                {msg.get('patient.total')}: {calculateTotal()} ₴
-              </span>
-              </div>
-              <div className="text-right mt-4">
-                <SecondaryButton disabled={processing} onClick={(e) => submit(e)}>
-                  {msg.get('patient.save')}
-                </SecondaryButton>
-                <Transition
-                  show={recentlySuccessful}
-                  enter="transition ease-in-out"
-                  enterFrom="opacity-0"
-                  leave="transition ease-in-out"
-                  leaveTo="opacity-0"
-                >
-                  <p className="text-sm text-gray-600">
-                    {msg.get('patient.saved')}
-                  </p>
-                </Transition>
-              </div>
-            </div>
-            <div className="clearfix" />
-          {/*</form>*/}
-        </div>
-        {/*PRICING BLOCK*/}
-        <div className={`w-1/2 ml-20`}>
-          <div className={`p-pricing`}>
-            <Pricing
-              clinicData={clinicData}
-              tree={tree}
-              services={pServices}
-              currency={currency}
-            />
-          </div>
-        </div>
-      </div>
-
+      {subTab === 'act' && (
+        <QuickAct
+          patientData={patientData}
+          pDiscountValue={pDiscountValue}
+          pServices={pServices}
+          tree={tree}
+          clinicData={clinicData}
+          currency={currency}
+          scheduleId={scheduleId}
+        />
+      )}
+      {subTab === 'actpayment' && (
+        <ActPayment
+          patientData={patientData}
+          pDiscountValue={pDiscountValue}
+          pServices={pServices}
+          tree={tree}
+          clinicData={clinicData}
+          currency={currency}
+          scheduleId={scheduleId}
+          actData={actData}
+        />
+      )}
     </>
   );
 }

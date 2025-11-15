@@ -121,13 +121,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/units', [UnitController::class, 'index'])->name('unit.index');
     Route::get('/unit/create', [UnitController::class, 'create'])->name('unit.create');
     Route::get('/unit/edit/{id}', [UnitController::class, 'edit'])->name('unit.edit');
+    Route::get('/unit/delete/{id}', [UnitController::class, 'delete'])->name('unit.delete');
     Route::post('/unit/update', [UnitController::class, 'update'])->name('unit.update');
 
 
     Route::get('/material-categories', [MaterialCategoresController::class, 'index'])->name('material.categories.index');
     Route::get('/material-category/create', [MaterialCategoresController::class, 'create'])->name('material.categories.create');
     Route::get('/material-category/edit/{id}', [MaterialCategoresController::class, 'edit'])->name('material.categories.edit');
-    Route::post('/material-category/update', [MaterialCategoresController::class, 'update'])->name('material.categories.update');
+    Route::get('/material-category/delete/{id}', [MaterialCategoresController::class, 'delete'])->name('material.categories.delete');
+    Route::get('/material-category/update', [MaterialCategoresController::class, 'update'])->name('material.categories.update');
 
     Route::get('/producers', [ProducerController::class, 'index'])->name('producer.index');
     Route::get('/producer/create', [ProducerController::class, 'create'])->name('producer.create');

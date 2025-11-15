@@ -41,14 +41,14 @@ const lngHeader = {
     'customer.create': 'Створити',
     'customer.roles': 'Ролі',
     'no.filial': 'Філіал не обрано',
-    'material.categories': 'Категоріі матеріалів',
-    materials: 'Матеріали',
+    'material.categories': 'Категорі матеріалів',
+    materials: 'Витратні матеріали',
     invoice: 'Накладні',
-    'material.brands': 'Виробники',
+    'material.brands': 'Виробники/Постачальники',
     clinic: 'Моя Кліника',
     currencies: 'Валюти',
     taxes: 'Ставки податку',
-    invoices: 'Документи',
+    invoices: 'Бухгалтерія',
     'invoice-incoming': 'Прибуткові',
     'invoice-outgoing': 'Видаткові',
     'invoice-change': 'Переміщення',
@@ -60,7 +60,9 @@ const lngHeader = {
     cabinets: 'Кабінети',
     patients: 'Пацієнти',
     import: 'Імпорт',
-    'patient.statuses': 'Статуси і знижки'
+    'patient.statuses': 'Статуси і знижки',
+    login: 'Увійти',
+    register: 'Зареєструватись'
   },
 };
 export default lngHeader;

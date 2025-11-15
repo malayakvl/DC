@@ -7,7 +7,7 @@ export default function NavLink({
   ...props
 }) {
   return (
-    <Link {...props} className={'text-sm ' + className}>
+    <Link {...props} className={'' + className}>
       {children}
     </Link>
   );

@@ -33,6 +33,8 @@ export default function CustomerForm({
   const { errors } = usePage().props;
   const [values, setValues] = useState({
     name: formData.name,
+    first_name: formData.first_name,
+    last_name: formData.last_name,
     email: formData.email,
     inn: formData.inn,
     phone: formData.phone,
@@ -49,7 +51,7 @@ export default function CustomerForm({
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
       id: formData.id,
-      file: formData.file,
+      file: null,
       name: formData.name,
       first_name: formData.first_name,
       last_name: formData.last_name,
@@ -242,12 +244,20 @@ console.log(formData.photo)
             </div>
             <div className={`${hideFields ? 'hidden' : ''}`}>
               <InputText
-                name={'name'}
+                name={'last_name'}
                 values={values}
-                value={values.name}
+                value={values.last_name}
                 onChange={handleChange}
                 required
-                label={msg.get('customer.name')}
+                label={msg.get('customer.last_name')}
+              />
+              <InputText
+                name={'first_name'}
+                values={values}
+                value={values.first_name}
+                onChange={handleChange}
+                required
+                label={msg.get('customer.first_name')}
               />
               <InputText
                 name={'inn'}

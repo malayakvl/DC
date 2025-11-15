@@ -13,7 +13,7 @@ export default function NavCabinets(props) {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-  console.log(permissions);
+
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||

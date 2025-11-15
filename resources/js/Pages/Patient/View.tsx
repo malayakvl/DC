@@ -28,18 +28,11 @@ export default function index({
   discountValue,
   services,
   tree,
-  scheduleId
+  scheduleId,
+  actData
 }) {
   const tab = useSelector(patientTabSelector);
   const dispatch = useDispatch();
-  if (quickActData ) {
-    dispatch(setPatientTab('finances'));
-  }
-  if (scheduleId) {
-    dispatch(setPatientSubTab('act'));
-  } else {
-    dispatch(setPatientSubTab('actpayment'));
-  }
 
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -49,7 +42,16 @@ export default function index({
   const [globalDiscount, setGlobalDiscount] = useState(discountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
 
+  if (quickActData.length > 0 ) {
+    dispatch(setPatientTab('finances'));
+  }
+  if (scheduleId) {
+    dispatch(setPatientSubTab('act'));
+  } else {
+    dispatch(setPatientSubTab('actpayment'));
+  }
 
+console.log('quickActData', quickActData)
   useEffect(() => {
     if (quickActData.services) {
       const initialServices = JSON.parse(quickActData.services).map(service => ({
@@ -64,6 +66,7 @@ export default function index({
   }, [quickActData])
 
   const handleTabClick = tabName => {
+    console.log(tabName)
     dispatch(setPatientTab(tabName));
   };
 
@@ -160,6 +163,7 @@ console.log('TAB', tab);
                   pDiscountValue={discountValue}
                   pServices={services}
                   tree={tree}
+                  actData={actData}
                 />
               </>
             )}

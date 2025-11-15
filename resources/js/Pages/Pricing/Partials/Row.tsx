@@ -26,6 +26,8 @@ export default function AddDynamicInputFields({
   const [hideFields, setHideFields] = useState(false);
   const serchResults = useSelector(searchResultMaterialsSelector);
   const [numRow, setNumRow] = useState(0);
+  const [weightIntutId, setWeightIntutId] = useState(null);
+  const [availableWeights, setAvailableWeights] = useState(null);
 
   const handleAddInput = () => {
     setInputs([
@@ -82,6 +84,26 @@ export default function AddDynamicInputFields({
     dispatch(setTotalPrice(totalItemPrice));
   }, [inputs]);
 
+  useEffect(() => {
+    if (weightIntutId > 0) {
+      const weightSelect = document.getElementById(`${weightIntutId}`)
+      if (weightSelect) {
+        Array.from(weightSelect['options']).forEach(option => {
+          // Get the value of the current option
+          const optionValue = option.value;
+          // Check if the option's value is in the allowedValues array
+          if (!availableWeights.includes(parseInt(optionValue))) {
+            // If not in the array, disable the option
+            option.disabled = true;
+          } else {
+            // If in the array, ensure it's enabled (in case it was previously disabled)
+            option.disabled = false;
+          }
+        });
+      }
+    }
+  }, [availableWeights, weightIntutId])
+
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
       return (
@@ -95,6 +117,11 @@ export default function AddDynamicInputFields({
                 className="cursor-pointer py-1"
                 onClick={() => {
                   setHideFields(true);
+                  setWeightIntutId(_res.id);
+                  const tmpWeight = [];
+                  tmpWeight.push(_res.unit_id);
+                  tmpWeight.push(_res.weightunit_id);
+                  setAvailableWeights(tmpWeight);
                   dispatch(emptyMaterialsAutocompleteAction());
                   inputs[index].product = _res.name;
                   inputs[index].product_id = _res.id;
@@ -125,7 +152,7 @@ export default function AddDynamicInputFields({
     <>
       {inputs.map((item, index) => (
         <tr key={index}>
-          <td className="w-product  pb-2">
+          <td className="w-product px-2 pb-2">
             <div className="relative">
               <input
                 name="product"
@@ -136,8 +163,9 @@ export default function AddDynamicInputFields({
               />
             </div>
           </td>
-          <td className="w-qty pb-2 mx-auto pl-[10px]">
+          <td className="w-qty pb-2 px-2 mx-auto pl-[10px] min-w-[120px]" data-id={`el-${item.product_id}`}>
             <InputSelect
+              elId={item.product_id}
               translatable={false}
               name={'unit_id'}
               className={'mb-1'}
@@ -150,7 +178,7 @@ export default function AddDynamicInputFields({
               label={``}
             />
           </td>
-          <td className="w-qty pb-2 mx-auto">
+          <td className="w-qty pb-2 px-2 mx-auto">
             <div className="row flex ml-[10px]">
               <input
                 className="input-text w-[100px] text-center"
@@ -161,7 +189,7 @@ export default function AddDynamicInputFields({
               />
             </div>
           </td>
-          <td className="w-qty pb-2 mx-auto pl-[10px]">
+          <td className="w-qty pb-2 px-2 mx-auto pl-[10px]">
             <input
               className="input-text price text-center"
               name="price"
@@ -171,7 +199,7 @@ export default function AddDynamicInputFields({
               onChange={event => handleChange(event, index)}
             />
           </td>
-          <td className="w-qty pb-2 mx-auto pl-[10px]">
+          <td className="w-qty pb-2 px-2 mx-auto pl-[10px]">
             <input
               className="input-text price text-center"
               name="total"
@@ -182,7 +210,7 @@ export default function AddDynamicInputFields({
             />
           </td>
 
-          <td className="w-btn pb-2">
+          <td className="w-btn pb-2 px-2">
             {inputs.length > 1 && (
               <button
                 onClick={() => handleDeleteInput(index)}

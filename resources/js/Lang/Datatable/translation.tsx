@@ -29,7 +29,7 @@ const lngHeaders = {
     actions: 'Дії',
     ceo_store: 'Відповідальна Особа',
     filial: 'Філіал',
-    producer: 'Виробник',
+    producer: 'Постачальник',
     percent: 'Наценка %',
     unit: 'Од. виміру',
     size: 'Розмір',
@@ -41,13 +41,15 @@ const lngHeaders = {
     status: 'Статус',
     store: 'Склад',
     customer: 'Користувач',
+    customercreate: 'Відповідальна особа',
     number: 'Номер',
     type: 'Тип',
     rate: 'Курс',
     storefrom: 'Зі складу',
     storeto: 'На склад',
     symbol: 'Позначення',
-    discount: 'Знижка'
+    discount: 'Знижка',
+    role: 'Роль'
   },
 };
 export default lngHeaders;

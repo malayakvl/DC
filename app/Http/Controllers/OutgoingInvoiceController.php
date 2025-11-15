@@ -186,12 +186,13 @@ class OutgoingInvoiceController extends Controller
             }
             $producer = Producer::find($request->producer_id);
             $store = Store::find($request->store_id);
-            if ($request->status_id === 2) {
+//            dd($request->status_id === 1);
+//            if ($request->status_id === 2) {
                 DB::table('document_operations')
                     ->where('document_id', $invoiceId)
                     ->where('document_type', 'invoice')
                     ->delete();
-            }
+//            }
             $total = 0;
             foreach ($request->rows as $row) {
                 $invoiceItem = new InvoiceItems();
@@ -202,7 +203,7 @@ class OutgoingInvoiceController extends Controller
                 $invoiceItem->total = ($row["quantity"])*floatval($row["price"]);
                 $total = $total + $row["quantity"]*floatval($row["price"]);
                 $invoiceItem->save();
-                if (intval($request->status_id) === 2) {
+//                if (intval($request->status_id) === 1) {
                     $documentOperation  = new DocumentOperations();
                     $documentOperation->operation_date = $request->invoice_date;
                     $documentOperation->operation_number = $request->invoice_number;
@@ -225,9 +226,9 @@ class OutgoingInvoiceController extends Controller
                     $documentOperation->comment = 'income_products';
                     $documentOperation->save();
                 }
-            }
+//            }
             // create operations
-            if (intval($request->status_id) === 2) {
+//            if (intval($request->status_id) === 1) {
                 $documentOperation  = new DocumentOperations();
                 $documentOperation->operation_date = $request->invoice_date;
                 $documentOperation->operation_number = $request->invoice_number;
@@ -241,7 +242,7 @@ class OutgoingInvoiceController extends Controller
                 $documentOperation->quantity = 0;
                 $documentOperation->comment = 'nds';
                 $documentOperation->save();
-            }
+//            }
 
             return Redirect::route('invoice.index');
         }
