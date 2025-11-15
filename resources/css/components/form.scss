@@ -1,11 +1,14 @@
 .input-text {
-    min-height: 33px;
-    @apply rounded-sm border-gray-300 shadow-sm w-full py-1
-        focus:border-indigo-500 focus:ring-indigo-500 text-[13px];
+    min-height: 40px;
+    @apply rounded-sm border-gray-300 shadow-sm w-full py-1 text-[13px];
+    background: transparent;
+    color: #fff;
+    border: solid 1px #35466d;
 }
 .input-invoice {
-    height: 33px;
-    min-height: 33px;
+    height: 40px;
+    min-height: 40px;
+    // min-width: 85px;
     //border-radius: 0;
 }
 .material-input {
@@ -36,9 +39,10 @@
     --tw-ring-color: none !important
 }
 .input-textarea {
-    @apply rounded-md border-gray-300 shadow-sm w-full py-1
-    focus:border-indigo-500 focus:ring-indigo-500 text-[13px];
+    @apply rounded-md border-[#35466d] shadow-sm w-full py-1
+    focus:border-[#1b2a40] focus:ring-indigo-500 text-[13px];
     height: 70px;
+    background-color: transparent !important;
 }
 .form-error {
     @apply text-[11px] text-red-500 absolute;
@@ -79,21 +83,21 @@
     font-size: 12px;
     color: palevioletred;
 }
-.btn-qty-minus {
-    @apply rounded-md rounded-r-none bg-slate-800 py-1 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700
-        focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none
-        disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none h-[33px] w-[50px];
-    background-image: linear-gradient(to left top, #484f52, #0f6d8f) !important;
+.btn-qty-minus, .btn-qty-plus {
+    @apply py-1 px-4 text-center text-sm text-white
+        bg-gradient-to-r from-[#b44dd6] to-[#7974e3] shadow-[0_12px_40px_rgba(21,195,255,0.12)];
 }
-.btn-qty-plus {
-    @apply rounded-md rounded-l-none bg-slate-800 py-1 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700
-        active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none h-[33px] w-[50px];
-    background-image: linear-gradient(to left top, #484f52, #0f6d8f) !important;
-}
+// .btn-qty-plus {
+//     @apply rounded-md rounded-l-none bg-slate-800 py-1 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700
+//         active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none h-[33px] w-[50px];
+//     background-image: linear-gradient(to left top, #484f52, #0f6d8f) !important;
+// }
 .qty {
     border-radius: 0;
     width: 60px;
-    @apply h-[33px] text-[14px];
+    background-color: transparent;
+    color: #fff;
+    height: 40px;
 }
 .price {
     width: 100px !important;
@@ -113,9 +117,9 @@
 }
 .factqty {
     width: 100px !important;
-    border: solid 1px black;
+    border: solid 1px #35466d;;
     border-radius: 0.125rem;
-    @apply border-gray-300;
+    height: 40px;
 }
 //.w-unit {
 //    width: 350px !important;
@@ -257,14 +261,14 @@ input[type="file"]::file-selector-button {
     --tw-ring-color: #fff !important
 }
 .overlay-bg-popup {
-    background: #9983af;
+    background: #080b12;
     width: 100%;
     height: 2000px;
     z-index: 10;
     position: absolute;
     top: 0;
     left: 0;
-    opacity: 0.3;
+    opacity: 0.7;
 }
 label.float-label {
     color: rgba(0, 0, 0, 0.6);
@@ -308,4 +312,23 @@ label.float-label {
 }
 .input-report-store {
     width: 200px;
+}
+.dark-form label {
+    color: #01bffb !important;
+    padding-bottom: 4px;
+}
+.dark-form .input-text {
+    background: none !important;
+    color: white !important;
+    border: solid 1px #01bffb !important;
+}
+.dark-form .btn-submit {
+    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+}
+.w-unit {
+    height: 40px;
+}
+.input-label {
+    @apply block text-sm font-medium text-white;
+    margin-bottom: 7px;
 }

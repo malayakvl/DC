@@ -63,35 +63,48 @@ const maxTime = new Date();
 maxTime.setHours(20, 0, 0, 0); // 20:00
 
 const DnDCalendar = withDragAndDrop(Calendar);
+
 const customStyles = {
   group: (provided) => ({
     ...provided,
     borderBottom: '2px solid #e0e0e0',
+    backgroundColor: '#020e14',
     padding: '10px 0',
   }),
   groupHeading: (provided) => ({
     ...provided,
     fontSize: '13px',
     fontWeight: 'bold',
-    color: '#5b28e3',
+    color: '#d554c1',
     textTransform: 'uppercase',
+    zIndex: 99999, // Set a high z-index value
     fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
   }),
   option: (provided) => ({
     ...provided,
     fontSize: '12px',
+    backgroundColor: '#020e14',
+    color: '#fff',
+    zIndex: 99999, // Set a high z-index value
     fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
   }),
   control: (provided) => ({
     ...provided,
     fontSize: '12px',
+    backgroundColor: '#020e14',
     fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
   }),
   singleValue: (provided) => ({
     ...provided,
     fontSize: '14px', // Размер шрифта для выбранного значения
     fontFamily: 'Manrope, sans-serif', // Шрифт для выбранного значения
-    color: '#333',
+    color: '#fff',
+    backgroundColor: '#020e14',
+    zIndex: 99999, // Set a high z-index value
+  }),
+  menu: (provided) => ({
+    ...provided,
+    zIndex: 99999, // Set a high z-index value
   }),
 };
 
@@ -646,7 +659,6 @@ export default function Index({
       color = '#de1818';
     } else if (event.kt_balance < event.dt_balance)
       color = '#0c9407';
-console.log(event)
 
     return view === 'month' ? (
       <strong>{event.title} </strong>
@@ -736,10 +748,9 @@ console.log(event)
               </SecondaryButton>
             </div>
           </div>
-        )}
-        <div style={{ flex: 1, padding: '10px' }}>
-          <div className={'w-full flex relative z-10'}>
-            <div className={'w-1/2 mb-5'}>
+        )}>
+          <div className={'w-full flex relative justify-center'} style={{ zIndex: 9999 }}>
+            <div className={'w-full md:w-1/2 mb-5'}>
               <Select
                 placeholder="Лікарі..."
                 value={null}
@@ -752,7 +763,7 @@ console.log(event)
           </div>
 
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-          <div className={'relative'}>
+          <div className={'relative'} style={{ zIndex: 1 }}>
             <DnDCalendar
               culture="uk"
               localizer={localizerFn as any}
@@ -773,7 +784,7 @@ console.log(event)
               onNavigate={handleNavigate as any}
               onSelectSlot={handleSelectSlot as any}
               tooltipAccessor={(event: any): any =>
-                `\n${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
+                `${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
               }
               onSelectEvent={onSelectEvent as any}
               onDoubleClickEvent={onDoubleClickEvent as any}
@@ -784,7 +795,7 @@ console.log(event)
                   border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
                   // background: `rgba(235, 157, 23, 0.1)`,
                   padding: '5px',
-                  zIndex: 10,
+                  zIndex: 5,
                   backgroundColor: `#fff`
                 },
               }) as any}
@@ -802,7 +813,7 @@ console.log(event)
                 position: 'absolute',
                 width: '200px',
                 minHeight: '130px',
-                zIndex: 99,
+                zIndex: 50,
                 display: 'none'
               }} />
 
@@ -816,7 +827,7 @@ console.log(event)
                   background: 'white',
                   border: '1px solid #ccc',
                   borderRadius: '4px',
-                  zIndex: 1000,
+                  zIndex: 500,
                 }}
                 onClick={closePopover}
               >

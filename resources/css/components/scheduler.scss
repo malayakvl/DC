@@ -12,7 +12,7 @@
     height: 16px;
     position: absolute;
     right: 14px;
-    top: 28px;
+    top: 35px;
     z-index: 44;
 }
 .scheduler-status {
@@ -30,7 +30,7 @@
     //background-color: palevioletred;
 }
 .css-1mrufi {
-    z-index: 30 !Important;
+    z-index: 30 !important;
 }
 
 .patients-data {
@@ -157,13 +157,7 @@
 .add-services {
     color: #424d71;
 }
-.price-popup {
-    //position: fixed;
-    //top: 30px;
-    //left: 22%;
-}
-.pricing-block {
-}
+
 .bg-price {
     height: 300px;
     max-height: 300px;
@@ -293,29 +287,7 @@
     left: 30px;
     //transform: rotate(-45deg);
 }
-.sch_tooltip {
-    //&__arrow {
-    //    width: 50px;
-    //    height: 25px;
-    //    position: absolute;
-    //    top: 100%;
-    //    left: 50%;
-    //    transform: translateX(-50%);
-    //    overflow: hidden;
-    //
-    //    &::after {
-    //        content: "";
-    //        position: absolute;
-    //        width: 20px;
-    //        height: 20px;
-    //        background: white;
-    //        transform: translateX(-50%) translateY(-50%) rotate(45deg);
-    //        top: 0;
-    //        left: 50%;
-    //        box-shadow: 1px 1px 20px 0px rgba(0,0,0,0.6);
-    //    }
-    //}
-}
+
 
 .sch_tooltip {
     position: absolute;
@@ -332,57 +304,13 @@
     padding: 10px;
     font-size: 14px;
 }
-.rbc-events-container {
-    //width: 100% !important;
-}
 
-.sch_arrow {
-    //position: absolute;
-    //width: 12px;
-    //height: 12px;
-    //background: white;
-    //border-top: 1px solid #ccc;
-    //border-left: 1px solid #ccc;
-    //transform: rotate(45deg); /* Ромб для стрелки, указывающей вверх */
-    //z-index: -1; /* Под поповером, чтобы не перекрывать контент */
-}
 
 /* Для стрелки, если поповер сверху (указывает вниз) */
 .sch_arrow.down {
     transform: rotate(225deg); /* Поворот для указания вниз */
 }
-//
-//.sch_tooltip {
-//    position: absolute;
-//    width: 380px;
-//    z-index: 1000;
-//    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Тень только на внешнем контейнере */
-//}
-//
-//.sch-content {
-//    padding: 10px;
-//    font-size: 14px;
-//    background: white; /* Фон для изоляции тени */
-//    border-radius: 4px; /* Скругленные углы */
-//    position: relative; /* Для изоляции контекста */
-//}
-//
-//.sch_arrow {
-//    position: absolute;
-//    width: 0;
-//    height: 0;
-//    border: 6px solid transparent; /* Прозрачные границы для треугольника */
-//    border-bottom: 6px solid white; /* Белый треугольник, указывающий вверх */
-//    border-left: 6px solid white; /* Формирует угол */
-//    z-index: 1; /* Над поповером для видимости */
-//}
-//
-///* Для стрелки, указывающей вниз (поповер сверху) */
-//.sch_arrow.down {
-//    border: 6px solid transparent;
-//    border-top: 6px solid white; /* Треугольник вниз */
-//    border-right: 6px solid white;
-//}
+
 .arrow-left {
     position: absolute;
     width: 20px;
@@ -487,7 +415,9 @@
     border-radius: 4px;
     float: left;
     margin-right: 10px;
-    border-color: #d1d5db;
+    border-color: #35466d;
+    background-color: transparent;
+    color: #fff;
 }
 .f-calendar {
     background: url(../../images/action-icons/calendar.svg);
@@ -511,3 +441,70 @@
     top: 34px;
     right: 41px;
 }
+
+.rbc-today {
+    background-color: #444c72 !important;
+}
+.rbc-timeslot-group {
+    // background-color: transparent !important;
+    min-height: 64px !important;
+
+}
+// .rbc-time-slot {
+//     background-color: #000 !important;
+//     color: #fff;
+// }
+.rbc-button-link {
+    color: #fff !important;
+}
+
+.rbc-day-slot .rbc-time-slot {
+    border-top: 1px solid #989393 !important;
+}
+.rbc-current-time-indicator {
+    background-color: #eb49bb !important;
+    height: 2px;
+}
+.rbc-timeslot-group {
+    border-bottom: none !important;
+}
+.sh-d-select {
+    background-color: transparent !important;
+}
+.rbc-time-header-gutter {
+    background-color: transparent !important;
+}
+.rbc-time-gutter .rbc-timeslot-group {
+    background-color: #2d3b5c;
+    color: #fff;
+}
+.rbc-time-gutter .rbc-time-slot {
+    border-bottom: solid 1px #444c72;
+}
+.scheduler-popup {
+    @apply px-5 max-h-[75vh] form-scheduler bg-[#020e13] overflow-y-auto;
+    -webkit-box-shadow: -1px -1px 26px 0px rgba(243 68 184 / 0.75);
+}
+
+.rbc-btn-group {
+    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+    color: #fff;
+}
+.rbc-toolbar button {
+    color: #fff !important;
+}
+.sh-d-select {
+    background-color: #032f62 !important;
+    z-index: 9999;
+}
+.css-cwtq7d-control {
+    background-color: #000 !important;
+    color: #fff;
+}
+.rbc-toolbar-label {
+    color: #fff !important;
+}
+// .css-hlgwow div {
+//     background-color: #000 !important;
+//     color: #fff;
+// }

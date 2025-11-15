@@ -212,7 +212,7 @@ export default function SchedulerFormCreate({
   }
 
   return (
-    <section className={`px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2 className={'pt-7 pb-7'}>
           {formData?.id

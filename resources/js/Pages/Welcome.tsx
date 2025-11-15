@@ -29,103 +29,175 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
   return (
     <>
       <Head title="Welcome" />
-      <Header auth={auth} />
-      <div className="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50 bg-main">
-        <div className="relative flex min-h-screen flex-col items-center justify-center selection:bg-[#FF2D20]">
-          <div className="w-full">
-            <main className="mt-16 px-[80px] mb-[50px] mx-auto w-full">
+      {/* <Header auth={auth} /> */}
+      <div className="body-main">
 
+        {/* <!-- Top nav --> */}
+        <Header auth={auth} />
+        {/* <!-- Container --> */}
+        <div className="max-w-6xl mx-auto px-6 relative z-10 pt-[100px]">
 
-              <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-                <div className="flex items-start gap-4 rounded-lg ">
-                  {/*BG IMG BLOCK*/}
-                  <div className="pt-3 sm:pt-5 block-m-1 m-b-image"></div>
+        {/* <!-- HERO --> */}
+        <section className="grid md:grid-cols-2 gap-8 items-center mt-6">
+          {/* <!-- Left column --> */}
+          <div className="space-y-5">
+            <div className="text-xs font-semibold tracking-wide text-white">FEATURES</div>
+            <h1 className="text-3xl md:text-2xl font-extrabold leading-tight">DentalCare —  <span className="text-xl font-bold">Автоматизований облік клініки</span></h1>
+            <p className="text-white max-w-xl">Автоматизовані рішення для клінік: запис пацієнтів, білінг, медичні записи й аналітика. Точна копія стилю з ескізу: темне неонове оформлення, м’які розмиті плями та скляні картки.</p>
+
+            <div className="flex gap-4 mt-2">
+              <button className="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 font-semibold shadow-[0_12px_40px_rgba(21,195,255,0.12)]">Взнати більше</button>
+              <button className="px-5 py-3 rounded-lg bg-gradient-to-r from-[#ed7b4a] to-[#410958] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold">Дивитись демо</button>
+            </div>
+
+            {/* <!-- small stats row similar to eскіз --> */}
+            <div className="flex gap-4 mt-6">
+              <div className="glass px-4 py-3 rounded-xl flex flex-col">
+                <div className="text-xs text-white">Клінік</div>
+                <div className="font-bold text-lg">1,200+</div>
+              </div>
+              <div className="glass px-4 py-3 rounded-xl flex flex-col">
+                <div className="text-xs text-white">Patients / mo</div>
+                <div className="font-bold text-lg">28k</div>
+              </div>
+              <div className="glass px-4 py-3 rounded-xl flex flex-col">
+                <div className="text-xs text-white">Avg. rating</div>
+                <div className="font-bold text-lg">4.8</div>
+              </div>
+            </div>
+          </div>
+
+          {/* <!-- Right column: frame with "tooth" and UI inside --> */}
+          <div className="relative flex big-block">
+            {/* <!-- Outer rounded panel --> */}
+            <div className="w-[520px] h-[360px] rounded-2xl glass p-2 relative overflow-hidden ml-[70px]">
+              {/* <!-- top bar with small pills --> */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-xs text-white">Patient — ID #4392</div>
+              </div>
+
+              <div className="flex gap-1">
+                {/* <!-- Left inside: tooth (big) --> */}
+                <div className="flex-1 flex items-center justify-center">
+                  {/* <!-- Tooth SVG (customized, gradient) --> */}
+                  <img src="../../images/new-diz/222-1.png" />
                 </div>
-                <div className="flex items-start gap-4 rounded-lg p-6 tooltip-right tooltip-main lg:pb-10 dark:bg-zinc-900 dark:ring-zinc-800">
 
-                  <div className="pt-3 sm:pt-5">
-                    <h2 className="text-2xl font-semibold text-white dark:text-white">
-                      Єдина система управління стоматологічною клінікою
-                    </h2>
-
-                    <p className="mt-4">
-                      <span className="text-[19px]">
-                        Ведення медичних карток пацієнтів і автоматизація процесів роботи клініки в одному просторі<br/><br/>
-                      </span>
-                      <Link
-                        href="/register"
-                        className="btn-submit main-submit"
-                      >
-                        {lng.get('menu.register')}
-                      </Link>
-                      <Link
-                        href="/login"
-                        className="rounded-md px-4 py-2 text-white ring-1 ring-transparent transition focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white"
-                      >
-                        {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
-                      </Link>
-                      <br/>
-
-                    </p>
+                {/* <!-- Right inside: dashboard snippet --> */}
+                <div className="w-[250px] mr-4">
+                  <div className="rounded-lg bg-[#06111a] border border-slate-700 p-3 mb-3">
+                    <div className="text-xs text-white">Звітність</div>
+                    <div className="h-2 bg-slate-500 rounded mt-1" style={{width: '80%'}}></div>
+                    <div className="flex items-end justify-between mt-2">
+                      <p className="text-[14px] text-white p-3">
+                        <ul className="list-disc">
+                          <li>планування розкладу</li>
+                          <li>розрахунки з пацієнтами</li>
+                          <li>розрахунки з постачальниками</li>
+                          <li>складський облік</li>
+                          <li>інтеграція в </li>
+                        </ul>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 mt-16">
-                <div className="flex items-start gap-4 tooltip-left tooltip-main p-6">
+            </div>
+            {/* <!-- bottom small caption --> */}
+            <div className="absolute bottom-4 text-sm left-[20px] bottom-[5px] text-white">
+              Зрозумілий интерфейс для лікарів та пацієнтів
+            </div>
 
-                  <div className="pt-3 sm:pt-5">
-                    <h2 className="text-2xl font-semibold text-white dark:text-white">
-                      Розумний розклад
-                    </h2>
+          </div>
+        </section>
 
-                    <p className="mt-4">
-                      <span className="text-[19px]">
-                        Інтерактивний розклад клініки надасть всю важливу інформацію про пацієнтів за лічені секунди. <br/><br/>
-                      </span>
+        <div className="flex flex-col mt-8 w-full text-white bg-[#000a21] p-[40px]">
+          <p>Тепер нарешті лікар і пацієнт можуть говорити на одній хвилі, оскільки схеми лікування викладені просто й доступно — не тільки для фахівців, а й для звичайних людей.</p>
+          <p className="mt-[20px]">Інтерактивна хроніка медичного лікування пацієнта, що дозволяє зберігати необмежену кількість файлів будь-яких типів у строгій послідовності за часом.</p>
+        </div>
 
-                      <br/>
-
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 rounded-lg ">
-                  {/*BG IMG BLOCK*/}
-                  <div className="pt-3 sm:pt-5 block-m-2 m-b-image"></div>
-                </div>
-              </div>
-
-              <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 mt-16">
-                <div className="flex items-start gap-4 rounded-lg ">
-                  {/*BG IMG BLOCK*/}
-                  <div className="pt-3 sm:pt-5 main-img-3 m-b-image"></div>
-                </div>
-                <div className="flex items-start gap-4 tooltip-right tooltip-main p-6">
-
-                  <div className="pt-3 sm:pt-5 w-full">
-                    <h2 className="text-2xl font-semibold text-white dark:text-white">
-                      Візуальне сприйняття історії лікування
-                    </h2>
-                    <p className="mt-4">
-                      <span className="text-[19px] text-white align-left">
-                        Динамічна історія лікування пацієнта, яка в хронологічному порядку та необмеженій кількості зберігає файли всіх форматів. Знімки рентгену та періо карти. <br/><br/>
-                      </span>
-
-                      <br/>
-
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-
-            </main>
-
-
-            <Footer />
+    {/* <!-- Features row (neon cards) --> */}
+    <section className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+      {/* <!-- Card 1 --> */}
+      <div className="p-[1px] rounded-2xl data-block">
+        <div className="bg-[#071122] rounded-2xl p-1 h-full">
+          <div className="text-sm font-semibold mb-2">Візуалізація історії пацієнта</div>
+          <div className="text-white text-sm">
+            <img src="../../images/main-page/pic2.png" />
           </div>
         </div>
       </div>
-    </>
+
+      {/* <!-- Card 2 --> */}
+      <div className="p-[1px] rounded-2xl data-block data-block-second">
+        <div className="bg-[#071122] rounded-2xl p-1 h-full">
+          <div className="text-sm font-semibold mb-2">Зрозумілий і гнучкий розклад</div>
+          <div className="text-white text-sm">
+            <img src="../../images/main-page/pic3.png" />
+          </div>
+        </div>
+      </div>
+
+      {/* <!-- Card 3 --> */}
+      <div className="p-[1px] rounded-2xl data-block data-block-third">
+        <div className="bg-[#071122] rounded-2xl p-1 h-full">
+          <div className="text-sm font-semibold mb-2">Звітність та облік</div>
+          <div className="text-white text-sm">
+            <img src="../../images/main-page/pic4.png" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* <!-- How it works + testimonials --> */}
+    <section className="mt-10 grid md:grid-cols-2 gap-6">
+      <div className="glass p-6 rounded-2xl">
+        <div className="text-sm font-semibold mb-3 uppercase">Як це працює</div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">1. Реєєструєся</div>
+          <div className="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">2. Додаєш клініку та філіали</div>
+          <div className="p-3 rounded-lg bg-[#061226] text-center text-xs border border-slate-700">3. Автоматизація процесу</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="glass p-4 rounded-xl text-center">
+          <div className="avatar mx-auto">
+            <img src="../../images/new-diz/pl-1.png" className="rounded-full w-full h-full" alt="" />
+          </div>
+          <div className="font-semibold mt-4">Start</div>
+          <div className="text-xs text-white">Essentials • $9.99/mo</div>
+        </div>
+        <div className="glass p-4 rounded-xl text-center">
+          <div className="avatar mx-auto">
+            <img src="../../images/new-diz/pl-3.png" className="rounded-full w-full h-full" alt="" />
+          </div>
+          <div className="font-semibold mt-4">Basic</div>
+          <div className="text-xs text-white">Essentials • $19.99/mo</div>
+        </div>
+        <div className="glass p-4 rounded-xl text-center">
+          <div className="avatar mx-auto">
+            <img src="../../images/new-diz/pl-4.png" className="rounded-full w-full h-full" alt="" />
+          </div>
+          <div className="font-semibold mt-4">Enterprise</div>
+          <div className="text-xs text-white">Essentials • $29.99/mo</div>
+        </div>
+      </div>
+    </section>
+
+        {/* <!-- Footer --> */}
+        <footer className="mt-12 py-8 flex items-center justify-between text-sm text-white">
+          <div>&copy; 2025 DentalCare — Demo</div>
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">f</div>
+            <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">t</div>
+            <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">in</div>
+          </div>
+        </footer>
+
+  </div>
+</div>
+      </>
   );
 }

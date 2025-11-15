@@ -12,7 +12,7 @@ export default function GuestLayout({ children }) {
     messages: lngHeader,
     locale: appLang,
   });
-
+console.log('Here')
   return (
     <div className="flex min-h-screen flex-col items-center pt-6 sm:justify-center sm:pt-0 bg-main">
       <header className="bg-white">

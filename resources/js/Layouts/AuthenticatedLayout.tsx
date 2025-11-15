@@ -74,7 +74,7 @@ export default function AuthenticatedLayout({ header, children }) {
       )}
 
       <main className="pt-[60px]">
-        <div className="mx-auto w-full">
+        <div className="mx-auto w-full px-4">
           <div>{children}</div>
         </div>
       </main>

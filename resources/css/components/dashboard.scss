@@ -129,3 +129,18 @@
     margin-top: 8px;
 }
 
+.dashboard-block {
+display: inline-block;
+  padding: 12px;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  background: linear-gradient(#0a0f1c, #0a0f1c) padding-box, linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
+  box-shadow: 0 0 20px rgba(183, 75, 213, 0.6), 0 0 40px rgba(0, 198, 255, 0.4);
+  color: #fff;
+}
+.dashboard-block h5 {
+    color: #fff;
+}
+.dashboard-icon {
+    @apply inline-block w-12 h-12 text-center rounded-lg text-sm  bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold;
+}
