@@ -29,7 +29,7 @@
     display: inline-block;
     min-width: 25%;
     flex: 1 1 25%;
-    color: #1c1717;
+    color: #fff;
     text-align: center;
     cursor: pointer;
     -webkit-transition: all 0.5s; /* Safari 3.1 to 6.0 */
@@ -139,6 +139,7 @@
     background: white url('../../images/patients/formula.svg');
     background-size: contain;
     background-repeat: no-repeat;
+    color: #fff;
 }
 .perio-tab {
     background: white url('../../images/patients/perio.svg');
@@ -149,4 +150,10 @@
     background: white url('../../images/patients/psr.svg');
     background-size: contain;
     background-repeat: no-repeat;
+}
+.tabs-title {
+    @apply inline-block ml-[35px] text-white;
+}
+.stage-tabs .icon {
+    border-color: #9462dd !important
 }

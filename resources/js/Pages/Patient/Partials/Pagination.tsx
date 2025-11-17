@@ -14,7 +14,7 @@ export default function Pagination({ listData }) {
   return (
       <div className="mt-4 flex justify-between items-center">
         <div>
-          <p className="text-sm text-gray-700">
+          <p className="pagination-title">
             {msgLayouts.get('layouts.pagination.show')} {listData.current_page} {msgLayouts.get('layouts.pagination.of')} {listData.last_page}
           </p>
         </div>
@@ -22,10 +22,10 @@ export default function Pagination({ listData }) {
       {/* Previous Button */}
       <a
         href={listData.first_page_url}
-        className={`px-3 py-1 border rounded text-sm ${
+        className={`pagination-btns ${
           listData.current_page !== 1
-            ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-            : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+            ? 'page-active'
+            : 'page-active cursor-not-allowed'
         }`}
         onClick={(e) => !listData.first_page_url && e.preventDefault()}
       >
@@ -39,12 +39,12 @@ export default function Pagination({ listData }) {
           <a
             key={link.label}
             href={link.url || '#'}
-            className={`px-3 py-1 border rounded text-sm ${
+            className={`pagination-btns ${
               link.active
-                ? 'bg-blue-500 text-white border-blue-500'
+                ? 'page-active'
                 : link.url
-                  ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                  : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+                  ? 'pagination-btns'
+                  : 'pagination-btns cursor-not-allowed'
             }`}
             onClick={(e) => !link.url && e.preventDefault()}
           >
@@ -55,10 +55,10 @@ export default function Pagination({ listData }) {
       {/* Next Button */}
       <a
         href={listData.last_page_url || '#'}
-        className={`px-3 py-1 border rounded text-sm ${
+        className={`pagination-btns ${
           listData.next_page_url
-            ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-            : 'bg-gray-200 border-gray-200 text-gray-400 cursor-not-allowed'
+            ? 'page-active'
+            : 'page-active cursor-not-allowed'
         }`}
         onClick={(e) => !listData.last_page_url && e.preventDefault()}
       >

@@ -114,3 +114,6 @@
 .invoice-table .w-qty {
     max-width: 160px;
 }
+.pagination-title {
+    @apply text-sm text-white font-medium;
+}
