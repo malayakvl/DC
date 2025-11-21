@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Create the table if it doesn't exist
+        // Only create the table if it doesn't already exist
         if (!Schema::hasTable('clinic_filial_user')) {
             Schema::create('clinic_filial_user', function (Blueprint $table) {
                 $table->id();
@@ -21,11 +21,6 @@ return new class extends Migration
                 $table->timestamps();
             });
         }
-        
-        // Add the role_id column
-        Schema::table('clinic_filial_user', function($table) {
-            $table->foreignId('role_id')->constrained()->onDelete('cascade');
-        });
     }
 
     /**
@@ -33,8 +28,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clinic_filial_user', function($table) {
-            $table->dropColumn('role_id');
-        });
+        // Only drop the table if it exists
+        if (Schema::hasTable('clinic_filial_user')) {
+            Schema::dropIfExists('clinic_filial_user');
+        }
     }
 };

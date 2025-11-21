@@ -284,8 +284,11 @@ class DisplacementInvoiceController extends Controller
                         'store_name' => $storeTo->name,
                         'product_id' => $material->id,
                         'product_name' => $material->name,
+                        'producer_id' => $material->producer_id,
+                        'producer_name' => $material->producer->name,
                         'price_per_unit' => $unitPrice,
-                        'fact_qty' => $qtyD
+                        'fact_qty' => $qtyD,
+                        'qty' => $row["quantity"]
                     ));
                     $documentOperation->operation_kt = '281';
                     $documentOperation->subconto_kt = json_encode(array(
@@ -293,8 +296,11 @@ class DisplacementInvoiceController extends Controller
                         'store_name' => $storeFrom->name,
                         'product_id' => $material->id,
                         'product_name' => $material->name,
+                        'producer_id' => $material->producer_id,
+                        'producer_name' => $material->producer->name,
                         'price_per_unit' => $unitPrice,
-                        'fact_qty' => $qtyD
+                        'fact_qty' => $qtyD,
+                        'qty' => $row["quantity"]
                     ));
                     $documentOperation->quantity = $row["quantity"];
                     $documentOperation->comment = 'move_products';

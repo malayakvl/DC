@@ -748,7 +748,7 @@ export default function Index({
               </SecondaryButton>
             </div>
           </div>
-        )}>
+        )}
           <div className={'w-full flex relative justify-center'} style={{ zIndex: 9999 }}>
             <div className={'w-full md:w-1/2 mb-5'}>
               <Select
@@ -862,6 +862,7 @@ export default function Index({
           />}
         </div>
       </div>
+    </div>
     </AuthenticatedLayout>
   );
 }

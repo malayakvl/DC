@@ -212,9 +212,14 @@ class OutgoingInvoiceController extends Controller
                     $documentOperation->operation_dt = '281';
                     $documentOperation->subconto_dt = json_encode(array(
                         'store_id' => $request->store_id,
-                        'name' => $store->name,
+                        'store_name' => $store->name,
                         'product_id' => $row["product_id"],
-                        'product_name' => $row['product']
+                        'product_name' => $row['product'],
+                        'producer_id' => $producer->id,
+                        'producer_name' => $producer->name,
+                        'fact_qty' => $row['quantity'],
+                        'qty' => $row['quantity'],
+                        'price_per_unit' => number_format(floatval($row["price"]), 2)
                     ));
                     $documentOperation->operation_kt = '631';
                     $documentOperation->subconto_kt = json_encode(array(
