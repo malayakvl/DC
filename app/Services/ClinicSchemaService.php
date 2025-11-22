@@ -40,6 +40,12 @@ class ClinicSchemaService
             
             // Create default currencies and exchange rates
             $this->createDefaultCurrencies($clinicId);
+
+            // Create default store
+            $this->createDefaultStore($clinicId);
+
+            // Create default patient statuses
+            $this->createDefaultPatientStatuses($clinicId);
         } finally {
             // Restore original search path
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -161,16 +167,7 @@ class ClinicSchemaService
         
         // Create additional clinic-specific tables as needed
         // This is a simplified version - you may need to add more tables based on your requirements
-        DB::statement("
-            CREATE TABLE IF NOT EXISTS patients (
-                id BIGSERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                phone VARCHAR(20),
-                email VARCHAR(255),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
+
         
         DB::statement("
             CREATE TABLE IF NOT EXISTS services (
@@ -194,6 +191,203 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+        // Create stores table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS stores (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                address TEXT,
+                uraddress TEXT,
+                phone VARCHAR(20),
+                user_id BIGINT,
+                filial_id BIGINT,
+                clinic_id BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create price_categories table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS price_categories (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                clinic_id BIGINT NOT NULL,
+                parent_id BIGINT,
+                producer_id BIGINT,
+                percent DECIMAL(5, 2) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create pricings table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS pricings (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                clinic_id BIGINT NOT NULL,
+                category_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create schedulers table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS schedulers (
+                id BIGSERIAL PRIMARY KEY,
+                title VARCHAR(255),
+                clinic_id BIGINT,
+                doctor_id BIGINT,
+                patient_id BIGINT,
+                cabinet_id BIGINT,
+                event_date DATE,
+                event_time_from TIME,
+                event_time_to TIME,
+                description TEXT,
+                status_color VARCHAR(255),
+                status_name INTEGER,
+                services TEXT,
+                priority BOOLEAN,
+                assistent_id INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create patient_statuses table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                discount DOUBLE PRECISION NOT NULL DEFAULT 0,
+                clinic_id INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create size table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS size (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                clinic_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create unit table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS unit (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                unit_qty INTEGER,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create taxes table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS taxes (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                value DOUBLE PRECISION NOT NULL
+            )
+        ");
+
+        // Create store_materials table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_materials (
+                id BIGSERIAL PRIMARY KEY,
+                doc_date TIMESTAMP,
+                document_type VARCHAR(255),
+                document_id BIGINT,
+                store_id BIGINT,
+                material_id BIGINT,
+                producer_id BIGINT,
+                qty DOUBLE PRECISION,
+                store_qty DOUBLE PRECISION,
+                unit_id BIGINT,
+                fact_qty DOUBLE PRECISION,
+                store_fact_qty DOUBLE PRECISION,
+                fact_unit_id BIGINT,
+                price_per_unit DOUBLE PRECISION,
+                pack_qty DOUBLE PRECISION,
+                pack_unit_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create patient_access table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_access (
+                id BIGSERIAL PRIMARY KEY,
+                patient_id BIGINT NOT NULL,
+                service_name VARCHAR(255) NOT NULL,
+                status VARCHAR(255) DEFAULT 'active' CHECK (status IN ('active', 'expired')),
+                start_date DATE NULL,
+                end_date DATE NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create patient_treatment table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_treatment (
+                id BIGSERIAL PRIMARY KEY,
+                patient_id BIGINT NOT NULL,
+                clinic_id BIGINT NOT NULL,
+                filial_id BIGINT,
+                treatment_date DATE NOT NULL,
+                diagnosis VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create treatment_details table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS treatment_details (
+                id BIGSERIAL PRIMARY KEY,
+                treatment_id BIGINT NOT NULL,
+                procedure VARCHAR(255) NOT NULL,
+                medications TEXT,
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create audit_logs table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                action VARCHAR(50) NOT NULL,
+                entity_type VARCHAR(100),
+                entity_id BIGINT,
+                clinic_id BIGINT,
+                filial_id BIGINT,
+                old_data JSONB,
+                new_data JSONB,
+                ip_address VARCHAR(45),
+                user_agent TEXT,
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create indexes for audit_logs
+        DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_user_id_created_at_idx ON audit_logs (user_id, created_at)");
+        DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_clinic_id_created_at_idx ON audit_logs (clinic_id, created_at)");
+        DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_entity_type_entity_id_idx ON audit_logs (entity_type, entity_id)");
+        DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs (created_at)");
     }
     
     /**
@@ -264,6 +458,54 @@ class ClinicSchemaService
                 'currency_id' => $currencyId,
                 'rate_value' => 1.0000,
                 'rate_date' => now(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+    }
+
+    /**
+     * Create default store for the clinic
+     *
+     * @param int $clinicId
+     * @return void
+     */
+    protected function createDefaultStore(int $clinicId): void
+    {
+        DB::table('stores')->insert([
+            'name' => 'Main Store',
+            'clinic_id' => $clinicId,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+    }
+
+    /**
+     * Create default patient statuses for the clinic
+     *
+     * @param int $clinicId
+     * @return void
+     */
+    protected function createDefaultPatientStatuses(int $clinicId): void
+    {
+        $statuses = [
+            'planned',
+            'confirm',
+            'done',
+            'missed',
+            'postponed',
+            'noanswer',
+            'late',
+            'inclicnic',
+            'incabinet',
+            'decline',
+        ];
+
+        foreach ($statuses as $status) {
+            DB::table('patient_statuses')->insert([
+                'name' => $status,
+                'discount' => 0,
+                'clinic_id' => $clinicId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
