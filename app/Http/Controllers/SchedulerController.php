@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SchedulerUpdateRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
-use App\Models\Filial;
 use App\Models\Patient;
 use App\Models\PriceCategory;
 use App\Models\Pricing;
@@ -487,7 +486,7 @@ class SchedulerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Filial $filial) {
+    public function destroy(ClinicFilial $filial) {
         //
     }
 }
