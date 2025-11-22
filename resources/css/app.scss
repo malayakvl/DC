@@ -173,3 +173,10 @@ hr {
 .page-active {
     @apply bg-gradient-to-r from-[#d7c7c6] to-[#1d535c] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
 }
+.disabled-content-block {
+  pointer-events: none;
+  opacity: 0.2;
+  background-color: #34456a;
+//   color: #999;
+  cursor: not-allowed;
+}

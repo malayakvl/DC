@@ -2,226 +2,129 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use DB;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\RoleUpdateRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
-class RoleController extends Controller implements HasMiddleware
+class RoleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    function __construct()
+    public function __construct()
     {
-        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
-        $this->middleware('permission:role-create', ['only' => ['create','store']]);
-        $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
+        // Используем наш middleware, который проверяет права внутри схемы клиники
+        $this->middleware('clinic_permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'store']]);
+        $this->middleware('clinic_permission:role-create', ['only' => ['create', 'store']]);
+        $this->middleware('clinic_permission:role-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('clinic_permission:role-delete', ['only' => ['destroy']]);
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Inertia\Response
+     * Helper для работы с текущей схемой клиники
      */
-    public function index(Request $request): \Inertia\Response
+    private function withClinicSchema(Request $request, \Closure $callback)
     {
-//        $request->user()->roles()->detach();
-//         $request->user()->hasRole('Ceo Filial');
-//         dd($request->user()->hasRole('Ceo Filial'));exit;
-//dd(Auth::user()->hasRole('Admin'));
-//        $role = Role::where('name', 'Ceo')->first();
-//        $permission = Permission::where('name', 'patient-edit')->first();
-//        dd($permission);exit;
-//        $permission = Permission::where(['name' => 'patient-edit']);
-//        $permission->assignRole($role);
-//        exit;
-//       $permission = Permission::create(['name' => 'patient-create']);
-//       $permission = Permission::create(['name' => 'patient-edit']);
-//       $permission = Permission::create(['name' => 'patient-view']);
-//       $permission = Permission::create(['name' => 'patient-delete']);
-//exit;
-//       $role = Role::where('name', 'Ceo Filial')->first();
-//       $permission = Permission::where('name', 'patient-all')->first();
-//       $permission->assignRole($role);
-//       $permission = Permission::where('name', 'patient-create')->first();
-//       $permission->assignRole($role);
-//       $permission = Permission::where('name', 'patient-edit')->first();
-//       $permission->assignRole($role);
-//       $permission = Permission::where('name', 'patient-view')->first();
-//       $permission->assignRole($role);
-//       $permission = Permission::where('name', 'patient-delete')->first();
-//       $permission->assignRole($role);
-        $roles = Role::where('special', null)->orderBy('name','ASC')->get();
-        return Inertia::render('Role/Index', [
-            'roleData' => $roles
-        ]);
-    }
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Inertia\Response
-     */
-    public function create(Request $request)
-    {
-        if ($request->user()->can('clinic-create')) {
-            $permissions = Permission::orderBy('name')->get();
-            $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
-            return Inertia::render('Role/Create', [
-                'clinicData' => $clinicData,
-                'permissionData' => $permissions
-            ]);
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            // Сбрасываем кеш Spatie, чтобы использовать актуальные permissions в схеме
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Inertia\Response
-     */
+    // Список ролей текущей клиники
+    public function index(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) {
+            $roles = Role::orderBy('name', 'ASC')->get();
+            return Inertia::render('Role/Index', [
+                'roleData' => $roles
+            ]);
+        });
+    }
+
+    // Форма создания роли
+    public function create(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $permissions = Permission::orderBy('name')->get();
+            return Inertia::render('Role/Create', [
+                'permissionData' => $permissions,
+                'clinicId' => $clinicId
+            ]);
+        });
+    }
+
+    // Создание роли
+    public function store(RoleUpdateRequest $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $role = new Role();
+            $role->name = $request->name;
+            $role->guard_name = 'web';
+            $role->clinic_id = $clinicId;
+            $role->save();
+
+            $permissionsID = array_map(fn($v) => (int)preg_replace('/[^0-9]/', '', $v), $request->permissions);
+            $permissions = Permission::whereIn('id', $permissionsID)->get();
+            $role->syncPermissions($permissions);
+
+            return Redirect::route('role.index');
+        });
+    }
+
+    // Форма редактирования роли
     public function edit(Request $request, $id)
     {
-        if ($request->user()->hasRole('Ceo Filial') || $request->user()->hasRole('Admin') || $request->user()->hasRole('Ceo')) {
-            $role = Role::find($id);
+        return $this->withClinicSchema($request, function($clinicId) use ($id) {
+            $role = Role::findOrFail($id);
             $permissions = Permission::orderBy('name')->get();
-            $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
-                ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
-                ->all();
-            $prepRolePermissions = [];
-            foreach ($rolePermissions as $value) {
-                $prepRolePermissions[] = $value;
-            }
-
+            // Get permission IDs as integers to ensure consistent types
+            $rolePermissions = $role->permissions()->pluck('id')->map(fn($id) => (int)$id)->toArray();
             return Inertia::render('Role/Edit', [
                 'roleData' => $role,
                 'permissionData' => $permissions,
-                'rolePermissions' => $prepRolePermissions
+                'rolePermissions' => $rolePermissions
             ]);
-        } else {
-            return Inertia::render('Layout/NoPermission', []);
-        }
+        });
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(RoleUpdateRequest $request): RedirectResponse
+    // Обновление роли
+    public function update(RoleUpdateRequest $request, $id)
     {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $role = new Role();
-        $role->name = $request->name;
-        $role->guard_name = 'web';
-        $role->clinic_id = $clinic->id;
-        $role->save();
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            $role = Role::findOrFail($id);
+            
+            // Update role name
+            $role->name = $request->name;
+            $role->save();
 
-        $permissionsID = array_map(
-            function($value) { return (int)preg_replace('/[^0-9]/', '', $value); },
-            $request->permissions
-        );
-//        $permissions =
-//        $permission->assignRole($role);
-        $role->syncPermissions($permissionsID);
+            $permissionsID = array_map(fn($v) => (int)preg_replace('/[^0-9]/', '', $v), $request->permissions);
+            $permissions = Permission::whereIn('id', $permissionsID)->get();
+            $role->syncPermissions($permissions);
 
-        return Redirect::route('role.index');
+            return Redirect::route('role.index');
+        });
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(RoleUpdateRequest $request): RedirectResponse
+    // Удаление роли
+    public function destroy(Request $request, $id)
     {
-        $id = $request->id;
-        $role = Role::find($id);
-//        $role->name = $request->input('name');
-//        $role->save();
-        $permissionsID = array_map(
-            function($value) { return (int)preg_replace('/[^0-9]/', '', $value); },
-            $request->permissions
-        );
-        $permissions = Permission::whereIn('id', $permissionsID)->get();
-        if ($permissions->isEmpty()) {
-            \Log::warning('Ни одно разрешение из массива не найдено', ['permissions_id' => $permissionsID]);
-            throw new \Exception('Ни одно разрешение не найдено для указанных ID');
-        }
-        // Назначаем роль каждому найденному разрешению
-        foreach ($permissions as $permission) {
-            try {
-                $permission->assignRole($role);
-                \Log::info("Роль {$role->name} (ID: {$role->id}) успешно назначена разрешению {$permission->name} (ID: {$permission->id})");
-            } catch (\Exception $e) {
-                \Log::error("Ошибка при назначении роли для разрешения ID {$permission->id}: {$e->getMessage()}");
-            }
-        }
-        // Проверяем, какие ID не были найдены (для отладки)
-        $foundPermissionIds = $permissions->pluck('id')->toArray();
-        $missingPermissions = array_diff($permissionsID, $foundPermissionIds);
-        if (!empty($missingPermissions)) {
-            \Log::warning('Следующие ID разрешений не найдены: ' . implode(', ', $missingPermissions));
-        }
-
-//        print_r($permissionsID);exit;
-//        $role->syncPermissions($permissionsID);
-
-        return Redirect::route('role.index');
-    }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id): View
-    {
-        $role = Role::find($id);
-        $rolePermissions = Permission::join("role_has_permissions","role_has_permissions.permission_id","=","permissions.id")
-            ->where("role_has_permissions.role_id",$id)
-            ->get();
-
-        return view('roles.show',compact('role','rolePermissions'));
-    }
-
-
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id): RedirectResponse
-    {
-        DB::table("roles")->where('id',$id)->delete();
-        return redirect()->route('roles.index')
-            ->with('success','Role deleted successfully');
-    }
-
-    public static function middleware()
-    {
-        // TODO: Implement middleware() method.
+        return $this->withClinicSchema($request, function($clinicId) use ($id) {
+            Role::where('id', $id)->delete();
+            return Redirect::route('role.index')->with('success', 'Role deleted successfully');
+        });
     }
 }

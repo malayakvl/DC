@@ -74,15 +74,15 @@ class DisplacementInvoiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response {
+    public function create(Request $request) {
         if ($request->user()->can('invoice-exchange-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 //            $storeData = Store::where('clinic_id', $clinicData->id)->get();
             $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
+            $unitsData = Unit::all();
             $statusData = InvoiceStatus::all();
-            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-            $taxData = Tax::where('clinic_id', $clinicData->id)->get();
+            $currencyData = Currency::all();
+            $taxData = Tax::all();
             $typeData = InvoiceType::all();
             $formData = new Invoice();
             $lastInvoiceNum = DB::table('invoices')
@@ -130,8 +130,8 @@ class DisplacementInvoiceController extends Controller
             $statusData = InvoiceStatus::all();
             $typeData = InvoiceType::all();
             $formData = Displacement::find($id);
-            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-            $taxData = Tax::where('clinic_id', $clinicData->id)->get();
+            $currencyData = Currency::all();
+            $taxData = Tax::all();
             $rowData = DisplacementItems::select('displacement_items.*', 'materials.name as product')
                 ->leftJoin('materials', 'materials.id', '=', 'displacement_items.product_id')
                 ->where('invoice_id', $id)->get();

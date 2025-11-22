@@ -97,9 +97,9 @@ class IncomingInvoiceController extends Controller
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
             $statusData = InvoiceStatus::all();
-            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
-            $taxData = Tax::where('clinic_id', $clinicData->id)->get();
+            $currencyData = Currency::all();
+            $unitsData = Unit::all();
+            $taxData = Tax::all();
             $typeData = InvoiceType::all();
             $formData = new Invoice();
             $lastInvoiceNum = DB::table('invoices')
@@ -134,6 +134,9 @@ class IncomingInvoiceController extends Controller
                 'unitsData' => $unitsData,
                 'taxData' => $taxData
             ]);
+        } else {
+            return Inertia::render('Layouts/NoPermission', [
+            ]);
         }
     }
 
@@ -147,10 +150,10 @@ class IncomingInvoiceController extends Controller
             $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
             $statusData = InvoiceStatus::all();
             $typeData = InvoiceType::all();
-            $unitsData = Unit::where('clinic_id', $clinicData->id)->get();
+            $unitsData = Unit::all();
             $formData = Invoice::find($id);
-            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
-            $taxData = Tax::where('clinic_id', $clinicData->id)->get();
+            $currencyData = Currency::all();
+            $taxData = Tax::all();
             $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
                 ->leftJoin('materials', 'materials.id', '=', 'invoice_items.product_id')
                 ->where('invoice_id', $id)->get();

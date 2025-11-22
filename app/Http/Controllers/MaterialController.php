@@ -55,7 +55,7 @@ class MaterialController extends Controller
                 ->where('clinic_id', $clinicData->id)
                 ->orWhere('special', true)
                 ->get();
-            $unitsData = Unit::where('clinic_id', '=', $clinicData->id)->get();
+            $unitsData = Unit::all();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
             $formData = new MaterialCategories();
@@ -85,7 +85,7 @@ class MaterialController extends Controller
             $tree = $this->generateCategories($categories, $arrCat, 0);
             $formData = Material::find($id);
             $producer = Producer::where('id', '=', $formData->producer_id)->get();
-            $unitsData = Unit::where('clinic_id', '=', $clinicData->id)->get();
+            $unitsData = Unit::all();
             if (count($producer)) {
                 $formData->producer = $producer[0]->name;
             }

@@ -11,8 +11,9 @@ import InputLabel from '../../Components/Form/InputLabel';
 import Checkbox from '../../Components/Form/Checkbox';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
+import { PERMISSION_CATEGORIES } from '../../Constants/Permissions';
 
-export default function Create({ roleData, permissionData, rolePermissions }) {
+export default function Edit({ roleData, permissionData, rolePermissions }) {
   const dispatch = useDispatch();
   const user = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
@@ -21,9 +22,12 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
     locale: appLang,
   });
 
+  // Convert all permission IDs to integers to ensure consistent types
+  const normalizedRolePermissions = rolePermissions.map(id => parseInt(id));
+  
   const [values, setValues] = useState({
     name: roleData.name,
-    permissions: rolePermissions,
+    permissions: normalizedRolePermissions,
   });
   const { processing, recentlySuccessful } = useForm();
 
@@ -37,11 +41,16 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
   };
 
   const handlePermission = el => {
-    const tmpPermis = values.permissions;
+    const tmpPermis = [...values.permissions]; // Create a copy to avoid mutation
+    const permissionId = parseInt(el.id);
+    
     if (el.checked) {
-      tmpPermis.push(parseInt(el.id));
+      // Only add if not already present
+      if (!tmpPermis.includes(permissionId)) {
+        tmpPermis.push(permissionId);
+      }
     } else {
-      const index = tmpPermis.indexOf(parseInt(el.id));
+      const index = tmpPermis.indexOf(permissionId);
       if (index > -1) {
         // only splice array when item is found
         tmpPermis.splice(index, 1); // 2nd parameter means remove one item only
@@ -55,21 +64,8 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
 
   const submit = e => {
     e.preventDefault();
-    router.post(`/role/update?id=${roleData.id}`, values);
+    router.post(`/role/update/${roleData.id}`, values);
   };
-  const permCol = [
-    'clinic',
-    'filial',
-    'customer',
-    'store',
-    'invoice-incoming',
-    'invoice-outgoing',
-    'invoice-exchange',
-    'schedule',
-    'price',
-    'cabinet',
-    'import'
-  ];
 
   return (
     <AuthenticatedLayout header={<Head title="Roles" />}>
@@ -80,7 +76,7 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
           className="mt-0 space-y-4"
           encType="multipart/form-data"
         >
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="py-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
@@ -94,9 +90,9 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
               </header>
             </section>
             <div>
-              <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+              <div className="p-0 mb-8 content-data bg-content">
                 <div
-                  className={`w-full mb-5 ${!roleData.clinic_id ? 'disabled-content-block' : ''}`}
+                  className={`w-full mb-5 ${!roleData.clinic_id ? '' : ''}`}
                 >
                   <InputText
                     name={'name'}
@@ -108,33 +104,47 @@ export default function Create({ roleData, permissionData, rolePermissions }) {
                   />
                 </div>
                 <div>
-                  <div className="grid-p">
-                    {permCol.map((colName, i) => (
-                      <div className="mb-[20px]">
-                        {permissionData &&
-                          permissionData
-                            .filter(item => item.name.includes(colName))
-                            .map(_p => (
-                              <div>
-                                <Checkbox
-                                  id={`${_p.id}`}
-                                  name={`remember[${_p.id}]`}
-                                  checked={values['permissions'].includes(
-                                    _p.id
-                                  )}
-                                  onChange={e => {
-                                    handlePermission(e.target);
-                                  }}
-                                />
-                                <label htmlFor={`${_p.id}`}>
-                                  <span className="ms-2 text-sm text-gray-600">
+                  {/* Using a grid layout to evenly distribute permission categories */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {PERMISSION_CATEGORIES.map((colName, i) => {
+                      const filteredPermissions = permissionData && 
+                        permissionData.filter(item => item.name.includes(colName));
+                      
+                      // Only render category if it has permissions
+                      if (!filteredPermissions || filteredPermissions.length === 0) {
+                        return null;
+                      }
+                      
+                      return (
+                        <div key={colName} className="permission-block">
+                          <h3 className="role-name-head ">
+                            {colName.replace('-', ' ')}
+                          </h3>
+                          <div className="space-y-2">
+                            {filteredPermissions.map(_p => {
+                              const permissionId = parseInt(_p.id);
+                              const isChecked = values['permissions'].includes(permissionId);
+                              return (
+                                <div key={_p.id} className="flex items-center">
+                                  <Checkbox
+                                    id={`${_p.id}`}
+                                    name={`remember[${_p.id}]`}
+                                    className="permission-checkbox"
+                                    checked={isChecked}
+                                    onChange={e => {
+                                      handlePermission(e.target);
+                                    }}
+                                  />
+                                  <label htmlFor={`${_p.id}`} className="ml-2 text-sm role-label">
                                     {msg.get(`role.${_p.name}`)}
-                                  </span>
-                                </label>
-                              </div>
-                            ))}
-                      </div>
-                    ))}
+                                  </label>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
                 <div className="clearfix"></div>

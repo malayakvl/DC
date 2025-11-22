@@ -75,9 +75,9 @@ class DentalClinicSeeder extends Seeder
     private function createCurrencies()
     {
         $currencies = [
-            ['name' => 'USD - US Dollar'],
-            ['name' => 'EUR - Euro'],
-            ['name' => 'UAH - Ukrainian Hryvnia'],
+            ['name' => 'USD - US Dollar', 'code' => 'USD', 'symbol' => '$', 'rate' => 1.0000, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'EUR - Euro', 'code' => 'EUR', 'symbol' => '€', 'rate' => 0.8500, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'UAH - Ukrainian Hryvnia', 'code' => 'UAH', 'symbol' => '₴', 'rate' => 27.0000, 'created_at' => now(), 'updated_at' => now()],
         ];
         
         foreach ($currencies as $currency) {

@@ -14,13 +14,16 @@ return new class extends Migration
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('code')->nullable();
+            $table->string('symbol')->nullable();
+            $table->decimal('rate', 10, 4)->nullable();
+            $table->timestamps();
         });
         Schema::create('currency_exchange', function (Blueprint $table) {
             $table->foreignId('currency_id')->index();
             $table->timestamp('rate_date');
             $table->float('rate_value');
-//            $table->timestamp('created_at')->nullable();
-//            $table->timestamp('updated_at')->nullable();
+            $table->timestamps();
         });
     }
 
