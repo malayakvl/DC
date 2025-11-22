@@ -40,10 +40,10 @@ export default function Details({ patientData, clinicData, className = '' }) {
             <div className="profile-photo" />
           )}
           <div className="parient-info">
-            <b className="text-purple-700">
+            <b className="text-p-name">
               {patientData.first_name} {patientData.last_name}
             </b>
-            <span className="block text-[12px] mt-[5]">
+            <span className="p-phone">
               {patientData.phone}
             </span>
           </div>
@@ -52,12 +52,12 @@ export default function Details({ patientData, clinicData, className = '' }) {
           <ul>
             <li>
               <Link href="/">
-                <FontAwesomeIcon icon={faUserPlus} className="mr-3" />
+                <FontAwesomeIcon style={{color: 'white'}} icon={faUserPlus} className="mr-3" />
               </Link>
             </li>
             <li>
               <Link href="">
-                <FontAwesomeIcon icon={faPencil} />
+                <FontAwesomeIcon style={{color: 'white'}} icon={faPencil} />
               </Link>
             </li>
           </ul>

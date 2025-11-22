@@ -58,31 +58,31 @@ export default function List({ listData, clinicData, currency }) {
             <ul className="mt-5">
               {listData.data?.map(item => (
                 <li
-                  className="patient-item grid grid-cols-1 place-content-between"
+                  className={`patient-item grid grid-cols-1 place-content-between ${item.discount ? 'bg-discount' : ''}`}  
                   key={item.id}
                 >
                   <Link href={`/patient/view/${item.id}`}>
                     <div className="inline-flex">
-                      {item.avatar ? (
-                        <img
-                          className='p-photo'
-                          src={`/uploads/patients/${item.avatar}`}
-                          width="auto"
-                          height="45"
-                        />
-                      ) : (
-                        <img
-                          className='p-photo'
-                          src={`/images/patients/patient-avatar.jpg`}
-                          width="45"
-                          height="45"
-                        />
-                      )}
+                      <div className="relative">
+                        {item.avatar ? (
+                          <img
+                            className='p-photo'
+                            src={`/uploads/patients/${item.avatar}`}
+                            width="auto"
+                            height="60"
+                          />
+                        ) : (
+                          <div className='p-photo flex items-center justify-center rounded-full p-abbr font-bold' style={{ width: '60px', height: '60px', fontSize: '24px' }}>
+                            {item.first_name?.charAt(0)}{item.last_name?.charAt(0)}
+                          </div>
+                        )}
+                      </div>
                       <div>
                         <span className="ml-3 mt-3">
                           {item.first_name} {item.last_name}
                         </span>
                         <i className="phone-patient">{item.phone}</i>
+                        {item.discount ? <i className="discount-patient">{item.discount}%</i> : null}
                         <span className="ml-3 mt-3 text-[13px]">
                           <b>{msg.get('patient.worked.at')}:</b> <span className="text-kt">{item.kt_balance}{currency}&nbsp;</span>
                           <b>{msg.get('patient.payed.at')}:</b> <span className="text-dt">{item. dt_balance}{currency}&nbsp;</span>
@@ -93,25 +93,27 @@ export default function List({ listData, clinicData, currency }) {
                   </Link>
                   <div className="icon-block">
                     <Link href="/patient/documents">
-                      <FontAwesomeIcon icon={faCopy} className="mr-5" title={msg.get('patient.list.documents')} />
+                      <FontAwesomeIcon style={{ color: 'white' }} icon={faCopy} className="mr-5" title={msg.get('patient.list.documents')} />
                     </Link>
                     <Link href="/patient/visits">
                       <FontAwesomeIcon
-                        icon={faPersonWalking} title={msg.get('patient.list.visits')}
+                        icon={faPersonWalking} 
+                        style={{ color: 'white' }}
+                        title={msg.get('patient.list.visits')}
                         className="mr-5 font-gra"
                       />
                     </Link>
                     <Link href="/patient/plans">
-                      <FontAwesomeIcon icon={faList} className="mr-5" />
+                      <FontAwesomeIcon icon={faList} style={{ color: 'white' }} className="mr-5" />
                     </Link>
                     <Link href={`/patient/view/${item.id}`}>
-                      <FontAwesomeIcon icon={faTooth} className="mr-5" title={msg.get('patient.list.history')} />
+                      <FontAwesomeIcon icon={faTooth} style={{ color: 'white' }} className="mr-5" title={msg.get('patient.list.history')} />
                     </Link>
                     <Link href={`/patient/finances/${item.id}`}>
-                      <FontAwesomeIcon icon={faEuro} className="mr-5" title={msg.get('patient.list.payment')} />
+                      <FontAwesomeIcon icon={faEuro} style={{ color: 'white' }} className="mr-5" title={msg.get('patient.list.payment')} />
                     </Link>
                     <Link href={`patient/edit/${item.id}`}>
-                      <FontAwesomeIcon icon={faEdit} className="mr-5" title={msg.get('patient.list.edit')} />
+                      <FontAwesomeIcon icon={faEdit} style={{ color: 'white' }} className="mr-5" title={msg.get('patient.list.edit')} />
                     </Link>
                   </div>
                 </li>

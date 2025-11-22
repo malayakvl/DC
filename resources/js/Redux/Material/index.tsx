@@ -22,7 +22,7 @@ const initialState = {
   searchResultMaterials: [],
   searchItems: [],
   categoryPercent: 0,
-  reportResults: [],
+  reportResults: {},
 };
 
 // ------------------------------------
@@ -80,7 +80,7 @@ const ACTION_HANDLERS = {
   [emptyStoreReportAction]: {
     next: (state, action) => ({
       ...state,
-      reportResults: action.payload,
+      reportResults: action.payload || {},
     }),
   },
   [findMaterialAction]: {

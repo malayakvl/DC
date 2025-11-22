@@ -396,7 +396,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 </ul>
               </div>
               <div className="clearfix" />
-              <div className="flex w-full patient-content-border">
+              <div className="flex w-full patient-content-border white-view">
                 <div className="w-1/2">
                   <Formula
                     action={'edit'}

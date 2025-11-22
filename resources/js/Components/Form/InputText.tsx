@@ -11,9 +11,11 @@ export default function InputText({
   showLabel = true,
   onChange,
   type = 'text',
+  error = null,
   ...props
 }) {
-  const { errors } = usePage().props;
+  const { errors: pageErrors } = usePage().props;
+  const displayError = error || pageErrors[name];
 
   return (
 
@@ -28,7 +30,7 @@ export default function InputText({
         placeholder={placeholder}
         className={'input-text ' + className}
       />
-      {errors[name] && <div className="form-error">{errors[name]}</div>}
+      {displayError && <div className="form-error">{displayError}</div>}
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function NavCustomers(props) {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-
+console.log(usePage().props.auth.user?.roles[0]);
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||

@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles', [RoleController::class, 'index'])->name('role.index');
     Route::get('/role/create', [RoleController::class, 'create'])->name('role.create');
     Route::get('/role/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
-    Route::post('/role/update/', [RoleController::class, 'update'])->name('role.update');
+    Route::post('/role/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::post('/role/store/', [RoleController::class, 'store'])->name('role.store');
 //    Route::get('/clinic/roles', [RoleController::class, 'index'])->name('role.index')
 //    ->middleware('can:clinic-create');

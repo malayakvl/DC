@@ -4,6 +4,7 @@ const lngMaterial = {
     'title.list': 'Materials',
     'title.edit': 'New Material',
     'title.view': 'View material',
+    'title.report': 'Store Report by Period',
     create: 'Add Material',
     name: 'Name',
     category: 'Category',
@@ -15,6 +16,9 @@ const lngMaterial = {
     saved: 'Saved.',
     back: 'Back',
     percent: '+Price',
+    store: 'Store',
+    'report.generate': 'Generate',
+    'report.error.store': 'Please select a store',
   },
   'uk.material': {
     'title.create': 'Новий Матеріал',

@@ -348,14 +348,14 @@ export default function History({ patientData, type, treatmentData }) {
 
   return (
       <>
-        <div className="w-full bg-white border mt-10 patient-stage flex">
+        <div className="w-full patient-view-border mt-10 patient-stage flex">
           <form
             onSubmit={submit}
             className="flex flex-row w-full"
             encType="multipart/form-data"
           >
             <div className="w-1/3">
-              <div className="mt-[-5px]">
+              <div className="mt-[-5px] stage-input">
                 <InputText
                   name={'stage_name'}
                   values={''}
@@ -381,7 +381,7 @@ export default function History({ patientData, type, treatmentData }) {
                     }}
                   >
                     <i className="icon-formula" />
-                    <span className="inline-block ml-[35px]">
+                    <span className="tabs-title">
                   {msg.get('patient.tab.formula')}
                 </span>
                   </button>
@@ -389,7 +389,7 @@ export default function History({ patientData, type, treatmentData }) {
                 <li className="relative">
                   <button type="submit" onClick={() => setTrType('perio')}>
                     <i className="icon-perio" />
-                    <span className="inline-block ml-[35px]">
+                    <span className="tabs-title">
                   {msg.get('patient.tab.perio')}
                 </span>
                   </button>
@@ -397,7 +397,7 @@ export default function History({ patientData, type, treatmentData }) {
                 <li className="relative">
                   <button type="submit" onClick={() => setTrType('psr')}>
                     <i className="icon-psr" />
-                    <span className="inline-block ml-[35px]">
+                    <span className="tabs-title">
                   {msg.get('patient.tab.test')}
                 </span>
                   </button>
@@ -407,7 +407,7 @@ export default function History({ patientData, type, treatmentData }) {
           </form>
         </div>
         {/*TABS BLOCK*/}
-        <div className="tabs-block w-full bg-white border mt-10 patient-stage flex">
+        <div className="tabs-block w-full patient-view-border mt-10 patient-stage flex">
           <div className={`stage-tabs w-full`}>
             <ul className={'w-full'}>
               <li className={`inline-block w-1/3 text-center ${stageTab === 'formula' ? 'active' : ''}`} onClick={() => setActiveStageTab('formula')}>

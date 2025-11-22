@@ -14,8 +14,9 @@ const lngAuth = {
     remember: 'Запам`ятати мене',
     logout: 'Вийти',
     name: 'Ім`я',
-    confirm_password: 'Підтвердження пароля'
-    
+    confirm_password: 'Підтвердження пароля',
+    already_registered: 'Вже зареєстровані?',
+    register: 'Зареєструватись',
   },
 };
 export default lngAuth;

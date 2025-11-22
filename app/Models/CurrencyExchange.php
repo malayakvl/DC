@@ -58,12 +58,31 @@ class CurrencyExchange extends Authenticatable
     public function clinicByFilial($clinicId)
     {
         if (!$clinicId) {
-            $clinic = Clinic::where('id', $this->clinic->id)->get();
-            return $clinic[0];
-//            return $this->hasOne(Clinic::class);
+            // Save current search_path
+            $originalSearchPath = \Illuminate\Support\Facades\DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                // Switch to core schema to find the clinic
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO core");
+                $clinic = Clinic::where('id', $this->clinic->id)->get();
+                return $clinic[0];
+            } finally {
+                // Restore original search_path
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO {$originalSearchPath}");
+            }
         } else {
-            $clinic = Clinic::where('id', $clinicId)->get();
-            return $clinic[0];
+            // Save current search_path
+            $originalSearchPath = \Illuminate\Support\Facades\DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                // Switch to core schema to find the clinic
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO core");
+                $clinic = Clinic::where('id', $clinicId)->get();
+                return $clinic[0];
+            } finally {
+                // Restore original search_path
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO {$originalSearchPath}");
+            }
         }
     }
 }

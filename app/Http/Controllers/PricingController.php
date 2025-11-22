@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MaterialCategoryUpdateRequest;
 use App\Http\Requests\PricingUpdateRequest;
 use App\Models\Clinic;
+use App\Models\ClinicFilial;
 use App\Models\InvoiceItems;
 use App\Models\Pricing;
 use App\Models\PricingItems;
@@ -60,7 +61,7 @@ class PricingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response {
+    public function create(Request $request) {
         if ($request->user()->can('store-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $categories = PriceCategory::where('parent_id', null)
@@ -69,8 +70,7 @@ class PricingController extends Controller
                 ->get();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
-            $unitData = Unit::where('clinic_id', $clinicData->id)
-                ->get();
+            $unitData = Unit::all();
             $formData = new Pricing();
             return Inertia::render('Pricing/Create', [
                 'clinicData' => $clinicData,
@@ -94,8 +94,7 @@ class PricingController extends Controller
                 ->get();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
-            $unitData = Unit::where('clinic_id', $clinicData->id)
-                ->get();
+            $unitData = Unit::all();
             $formData = Pricing::find($request->id);
             $formRow = DB::table('pricing_items')
                 ->select('pricing_items.*', 'materials.name AS product', "materials.id AS product_id")
@@ -169,7 +168,7 @@ class PricingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Filial $filial) {
+    public function destroy(ClinicFilial $filial) {
         //
     }
 }

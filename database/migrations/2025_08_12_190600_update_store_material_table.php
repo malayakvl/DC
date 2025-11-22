@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('store_materials', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('doc_date');
-            $table->string('document_type');
-            $table->bigInteger('document_id');
+            $table->dateTime('doc_date')->nullable();
+            $table->string('document_type')->nullable();
+            $table->bigInteger('document_id')->nullable();
             $table->foreignId('store_id')->nullable()->index();
             $table->foreignId('material_id')->nullable()->index();
             $table->foreignId('producer_id')->nullable()->index();
@@ -26,6 +26,8 @@ return new class extends Migration
             $table->float('store_fact_qty')->nullable();
             $table->foreignId('fact_unit_id')->nullable()->index();
             $table->float('price_per_unit')->nullable();
+            $table->float('pack_qty')->nullable();
+            $table->foreignId('pack_unit_id')->nullable()->index();
             $table->timestamps();
         });
     }

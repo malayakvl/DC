@@ -2,7 +2,7 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
-
+console.log(1)
 export default function Edit({
   clinicData,
   formData,
