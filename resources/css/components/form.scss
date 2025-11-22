@@ -1,6 +1,6 @@
 .input-text {
     min-height: 40px;
-    @apply rounded-sm border-gray-300 shadow-sm w-full py-1 text-[13px];
+    @apply rounded-sm shadow-sm w-full py-1 text-[13px];
     background: transparent;
     color: #fff;
     border: solid 1px #35466d;
@@ -331,4 +331,22 @@ label.float-label {
 .input-label {
     @apply block text-sm font-medium text-white;
     margin-bottom: 7px;
+}
+.role-label {
+    color: #fff;
+}
+.role-name-head {
+    @apply font-medium text-lg mb-3 capitalize;
+    color: #01bff8 !important;
+    font-weight: bold  !important;
+    text-align: left
+}
+.permission-block {
+    @apply rounded p-6;
+    background: #1a2235;
+}
+.permission-checkbox {
+    @apply rounded;
+    background: transparent;
+    border-color: #01bff8;
 }

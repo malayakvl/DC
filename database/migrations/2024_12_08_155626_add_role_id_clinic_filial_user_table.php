@@ -11,9 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Create the table if it doesn't exist
+        if (!Schema::hasTable('clinic_filial_user')) {
+            Schema::create('clinic_filial_user', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('clinic_id')->constrained()->onDelete('cascade');
+                $table->foreignId('filial_id')->constrained()->onDelete('cascade');
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
+        
+        // Add the role_id column
         Schema::table('clinic_filial_user', function($table) {
-            $table->foreignId('role_id')->index();
-
+            $table->foreignId('role_id')->constrained()->onDelete('cascade');
         });
     }
 

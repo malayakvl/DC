@@ -83,13 +83,17 @@ export const findMaterialQtyAction: any = createAction(
     }
 );
 export const generateStoreReportAction: any = createAction(
-  'material/FIND_UNIT_EXIST',
+  'material/GENERATE_STORE_REPORT',
   async (storeId: any, reportFromDate: any, reportToDate: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
       const state = getState();
       return axios
         .post(`/material/generateStoreReport`, { storeId: storeId, reportFromDate: reportFromDate, reportToDate: reportToDate }, {})
         .then(async res => {
+          dispatch({
+            type: 'material/GENERATE_STORE_REPORT',
+            payload: res.data.results
+          });
           return res.data.results;
         });
     }

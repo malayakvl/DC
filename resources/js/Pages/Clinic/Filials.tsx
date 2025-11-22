@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
 import React, { useCallback } from 'react';
-x
+import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFilial from '../../Lang/Filial/translation';

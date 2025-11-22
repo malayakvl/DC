@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,32 +31,51 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-//        return [
-//            ...parent::share($request),
-//            'auth' => [
-//                'user' => $request->user(),
-//                'permissionTmp' => '',
-//                'can' => $request->user()?->loadMissing('roles.permissions')
-//                    ->roles->flatMap(function ($role) {
-//                        return $role->permissions;
-//                    })->map(function ($permission) {
-//                        return [$permission['name'] => auth()->user()->can($permission['name'])];
-//                    })->collapse()->all(),
-//            ],
-//        ];
-//        dd($request->user()?->getRoleNames());
-        return array_merge(parent::share($request), [
-            ...parent::share($request),
-            'auth' => [
-                'user' => $request->user(),
-                'role' => $request->user()?->getRoleNames(),
-                'can' => $request->user()?->getPermissionsViaRoles()->flatMap(function ($role) {
-                    return [$role];
-                })->map(function ($permission) {
-                    return [$permission->name => auth()->user()->can($permission['name'])];
-                })->collapse()->all()
-            ]
+        $user = $request->user();
+        $clinicId = $request->session()->get('clinic_id');
+        $filialId = $request->session()->get('filial_id');
 
+        $roles = [];
+        $permissions = [];
+
+        if ($user && $clinicId) {
+            // 🔹 Сохраняем текущий search_path
+            $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+            try {
+                // 🔹 Переключаемся на схему текущей клиники
+                DB::statement("SET search_path TO clinic_{$clinicId}");
+
+                // 🔹 Получаем роли и permissions через Spatie в схеме клиники
+                $roles = $user->getRoleNames();
+                $permissions = $user->getAllPermissions()
+                                    ->pluck('name')
+                                    ->mapWithKeys(fn($p) => [$p => true])
+                                    ->toArray();
+            } finally {
+                // 🔹 Возвращаем исходный search_path
+                DB::statement("SET search_path TO {$originalSearchPath}");
+            }
+        }
+
+        // 🔹 Логируем для отладки
+        Log::debug('HandleInertiaRequests:', [
+            'session_id' => session()->getId(),
+            'user_id' => $user?->id,
+            'clinic_id' => $clinicId,
+            'filial_id' => $filialId,
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ]);
+
+        return array_merge(parent::share($request), [
+            'auth' => [
+                'user' => $user,
+                'role' => $roles,
+                'can' => $permissions,
+                'clinic_id' => $clinicId,
+                'filial_id' => $filialId,
+            ],
         ]);
     }
 }

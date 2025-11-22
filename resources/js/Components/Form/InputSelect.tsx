@@ -16,14 +16,17 @@ export default function InputSelect({
   onChange,
   translatable = false,
   defaultValue = null,
+  error = null,
   ...props
 }) {
-  const { errors } = usePage().props;
+  const { errors: pageErrors } = usePage().props;
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngDropdown,
     locale: appLang,
   });
+  const displayError = error || pageErrors[name];
+  
   return (
     <div className={`relative`}>
       <InputLabel htmlFor={name} value={label} children={null} />
@@ -43,7 +46,7 @@ export default function InputSelect({
           ))}
         </select>
       )}
-      {errors[name] && <div className="form-error">{errors[name]}</div>}
+      {displayError && <div className="form-error">{displayError}</div>}
     </div>
   );
 }

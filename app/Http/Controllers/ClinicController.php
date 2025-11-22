@@ -21,9 +21,48 @@ class ClinicController extends Controller
 {
     public function create(Request $request): Response
     {
+        // Get clinic data from the default schema
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        
         if ($clinicData) {
-            $currencyData = Currency::where('clinic_id', $clinicData->id)->get();
+            // Set session data for this clinic
+            $request->session()->put('clinic_id', $clinicData->id);
+            
+            // Try to get currency data from the clinic-specific schema first
+            $clinicId = $clinicData->id;
+            $schemaName = 'clinic_' . $clinicId;
+            
+            // Save current search_path
+            $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                // Set search_path to clinic schema
+                DB::statement("SET search_path TO {$schemaName}");
+                
+                // Try to get currency data from clinic schema
+                $currencyData = DB::table('currencies')->get();
+                
+                // If no currencies in clinic schema, fall back to default
+                if ($currencyData->isEmpty()) {
+                    throw new \Exception('No currencies found in clinic schema');
+                }
+                
+                // Also try to get filial data and set filial_id in session
+                $filialData = DB::table('clinic_filials')->where('clinic_id', $clinicId)->first();
+                if ($filialData) {
+                    $request->session()->put('filial_id', $filialData->id);
+                }
+            } catch (\Exception $e) {
+                // Restore original search_path
+                DB::statement("SET search_path TO {$originalSearchPath}");
+                
+                // Fall back to default schema currencies
+                $currencyData = Currency::all();
+            } finally {
+                // Always restore original search_path
+                DB::statement("SET search_path TO {$originalSearchPath}");
+            }
+            
             return Inertia::render('Clinic/Create', [
                 'clinicData' => $clinicData,
                 'currencyData' => $currencyData
@@ -40,12 +79,51 @@ class ClinicController extends Controller
 
     public function new(Request $request): Response
     {
-        $clinicData = new Clinic();
-        $currencyData = Currency::all();
-        return Inertia::render('Clinic/Create', [
-            'clinicData' => $clinicData,
-            'currencyData' => $currencyData
-        ]);
+        // Get clinic data from the default schema
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        
+        if ($clinicData) {
+            // Try to get currency data from the clinic-specific schema first
+            $clinicId = $clinicData->id;
+            $schemaName = 'clinic_' . $clinicId;
+            
+            // Save current search_path
+            $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                // Set search_path to clinic schema
+                DB::statement("SET search_path TO {$schemaName}");
+                
+                // Try to get currency data from clinic schema
+                $currencyData = DB::table('currencies')->get();
+                
+                // If no currencies in clinic schema, fall back to default
+                if ($currencyData->isEmpty()) {
+                    throw new \Exception('No currencies found in clinic schema');
+                }
+            } catch (\Exception $e) {
+                // Restore original search_path
+                DB::statement("SET search_path TO {$originalSearchPath}");
+                
+                // Fall back to default schema currencies
+                $currencyData = Currency::all();
+            } finally {
+                // Always restore original search_path
+                DB::statement("SET search_path TO {$originalSearchPath}");
+            }
+            
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        } else {
+            $clinicData = new Clinic();
+            $currencyData = Currency::all();
+            return Inertia::render('Clinic/Create', [
+                'clinicData' => $clinicData,
+                'currencyData' => $currencyData
+            ]);
+        }
     }
 
     /**
@@ -61,60 +139,89 @@ class ClinicController extends Controller
      * Update the user's profile information.
      */
     public function update(ClinicUpdateRequest $request) {
-        if (!$request->id) {
-            $clinic = new Clinic();
+        // Since clinic is already created during registration, we only need to update it
+        $clinic = Clinic::where('user_id', $request->user()->id)->first();
+        
+        if ($clinic && $request->user()->can('clinic-create')) {
             $clinic->fill($request->validated());
             $clinic->save();
-
-            // созадем дефолтний филиал
-            $clinicFilial = new ClinicFilial();
-            $clinicFilial->name = $clinic->name;
-            $clinicFilial->address = $clinic->address;
-            $clinicFilial->uraddress = $clinic->uraddress;
-            $clinicFilial->inn = $clinic->inn;
-            $clinicFilial->edrpou = $clinic->edrpou;
-            $clinicFilial->phone = $clinic->phone;
-            $clinicFilial->clinic_id = $clinic->id;
-            $clinicFilial->save();
-
-            // add roles
-//            $request->user()
-
-            return Redirect::route('clinic.create');
-        } else {
-            if ($request->user()->can('clinic-create')) {
-                if ($request->id)
-                    $clinic = Clinic::find($request->id);
-                else {
-                    $clinic = new Clinic();
-                }
-                $clinic->fill($request->validated());
-                $clinic->save();
-
-                return Redirect::route('clinic.create');
+            
+            // Update the corresponding clinic filial
+            $schemaName = 'clinic_' . $clinic->id;
+            $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                DB::statement("SET search_path TO {$schemaName}");
+                
+                // Update the clinic filial with the same data
+                DB::table('clinic_filials')
+                    ->where('clinic_id', $clinic->id)
+                    ->update([
+                        'name' => $clinic->name,
+                        'address' => $clinic->address,
+                        'uraddress' => $clinic->uraddress,
+                        'inn' => $clinic->inn,
+                        'edrpou' => $clinic->edrpou,
+                        'phone' => $clinic->phone,
+                        'updated_at' => now()
+                    ]);
+            } finally {
+                DB::statement("SET search_path TO {$originalSearchPath}");
             }
+            
+            return Redirect::route('dashboard.select');
         }
+        
+        return Redirect::back()->withErrors(['error' => 'Clinic not found or insufficient permissions']);
     }
 
     public function filialEnter(Request $request, $filialId) {
-        // get role for current filial
-        $data = DB::table('clinic_filial_user')
-            ->select('role_id', 'roles.name AS roleName', 'clinic_filial_user.clinic_id', 'clinic_filial_user.filial_id')
-            ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
-            ->where('filial_id', $filialId)
-            ->where('user_id', $request->user()->id)->get();
+        // get role for current filial from the clinic schema
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        
+        try {
+            // Get clinic_id for this filial
+            $clinicFilial = DB::table('clinic_filials')->where('id', $filialId)->first();
+            if (!$clinicFilial) {
+                return Redirect::back()->withErrors(['error' => 'Filial not found']);
+            }
+            
+            $clinicId = $clinicFilial->clinic_id;
+            $schemaName = 'clinic_' . $clinicId;
+            DB::statement("SET search_path TO {$schemaName}");
+            
+            // get role for current filial from clinic schema
+            $data = DB::table('clinic_filial_user')
+                ->select('role_id', 'roles.name AS roleName', 'clinic_filial_user.clinic_id', 'clinic_filial_user.filial_id')
+                ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+                ->where('filial_id', $filialId)
+                ->where('user_id', $request->user()->id)->get();
 
-        // assign role for current filial
-        foreach ($request->user()->roles as $role) {
-            $request->user()->removeRole($role->name);
+            if ($data->isEmpty()) {
+                return Redirect::back()->withErrors(['error' => 'User not found in this filial']);
+            }
+
+            // assign role for current filial
+            foreach ($request->user()->roles as $role) {
+                $request->user()->removeRole($role->name);
+            }
+            $request->user()->assignRole($data[0]->roleName);
+            
+            $request->session()->put('clinic_id', $data[0]->clinic_id);
+            $request->session()->put('filial_id', $data[0]->filial_id);
+            
+            // Update user_clinic_roles table
+            DB::table('core.user_clinic_roles')
+                ->where('user_id', $request->user()->id)
+                ->where('clinic_id', $data[0]->clinic_id)
+                ->update([
+                    'role_name' => $data[0]->roleName,
+                    'updated_at' => now()
+                ]);
+        } finally {
+            // Restore original search_path
+            DB::statement("SET search_path TO {$originalSearchPath}");
         }
-        $request->user()->assignRole($data[0]->roleName);
-        // assign role permissions
-//        $permission = Permission::where('name', 'invoice-exchange-all')->first();
-//        $permission->assignRole($role);
-
-        $request->session()->put('clinic_id', $data[0]->clinic_id);
-        $request->session()->put('filial_id', $data[0]->filial_id);
 
         return Redirect::route('dashboard.index');
     }

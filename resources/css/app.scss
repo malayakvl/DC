@@ -165,3 +165,18 @@ body {
 hr {
     border-width: 0px !important;
 }
+.pagination-btns {
+    @apply px-3 py-1 rounded text-sm;
+    color: #fff;
+    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+}
+.page-active {
+    @apply bg-gradient-to-r from-[#d7c7c6] to-[#1d535c] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+}
+.disabled-content-block {
+  pointer-events: none;
+  opacity: 0.2;
+  background-color: #34456a;
+//   color: #999;
+  cursor: not-allowed;
+}

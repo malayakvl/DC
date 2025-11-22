@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clinic_user', function($table) {
-            $table->string('clinic_token')->nullable();;
+        Schema::table('users_to_clinics', function($table) {
+            $table->string('clinic_token')->nullable();
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clinic_user', function($table) {
+        Schema::table('users_to_clinics', function($table) {
             $table->dropColumn('clinic_token');
         });
     }

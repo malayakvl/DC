@@ -10,43 +10,37 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-//    protected $with = ['clinic_id'];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // 🔹 Добавляем атрибуты для сериализации
+    protected $appends = ['clinic_id', 'filial_id'];
+
+    // 🔹 Возвращаем clinic_id из сессии
+    public function getClinicIdAttribute()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return session('clinic_id');
+    }
+
+    // 🔹 Возвращаем filial_id из сессии
+    public function getFilialIdAttribute()
+    {
+        return session('filial_id');
     }
 
     public function clinic(): \Illuminate\Database\Eloquent\Relations\HasOne
@@ -57,15 +51,20 @@ class User extends Authenticatable
     public function clinicByFilial($clinicId)
     {
         if (!$clinicId) {
-            if ($this->clinic->id) {
-                $clinic = Clinic::where('id', $this->clinic->id)->get();
-                return $clinic[0];
-            } else {
-                return null;
-            }
+            return $this->clinic ?? null;
         } else {
-            $clinic = Clinic::where('id', $clinicId)->get();
-            return $clinic[0];
+            // Save current search_path
+            $originalSearchPath = \Illuminate\Support\Facades\DB::select("SHOW search_path")[0]->search_path;
+            
+            try {
+                // Switch to core schema to find the clinic
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO core");
+                $clinic = Clinic::find($clinicId);
+                return $clinic;
+            } finally {
+                // Restore original search_path
+                \Illuminate\Support\Facades\DB::statement("SET search_path TO {$originalSearchPath}");
+            }
         }
     }
 }

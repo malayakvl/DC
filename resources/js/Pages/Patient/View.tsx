@@ -94,7 +94,7 @@ console.log('TAB', tab);
                   <b>
                     {patientData.first_name} {patientData.last_name}
                   </b>
-                  <span className="block text-[11px]">{patientData.phone}</span>
+                  <span className="p-phone">{patientData.phone}!!</span>
                   <span className="block text-[13px] p-discount">{patientData.discount ? `${discountStatus} -${discountValue}%` : '2'}</span>
                 </div>
               </div>
@@ -102,12 +102,12 @@ console.log('TAB', tab);
                 <ul>
                   <li>
                     <Link href="/">
-                      <FontAwesomeIcon icon={faUserPlus} className="mr-3" />
+                      <FontAwesomeIcon style={{color: 'white'}} icon={faUserPlus} className="mr-3" />
                     </Link>
                   </li>
                   <li>
                     <Link href={`/patient/edit/${patientData.id}`}>
-                      <FontAwesomeIcon icon={faPencil} />
+                      <FontAwesomeIcon style={{color: 'white'}} icon={faPencil} />
                     </Link>
                   </li>
                 </ul>

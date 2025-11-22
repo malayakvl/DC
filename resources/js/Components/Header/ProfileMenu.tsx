@@ -17,6 +17,7 @@ export default function ProfileMenu() {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
+console.log(user, permissions)  
   const source = user.name;
   const array = source.split(' ');
   const fioResult =
