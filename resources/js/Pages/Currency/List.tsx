@@ -18,7 +18,7 @@ export default function List({ listData, permissions }) {
     messages: lngCurrency,
     locale: appLang,
   });
-
+console.log(listData);
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -44,7 +44,7 @@ export default function List({ listData, permissions }) {
                 <tr className="" key={item.id}>
                   <td className="">{item.name}</td>
                   <td className="">{item.symbol}</td>
-                  <td className="">{item.rate}</td>
+                  <td className="">{item.rate_value}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"
