@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProducerUpdateRequest;
+use App\Http\Requests\CurrencyUpdateRequest;
 use App\Models\Clinic;
 use App\Models\Currency;
 use App\Models\CurrencyExchange;
@@ -42,36 +43,28 @@ class CurrencyController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            
-            if ($request->user()->can('currency-view')) {
-                $clinic = $request->user()->clinicByFilial($clinicId);
-                
-                $listData = Currency::all();
-                $arrCurrencies = array();
-                foreach($listData as $currency) {
-                    $arrCurrencies[$currency->id] = $currency;
-                    // Fix: Properly access the rate_value by executing the relationship query
-                    $rate = $currency->rate()->first();
-                    $arrCurrencies[$currency->id]->rate = $rate ? $rate->rate_value : 1; // Default to 1 if no rate found
-                }
 
-                return Inertia::render('Currency/List', [
-                    'clinicData' => $clinic,
-                    'listData' => $listData
-                ]);
-            } else {
-                return Inertia::render('Currency/List', [
-                    'error' => 'Insufficient permissions to view currencies'
-                ]);
+            if (!$request->user()->canClinic('currency-view')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
+
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $listData = Currency::with('rate')->get();
+
+            return Inertia::render('Currency/List', [
+                'clinicData' => $clinic,
+                'listData'   => $listData,
+            ]);
         });
     }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('currency-create')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
             if ($request->user()->can('currency-create')) {
                 $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
                 $formData = new Currency();
@@ -91,58 +84,53 @@ class CurrencyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
-            if ($request->user()->can('currency-edit')) {
-                $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                $formData = DB::table('currencies')
-                    ->select('currencies.*', 'currency_exchanges.rate_value AS rate')
-                    ->leftJoin('currency_exchanges', 'currencies.id', '=', 'currency_exchanges.to_currency_id')
-                    ->where('currencies.id', $id)
-                    ->orderBy('created_at', 'desc')->get();
-                return Inertia::render('Currency/Edit', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData[0],
-                ]);
-            } else {
-                return Inertia::render('Currency/List', [
-                    'clinicData' => $clinicData ?? null,
-                    'error' => 'Insufficient permissions to edit currency'
-                ]);
+    public function edit(Request $request, $id)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($id, $request) {
+            $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+
+            if (!$request->user()->canClinic('currency-view')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
+
+            $formData = Currency::with('rate')->findOrFail($id);
+
+            return Inertia::render('Currency/Edit', [
+                'clinicData' => $clinicData,
+                'formData'   => [
+                    'id'     => $formData->id,
+                    'name'   => $formData->name,
+                    'symbol' => $formData->symbol,
+                    'rate'   => $formData->rate->rate_value ?? 1,
+                ],
+            ]);
         });
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request) {
+    public function update(CurrencyUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('currency-edit')) {
-                // Get clinic data
-                $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                
-                // Update currency information
-                $currency = Currency::find($request->id);
-                $currency->fill($request->validated());
-                $currency->symbol = $request->symbol;
-                $currency->save();
-
-                // Create new currency exchange rate record
-                $currencyExchange = new CurrencyExchange();
-                $currencyExchange->clinic_id = $clinicId;
-                $currencyExchange->currency_id = $request->id; // Use the currency ID, not from request
-                $currencyExchange->rate_value = floatval($request->rate);
-                $currencyExchange->rate_date = date('Y-m-d H:i:s');
-                $currencyExchange->save();
-
-                return Redirect::route('currency.index');
-            } else {
-                return Inertia::render('Currency/List', [
-                    'clinicData' => $clinicData ?? null,
-                    'error' => 'Insufficient permissions to update currency'
-                ]);
+            $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+            if (!$request->user()->canClinic('currency-edit')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
+            // Update currency information
+            $currency = Currency::find($request->id);
+            $currency->fill($request->validated());
+            $currency->symbol = $request->symbol;
+            $currency->save();
+
+            // Create new currency exchange rate record
+            $currencyExchange = new CurrencyExchange();
+            $currencyExchange->clinic_id = $clinicId;
+            $currencyExchange->currency_id = $request->id; // Use the currency ID, not from request
+            $currencyExchange->rate_value = floatval($request->rate);
+            $currencyExchange->rate_date = date('Y-m-d H:i:s');
+            $currencyExchange->save();
+
+            return Redirect::route('currency.index')->with('success', 'Currency updated successfully');
         });
     }
 

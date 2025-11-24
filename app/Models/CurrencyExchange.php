@@ -50,6 +50,18 @@ class CurrencyExchange extends Authenticatable
         ];
     }
 
+    public static function booted()
+    {
+        static::addGlobalScope('schema', function ($builder) {
+            $clinicId = session()->get('clinic_id');
+            if ($clinicId) {
+                $builder->from("clinic_{$clinicId}.currency_exchanges as currency_exchanges");
+            }
+        });
+    }
+
+    
+
     public function clinic(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Clinic::class);

@@ -19,6 +19,26 @@ use Spatie\Permission\Models\Permission;
 
 class ClinicController extends Controller
 {
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+
     public function create(Request $request): Response
     {
         // Get clinic data from the default schema
@@ -139,42 +159,17 @@ class ClinicController extends Controller
      * Update the user's profile information.
      */
     public function update(ClinicUpdateRequest $request) {
-        // Since clinic is already created during registration, we only need to update it
         $clinic = Clinic::where('user_id', $request->user()->id)->first();
-        
-        if ($clinic && $request->user()->can('clinic-create')) {
+
+        if (!$request->user()->can('clinic-create')) {
             $clinic->fill($request->validated());
             $clinic->save();
-            
-            // Update the corresponding clinic filial
-            $schemaName = 'clinic_' . $clinic->id;
-            $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
-            
-            try {
-                DB::statement("SET search_path TO {$schemaName}");
-                
-                // Update the clinic filial with the same data
-                DB::table('clinic_filials')
-                    ->where('clinic_id', $clinic->id)
-                    ->update([
-                        'name' => $clinic->name,
-                        'address' => $clinic->address,
-                        'uraddress' => $clinic->uraddress,
-                        'inn' => $clinic->inn,
-                        'edrpou' => $clinic->edrpou,
-                        'phone' => $clinic->phone,
-                        'updated_at' => now()
-                    ]);
-            } finally {
-                DB::statement("SET search_path TO {$originalSearchPath}");
-            }
-            
-            return Redirect::route('dashboard.select');
         }
-        
-        return Redirect::back()->withErrors(['error' => 'Clinic not found or insufficient permissions']);
+
+        return Redirect::route('dashboard.index');
     }
 
+    
     public function filialEnter(Request $request, $filialId) {
         // get role for current filial from the clinic schema
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;

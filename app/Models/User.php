@@ -67,4 +67,16 @@ class User extends Authenticatable
             }
         }
     }
+
+    public function canClinic(string $permission): bool
+    {
+        if ($this->permissions instanceof \Illuminate\Support\Collection) {
+            // Берём только имена прав
+            $permissionsArray = $this->permissions->pluck('name')->toArray();
+        } else {
+            $permissionsArray = $this->permissions;
+        }
+
+        return in_array($permission, $permissionsArray, true);
+    }
 }
