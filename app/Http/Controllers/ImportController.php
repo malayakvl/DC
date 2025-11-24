@@ -4,39 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PatientUpdateRequest;
 use App\Models\Clinic;
-use App\Models\ClinicFilial;
 use App\Models\ClinicUser;
-use App\Models\DocumentOperations;
-use App\Models\Patient;
 use App\Models\User;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Rap2hpoutre\FastExcel\FastExcel;
 use File;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
 
 class ImportController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
     //
-    function __construct()
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
     {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
     }
 
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
 
     public function index(Request $request) {
-        if ($request->user()->can('import')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('clinic-aaaa')) {
+                return Inertia::render('Exception/NoPermission', ['error' => 'Insufficient permissions']);
+            }
             return Inertia::render('Import/Index', [
             ]);
-        } else {
-            return Inertia::render('Layout/NoPermission', []);
-        }
+        });
+
     }
 
     public function parsePersonData($string) {
@@ -109,7 +124,7 @@ class ImportController extends Controller
                     ini_set('memory_limit', '512M');
 
                     // Импорт файла в LazyCollection
-                    $lazyCollection = LazyCollection::make(function () use ($filePath) {
+                    $lazyCollection = LazyCollection::Make(function () use ($filePath) {
                         $data = (new FastExcel)->import($filePath);
                         foreach ($data as $row) {
                             yield $row;

@@ -50,11 +50,9 @@ class CurrencyController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-
             if (!$request->user()->canClinic('currency-view')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
-
             $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = Currency::with('rate')->get();
 
