@@ -25,9 +25,28 @@ use Spatie\Permission\Models\Role;
 class CustomerController extends Controller
 {
     /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+    /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function indexOld(Request $request)
     {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
         $filialData = ClinicFilial::where('clinic_id', '=', $clinic->id)->get();
@@ -41,6 +60,28 @@ class CustomerController extends Controller
             'filialData' => $filialData,
             'customerData' => $customerData
         ]);
+    }
+    public function index(Request $request)
+    {
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+            // Проверка прав
+            if (!$request->user()->canClinic('customer-view')) {
+                return Inertia::render('Customer/List', ['error' => 'Insufficient permissions']);
+            }
+
+            // Получаем филиалы клиники
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+
+            // Получаем кастомеров с ролями через схему клиники
+            $customerData = $clinicData->employees();
+
+            return Inertia::render('Customer/List', [
+                'clinicData'   => $clinicData,
+                'filialData'   => $filialData,
+                'customerData' => $customerData,
+            ]);
+        });
     }
 
     /**
@@ -241,7 +282,7 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Filial $filial) {
+    public function destroy(Customer $customer) {
         //
     }
 }

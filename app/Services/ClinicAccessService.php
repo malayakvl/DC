@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
+
 class ClinicAccessService
 {
     /**
@@ -61,9 +62,8 @@ class ClinicAccessService
             }
 
             // 4️⃣ Привязываем пользователя к филиалу через pivot
-            DB::table('clinic_filial_user')->insertOrIgnore([
+            DB::table('clinic_users')->insertOrIgnore([
                 'clinic_id' => $clinicId,
-                'filial_id' => $filialId,
                 'user_id' => $user->id,
                 'role_id' => $roleId,
                 'created_at' => now(),

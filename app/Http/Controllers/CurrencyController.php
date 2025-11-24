@@ -2,21 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProducerUpdateRequest;
 use App\Http\Requests\CurrencyUpdateRequest;
 use App\Models\Clinic;
 use App\Models\Currency;
 use App\Models\CurrencyExchange;
-use App\Models\MaterialCategories;
-use App\Models\Producer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
 
 class CurrencyController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+    
     /**
      * Helper для работы с текущей схемой клиники
      */
@@ -89,7 +96,7 @@ class CurrencyController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($id, $request) {
             $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
 
-            if (!$request->user()->canClinic('currency-view')) {
+            if (!$request->user()->canClinic('currency-edit')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
 
@@ -118,9 +125,15 @@ class CurrencyController extends Controller
             }
             // Update currency information
             $currency = Currency::find($request->id);
+            // Capture old data before updating
+            $oldData = $currency->toArray();
             $currency->fill($request->validated());
             $currency->symbol = $request->symbol;
+            // Prepare new data
+            $newData = $currency->toArray();
             $currency->save();
+            // Log the currency update
+            $this->auditLogService->log($request->user(), 'currency.updated', $currency, $oldData, $newData);
 
             // Create new currency exchange rate record
             $currencyExchange = new CurrencyExchange();
@@ -129,6 +142,8 @@ class CurrencyController extends Controller
             $currencyExchange->rate_value = floatval($request->rate);
             $currencyExchange->rate_date = date('Y-m-d H:i:s');
             $currencyExchange->save();
+            // Log the currency exchange rate creation
+            $this->auditLogService->log($request->user(), 'currency_exchange.created', $currencyExchange, null, $currencyExchange->toArray());
 
             return Redirect::route('currency.index')->with('success', 'Currency updated successfully');
         });

@@ -181,7 +181,18 @@ class ClinicSchemaService
             )
         ");
         
-        // Create clinic_filial_user table
+        // Create clinic_users table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_users (
+                id BIGSERIAL PRIMARY KEY,
+                clinic_id BIGINT NOT NULL,
+                user_id BIGINT NOT NULL,
+                role_id BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+        // Create clinic_filial_users table
         DB::statement("
             CREATE TABLE IF NOT EXISTS clinic_filial_user (
                 id BIGSERIAL PRIMARY KEY,
@@ -476,6 +487,8 @@ class ClinicSchemaService
     {
         DB::table('stores')->insert([
             'name' => 'Main Store',
+            'address' => 'Main Store Address',
+            'uraddress' => 'Main Store UR Address',
             'clinic_id' => $clinicId,
             'created_at' => now(),
             'updated_at' => now()
