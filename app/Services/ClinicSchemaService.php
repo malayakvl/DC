@@ -70,6 +70,8 @@ class ClinicSchemaService
                 edrpou VARCHAR(20),
                 phone VARCHAR(20),
                 clinic_id BIGINT NOT NULL,
+                store_id BIGINT,
+                ceo_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

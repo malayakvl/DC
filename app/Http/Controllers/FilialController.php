@@ -69,22 +69,15 @@ class FilialController extends Controller
      */
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('filial-edit')) {
-                $clinic = $this->getClinicFromCoreSchema($clinicId);
-                // Switch back to clinic schema for clinic data query
-                $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                $storeData = Store::where('clinic_id', $clinicId)->get();
-                $filialData = new ClinicFilial();
-                return Inertia::render('Clinic/FilialCreate', [
-                    'clinicData' => $clinicData,
-                    'filialData' => $filialData,
-                    'storeData' => $storeData,
-                    'employeesData' => $clinic->users
-                ]);
-            } else {
-                // Return empty response or handle permission denied
-                return Inertia::render('Layouts/NoPermission');
-            }
+            $clinic = $this->getClinicFromCoreSchema($clinicId);
+            $storeData = Store::where('clinic_id', $clinicId)->get();
+            $filialData = new ClinicFilial();
+            return Inertia::render('Clinic/FilialCreate', [
+                'clinicData' => $clinic,
+                'filialData' => $filialData,
+                'storeData' => $storeData,
+                'employeesData' => $clinic->employees()
+            ]);
         });
     }
 
@@ -92,16 +85,23 @@ class FilialController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, $id) {
+        // Debug the current search path and user permissions
+        $searchPath = DB::select("SHOW search_path")[0]->search_path;
+        \Illuminate\Support\Facades\Log::debug('FilialController show: Current search path: ' . $searchPath);
+        \Illuminate\Support\Facades\Log::debug('FilialController show: User permissions: ', $request->user()->getAllPermissions()->pluck('name')->toArray());
+        
+        // Check permissions in the current schema context
+        if (!$request->user()->can('filial-view')) {
+            \Illuminate\Support\Facades\Log::debug('FilialController show: Permission denied for filial-view');
+            return Inertia::render('Layouts/NoPermission');
+        }
+        
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
-            if ($request->user()->can('filial-view')) {
-                $clinic = $this->getClinicFromCoreSchema($clinicId);
-                $filial = ClinicFilial::find($id);
-                return Inertia::render('Clinic/FilialShow', [
-                    'filialData' => $filial,
-                ]);
-            } else {
-                return Inertia::render('Layouts/NoPermission');
-            }
+            $clinic = $this->getClinicFromCoreSchema($clinicId);
+            $filial = ClinicFilial::find($id);
+            return Inertia::render('Clinic/FilialShow', [
+                'filialData' => $filial,
+            ]);
         });
     }
 
@@ -109,28 +109,32 @@ class FilialController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id) {
+    public function edit(Request $request, $id)
+    {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+
+            // Проверка прав уже внутри схемы clinic_X
+            if (!$request->user()->canClinic('filial-edit')) {
+                return Inertia::render('Layouts/NoPermission');
+            }
             $serverFilePath = public_path('storage/clinic/stamps/filial-stamp-' .$id. '.png');
             $imagePath = '';
             if (file_exists($serverFilePath)) {
                 $imagePath = asset('storage/clinic/stamps/filial-stamp-' .$id. '.png');
             }
-            if ($request->user()->can('filial-edit')) {
-                $clinic = $this->getClinicFromCoreSchema($clinicId);
-                $storeData = Store::where('clinic_id', $clinicId)->get();
-                $filial = ClinicFilial::find($id);
-                $filial->stamp = $imagePath;
-                return Inertia::render('Clinic/FilialEdit', [
-                    'filialData' => $filial,
-                    'clinicData' => $clinic,
-                    'storeData' => $storeData,
-                    'stampPath' => $imagePath,
-                    'employeesData' => $clinic->users
-                ]);
-            } else {
-                return Inertia::render('Layouts/NoPermission');
-            }
+
+            $clinic = $this->getClinicFromCoreSchema($clinicId);
+            $storeData = Store::where('clinic_id', $clinicId)->get();
+            $filial = ClinicFilial::find($id);
+            $filial->stamp = $imagePath;
+
+            return Inertia::render('Clinic/FilialEdit', [
+                'filialData' => $filial,
+                'clinicData' => $clinic,
+                'storeData'  => $storeData,
+                'stampPath'  => $imagePath,
+                'employeesData' => array()
+            ]);
         });
     }
 
@@ -138,34 +142,30 @@ class FilialController extends Controller
      * Update the specified resource in storage.
      */
     public function update(FilialUpdateRequest $request) {
+        
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('filial-edit')) {
-
-                if ($request->id)
-                    $filial = ClinicFilial::find($request->id);
-                else {
-                    $filial = new ClinicFilial();
-                }
-                if ($request->ceo_id) {
-                    $clinicUser = new ClinicUser();
-                    $clinicUser->user_id = $request->ceo_id;
-                    $clinicUser->clinic_id = $clinicId;
-                    $clinicUser->save();
-                }
-                $filial->fill($request->validated());
-                $filial->store_id = $request->store_id;
-                $filial->save();
-                $filialId = $filial->id;
-                if ($request->file) {
-                    $ext = $request->file->getClientOriginalExtension();
-                    Storage::disk('public')->put('clinic/stamps/filial-stamp-' .$filialId. '.'.$ext, file_get_contents($request->file));
-                }
-
-                return Redirect::route('clinic.filials');
-            } else {
+            // Проверка прав уже внутри схемы clinic_X
+            if (!$request->user()->canClinic('filial-edit')) {
                 return Inertia::render('Layouts/NoPermission');
             }
+            if ($request->id)
+                $filial = ClinicFilial::find($request->id);
+            else {
+                $filial = new ClinicFilial();
+            }
+            $filial->fill($request->validated());
+            $filial->store_id = $request->store_id;
+            $filial->clinic_id = $clinicId;
+            $filial->save();
+            $filialId = $filial->id;
+            if ($request->file) {
+                $ext = $request->file->getClientOriginalExtension();
+                Storage::disk('public')->put('clinic/stamps/filial-stamp-' .$filialId. '.'.$ext, file_get_contents($request->file));
+            }
+
+            return Redirect::route('clinic.filials');
         });
+
     }
 
     /**
