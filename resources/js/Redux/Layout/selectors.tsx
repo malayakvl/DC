@@ -37,3 +37,7 @@ export const isShowOverlaySelector = createSelector(
   rootSelector,
   (layout: State.Layouts): Layouts.checkedIds[] => layout.showOverlay
 );
+export const isDataLoadingSelector = createSelector(
+  rootSelector,
+  (layout: State.Layouts): boolean => layout.isDataLoading
+);

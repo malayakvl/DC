@@ -92,15 +92,15 @@ export default function Form({
         className="mt-0 space-y-4"
         encType="multipart/form-data"
       >
-        <InputSelect
-          name={'filial_id'}
-          values={values}
-          value={values.filial_id}
-          options={filialData}
-          onChange={handleChangeSelect}
-          required
-          label={msg.get('store.filial')}
-        />
+        {/*<InputSelect*/}
+        {/*  name={'filial_id'}*/}
+        {/*  values={values}*/}
+        {/*  value={values.filial_id}*/}
+        {/*  options={filialData}*/}
+        {/*  onChange={handleChangeSelect}*/}
+        {/*  required*/}
+        {/*  label={msg.get('store.filial')}*/}
+        {/*/>*/}
         <InputSelect
           name={'user_id'}
           values={values}
@@ -109,15 +109,6 @@ export default function Form({
           onChange={handleChangeSelect}
           required
           label={msg.get('store.ceo')}
-        />
-        <InputSelect
-          name={'filial_id'}
-          values={values}
-          value={values.filial_id}
-          options={filialData}
-          onChange={handleChangeSelect}
-          required
-          label={msg.get('store.filial')}
         />
         <InputText
           name={'name'}

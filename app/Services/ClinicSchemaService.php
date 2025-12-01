@@ -32,6 +32,9 @@ class ClinicSchemaService
             // Create required tables in the new schema
             $this->createClinicTables();
             
+            // Create PostgreSQL functions
+            $this->createPostgreSQLFunctions();
+            
             // Create default roles
             $this->createDefaultRoles();
             
@@ -192,6 +195,33 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_patient_data (
+                id BIGSERIAL PRIMARY KEY,
+                clinic_user_id BIGINT NOT NULL REFERENCES clinic_users(id) ON DELETE CASCADE,
+                -- пациентские данные
+                discount INTEGER DEFAULT 0,                       -- персональная скидка
+                dt_balance NUMERIC(12,2) DEFAULT 0,               -- дебет
+                kt_balance NUMERIC(12,2) DEFAULT 0,               -- кредит
+                notes TEXT DEFAULT NULL,                          -- любые заметки врача/клиники
+    
+                -- flexible future fields
+                extra JSONB DEFAULT '{}'::jsonb,                  -- для расширения без миграций
+    
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+        DB::statement("
+            CREATE TABLE patient_doctor (
+                id BIGSERIAL PRIMARY KEY,
+                clinic_id BIGINT NOT NULL,
+                patient_id BIGINT NOT NULL, -- user_id из core
+                doctor_id BIGINT NOT NULL,  -- user_id из core
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
         // Create clinic_filial_users table
         DB::statement("
             CREATE TABLE IF NOT EXISTS clinic_filial_user (
@@ -268,6 +298,62 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_visits (
+                id BIGSERIAL PRIMARY KEY,
+                scheduler_id BIGINT NULL,                   -- может быть NULL (если визит вне расписания)
+                clinic_user_id_patient BIGINT NOT NULL,     -- ссылка на пациента в clinic_users
+                clinic_user_id_doctor BIGINT NOT NULL,      -- ссылка на врача в clinic_users
+                visit_date DATE NOT NULL,
+                visit_time_from TIME,
+                visit_time_to TIME,
+                status VARCHAR(50) DEFAULT 'pending',       -- planned / in_progress / done / canceled
+                notes TEXT,                                 -- заметки врача по приёту
+                diagnosis TEXT,                             -- диагноз/обоснование
+                recommendation TEXT,                         -- рекомендации
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+                    ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_visit_services (
+                id BIGSERIAL PRIMARY KEY,
+                visit_id BIGINT NOT NULL REFERENCES clinic_visits(id) ON DELETE CASCADE,
+                service_id BIGINT NOT NULL,                 -- ссылка на услугу клиники
+                quantity INTEGER DEFAULT 1,
+                price NUMERIC(12,2) NOT NULL,               -- цена на момент визита (фиксируем!)
+                discount NUMERIC(12,2) DEFAULT 0,
+                total NUMERIC(12,2) GENERATED ALWAYS AS ( (price - discount) * quantity ) STORED
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_visit_payments (
+                id BIGSERIAL PRIMARY KEY,
+    
+                visit_id BIGINT NOT NULL REFERENCES clinic_visits(id) ON DELETE CASCADE,         -- к какому визиту относится
+                service_id BIGINT NOT NULL REFERENCES clinic_visit_services(id) ON DELETE CASCADE, -- к какой услуге
+                amount NUMERIC(12,2) NOT NULL,
+                method VARCHAR(50),            -- cash / card / bonus / internal / etc
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS clinic_visit_payments (
+                id BIGSERIAL PRIMARY KEY,
+    
+                visit_id BIGINT NOT NULL REFERENCES clinic_visits(id) ON DELETE CASCADE,         -- к какому визиту относится
+                service_id BIGINT NOT NULL REFERENCES clinic_visit_services(id) ON DELETE CASCADE, -- к какой услуге
+                amount NUMERIC(12,2) NOT NULL,
+                method VARCHAR(50),            -- cash / card / bonus / internal / etc
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
 
         // Create patient_statuses table
         DB::statement("
@@ -396,11 +482,108 @@ class ClinicSchemaService
             )
         ");
 
+        // Create invoices table
+
+
         // Create indexes for audit_logs
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_user_id_created_at_idx ON audit_logs (user_id, created_at)");
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_clinic_id_created_at_idx ON audit_logs (clinic_id, created_at)");
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_entity_type_entity_id_idx ON audit_logs (entity_type, entity_id)");
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs (created_at)");
+    }
+    
+    /**
+     * Create PostgreSQL functions for the clinic schema
+     *
+     * @return void
+     */
+    protected function createPostgreSQLFunctions(): void
+    {
+        // Create function to update or insert store materials
+        DB::statement("
+            CREATE OR REPLACE FUNCTION update_store_materials(
+                p_doc_date TIMESTAMP,
+                p_document_type VARCHAR,
+                p_document_id BIGINT,
+                p_store_id BIGINT,
+                p_material_id BIGINT,
+                p_qty NUMERIC,
+                p_unit_id BIGINT,
+                p_fact_qty NUMERIC,
+                p_fact_unit_id BIGINT,
+                p_price_per_unit NUMERIC,
+                p_producer_id BIGINT
+            )
+            RETURNS VOID AS $$
+            DECLARE
+                v_existing_id BIGINT;
+            BEGIN
+                -- Check if record already exists
+                SELECT id INTO v_existing_id
+                FROM store_materials
+                WHERE store_id = p_store_id 
+                AND material_id = p_material_id 
+                AND producer_id = p_producer_id
+                LIMIT 1;
+                
+                IF v_existing_id IS NOT NULL THEN
+                    -- Update existing record
+                    UPDATE store_materials
+                    SET doc_date = p_doc_date,
+                        document_type = p_document_type,
+                        document_id = p_document_id,
+                        qty = COALESCE(qty, 0) + p_qty,
+                        store_qty = COALESCE(store_qty, 0) + p_qty,
+                        fact_qty = COALESCE(fact_qty, 0) + p_fact_qty,
+                        store_fact_qty = COALESCE(store_fact_qty, 0) + p_fact_qty,
+                        price_per_unit = p_price_per_unit,
+                        updated_at = NOW()
+                    WHERE id = v_existing_id;
+                ELSE
+                    -- Insert new record
+                    INSERT INTO store_materials (
+                        doc_date, document_type, document_id, store_id, material_id, 
+                        producer_id, qty, store_qty, unit_id, fact_qty, 
+                        store_fact_qty, fact_unit_id, price_per_unit, created_at, updated_at
+                    ) VALUES (
+                        p_doc_date, p_document_type, p_document_id, p_store_id, p_material_id,
+                        p_producer_id, p_qty, p_qty, p_unit_id, p_fact_qty,
+                        p_fact_qty, p_fact_unit_id, p_price_per_unit, NOW(), NOW()
+                    );
+                END IF;
+            END;
+            $$ LANGUAGE plpgsql;
+        ");
+
+        // Create function to create document operations
+        DB::statement("
+            CREATE OR REPLACE FUNCTION create_document_operation(
+                p_operation_date TIMESTAMP,
+                p_operation_number VARCHAR,
+                p_document_id BIGINT,
+                p_document_type VARCHAR,
+                p_operation_dt VARCHAR,
+                p_subconto_dt JSONB,
+                p_operation_kt VARCHAR,
+                p_subconto_kt JSONB,
+                p_amount NUMERIC,
+                p_quantity NUMERIC,
+                p_comment VARCHAR
+            )
+            RETURNS VOID AS $$
+            BEGIN
+                INSERT INTO document_operations (
+                    operation_date, operation_number, document_id, document_type,
+                    operation_dt, subconto_dt, operation_kt, subconto_kt,
+                    amount, quantity, comment, created_at, updated_at
+                ) VALUES (
+                    p_operation_date, p_operation_number, p_document_id, p_document_type,
+                    p_operation_dt, p_subconto_dt, p_operation_kt, p_subconto_kt,
+                    p_amount, p_quantity, p_comment, NOW(), NOW()
+                );
+            END;
+            $$ LANGUAGE plpgsql;
+        ");
     }
     
     /**

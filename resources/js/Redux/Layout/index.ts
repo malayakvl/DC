@@ -6,6 +6,7 @@ import {
     setSwitchToggleAction,
     setPopupAction,
     showOverlayAction,
+    setDataLoadingAction
 } from './actions';
 import { PaginationType } from '../../Constants';
 const initPagination = { limit: 25, offset: 0, sort: 'DESC', column: 'created_at', query: '' };
@@ -80,6 +81,12 @@ const ACTION_HANDLERS: any = {
             showOverlay: action.payload
         })
     },
+    [setDataLoadingAction]: {
+        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
+            ...state,
+            isDataLoading: action.payload
+        })
+    },
 
 }
 
@@ -88,7 +95,8 @@ export {
     setPaginationAction,
     setSwitchToggleAction,
     setPopupAction,
-    showOverlayAction
+    showOverlayAction,
+    setDataLoadingAction
 }
 
 export default handleActions(ACTION_HANDLERS, initialState);

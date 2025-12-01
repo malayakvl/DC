@@ -18,9 +18,9 @@ export default function ProfileMenu() {
   });
   const permissions = usePage().props.auth.can;
 console.log('Permissions', permissions)  
-
+console.log('User', user)
   
-  const source = user.name;
+  const source = user?.name;
   const array = source.split(' ');
   const fioResult =
     array[0] +
@@ -49,10 +49,10 @@ console.log('Permissions', permissions)
                       {usePage().props.auth.role.length > 0
                         ? (
                           <>
-                            {user.current_clinic.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
+                            {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
                           </>
                         )
-                        : (user.current_clinic.name || '')}
+                        : (user?.current_clinic?.name || '')}
                     </small>
                   </div>
                   <span className="icon-arrow-down" />

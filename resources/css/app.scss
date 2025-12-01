@@ -217,9 +217,10 @@ hr {
   cursor: not-allowed;
 }
 .bg-no-permission {
-    background: url(../../images/bg/maxresdefault.jpg);
-    //background: url(../../images/bg/no-access.jpg);
+    //background: url(../../images/bg/maxresdefault.jpg);
+    background: url(../../images/bg/no-access.jpg);
     background-repeat: no-repeat;
+    background-position: center;
     background-size: cover;
     min-height: calc(100vh - 70px);
 }

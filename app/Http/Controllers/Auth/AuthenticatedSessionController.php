@@ -42,6 +42,7 @@ class AuthenticatedSessionController extends Controller
 
     public function storeClinicLogin(LoginClinicRequest $request): RedirectResponse
     {
+        dd($request->all());exit;
         $request->authenticateToClinic();
         $request->session()->regenerate();
 
@@ -57,7 +58,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         /** @var \App\Models\User $logUser */
         $logUser = Auth::user();
-        
+        dd($logUser);exit;
         // First, we need to get the clinics that this user belongs to
         // Using the new user_clinic_roles table in the core schema
         $userClinics = DB::table('core.user_clinic_roles')
@@ -71,7 +72,6 @@ class AuthenticatedSessionController extends Controller
                 'dashboardSelect' => false,
             ]);
         }
-        
         // If user belongs to multiple clinics, they need to select one
         if (count($userClinics) > 1) {
             // Get the list of clinics for the user
