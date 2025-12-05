@@ -23,7 +23,7 @@ class ClinicPermissionMiddleware
         }
 
         // Проверяем что user состоит в этом filial
-        $exists = DB::table('core.clinic_filial_user')
+        $exists = DB::table('clinic_' . $clinicId . '.clinic_filial_user')
             ->where('clinic_id', $clinicId)
             ->where('filial_id', $filialId)
             ->where('user_id', $request->user()->id)

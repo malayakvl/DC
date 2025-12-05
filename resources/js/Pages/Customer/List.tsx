@@ -18,7 +18,7 @@ export default function List({ clinicData, filialData, customerData }) {
     messages: lngCustomer,
     locale: appLang,
   });
-
+  console.log(customerData)
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -52,17 +52,18 @@ export default function List({ clinicData, filialData, customerData }) {
               {customerData?.map(item => (
                 <tr className="" key={item.id}>
                   <td style={{ width: '100px' }}>
-                    {item.file && (
-                      <img
-                        src={`/uploads/users/${item.file}`}
-                        width={40}
-                        className="float-left rounded"
-                        height="auto"
-                      />
-                    )}
+                    <img
+                      src={item.file ? `/uploads/users/${item.file}` : '/images/no-photo.png'}
+                      width={40}
+                      className="float-left rounded"
+                      height="auto"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/no-photo.png';
+                      }}
+                    />
                   </td>
-                  <td className="">{item.name}</td>
-                  <td className="">{item.role_name}</td>
+                  <td className="">{item.first_name}</td>
+                  <td className="">{item.last_name}</td>
                   <td className="">{item.phone}</td>
                   <td className="">{item.inn}</td>
                   <td className="text-right">

@@ -63,18 +63,31 @@ class CustomerController extends Controller
     }
     public function index(Request $request)
     {
-        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        $clinicId = session('clinic_id');
+        $clinicData = $request->user()->clinicByFilial($clinicId);
+
         return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+
             // Проверка прав
             if (!$request->user()->canClinic('customer-view')) {
                 return Inertia::render('Customer/List', ['error' => 'Insufficient permissions']);
             }
 
-            // Получаем филиалы клиники
+            // 1️⃣ Получаем филиалы клиники (уже ОК, они в clinic_{id})
             $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
 
-            // Получаем кастомеров с ролями через схему клиники
-            $customerData = $clinicData->employees();
+            // 2️⃣ Получаем сотрудников через core.clinic_user
+            $customerData = DB::table('core.clinic_user')
+                ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                ->select(
+                    'users.id',
+                    'users.first_name',
+                    'users.last_name',
+                    'users.email'
+                )
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->orderBy('users.last_name')
+                ->get();
 
             return Inertia::render('Customer/List', [
                 'clinicData'   => $clinicData,

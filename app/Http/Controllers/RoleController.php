@@ -32,7 +32,6 @@ class RoleController extends Controller
         }
 
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
-
         try {
             DB::statement("SET search_path TO clinic_{$clinicId}");
             // Сбрасываем кеш Spatie, чтобы использовать актуальные permissions в схеме
@@ -47,6 +46,7 @@ class RoleController extends Controller
     // Список ролей текущей клиники
     public function index(Request $request)
     {
+        $roles = Role::orderBy('name', 'ASC')->get();
         return $this->withClinicSchema($request, function($clinicId) {
             $roles = Role::orderBy('name', 'ASC')->get();
             return Inertia::render('Role/Index', [

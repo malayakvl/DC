@@ -123,7 +123,8 @@ class FilialController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
 
             // Проверка прав уже внутри схемы clinic_X
             if (!$request->user()->canClinic('filial-edit')) {
@@ -134,18 +135,18 @@ class FilialController extends Controller
             if (file_exists($serverFilePath)) {
                 $imagePath = asset('storage/clinic/stamps/filial-stamp-' .$id. '.png');
             }
-
             $clinic = $this->getClinicFromCoreSchema($clinicId);
             $storeData = Store::where('clinic_id', $clinicId)->get();
             $filial = ClinicFilial::find($id);
             $filial->stamp = $imagePath;
-
+            $customerData = $clinicData->employees();
+            
             return Inertia::render('Clinic/FilialEdit', [
                 'filialData' => $filial,
                 'clinicData' => $clinic,
                 'storeData'  => $storeData,
                 'stampPath'  => $imagePath,
-                'employeesData' => array()
+                'employeesData' => $customerData
             ]);
         });
     }

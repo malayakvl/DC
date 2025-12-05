@@ -49,7 +49,9 @@ const lngHeaders = {
     storeto: 'На склад',
     symbol: 'Позначення',
     discount: 'Знижка',
-    role: 'Роль'
+    role: 'Роль',
+    first_name: 'Ім\'я',
+    last_name: 'Прізвище',
   },
 };
 export default lngHeaders;

@@ -30,8 +30,8 @@ export const TableHeaders = {
   ],
   [PaginationType.CUSTOMERS]: [
     { titleKey: 'datatable.photo', className: '' },
-    { titleKey: 'datatable.name', className: '' },
-    { titleKey: 'datatable.role', className: '' },
+    { titleKey: 'datatable.first_name', className: '' },
+    { titleKey: 'datatable.last_name', className: '' },
     { titleKey: 'datatable.phone', className: '' },
     { titleKey: 'datatable.inn', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
