@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClinicUpdateRequest;
 use App\Models\Clinic;
-use App\Models\ClinicFilial;
 use App\Models\Currency;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +12,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+
 
 class ClinicController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
     /**
      * Helper для работы с текущей схемой клиники
      */

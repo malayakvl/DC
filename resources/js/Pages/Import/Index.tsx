@@ -3,6 +3,7 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
+import { setDataLoadingAction } from '../../Redux/Layout/actions';
 import Lang from 'lang.js';
 import lngImport from '../../Lang/Import/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
@@ -11,15 +12,17 @@ import InputError from '../../Components/Form/InputError';
 import { paletterDataSelector } from '../../Redux/Staff/selectors';
 import { userSearchResultsSelector } from '../../Redux/Clinic/selectors';
 import { Transition } from '@headlessui/react';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function Index() {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
+  
   const msg = new Lang({
     messages: lngImport,
     locale: appLang,
   });
-  const { errors } = usePage().props;
+  const { errors, message } = usePage().props;
   const [values, setValues] = useState({
     file: null,
     type: ''
@@ -30,7 +33,7 @@ export default function Index() {
       file: null,
       type: null,
     });
-
+  const notify = () => toast("Wow so easy!", { theme: "colored", });  
 
   const handleChangeFile = e => {
     const key = e.target.id;
@@ -43,8 +46,30 @@ export default function Index() {
   const submit = e => {
     e.preventDefault();
     values['type'] = importType;
-    router.post(`/import/save`, values);
-    // post(route('import.update'));
+    
+    // Set loading state to true
+    dispatch(setDataLoadingAction(true));
+    
+    router.post(`/import/save`, values, {
+      onSuccess: () => {
+        // Set loading state to false
+        dispatch(setDataLoadingAction(false));
+        toast.success(msg.get('import.success_message') || "File uploaded successfully!", { 
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+        });
+      },
+      onError: (errors) => {
+        // Set loading state to false
+        dispatch(setDataLoadingAction(false));
+        toast.error(msg.get('import.error_message') || "File upload failed!", { 
+          theme: "colored",
+          position: "top-right",
+          autoClose: 5000,
+        });
+      }
+    });
   };
 
   return (
@@ -61,17 +86,17 @@ export default function Index() {
             <section>
                 <div className="">
                   <h2 className={'w-full'}>{msg.get('import.title.list')}</h2>
-                  <div>
-                    <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />
-                    <label for={'patients'} className={'ml-2'}>{msg.get('import.patients')}</label>
-                  </div>
+                  {/*<div>*/}
+                  {/*  <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />*/}
+                  {/*  <label for={'patients'} className={'ml-2 text-white'}>{msg.get('import.patients')}</label>*/}
+                  {/*</div>*/}
                   <div>
                     <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'customers'} />
-                    <label htmlFor={'customers'} className={'ml-2'}>{msg.get('import.customers')}</label>
+                    <label htmlFor={'customers'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.customers')}</label>
                   </div>
                   <div>
                     <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
-                    <label htmlFor={'dia'} className={'ml-2'}>{msg.get('import.dia')}</label>
+                    <label htmlFor={'dia'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.dia')}</label>
                   </div>
 
                   <div className="mt-2">

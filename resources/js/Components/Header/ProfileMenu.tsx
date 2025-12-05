@@ -17,8 +17,10 @@ export default function ProfileMenu() {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-console.log(user, permissions)  
-  const source = user.name;
+console.log('Permissions', permissions)  
+console.log('User', user)
+  
+  const source = user?.name;
   const array = source.split(' ');
   const fioResult =
     array[0] +
@@ -38,25 +40,20 @@ console.log(user, permissions)
               <div className="relative">
                 <button
                   type="button"
-                  className="inline-flex items-center
-                                    px-2 text-sm
-                                    font-medium leading-4 text-gray-500
-                                    transition duration-150
-                                    ease-in-out hover:text-gray-700 focus:outline-none"
+                  className="profile-top-btn"
                 >
                   <div className="mt-0 relative text-white">
                     <div className="icon-user"></div>
                     <span className="truncate text-white">{fioResult}</span>
                     <small className="user-profile-role">
                       {usePage().props.auth.role.length > 0
-                        ? `${localStorage.getItem('filialName')} [${usePage().props.auth.role}]`
-                        : ''}
+                        ? (
+                          <>
+                            {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
+                          </>
+                        )
+                        : (user?.current_clinic?.name || '')}
                     </small>
-                    {!localStorage.getItem('filialName') && (
-                      <small className="user-profile-role">
-                        {localStorage.getItem('filialName')}
-                      </small>
-                    )}
                   </div>
                   <span className="icon-arrow-down" />
                 </button>
@@ -75,10 +72,15 @@ console.log(user, permissions)
                   {lng.get('menu.filials')}
                 </Link>
               )}
+              {(permissions['store-all'] || permissions['store-view']) && (
+                <Link className="dropdown-span" href={'/stores'}>
+                  {lng.get('menu.stores')}
+                </Link>
+              )}
               <Link className="dropdown-span" href={'/currency'}>
                 {lng.get('menu.currencies')}
               </Link>
-              <Link className="dropdown-span" href={'/clinic/create'}>
+              <Link className="dropdown-span" href={'/taxes'}>
                 {lng.get('menu.taxes')}
               </Link>
               <Link className="dropdown-span" href={'/import-data'}>

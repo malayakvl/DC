@@ -15,7 +15,7 @@ export default function Header({auth}) {
     messages: lngHeader,
     locale: appLang,
   });
-console.log('Current user', user);
+
   return (
     <>
     <header className="flex items-center justify-between py-6 neon-header">

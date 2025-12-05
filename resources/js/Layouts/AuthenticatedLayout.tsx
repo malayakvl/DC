@@ -4,13 +4,15 @@ import { useState } from 'react';
 import Lang from 'lang.js';
 import lngHeader from '../Lang/Header/translation';
 import { useSelector } from 'react-redux';
-import { appFilialSelector, appLangSelector, isShowOverlaySelector } from '../Redux/Layout/selectors';
+import { appFilialSelector, appLangSelector, isShowOverlaySelector, isDataLoadingSelector } from '../Redux/Layout/selectors';
 import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
+import { ToastContainer } from 'react-toastify';
 
 export default function AuthenticatedLayout({ header, children }) {
   const appLang = useSelector(appLangSelector);
+  const isLoading = useSelector(isDataLoadingSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
@@ -78,6 +80,15 @@ export default function AuthenticatedLayout({ header, children }) {
           <div>{children}</div>
         </div>
       </main>
+      <ToastContainer />
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#846de1] p-6 rounded-lg shadow-xl flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-gray-200 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-white text-[14px] font-semibold">Loading...</p>
+          </div>
+        </div>
+      )}
       <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
     </div>
   );
