@@ -59,7 +59,7 @@ class StoreController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             $storeData = DB::table('stores')
                 ->select('stores.*', 'users.name AS ceoName', 'clinic_filials.name AS filialName')
-                ->leftJoin('users', 'users.id', '=', 'stores.user_id')
+                ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
                 ->where('stores.clinic_id', $request->session()->get('clinic_id'))
                 ->orderBy('name')->get();

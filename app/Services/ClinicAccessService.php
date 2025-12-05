@@ -62,13 +62,13 @@ class ClinicAccessService
             }
 
             // 4️⃣ Привязываем пользователя к филиалу через pivot
-            DB::table('clinic_users')->insertOrIgnore([
-                'clinic_id' => $clinicId,
-                'user_id' => $user->id,
-                'role_id' => $roleId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // DB::table('clinic_users')->insertOrIgnore([
+            //     'clinic_id' => $clinicId,
+            //     'user_id' => $user->id,
+            //     'role_id' => $roleId,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
 
         } finally {
             // Восстанавливаем оригинальный search_path

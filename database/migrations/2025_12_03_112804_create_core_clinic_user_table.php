@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clinics', function($table) {
-            $table->foreignId('currency_id')->float()->nullable();
+        Schema::create('core.clinic_user', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('clinic_id')->index();
+            $table->unsignedBigInteger('user_id')->index();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('clinics', function($table) {
-            $table->dropColumn('currency_id');
-        });
+        Schema::dropIfExists('core_clinic_user');
     }
 };

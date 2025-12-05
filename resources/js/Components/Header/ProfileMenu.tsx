@@ -80,7 +80,7 @@ console.log('User', user)
               <Link className="dropdown-span" href={'/currency'}>
                 {lng.get('menu.currencies')}
               </Link>
-              <Link className="dropdown-span" href={'/clinic/create'}>
+              <Link className="dropdown-span" href={'/taxes'}>
                 {lng.get('menu.taxes')}
               </Link>
               <Link className="dropdown-span" href={'/import-data'}>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clinic;
+use App\Models\ClinicUser;
 use App\Models\ClinicFilial;
 use App\Models\Currency;
 use App\Models\User;
@@ -98,35 +99,43 @@ class RegisteredUserController extends Controller
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
 
-        // 5️⃣ Назначаем роль и права через сервис
+        // 5️⃣ Associate user with clinic in core schema
+        ClinicUser::createInCore([
+            'clinic_id' => $clinic->id,
+            'user_id' => $user->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 6️⃣ Назначаем роль и права через сервис
         app(\App\Services\ClinicAccessService::class)
             ->assignRole($user, $clinic->id, $filialId, 'ceo');
 
-        // 🔑 Логируем ключевые события регистрации
+        // 7️⃣ Логируем ключевые события регистрации
         $request->session()->put('clinic_id', $clinic->id);
         $this->auditLogService->log($user, 'clinic.created', $clinic);
         $this->auditLogService->log($user, 'filial.created', null, null, ['filial_id' => $filialId, 'clinic_id' => $clinic->id]);
         $this->auditLogService->log($user, 'role.assigned', null, null, ['role' => 'ceo', 'clinic_id' => $clinic->id, 'filial_id' => $filialId]);
 
-        // 6️⃣ Сбрасываем кеш Spatie и перезагружаем пользователя с ролями и правами
+        // 8️⃣ Сбрасываем кеш Spatie и перезагружаем пользователя с ролями и правами
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
         $user = $user->fresh()->load('roles', 'permissions');
 
-        // 7️⃣ Логиним пользователя
+        // 9️⃣ Логиним пользователя
         event(new Registered($user));
         Auth::login($user);
 
-        // 8️⃣ Сохраняем текущую клинику и филиал в сессии
+        // ⓪ Сохраняем текущую клинику и филиал в сессии
         $request->session()->put('clinic_id', $clinic->id);
         $request->session()->put('filial_id', $filialId);
         $request->session()->regenerate();
         $request->session()->save();
 
-        // 9️⃣ Загружаем роли и права пользователя для фронта
+        // ① Загружаем роли и права пользователя для фронта
         $access = app(\App\Services\ClinicAccessService::class)
             ->getUserRolesWithPermissions($user, $clinic->id);
 
-        // 🔟 Редирект на страницу выбора клиники, как в оригинальном flow
+        // ② Редирект на страницу выбора клиники, как в оригинальном flow
         // или можно вернуть Inertia с ролями и правами
         return redirect()->route('clinic.new')
             ->with([
