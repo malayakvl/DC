@@ -73,7 +73,7 @@ export default function AssignFilialEdit({
                 <div className="grid grid-cols-4 gap-4">
                   {filialData?.map(item => (
                     <div key={item.id}>
-                      <h5>{item.name}</h5>
+                      <h5 className="text-lg font-bold text-white">{item.name}</h5>
                       <InputRoleSelect
                         name={`role_id_${item.id}`}
                         values={assignedData.find(
