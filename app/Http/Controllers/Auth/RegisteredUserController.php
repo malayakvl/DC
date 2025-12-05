@@ -107,6 +107,18 @@ class RegisteredUserController extends Controller
             'updated_at' => now(),
         ]);
 
+        $firstFilial = DB::table("clinic_{$clinic->id}.clinic_filials")->first();
+        DB::table("clinic_{$clinic->id}.clinic_filial_user")->insert([
+            'clinic_id' => $clinic->id,
+            'filial_id' => $firstFilial->id,
+            'user_id' => $user->id,
+            'role_id' => DB::table("clinic_{$clinic->id}.roles")
+                            ->where('name', 'ceo')
+                            ->value('id'),
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
         // 6️⃣ Назначаем роль и права через сервис
         app(\App\Services\ClinicAccessService::class)
             ->assignRole($user, $clinic->id, $filialId, 'ceo');

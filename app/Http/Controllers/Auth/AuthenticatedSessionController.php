@@ -61,17 +61,17 @@ class AuthenticatedSessionController extends Controller
         // find 
         // First, we need to get the clinics that this user belongs to
         // Using the new user_clinic_roles table in the core schema
-        $userClinics = DB::table('core.user_clinic_roles')
-            ->select('clinic_id', 'role_name')
+        $userClinics = DB::table('core.clinic_user')
+            ->select('*')
             ->where('user_id', $logUser->id)
             ->get();
-dd($userClinics);exit;            
-        if ($userClinics->isEmpty()) {
-            // User is not associated with any clinic
-            return response()->json([
-                'dashboardSelect' => false,
-            ]);
-        }
+
+        // if (!$userClinics->isEmpty()) {
+        //     // User is not associated with any clinic
+        //     return response()->json([
+        //         'dashboardSelect' => false,
+        //     ]);
+        // }
         // If user belongs to multiple clinics, they need to select one
         if (count($userClinics) > 1) {
             // Get the list of clinics for the user

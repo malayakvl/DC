@@ -22,17 +22,40 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $userClinicFilials = DB::table('users')
-            ->select('clinic_filials.name AS filialName', 'clinics.name AS clinicName',
-                'clinic_filials.id AS filialId', 'roles.name AS roleName')
-            ->leftJoin('clinic_filial_user', 'users.id', '=', 'clinic_filial_user.user_id')
-            ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
-            ->leftJoin('clinics', 'clinics.id', '=', 'clinic_filials.clinic_id')
-            ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
-            ->orderBy('filialName')
-            ->where('users.id', $request->user()->id)->get();
-        return Inertia::render('DashboardSelect', [
-            'filialData' => $userClinicFilials
+        // $userClinicFilials = DB::table('users')
+        //     ->select('clinic_filials.name AS filialName', 'clinics.name AS clinicName',
+        //         'clinic_filials.id AS filialId', 'roles.name AS roleName')
+        //     ->leftJoin('clinic_filial_user', 'users.id', '=', 'clinic_filial_user.user_id')
+        //     ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
+        //     ->leftJoin('clinics', 'clinics.id', '=', 'clinic_filials.clinic_id')
+        //     ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+        //     ->orderBy('filialName')
+        //     ->where('users.id', $request->user()->id)->get();
+        $userClinics = DB::table('core.clinic_user')
+            ->select('*')
+            ->leftJoin('core.clinics', 'clinics.id', '=', 'clinic_user.clinic_id')
+            ->where('core.clinic_user.user_id', $request->user()->id)
+            ->get();
+        // dd($userClinics);exit;
+        // $userClinicFilials = DB::table('core.users')
+        // ->select(
+        //     'clinic_filials.name AS filialName',
+        //     'clinics.name AS clinicName',
+        //     'clinic_filials.id AS filialId',
+        //     'clinics.id AS clinicId',
+        //     'roles.name AS roleName'
+        // )
+        // ->leftJoin('clinic_filial_user', 'users.id', '=', 'clinic_filial_user.user_id')
+        // ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
+        // ->leftJoin('clinics', 'clinics.id', '=', 'clinic_filials.clinic_id')
+        // ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+        // ->where('users.id', $request->user()->id)
+        // ->orderBy('clinicName')
+        // ->orderBy('filialName')
+        // ->get();
+
+        return Inertia::render('Dashboard/ClinicSelect', [
+            'clinicsData' => $userClinics
         ]);
     }
 
