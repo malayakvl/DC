@@ -19,6 +19,7 @@ export default function NavMenu(props) {
   });
   const user = usePage().props.auth.user;
   const permissions = usePage().props.auth.can;
+  console.log('clinic', user);
   return (
     <>
       <div className="md:space-x-4 md:flex md:pr-[30px]">

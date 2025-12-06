@@ -144,3 +144,20 @@ display: inline-block;
 .dashboard-icon {
     @apply inline-block w-12 h-12 text-center rounded-lg text-sm  bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold;
 }
+.d-clinic-name {
+    @apply text-xl text-white mb-3 font-bold;
+    color: #02bff8 !important;
+    text-align: left;
+}
+.btn-f-select {
+    background-color: #f345b9;
+    padding: 5px 10px;
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    color: white;
+    border-radius: 5px;
+    display: block;
+    font-weight: bold;
+}

@@ -56,6 +56,103 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
+
+        /** @var \App\Models\User $logUser */
+        $logUser = Auth::user();
+
+        /**
+         * 1) Получаем клиники из core.clinic_user
+         */
+        $userClinics = DB::table('core.clinic_user')
+            ->where('user_id', $logUser->id)
+            ->get();
+
+        /**
+         * 2) Если клиник > 1 → показываем выбор клиники
+         */
+        if ($userClinics->count() > 1) {
+            $clinics = DB::table('clinics')
+                ->whereIn('id', $userClinics->pluck('clinic_id'))
+                ->select('id', 'name')
+                ->get();
+
+            return response()->json([
+                'select_clinic' => true,
+                'clinics' => $clinics
+            ]);
+        }
+
+        /**
+         * 3) Одна клиника → выбираем её автоматически
+         */
+        $clinicId = $userClinics[0]->clinic_id;
+        $request->session()->put('clinic_id', $clinicId);
+
+
+        /**
+         * 4) Получаем список всех филиалов в СХЕМЕ клиники
+         */
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        $assignedFilialsCnt = 1;
+        try {
+            $schemaName = "clinic_{$clinicId}";
+            DB::statement("SET search_path TO {$schemaName}, public, core");
+
+            $filials = DB::table('clinic_filials')->get();
+
+            $assignedFilials = DB::table('clinic_filial_user')
+                ->where('user_id', $logUser->id)
+                ->where('clinic_id', $clinicId)
+                ->pluck('filial_id');
+            $assignedFilialsCnt = $assignedFilials->count();
+
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+
+        /**
+         * 5) Получаем филиалы, к которым пользователь назначен
+         */
+        // $assignedFilials = DB::table('clinic_filial_user')
+        //     ->where('user_id', $logUser->id)
+        //     ->where('clinic_id', $clinicId)
+        //     ->pluck('filial_id');
+        /**
+         * 6) Если:
+         *    - филиалов >1
+         *    ИЛИ
+         *    - назначено несколько филиалов
+         *    ИЛИ
+         *    - назначено 0 филиалов
+         *
+         *    → показываем выбор филиала
+         */
+        if (
+            $assignedFilialsCnt > 1
+        ) {
+            return response()->json([
+                'dashboardSelect' => true,
+            ]);
+        }
+
+        /**
+         * 7) Один филиал → автоматически выбираем
+         */
+        $filialId = $assignedFilials->first();
+        $request->session()->put('filial_id', $filialId);
+
+        return response()->json([
+            'select_clinic' => false,
+            'select_filial' => false,
+            'clinic_id' => $clinicId,
+            'filial_id' => $filialId
+        ]);
+    }
+
+    public function storeOld(LoginRequest $request)
+    {
+        $request->authenticate();
+        $request->session()->regenerate();
         /** @var \App\Models\User $logUser */
         $logUser = Auth::user();
         // find 

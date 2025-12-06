@@ -1,9 +1,9 @@
-import AuthenticatedLayout from '../Layouts/AuthenticatedLayout';
+import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import Lang from 'lang.js';
-import lngDashboard from '../Lang/Dashboard/translation';
+import lngDashboard from '../../Lang/Dashboard/translation';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../Redux/Layout/selectors';
+import { appLangSelector } from '../../Redux/Layout/selectors';
 import React from 'react';
 
 export default function Dashboard({ clinicsData }) {
@@ -14,20 +14,19 @@ export default function Dashboard({ clinicsData }) {
     });
 
     const renderClinicBlock = clinic => {
-        console.log('clinic render', clinic);
         return (
-            <div key={clinic.clinic_id} className="mb-6 border border-gray-600 rounded p-4">
+            <div key={clinic.clinic_id} className="mb-6 border border-gray-600 bg-[#1b233a] rounded p-4">
                 {/* Название клиники */}
-                <h3 className="text-xl text-white mb-3 font-bold">
-                    {clinic.clinic_name}!
+                <h3 className="d-clinic-name">
+                    {clinic.clinic_name}
                 </h3>
 
                 {/* Таблица филиалов */}
-                <table className="data-table w-full bg-red">
+                <table className="data-table w-full">
                     <thead>
                         <tr>
                             <th className="text-left text-white py-2">Филиал</th>
-                            <th className="text-right text-white py-2">Действие</th>
+                            <th className="text-right text-white py-2">&nbsp;</th>
                         </tr>
                     </thead>
 
@@ -42,11 +41,11 @@ export default function Dashboard({ clinicsData }) {
 
                         {clinic.filials.map(filial => (
                             <tr key={filial.id} className="border-t border-gray-700">
-                                <td className="text-white py-2">{filial.name}</td>
+                                <td className="text-white py-2 w-[85%]">{filial.name}</td>
 
                                 <td className="text-right py-2">
                                     <Link
-                                        className="btn-grad"
+                                        className="btn-f-select"
                                         href={`/enter-filial/${filial.id}`}
                                         onClick={() => {
                                             localStorage.setItem('filialName', filial.name);
