@@ -32,7 +32,7 @@ export default function ClinicSelect({ clinicsData }) {
                   localStorage.setItem('filialId', _res.id);
                 }}
                 title={msg.get('customer.back')}
-                href={`/enter-filial/${_res.filialId}`}
+                href={`/enter-filial?clinicId=${_res.clinicId}&filialId=${_res.filialId}`}
               >
                 {msg.get('dashboard.enter')}
               </Link>

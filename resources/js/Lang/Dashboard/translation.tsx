@@ -5,6 +5,7 @@ const lngDashboard = {
     enter: 'Enter',
     clinic: 'Clinic',
     role: 'Role',
+    no_filials: 'No filials',
   },
   'uk.dashboard': {
     logging: 'Ви зареєстровані',
@@ -12,6 +13,7 @@ const lngDashboard = {
     enter: 'Перейти',
     clinic: 'Клініка',
     role: 'Роль',
+    no_filials: 'Немає філіалів',
   },
 };
 export default lngDashboard;

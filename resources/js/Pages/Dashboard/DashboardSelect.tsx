@@ -35,7 +35,7 @@ export default function Dashboard({ clinicsData }) {
                         {clinic.filials.length === 0 && (
                             <tr>
                                 <td colSpan="2" className="text-center text-gray-400 py-3">
-                                    Нет назначенных филиалов
+                                    {msg.get('dashboard.no_filials')}
                                 </td>
                             </tr>
                         )}
@@ -47,7 +47,7 @@ export default function Dashboard({ clinicsData }) {
                                 <td className="text-right py-2">
                                     <Link
                                         className="btn-f-select"
-                                        href={`/enter-filial/${filial.id}`}
+                                        href={`/enter-filial?clinicId=${clinic.clinic_id}&filialId=${filial.id}`}
                                         onClick={() => {
                                             localStorage.setItem('filialName', filial.name);
                                             localStorage.setItem('filialId', filial.id);
@@ -68,6 +68,7 @@ export default function Dashboard({ clinicsData }) {
 
     return (
         <AuthenticatedLayout header={<Head title="Dashboard Select" />}>
+            <Head title={msg.get('dashboard.title')} />
             <div className="p-4 shadow-md">
                 <h2 className="text-2xl text-white mb-4">{msg.get('dashboard.title')}</h2>
 

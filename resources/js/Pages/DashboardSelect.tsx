@@ -47,7 +47,7 @@ export default function Dashboard({ clinicsData }) {
                                 <td className="text-right py-2">
                                     <Link
                                         className="btn-grad"
-                                        href={`/enter-filial/${filial.id}`}
+                                        href={`/enter-filial?clinicId=${clinic.clinic_id}&filialId=${filial.id}`}
                                         onClick={() => {
                                             localStorage.setItem('filialName', filial.name);
                                             localStorage.setItem('filialId', filial.id);
