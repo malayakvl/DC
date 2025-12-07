@@ -36,27 +36,25 @@ class Clinic extends Model
     public function employees(): Collection
     {
         $clinicId = $this->id;
-        $usersTable = "clinic_{$clinicId}.clinic_users";
+        // $usersTable = "clinic_{$clinicId}.clinic_users";
 
-        $exists = DB::select("SELECT to_regclass(?) as tbl", [$usersTable])[0]->tbl ?? null;
-        if (!$exists) return collect();
+        // $exists = DB::select("SELECT to_regclass(?) as tbl", [$usersTable])[0]->tbl ?? null;
+        // if (!$exists) return collect();
 
-        $employees = DB::table("$usersTable as cu")
-            ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-            ->leftJoin('roles as r', 'cu.role_id', '=', 'r.id')
-            ->where('cu.clinic_id', $clinicId)
-            ->select(
-                'u.id',
-                'u.name',
-                'u.email',
-                'r.name as role_name',
-                'cu.role_id',
-                'cu.created_at as assigned_at'
-            )
-            ->orderBy('u.name')
-            ->get();
+        $customerData = DB::table('core.clinic_user')
+                ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                ->select(
+                    'users.id',
+                    'users.first_name',
+                    'users.last_name',
+                    DB::raw("CONCAT(users.first_name, ' ', users.last_name) as name"),
+                    'users.email'
+                )
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->orderBy('users.last_name')
+                ->get();
 
-        return $employees;
+        return $customerData;
     }
 
     /**

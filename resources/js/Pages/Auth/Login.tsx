@@ -40,8 +40,6 @@ export default function Login({ status, canResetPassword }) {
     axios
       .post('/login', values)
       .then(response => {
-        console.log('RESPONSE:: ', response.data);
-        exit;
         if (response.data.dashboardSelect) {
           location.href = '/dashboard-select';
         } else {

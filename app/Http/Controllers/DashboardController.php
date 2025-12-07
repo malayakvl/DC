@@ -22,17 +22,59 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        $userClinicFilials = DB::table('users')
-            ->select('clinic_filials.name AS filialName', 'clinics.name AS clinicName',
-                'clinic_filials.id AS filialId', 'roles.name AS roleName')
-            ->leftJoin('clinic_filial_user', 'users.id', '=', 'clinic_filial_user.user_id')
-            ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
-            ->leftJoin('clinics', 'clinics.id', '=', 'clinic_filials.clinic_id')
-            ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
-            ->orderBy('filialName')
-            ->where('users.id', $request->user()->id)->get();
-        return Inertia::render('DashboardSelect', [
-            'filialData' => $userClinicFilials
+        $userId = $request->user()->id;
+
+        // 1️⃣ Получаем клиники пользователя
+        $clinics = DB::table('core.clinic_user')
+            ->join('core.clinics', 'core.clinics.id', '=', 'core.clinic_user.clinic_id')
+            ->where('core.clinic_user.user_id', $userId)
+            ->select(
+                'core.clinics.id as clinic_id',
+                'core.clinics.name as clinic_name'
+            )
+            ->get();
+
+        $result = [];
+
+        foreach ($clinics as $clinic) {
+
+            // 3️⃣ Получаем названия филиалов из схемы клиники
+            $original = DB::select("SHOW search_path")[0]->search_path;
+            DB::statement("SET search_path TO clinic_{$clinic->clinic_id}, public, core");
+
+            // 2️⃣ Филиалы, к которым пользователь назначен (core)
+            $assignedFilialData = DB::table('clinic_filial_user')
+                ->join('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+                ->where('clinic_filial_user.clinic_id', $clinic->clinic_id)
+                ->where('clinic_filial_user.user_id', $userId)
+                ->select('clinic_filial_user.filial_id', 'clinic_filial_user.role_id', 'roles.name as role_name')
+                ->get();
+            
+            $assignedFilialIds = $assignedFilialData->pluck('filial_id')->toArray();
+            // Получаем филиалы с информацией о ролях
+            $filials = DB::table('clinic_filials')
+                ->whereIn('id', $assignedFilialIds)
+                ->select('id', 'name')
+                ->get()
+                ->map(function ($filial) use ($assignedFilialData) {
+                    $assignment = $assignedFilialData->firstWhere('filial_id', $filial->id);
+                    $filial->role_id = $assignment->role_id ?? null;
+                    $filial->role_name = $assignment->role_name ?? null;
+                    return $filial;
+                });
+
+            DB::statement("SET search_path TO {$original}");
+
+            // 4️⃣ Формируем единый объект
+            $result[] = [
+                'clinic_id' => $clinic->clinic_id,
+                'clinic_name' => $clinic->clinic_name,
+                'filials' => $filials,
+            ];
+        }
+        // dd($result);exit;
+        return Inertia::render('Dashboard/DashboardSelect', [
+            'clinicsData' => $result,
         ]);
     }
 
@@ -90,7 +132,7 @@ class DashboardController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreUpdateRequest $request) {
+    public function update(Request $request) {
         if ($request->user()->can('store-edit')) {
             $store = Store::find($request->id);
 
@@ -107,7 +149,7 @@ class DashboardController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Filial $filial) {
+    public function destroy(Request $request, $id) {
         //
     }
 }

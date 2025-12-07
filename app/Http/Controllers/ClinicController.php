@@ -177,20 +177,29 @@ class ClinicController extends Controller
     }
 
     
-    public function filialEnter(Request $request, $filialId) {
+    public function filialEnter(Request $request) {
+        // Get clinicId and filialId from query parameters
+        $clinicId = $request->query('clinicId');
+        $filialId = $request->query('filialId');
+        
+        // Validate that both parameters are provided
+        if (!$clinicId || !$filialId) {
+            return Redirect::back()->withErrors(['error' => 'Clinic ID and Filial ID are required']);
+        }
+        
         // get role for current filial from the clinic schema
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
         
         try {
-            // Get clinic_id for this filial
-            $clinicFilial = DB::table('clinic_filials')->where('id', $filialId)->first();
-            if (!$clinicFilial) {
-                return Redirect::back()->withErrors(['error' => 'Filial not found']);
-            }
-            
-            $clinicId = $clinicFilial->clinic_id;
+            // Set search path to the clinic schema to access clinic_filials table
             $schemaName = 'clinic_' . $clinicId;
             DB::statement("SET search_path TO {$schemaName}");
+            
+            // Get clinic_id for this filial (validation)
+            $clinicFilial = DB::table('clinic_filials')->where('id', $filialId)->where('clinic_id', $clinicId)->first();
+            if (!$clinicFilial) {
+                return Redirect::back()->withErrors(['error' => 'Filial not found or does not belong to the specified clinic']);
+            }
             
             // get role for current filial from clinic schema
             $data = DB::table('clinic_filial_user')

@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/clinic/create', [ClinicController::class, 'create'])->name('clinic.create');
     Route::post('/clinic/update', [ClinicController::class, 'update'])->name('clinic.update');
-    Route::get('/enter-filial/{id}', [ClinicController::class, 'filialEnter'])->name('filial.enter');
+    Route::get('/enter-filial', [ClinicController::class, 'filialEnter'])->name('filial.enter');
     Route::post('/clinic/findProducers', [ClinicController::class, 'findProducer'])->name('find.producer');
 
 //    Route::get('/clinic/accept', [ClinicController::class, 'accept'])->name('clinic.accept');

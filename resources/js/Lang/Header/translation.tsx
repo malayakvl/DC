@@ -16,6 +16,7 @@ const lngHeader = {
     'customer.create': 'Create',
     'customer.roles': 'Roles',
     'no.filial': 'No Filial Selected',
+    'no.clinic': 'No Clinic Selected',
     'material.categories': 'Product Categories',
     materials: 'Materials',
     brands: 'Brands',
@@ -23,6 +24,7 @@ const lngHeader = {
     clinic: 'Мy Clinic',
     currencies: 'Currencies',
     taxes: 'Taxes',
+    import: 'Import'
   },
   'uk.menu': {
     dashboard: 'Панель керування',
@@ -33,19 +35,20 @@ const lngHeader = {
     scheduler: 'Розклад',
     logout: 'Вийти',
     create: 'Створити',
-    'clinic.create': 'Кліника',
+    'clinic.create': 'Клініка',
     'clinic.filials': 'Філіали',
     'clinic.stores': 'Склади',
     customers: 'Користувачі',
-    'customer.list': 'Користувачі кліники',
+    'customer.list': 'Користувачі клініки',
     'customer.create': 'Створити',
     'customer.roles': 'Ролі',
     'no.filial': 'Філіал не обрано',
+    'no.clinic': 'Клініка не обрана',
     'material.categories': 'Категорі матеріалів',
     materials: 'Витратні матеріали',
     invoice: 'Накладні',
     'material.brands': 'Виробники/Постачальники',
-    clinic: 'Моя Кліника',
+    clinic: 'Моя Клініка',
     currencies: 'Валюти',
     taxes: 'Ставки податку',
     invoices: 'Бухгалтерія',
@@ -62,7 +65,10 @@ const lngHeader = {
     import: 'Імпорт',
     'patient.statuses': 'Статуси і знижки',
     login: 'Увійти',
-    register: 'Зареєструватись'
+    register: 'Зареєструватись',
+    'no.filial': 'Філіал не обрано',
+    'no.clinic': 'Клініка не обрана',
+
   },
 };
 export default lngHeader;

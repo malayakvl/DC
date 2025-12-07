@@ -63,18 +63,31 @@ class CustomerController extends Controller
     }
     public function index(Request $request)
     {
-        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        $clinicId = session('clinic_id');
+        $clinicData = $request->user()->clinicByFilial($clinicId);
+
         return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+
             // Проверка прав
             if (!$request->user()->canClinic('customer-view')) {
                 return Inertia::render('Customer/List', ['error' => 'Insufficient permissions']);
             }
 
-            // Получаем филиалы клиники
+            // 1️⃣ Получаем филиалы клиники (уже ОК, они в clinic_{id})
             $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
 
-            // Получаем кастомеров с ролями через схему клиники
-            $customerData = $clinicData->employees();
+            // 2️⃣ Получаем сотрудников через core.clinic_user
+            $customerData = DB::table('core.clinic_user')
+                ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                ->select(
+                    'users.id',
+                    'users.first_name',
+                    'users.last_name',
+                    'users.email'
+                )
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->orderBy('users.last_name')
+                ->get();
 
             return Inertia::render('Customer/List', [
                 'clinicData'   => $clinicData,
@@ -226,12 +239,13 @@ class CustomerController extends Controller
         }
     }
 
-    public function assign(Request $request, $id) {
+    public function assignOld(Request $request, $id) {
         $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
 
         $customer = User::where('id', $id)->get();
         $rolesData = Role::where('clinic_id', null)->orWhere('clinic_id', $clinic->id)
             ->orderBy('name')->get();
+        dd($rolesData);exit;
         $filialData = ClinicFilial::where('clinic_id', $clinic->id)->get();
         $assignedData = DB::table('clinic_filial_user')->select()
             ->where('user_id', $id)
@@ -255,7 +269,103 @@ class CustomerController extends Controller
         }
     }
 
-    public function assignSubmit(Request $request) {
+    public function assign(Request $request, $userId)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        $clinic = $request->user()->clinicByFilial($clinicId);
+
+        // 1️⃣ Получаем пользователя из core.users
+        $customer = User::findOrFail($userId);
+
+        // 3️⃣ Переключаемся в схему клиники и забираем роли + связи
+        $original = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+
+            // 2️⃣ Получаем список филиалов (они в clinic_{id})
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+
+            // 3.1️⃣ Роли внутри клиники
+            $rolesData = DB::table('roles')
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+
+            // 3.2️⃣ Назначения пользователя по филиалам
+            $assignedData = DB::table('clinic_filial_user')
+                ->where('user_id', $userId)
+                ->where('clinic_id', $clinicId)
+                ->get();
+
+        } finally {
+            DB::statement("SET search_path TO {$original}");
+        }
+
+        // 4️⃣ Если пользователь уже назначен хотя бы в один филиал → страница редактирования
+        if ($assignedData->count() > 0) {
+            return Inertia::render('Customer/AssignFilialEdit', [
+                'rolesData'   => $rolesData,
+                'clinicData'  => $clinic,
+                'filialData'  => $filialData,
+                'customer'    => $customer,
+                'assignedData'=> $assignedData
+            ]);
+        }
+
+        // 5️⃣ Иначе — новая привязка
+        return Inertia::render('Customer/AssignFilial', [
+            'rolesData'  => $rolesData,
+            'clinicData' => $clinic,
+            'filialData' => $filialData,
+            'customer'   => $customer
+        ]);
+    }
+
+    public function assignSubmit(Request $request)
+    {
+        $clinicId   = $request->clinicId;
+        $userId     = $request->customerId;
+        $values     = $request->values;
+
+        // Сохраняем оригинальный search_path
+        $original = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            // Переключаемся на схему клиники
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+
+            // 1️⃣ Удаляем старые назначения
+            DB::table('clinic_filial_user')
+                ->where('user_id', $userId)
+                ->where('clinic_id', $clinicId)
+                ->delete();
+
+            // 2️⃣ Добавляем новые
+            foreach ($values as $filialBlock) {
+                foreach ($filialBlock as $item) {
+
+                    if (!empty($item['role_id']) && intval($item['role_id']) > 0) {
+
+                        DB::table('clinic_filial_user')->insert([
+                            'user_id'   => $userId,
+                            'filial_id' => $item['filial_id'],
+                            'role_id'   => $item['role_id'],
+                            'clinic_id' => $clinicId
+                        ]);
+                    }
+                }
+            }
+
+        } finally {
+            // Возвращаем search_path (обязательно!)
+            DB::statement("SET search_path TO {$original}");
+        }
+
+        return Inertia::location(route('customer.index'));
+    }
+
+    public function assignSubmitOld(Request $request) {
         DB::table('clinic_filial_user')
             ->where('user_id', $request->customerId)
             ->where('clinic_id', $request->clinicId)

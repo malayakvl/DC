@@ -189,68 +189,72 @@ class ImportController extends Controller
                     }
                 }
                 // Проверяем существование связи в clinic_{id}.clinic_users
-                try {
-                    // Используем правильное переключение схемы для доступа к таблице clinic_users
-                    $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
-                    DB::statement("SET search_path TO clinic_{$clinicData->id}");
-                    $existsPivot = DB::table("clinic_users")
-                        ->where('clinic_id', $clinicData->id)
-                        ->where('user_id', $existingUser->id)
-                        ->exists();
+                ClinicUser::createInCore([
+                    'clinic_id' => $clinicData->id,
+                    'user_id' => $existingUser->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                // try {
+                //     // Используем правильное переключение схемы для доступа к таблице clinic_users
+                //     $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+                //     DB::statement("SET search_path TO clinic_{$clinicData->id}");
+                //     $existsPivot = DB::table("clinic_users")
+                //         ->where('clinic_id', $clinicData->id)
+                //         ->where('user_id', $existingUser->id)
+                //         ->exists();
 
-                    if (!$existsPivot) {
-                        // Получаем ID роли из таблицы roles схемы клиники по имени
-                        $roleName = 'doctor'; // по умолчанию
-                        if (is_array($employeeData) && isset($employeeData['role'])) {
-                            $roleName = strtolower($employeeData['role']);
-                        }
+                //     if (!$existsPivot) {
+                //         // Получаем ID роли из таблицы roles схемы клиники по имени
+                //         $roleName = 'doctor'; // по умолчанию
+                //         if (is_array($employeeData) && isset($employeeData['role'])) {
+                //             $roleName = strtolower($employeeData['role']);
+                //         }
                         
-                        // Получаем ID роли из таблицы roles в схеме клиники
-                        $roleRecord = DB::table('roles')->where('name', $roleName)->first();
-                        if ($roleRecord) {
-                            $roleId = $roleRecord->id;
-                        } else {
-                            // Если роль не найдена, используем значение по умолчанию
-                            $roleId = 15; // DOCTOR по умолчанию
-                        }
+                //         // Получаем ID роли из таблицы roles в схеме клиники
+                //         $roleRecord = DB::table('roles')->where('name', $roleName)->first();
+                //         if ($roleRecord) {
+                //             $roleId = $roleRecord->id;
+                //         } else {
+                //             // Если роль не найдена, используем значение по умолчанию
+                //             $roleId = 15; // DOCTOR по умолчанию
+                //         }
                         
-                        $insertResult = DB::table("clinic_users")->insert([
-                            'clinic_id'  => $clinicData->id,
-                            'user_id'    => $existingUser->id,
-                            'role_id'    => $roleId,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
+                //         $insertResult = DB::table("clinic_users")->insert([
+                //             'clinic_id'  => $clinicData->id,
+                //             'user_id'    => $existingUser->id,
+                //             'role_id'    => $roleId,
+                //             'created_at' => now(),
+                //             'updated_at' => now(),
+                //         ]);
                         
-                        if ($insertResult) {
-                            Log::info("Пользователь {$existingUser->id} успешно привязан к clinic_{$clinicData->id}.clinic_users с ролью {$roleId}");
-                        } else {
-                            Log::warning("Не удалось привязать пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users");
-                        }
-                    }
+                //         if ($insertResult) {
+                //             Log::info("Пользователь {$existingUser->id} успешно привязан к clinic_{$clinicData->id}.clinic_users с ролью {$roleId}");
+                //         } else {
+                //             Log::warning("Не удалось привязать пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users");
+                //         }
+                //     }       
                     
-                    // Добавляем логирование через AuditLogService если доступен request
-                    if ($request) {
-                        $this->auditLogService->log(
-                            $request->user(), 
-                            'employee_imported', 
-                            null, 
-                            null, 
-                            ['user_id' => $existingUser->id, 'clinic_id' => $clinicData->id]
-                        );
-                    }
+                //     // Добавляем логирование через AuditLogService если доступен request
+                //     if ($request) {
+                //         $this->auditLogService->log(
+                //             $request->user(), 
+                //             'employee_imported', 
+                //             null, 
+                //             null, 
+                //             ['user_id' => $existingUser->id, 'clinic_id' => $clinicData->id]
+                //         );
+                //     }
 
-                    // Восстанавливаем исходный search_path
-                    DB::statement("SET search_path TO {$originalSearchPath}");
-                } catch (\Exception $e) {
-                    // Восстанавливаем исходный search_path в случае ошибки
-                    if (isset($originalSearchPath)) {
-                        DB::statement("SET search_path TO {$originalSearchPath}");
-                    }
-                    Log::error("Ошибка при проверке/привязке пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users: " . $e->getMessage());
-                }
-
-                
+                //     // Восстанавливаем исходный search_path
+                //     DB::statement("SET search_path TO {$originalSearchPath}");
+                // } catch (\Exception $e) {
+                //     // Восстанавливаем исходный search_path в случае ошибки
+                //     if (isset($originalSearchPath)) {
+                //         DB::statement("SET search_path TO {$originalSearchPath}");
+                //     }
+                //     Log::error("Ошибка при проверке/привязке пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users: " . $e->getMessage());
+                // }
             }
         }
         // Return the count of processed employees
