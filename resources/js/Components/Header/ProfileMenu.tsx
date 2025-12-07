@@ -17,8 +17,8 @@ export default function ProfileMenu() {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-console.log('Permissions', permissions)  
-console.log('User', user)
+  console.log('Permissions', permissions);
+// console.log('User', user)
   
   const source = user?.name;
   const array = source.split(' ');
@@ -29,6 +29,7 @@ console.log('User', user)
     '. ' +
     (array[2] ? array[2][0] : '') +
     '.';
+
 
   return (
     <div>
@@ -52,8 +53,8 @@ console.log('User', user)
                             {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
                           </>
                         )
-                        : (user?.current_clinic?.name || '')}
-                    </small>
+                          : (user?.current_clinic?.name || lng.get('menu.no.clinic'))}
+                      </small>
                   </div>
                   <span className="icon-arrow-down" />
                 </button>
@@ -64,9 +65,13 @@ console.log('User', user)
               <Link className="dropdown-span" href={'/profile'}>
                 {lng.get('menu.profile')}
               </Link>
-              <Link className="dropdown-span" href={'/clinic/create'}>
-                {lng.get('menu.clinic')}
-              </Link>
+              {(usePage().props?.auth?.user?.roles?.length > 0 && usePage().props?.auth?.user?.roles[0]?.name === 'Admin') ||
+                permissions['clinic-create'] && (
+                  <Link className="dropdown-span" href={'/clinic/create'}>
+                    {lng.get('menu.clinic')}
+                  </Link>
+                )}
+              
               {(permissions['filial-all'] || permissions['filial-view']) && (
                 <Link className="dropdown-span" href={'/filials'}>
                   {lng.get('menu.filials')}
@@ -77,15 +82,21 @@ console.log('User', user)
                   {lng.get('menu.stores')}
                 </Link>
               )}
-              <Link className="dropdown-span" href={'/currency'}>
-                {lng.get('menu.currencies')}
-              </Link>
-              <Link className="dropdown-span" href={'/taxes'}>
-                {lng.get('menu.taxes')}
-              </Link>
-              <Link className="dropdown-span" href={'/import-data'}>
-                {lng.get('menu.import')}
-              </Link>
+              {(permissions['currency-all'] || permissions['currency-view']) && (
+                <Link className="dropdown-span" href={'/currency'}>
+                  {lng.get('menu.currencies')}
+                </Link>
+              )}
+              {(permissions['tax-all'] || permissions['tax-view']) && (
+                <Link className="dropdown-span" href={'/taxes'}>
+                  {lng.get('menu.taxes')}
+                </Link>
+              )}
+              {permissions['import-data'] && (
+                <Link className="dropdown-span" href={'/import-data'}>
+                  {lng.get('menu.import')}
+                </Link>
+              )}
               <Dropdown.Link
                 href={'/logout'}
                 method="post"

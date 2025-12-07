@@ -43,16 +43,25 @@ class DashboardController extends Controller
             DB::statement("SET search_path TO clinic_{$clinic->clinic_id}, public, core");
 
             // 2️⃣ Филиалы, к которым пользователь назначен (core)
-            $assignedFilialIds = DB::table('clinic_filial_user')
-                ->where('clinic_id', $clinic->clinic_id)
-                ->where('user_id', $userId)
-                ->pluck('filial_id')
-                ->toArray();
-
+            $assignedFilialData = DB::table('clinic_filial_user')
+                ->join('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+                ->where('clinic_filial_user.clinic_id', $clinic->clinic_id)
+                ->where('clinic_filial_user.user_id', $userId)
+                ->select('clinic_filial_user.filial_id', 'clinic_filial_user.role_id', 'roles.name as role_name')
+                ->get();
+            
+            $assignedFilialIds = $assignedFilialData->pluck('filial_id')->toArray();
+            // Получаем филиалы с информацией о ролях
             $filials = DB::table('clinic_filials')
                 ->whereIn('id', $assignedFilialIds)
                 ->select('id', 'name')
-                ->get();
+                ->get()
+                ->map(function ($filial) use ($assignedFilialData) {
+                    $assignment = $assignedFilialData->firstWhere('filial_id', $filial->id);
+                    $filial->role_id = $assignment->role_id ?? null;
+                    $filial->role_name = $assignment->role_name ?? null;
+                    return $filial;
+                });
 
             DB::statement("SET search_path TO {$original}");
 

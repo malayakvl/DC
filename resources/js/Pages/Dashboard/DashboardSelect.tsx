@@ -25,7 +25,8 @@ export default function Dashboard({ clinicsData }) {
                 <table className="data-table w-full">
                     <thead>
                         <tr>
-                            <th className="text-left text-white py-2">Филиал</th>
+                            <th className="text-left text-white py-2">{msg.get('dashboard.clinic')}</th>
+                            <th className="text-left text-white py-2">{msg.get('dashboard.role')}</th>
                             <th className="text-right text-white py-2">&nbsp;</th>
                         </tr>
                     </thead>
@@ -42,7 +43,7 @@ export default function Dashboard({ clinicsData }) {
                         {clinic.filials.map(filial => (
                             <tr key={filial.id} className="border-t border-gray-700">
                                 <td className="text-white py-2 w-[85%]">{filial.name}</td>
-
+                                <td className="text-white py-2 w-[15%]">{filial.role_name}</td>
                                 <td className="text-right py-2">
                                     <Link
                                         className="btn-f-select"

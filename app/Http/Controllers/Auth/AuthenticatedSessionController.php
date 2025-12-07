@@ -77,7 +77,7 @@ class AuthenticatedSessionController extends Controller
                 ->get();
 
             return response()->json([
-                'select_clinic' => true,
+                'dashboardSelect' => true,
                 'clinics' => $clinics
             ]);
         }
@@ -87,7 +87,6 @@ class AuthenticatedSessionController extends Controller
          */
         $clinicId = $userClinics[0]->clinic_id;
         $request->session()->put('clinic_id', $clinicId);
-
 
         /**
          * 4) Получаем список всех филиалов в СХЕМЕ клиники
