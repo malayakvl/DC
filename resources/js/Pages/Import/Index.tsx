@@ -95,6 +95,10 @@ export default function Index() {
                     <label htmlFor={'customers'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.customers')}</label>
                   </div>
                   <div>
+                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'patients'} />
+                    <label htmlFor={'patients'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.patients')}</label>
+                  </div>
+                  <div>
                     <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
                     <label htmlFor={'dia'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.dia')}</label>
                   </div>

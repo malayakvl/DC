@@ -23,7 +23,7 @@ const lngDropdown = {
     'tax.20': 'ПДВ 20%',
     UAH: 'грн',
     USD: 'usd',
-    EURO: 'euro',
+    EUR: 'euro',
     'Hungarian Forint': 'Hungarian Forint',
     'Danish Krone': 'Danish Krone',
     'British Pound Sterling': 'British Pound Sterling',

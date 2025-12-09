@@ -303,6 +303,9 @@ to-green-400 {
 .lang-block {
   @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[-8px] relative md:mr-[150px] pt-[10px];
 }
+.body-main .lang-block {
+  @apply md:mr-[30px]
+}
 
 .profile-top-btn {
   @apply inline-flex items-center
