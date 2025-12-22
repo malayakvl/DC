@@ -32,9 +32,21 @@ class ClinicSchemaService
             // Create required tables in the new schema
             $this->createClinicTables();
 
+            // Create default catalogs (materials, producers, etc.)
+            $this->createDefaultCatalogs();
+
+            // Seed default material categories
+            $this->seedDefaultMaterialCategories();
+
+            // Seed default units
+            $this->seedDefaultUnits();
+
+            // Seed default taxes
+            $this->seedDefaultTaxes();
+
             // Create default documents
             $this->createDefaultDocuments();
-            
+
             // Create default roles
             $this->createDefaultRoles();
             
@@ -238,6 +250,8 @@ class ClinicSchemaService
             )
         ");
 
+        
+
         // Create schedulers table
         DB::statement("
             CREATE TABLE IF NOT EXISTS schedulers (
@@ -286,7 +300,7 @@ class ClinicSchemaService
 
         // Create unit table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS unit (
+            CREATE TABLE IF NOT EXISTS units (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 unit_qty INTEGER,
@@ -300,7 +314,9 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS taxes (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                value DOUBLE PRECISION NOT NULL
+                value DOUBLE PRECISION NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
@@ -430,7 +446,6 @@ class ClinicSchemaService
                 producer_id BIGINT,
                 unit_id BIGINT,
                 size_id BIGINT,
-                producer_id BIGINT,
                 price NUMERIC(12,2) DEFAULT 0,
                 discount_percent DOUBLE PRECISION DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -475,17 +490,6 @@ class ClinicSchemaService
             )
         ");
 
-        // Units
-        DB::statement("
-            CREATE TABLE IF NOT EXISTS unit (
-                id BIGSERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                unit_qty INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
-
         // Cabinets
         DB::statement("
             CREATE TABLE IF NOT EXISTS cabinets (
@@ -508,6 +512,180 @@ class ClinicSchemaService
         ");
     }
 
+    /**
+     * Seed default material categories
+     *
+     * @return void
+     */
+    protected function seedDefaultMaterialCategories(): void
+    {
+        $materialCategories = [
+            [
+                'name' => 'Пломбувальні матеріали',
+                'special' => false,
+                'percent' => 10,
+                'parent_id' => null,
+                'children' => [
+                    [
+                        'name' => 'Композити',
+                        'special' => false,
+                        'percent' => 20,
+                        'parent_id' => null,
+                    ],
+                    [
+                        'name' => 'Склоіономери',
+                        'special' => false,
+                        'percent' => 15,
+                        'parent_id' => null,
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Ортопедія',
+                'special' => false,
+                'percent' => 25,
+                'parent_id' => null,
+            ],
+            [
+                'name' => 'Хірургія',
+                'special' => false,
+                'percent' => 30,
+                'parent_id' => null,
+            ],
+            [
+                'name' => 'Анестезія',
+                'special' => false,
+                'percent' => 0,
+                'parent_id' => null,
+            ],
+        ];
+
+        // Check if we already have material categories to avoid duplicates
+        $existingCategories = DB::table('material_categories')->count();
+        
+        if ($existingCategories > 0) {
+            // Categories already exist, don't insert duplicates
+            return;
+        }
+
+        foreach ($materialCategories as $category) {
+            // Extract children if they exist
+            $children = $category['children'] ?? [];
+            unset($category['children']);
+            
+            // Add timestamps
+            $category['created_at'] = now();
+            $category['updated_at'] = now();
+            
+            // Insert the parent category
+            $parentId = DB::table('material_categories')->insertGetId($category);
+            
+            // Insert children if they exist
+            foreach ($children as $child) {
+                $child['parent_id'] = $parentId;
+                $child['created_at'] = now();
+                $child['updated_at'] = now();
+                unset($child['children']); // Remove children if nested deeper
+                DB::table('material_categories')->insert($child);
+            }
+        }
+    }
+
+    /**
+     * Seed default units
+     *
+     * @return void
+     */
+    protected function seedDefaultUnits(): void
+    {
+        $units = [
+            // Базові одиниці
+            ['name' => 'шт', 'unit_qty' => 1],          // штука
+            ['name' => 'мл', 'unit_qty' => 1],          // мілілітр
+            ['name' => 'г', 'unit_qty' => 1],           // грам
+            ['name' => 'мг', 'unit_qty' => 1],          // міліграм
+            ['name' => 'доза', 'unit_qty' => 1],       // доза
+            
+            // Медичні одиниці
+            ['name' => 'ампула', 'unit_qty' => 1],     // ампула
+            ['name' => 'карпула', 'unit_qty' => 1],    // карпула
+            ['name' => 'шприц', 'unit_qty' => 1],      // шприц
+            ['name' => 'капсула', 'unit_qty' => 1],    // капсула
+            
+            // Упаковки
+            ['name' => 'упаковка', 'unit_qty' => 1],   // упаковка (без деталізації)
+            ['name' => 'коробка_10', 'unit_qty' => 10],
+            ['name' => 'коробка_20', 'unit_qty' => 20],
+            ['name' => 'коробка_50', 'unit_qty' => 50],
+            ['name' => 'коробка_100', 'unit_qty' => 100],
+            
+            // Інші одиниці
+            ['name' => 'набір', 'unit_qty' => 1],      // набір
+            ['name' => 'комплект', 'unit_qty' => 1],   // комплект
+            ['name' => 'тюбик_1г', 'unit_qty' => 1],
+            ['name' => 'тюбик_2г', 'unit_qty' => 2],
+            ['name' => 'тюбик_5г', 'unit_qty' => 5],
+            ['name' => 'тюбик_10г', 'unit_qty' => 10],
+            ['name' => 'флакон_5мл', 'unit_qty' => 5],    // 5 мл
+            ['name' => 'флакон_10мл', 'unit_qty' => 10],  // 10 мл
+            ['name' => 'флакон_20мл', 'unit_qty' => 20],  // 20 мл
+            ['name' => 'рулон', 'unit_qty' => 1],      // рулон (коффердам і т.д.)
+        ];
+
+
+        // Check if we already have units to avoid duplicates
+        $existingUnits = DB::table('units')->count();
+        
+        if ($existingUnits > 0) {
+            // Units already exist, don't insert duplicates
+            return;
+        }
+
+        // Insert default units with timestamps
+        foreach ($units as $unit) {
+            $unit['created_at'] = now();
+            $unit['updated_at'] = now();
+            DB::table('units')->insert($unit);
+        }
+    }
+
+    /**
+     * Seed default taxes
+     *
+     * @return void
+     */
+    protected function seedDefaultTaxes(): void
+    {
+        $taxes = [
+            // VAT taxes
+            ['name' => 'Без ПДВ', 'value' => 0],
+            ['name' => 'ПДВ 20%', 'value' => 20],
+            ['name' => 'ПДВ 7%', 'value' => 7],
+            
+            // Single taxes
+            ['name' => 'Єдиний податок 5%', 'value' => 5],
+            ['name' => 'Єдиний податок 3%', 'value' => 3],
+            
+            // Other taxes
+            ['name' => 'Страховий збір 2%', 'value' => 2],
+            ['name' => 'Сервісний збір 1.5%', 'value' => 1.5],
+        ];
+
+        // Check if we already have taxes to avoid duplicates
+        $existingTaxes = DB::table('taxes')->count();
+        
+        if ($existingTaxes > 0) {
+            // Taxes already exist, don't insert duplicates
+            return;
+        }
+
+        // Insert default taxes
+        foreach ($taxes as $tax) {
+            $tax['created_at'] = now();
+            $tax['updated_at'] = now();
+            DB::table('taxes')->insert($tax);
+        }
+    }
 
     /**
     * Create all document-related tables inside clinic schema

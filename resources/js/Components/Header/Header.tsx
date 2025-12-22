@@ -42,7 +42,7 @@ export default function Header({auth}) {
           </div>
           
 
-          <nav className="hidden md:flex items-center gap-8 text-sm text-white">
+          <nav className="hidden md:flex items-center gap-8 text-sm text-white md:min-w-[300px]">
             {/* <a className="hover:text-white" href="#">Features</a> */}
             <a className="hover:text-white" href="#">Прайс</a>
             <a className="hover:text-white" href="#">Інтеграція</a>

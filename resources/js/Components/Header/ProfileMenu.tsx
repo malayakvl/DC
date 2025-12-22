@@ -92,7 +92,7 @@ export default function ProfileMenu() {
                   {lng.get('menu.taxes')}
                 </Link>
               )}
-              {permissions['import-data'] && (
+              {permissions['clinic-create'] && (
                 <Link className="dropdown-span" href={'/import-data'}>
                   {lng.get('menu.import')}
                 </Link>

@@ -12,7 +12,8 @@ import lngAuth from '../../Lang/Auth/translation';
 
 export default function Register() {
   const { data, setData, post, processing, errors, reset } = useForm({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -37,20 +38,36 @@ export default function Register() {
 
       <form onSubmit={submit} className="dark-form">
         <div>
-          <InputLabel htmlFor="name" value={msg.get('auth.name')} />
+          <InputLabel htmlFor="name" value={msg.get('auth.first_name')} />
 
           <TextInput
-            id="name"
-            name="name"
+            id="first_name"
+            name="fitst_name"
             value={data.name}
             className="input-text"
-            autoComplete="name"
             isFocused={true}
-            onChange={e => setData('name', e.target.value)}
+            onChange={e => setData('first_name', e.target.value)}
             required
           />
 
-          <InputError message={errors.name} className="mt-2" />
+          <InputError message={errors.first_name} className="mt-2" />
+        </div>
+
+
+        <div>
+          <InputLabel htmlFor="last_name" value={msg.get('auth.last_name')} />
+
+          <TextInput
+            id="last_name"
+            name="last_name"
+            value={data.name}
+            className="input-text"
+            isFocused={true}
+            onChange={e => setData('last_name', e.target.value)}
+            required
+          />
+
+          <InputError message={errors.last_name} className="mt-2" />
         </div>
 
         <div className="mt-4">

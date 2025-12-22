@@ -124,7 +124,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
         <div className="bg-[#071122] rounded-2xl p-1 h-full">
           <div className="text-sm font-semibold mb-2">Візуалізація історії пацієнта</div>
           <div className="text-white text-sm">
-            <img src="../../images/main-page/pic2.png" />
+            <img src="../../images/main-page/pic1.png" />
           </div>
         </div>
       </div>
@@ -186,17 +186,18 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
       </div>
     </section>
 
-        {/* <!-- Footer --> */}
-        <footer className="mt-12 py-8 flex items-center justify-between text-sm text-white">
+        {/* <footer className="mt-12 py-8 flex items-center justify-between text-sm text-white">
           <div>&copy; 2025 DentalCare — Demo</div>
           <div className="flex gap-3">
             <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">f</div>
             <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">t</div>
             <div className="w-8 h-8 rounded-full bg-[#0b1220] flex items-center justify-center">in</div>
           </div>
-        </footer>
+        </footer> */}
 
   </div>
+  <Footer />
+
 </div>
       </>
   );

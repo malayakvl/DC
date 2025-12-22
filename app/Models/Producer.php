@@ -8,6 +8,5 @@ class Producer extends Model
 {
     protected $fillable = [
         'name',
-        'clinic_id',
     ];
 }
