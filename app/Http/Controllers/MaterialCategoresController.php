@@ -98,11 +98,6 @@ class MaterialCategoresController extends Controller
             if (!$request->user()->canClinic('store-create')) {
                 return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
             }
-            $filailData = ClinicFilial::where('clinic_id', $clinicData->id)->get();
-            $customerData = $clinicData->employees();
-            $categoryData = MaterialCategories
-                ::where('special', true)
-                ->get();
             $categories = MaterialCategories::where('parent_id', null)
                 ->orWhere('special', true)
                 ->get();

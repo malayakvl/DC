@@ -289,7 +289,7 @@ class ClinicSchemaService
 
         // Create size table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS size (
+            CREATE TABLE IF NOT EXISTS sizes(
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 clinic_id BIGINT,
@@ -527,13 +527,19 @@ class ClinicSchemaService
                 'parent_id' => null,
                 'children' => [
                     [
-                        'name' => 'Композити',
+                        'name' => 'Реставраційні пломбувальні матеріали',
                         'special' => false,
                         'percent' => 20,
                         'parent_id' => null,
                     ],
                     [
-                        'name' => 'Склоіономери',
+                        'name' => 'Адгезивні системи та травильні гелі',
+                        'special' => false,
+                        'percent' => 15,
+                        'parent_id' => null,
+                    ],
+                    [
+                        'name' => 'Цементи для Фіксації',
                         'special' => false,
                         'percent' => 15,
                         'parent_id' => null,

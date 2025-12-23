@@ -110,7 +110,8 @@ console.log(values)
       // calcPricePerUnit();
     } else {
       const _cat = categoryData.find(_d => _d.id == values['category_id']);
-      dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
+      if (_cat)
+        dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
     }
   }, [values.price]);
 
