@@ -67,11 +67,11 @@ class MaterialController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = DB::table('materials')
                 ->select('materials.*', 'material_categories.name AS categoryName', 'producers.name AS producerName',
-                    'material_categories.percent', 'sizes.name AS sizeName', 'units.name AS unitName')
+                    'material_categories.percent', 'units.name AS unitName')
                 ->leftJoin('material_categories', 'material_categories.id', '=', 'materials.category_id')
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
-                ->leftJoin('sizes', 'sizes.id', '=', 'materials.size_id')
+                // ->leftJoin('sizes', 'sizes.id', '=', 'materials.size_id')
                 // ->where('materials.clinic_id', $clinic->id)
                 ->orderBy('name')->get();
 
@@ -99,9 +99,12 @@ class MaterialController extends Controller
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
             $formData = new MaterialCategories();
+            $producerData = Producer::get();
+            
             return Inertia::render('Material/Create', [
                 'clinicData' => $clinicData,
                 'categoryData' => $tree,
+                'producerData' => $producerData,
                 'unitsData' => $unitsData,
                 'formData' => $formData,
             ]);
@@ -122,31 +125,6 @@ class MaterialController extends Controller
         });
 
     }
-    // public function create(Request $request): Response {
-    //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-    //     return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
-    //         if ($request->user()->can('store-edit')) {
-    //             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-    //             $categories = MaterialCategories::where('parent_id', null)
-    //                 ->where('clinic_id', $clinicData->id)
-    //                 ->orWhere('special', true)
-    //                 ->get();
-    //             $unitsData = Unit::all();
-    //             $arrCat = array();
-    //             $tree = $this->generateCategories($categories, $arrCat, 0);
-    //             $formData = new MaterialCategories();
-    //             return Inertia::render('Material/Create', [
-    //                 'clinicData' => $clinicData,
-    //                 'categoryData' => $tree,
-    //                 'unitsData' => $unitsData,
-    //                 'formData' => $formData,
-    //             ]);
-    //         } else {
-    //             return Inertia::render('Layouts/NoPermission', [
-    //             ]);
-    //         }
-    //     });
-
         
     // }
 
@@ -154,6 +132,7 @@ class MaterialController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
+        
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $categories = MaterialCategories::where('parent_id', null)
@@ -193,6 +172,146 @@ class MaterialController extends Controller
             ]);
         }
     }
+
+        /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
+            if ($request->id)
+                $material = Material::find($request->id);
+            else {
+                $material = new Material();
+            }
+            // find producer
+            $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
+            if (count($producer) > 0) {
+                $producerId = $producer[0]->id;
+            } else {
+                $producerNew = new Producer();
+                $producerNew->name = $request->producer;
+                $producerNew->save();
+                $producerId = $producerNew->id;
+            }
+            // // find unit
+            // $unit = Unit::where('id', '=', $request->unit_id)->first();
+            // $unitWeight = '';
+            // if ($request->weightunit_id) {
+            //     $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
+            // }
+            // find size
+            // $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->weightunit_id). '%')->get();
+            // dd($size);exit;
+            // if (count($size) > 0) {
+            //     $sizeId = $size[0]->id;
+            // } else {
+            //     $sizeNew = new Size();
+            //     $sizeNew->name = $request->size;
+            //     $sizeNew->save();
+            //     $sizeId = $sizeNew->id;
+            // }
+            $material->name = $request->name;
+            $material->price = (float)$request->price;
+            $material->retail_price = (float)$request->retail_price;
+            $material->category_id = $request->category_id;
+            $material->producer_id = $producerId;
+            $material->unit_id = $request->unit_id;
+            // $material->size_id = $request->weightunit_id;
+            $material->weight = $request->weight;
+            $material->weightunit_id = $request->weightunit_id ? $request->weightunit_id : null;
+            $material->price_per_unit = $request->price_per_unit | null;
+            $material->save();
+
+            return Redirect::route('material.index');
+
+            
+            // Update currency information
+            // $currency = Currency::find($request->id);
+            // // Capture old data before updating
+            // $oldData = $currency->toArray();
+            // $currency->fill($request->validated());
+            // $currency->symbol = $request->symbol;
+            // // Prepare new data
+            // $newData = $currency->toArray();
+            // $currency->save();
+            // // Log the currency update
+            // $this->auditLogService->log($request->user(), 'currency.updated', $currency, $oldData, $newData);
+
+            // // Create new currency exchange rate record
+            // $currencyExchange = new CurrencyExchange();
+            // $currencyExchange->clinic_id = $clinicId;
+            // $currencyExchange->currency_id = $request->id; // Use the currency ID, not from request
+            // $currencyExchange->rate_value = floatval($request->rate);
+            // $currencyExchange->rate_date = date('Y-m-d H:i:s');
+            // $currencyExchange->save();
+            // // Log the currency exchange rate creation
+            // $this->auditLogService->log($request->user(), 'currency_exchange.created', $currencyExchange, null, $currencyExchange->toArray());
+
+            // return Redirect::route('currency.index')->with('success', 'Currency updated successfully');
+        });
+    }
+
+    // public function update(Request $request) {
+    //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+    //     return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+    //         dd($request->user()->can('store-edit'));exit;
+    //         if ($request->user()->can('store-edit')) {
+    //             if ($request->id)
+    //                 $material = Material::find($request->id);
+    //             else {
+    //                 $material = new Material();
+    //             }
+    //             // find producer
+    //             $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
+    //             if (count($producer) > 0) {
+    //                 $producerId = $producer[0]->id;
+    //             } else {
+    //                 $producerNew = new Producer();
+    //                 $producerNew->name = $request->producer;
+    //                 $producerNew->save();
+    //                 $producerId = $producerNew->id;
+    //             }
+    //             // find unit
+    //             $unit = Unit::where('id', '=', $request->unit_id)->first();
+    //             $unitWeight = '';
+    //             if ($request->weightunit_id) {
+    //                 $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
+    //             }
+    //             // find size
+    //             // $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->weightunit_id). '%')->get();
+    //             // dd($size);exit;
+    //             // if (count($size) > 0) {
+    //             //     $sizeId = $size[0]->id;
+    //             // } else {
+    //             //     $sizeNew = new Size();
+    //             //     $sizeNew->name = $request->size;
+    //             //     $sizeNew->save();
+    //             //     $sizeId = $sizeNew->id;
+    //             // }
+    //             dd('here we are');exit;
+    //             $material->name = $request->name;
+    //             $material->price = (float)$request->price;
+    //             $material->retail_price = (float)$request->retail_price;
+    //             $material->category_id = $request->category_id;
+    //             $material->clinic_id = $request->clinic_id;
+    //             $material->producer_id = $producerId;
+    //             $material->unit_id = $unit->id;
+    //             // $material->size_id = $request->weightunit_id;
+    //             $material->weight = $request->weight;
+    //             $material->weightunit_id = $unitWeight ? $unitWeight->id : null;
+    //             $material->price_per_unit = $request->price_per_unit | null;
+    //             $material->save();
+
+    //             return Redirect::route('material.index');
+    //         }
+    //     });
+        
+    // }
+
 
     public function storeReport(Request $request) {
         if ($request->user()->can('store-edit')) {
@@ -373,61 +492,6 @@ class MaterialController extends Controller
         ], 403);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ProducerUpdateRequest $request) {
-        if ($request->user()->can('store-edit')) {
-            if ($request->id)
-                $material = Material::find($request->id);
-            else {
-                $material = new Material();
-            }
-            // find producer
-            $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
-            if (count($producer) > 0) {
-                $producerId = $producer[0]->id;
-            } else {
-                $producerNew = new Producer();
-                $producerNew->name = $request->producer;
-                $producerNew->save();
-                $producerId = $producerNew->id;
-            }
-            // find unit
-//            $unit = Unit::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->unit). '%')->get();
-            $unit = Unit::where('id', '=', $request->unit_id)->first();
-            $unitWeight = '';
-            if ($request->weightunit_id) {
-                $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
-            }
-
-            // find size
-            $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->size). '%')->get();
-            if (count($size) > 0) {
-                $sizeId = $size[0]->id;
-            } else {
-                $sizeNew = new Size();
-                $sizeNew->name = $request->size;
-                $sizeNew->save();
-                $sizeId = $sizeNew->id;
-            }
-            $material->name = $request->name;
-            $material->price = (float)$request->price;
-            $material->retail_price = (float)$request->retail_price;
-            $material->category_id = $request->category_id;
-            $material->clinic_id = $request->clinic_id;
-            $material->producer_id = $producerId;
-            $material->unit_id = $unit->id;
-            $material->size_id = $sizeId;
-            $material->weight = $request->weight;
-            $material->weightunit_id = $unitWeight ? $unitWeight->id : null;
-            $material->price_per_unit = $request->price_per_unit | null;
-            $material->save();
-
-            return Redirect::route('material.index');
-        }
-    }
-
     public function generateCategories($categories, &$arrCat, $level) {
         foreach ($categories as $category) {
             $category->level = $level;
@@ -491,42 +555,52 @@ class MaterialController extends Controller
 
     public function findMaterial(Request $request) {
         $name = $request->searchName;
-        $resData = DB::table('materials')->select('*')
-            ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
-            ->get();
-        return response()->json([
-            'items' => $resData
-        ]);
+        return $this->withClinicSchema($request, function($clinicId, $name) use ($request) {
+            $resData = DB::table('materials')->select('*')
+                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->get();
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
     }
 
 
     public function findUnit(Request $request) {
         $name = $request->searchName;
-        $producerData = DB::table('units')->select('name', 'id')
-            ->where('name', 'like', $name.'%')
-            ->get();
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+            $producerData = DB::table('units')->select('name', 'id')
+                ->where('name', 'like', $name.'%')
+                ->get();
+        });
         return response()->json([
             'items' => $producerData
         ]);
     }
 
     public function findSize(Request $request) {
-        $name = $request->searchName;
-        $producerData = DB::table('sizes')->select('name', 'id')
-            ->where('name', 'like', $name.'%')
-            ->get();
-        return response()->json([
-            'items' => $producerData
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+            $producerData = DB::table('sizes')->select('name', 'id')
+                ->where('name', 'like', $name.'%')
+                ->get();
+
+            return response()->json([
+                'items' => $producerData
+            ]);
+        });
     }
 
     public function findPercent(Request $request) {
-        $catData = DB::table('material_categories')->select('percent', 'id')
-            ->where('id', '=', $request->searchId)
-            ->get();
-        return response()->json([
-            'percent' => $catData[0]->percent
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $catData = DB::table('material_categories')->select('percent', 'id')
+                ->where('id', '=', $request->searchId)
+                ->get();
+            return response()->json([
+                'percent' => $catData[0]->percent
+            ]);
+        });
     }
 
     /**

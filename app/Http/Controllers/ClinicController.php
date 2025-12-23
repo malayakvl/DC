@@ -239,12 +239,16 @@ class ClinicController extends Controller
 
     public function findProducer(Request $request) {
         $name = $request->searchName;
-        $producerData = DB::table('producers')->select('name', 'id')
-            ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
-            ->get();
-        return response()->json([
-            'items' => $producerData
-        ]);
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData, $name) {
+            $producerData = DB::table('producers')->select('name', 'id')
+                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->get();
+            return response()->json([
+                'items' => $producerData
+            ]);
+        });
+        
     }
 
 

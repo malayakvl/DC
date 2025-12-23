@@ -49,7 +49,7 @@ class UnitController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if (!$request->user()->canClinic('clinic-view')) {
+            if (!$request->user()->canClinic('store-view')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
@@ -101,19 +101,20 @@ class UnitController extends Controller
     public function update(UnitUpdateRequest $request) {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
         return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
-            if ($request->user()->can('store-edit')) {
-                if ($request->id)
-                    $unit = Unit::find($request->id);
-                else {
-                    $unit = new Unit();
-                }
-                $unit->fill($request->validated());
-                $unit->clinic_id = $clinicData->id;
-                $unit->unit_qty = $request->unit_qty;
-                $unit->save();
-
-                return Redirect::route('unit.index');
+            if (!$request->user()->canClinic('store-create')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
+            if ($request->id)
+                $unit = Unit::find($request->id);
+            else {
+                $unit = new Unit();
+            }
+            $unit->fill($request->validated());
+            // $unit->clinic_id = $clinicData->id;
+            $unit->unit_qty = $request->unit_qty;
+            $unit->save();
+
+            return Redirect::route('unit.index');
         });
         
     }
