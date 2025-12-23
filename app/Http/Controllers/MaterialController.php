@@ -98,7 +98,7 @@ class MaterialController extends Controller
             $unitsData = Unit::all();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
-            $formData = new MaterialCategories();
+            $formData = new Material();
             $producerData = Producer::get();
             
             return Inertia::render('Material/Create', [
@@ -132,18 +132,20 @@ class MaterialController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        
-        if ($request->user()->can('store-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Unit/List', ['error' => 'Insufficient permissions']);
+            }
             $categories = MaterialCategories::where('parent_id', null)
-                ->where('clinic_id', $clinicData->id)
                 ->orWhere('special', true)
                 ->get();
+            $unitsData = Unit::all();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
+            
+            $producer = Producer::get();
             $formData = Material::find($id);
-            $producer = Producer::where('id', '=', $formData->producer_id)->get();
-            $unitsData = Unit::all();
             if (count($producer)) {
                 $formData->producer = $producer[0]->name;
             }
@@ -159,6 +161,7 @@ class MaterialController extends Controller
             if (count($category)) {
                 $formData->percent = $category[0]->percent;
             }
+            // dd($formData);exit;
             return Inertia::render('Material/Edit', [
                 'clinicData' => $clinicData,
                 'categoryData' => $tree,
@@ -166,12 +169,54 @@ class MaterialController extends Controller
                 'percent' => $formData->percent,
                 'unitsData' => $unitsData
             ]);
-
-        } else {
-            return Inertia::render('Layouts/NoPermission', [
-            ]);
-        }
+        });
+        
     }
+    // public function edit(Request $request, $id) {
+    //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+    //     return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
+    //         dd($request->user()->can('store-view'));exit;
+    //         if ($request->user()->can('store-view')) {
+            
+    //             $categories = MaterialCategories::where('parent_id', null)
+    //                 ->where('clinic_id', $clinicData->id)
+    //                 ->orWhere('special', true)
+    //                 ->get();
+    //             $arrCat = array();
+    //             $tree = $this->generateCategories($categories, $arrCat, 0);
+    //             $formData = Material::find($id);
+    //             $producer = Producer::where('id', '=', $formData->producer_id)->get();
+    //             $unitsData = Unit::all();
+    //             if (count($producer)) {
+    //                 $formData->producer = $producer[0]->name;
+    //             }
+    //             $unit = Unit::where('id', '=', $formData->unit_id)->get();
+    //             if (count($unit)) {
+    //                 $formData->unit = $unit[0]->name;
+    //             }
+    //             $size = Size::where('id', '=', $formData->size_id)->get();
+    //             if (count($size)) {
+    //                 $formData->size = $size[0]->name;
+    //             }
+    //             $category = MaterialCategories::where('id', '=', $formData->category_id)->get();
+    //             if (count($category)) {
+    //                 $formData->percent = $category[0]->percent;
+    //             }
+    //             return Inertia::render('Material/Edit', [
+    //                 'clinicData' => $clinicData,
+    //                 'categoryData' => $tree,
+    //                 'formData' => $formData,
+    //                 'percent' => $formData->percent,
+    //                 'unitsData' => $unitsData
+    //             ]);
+
+    //         } else {
+    //             return Inertia::render('Layouts/NoPermission', [
+    //             ]);
+    //         }
+    //     });
+
+    // }
 
         /**
      * Update the specified resource in storage.
@@ -225,92 +270,11 @@ class MaterialController extends Controller
             $material->weightunit_id = $request->weightunit_id ? $request->weightunit_id : null;
             $material->price_per_unit = $request->price_per_unit | null;
             $material->save();
+            $this->auditLogService->log($request->user(), 'material.updated', $material, null, $material->toArray());
 
             return Redirect::route('material.index');
-
-            
-            // Update currency information
-            // $currency = Currency::find($request->id);
-            // // Capture old data before updating
-            // $oldData = $currency->toArray();
-            // $currency->fill($request->validated());
-            // $currency->symbol = $request->symbol;
-            // // Prepare new data
-            // $newData = $currency->toArray();
-            // $currency->save();
-            // // Log the currency update
-            // $this->auditLogService->log($request->user(), 'currency.updated', $currency, $oldData, $newData);
-
-            // // Create new currency exchange rate record
-            // $currencyExchange = new CurrencyExchange();
-            // $currencyExchange->clinic_id = $clinicId;
-            // $currencyExchange->currency_id = $request->id; // Use the currency ID, not from request
-            // $currencyExchange->rate_value = floatval($request->rate);
-            // $currencyExchange->rate_date = date('Y-m-d H:i:s');
-            // $currencyExchange->save();
-            // // Log the currency exchange rate creation
-            // $this->auditLogService->log($request->user(), 'currency_exchange.created', $currencyExchange, null, $currencyExchange->toArray());
-
-            // return Redirect::route('currency.index')->with('success', 'Currency updated successfully');
         });
     }
-
-    // public function update(Request $request) {
-    //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-    //     return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
-    //         dd($request->user()->can('store-edit'));exit;
-    //         if ($request->user()->can('store-edit')) {
-    //             if ($request->id)
-    //                 $material = Material::find($request->id);
-    //             else {
-    //                 $material = new Material();
-    //             }
-    //             // find producer
-    //             $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
-    //             if (count($producer) > 0) {
-    //                 $producerId = $producer[0]->id;
-    //             } else {
-    //                 $producerNew = new Producer();
-    //                 $producerNew->name = $request->producer;
-    //                 $producerNew->save();
-    //                 $producerId = $producerNew->id;
-    //             }
-    //             // find unit
-    //             $unit = Unit::where('id', '=', $request->unit_id)->first();
-    //             $unitWeight = '';
-    //             if ($request->weightunit_id) {
-    //                 $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
-    //             }
-    //             // find size
-    //             // $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->weightunit_id). '%')->get();
-    //             // dd($size);exit;
-    //             // if (count($size) > 0) {
-    //             //     $sizeId = $size[0]->id;
-    //             // } else {
-    //             //     $sizeNew = new Size();
-    //             //     $sizeNew->name = $request->size;
-    //             //     $sizeNew->save();
-    //             //     $sizeId = $sizeNew->id;
-    //             // }
-    //             dd('here we are');exit;
-    //             $material->name = $request->name;
-    //             $material->price = (float)$request->price;
-    //             $material->retail_price = (float)$request->retail_price;
-    //             $material->category_id = $request->category_id;
-    //             $material->clinic_id = $request->clinic_id;
-    //             $material->producer_id = $producerId;
-    //             $material->unit_id = $unit->id;
-    //             // $material->size_id = $request->weightunit_id;
-    //             $material->weight = $request->weight;
-    //             $material->weightunit_id = $unitWeight ? $unitWeight->id : null;
-    //             $material->price_per_unit = $request->price_per_unit | null;
-    //             $material->save();
-
-    //             return Redirect::route('material.index');
-    //         }
-    //     });
-        
-    // }
 
 
     public function storeReport(Request $request) {

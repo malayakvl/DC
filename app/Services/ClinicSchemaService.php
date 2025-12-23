@@ -437,6 +437,20 @@ class ClinicSchemaService
             )
         ");
 
+        // Suppliers
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS suppliers (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                contact_name VARCHAR(255),
+                email VARCHAR(255),
+                phone VARCHAR(50),
+                address TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
         // Materials
         DB::statement("
             CREATE TABLE IF NOT EXISTS materials (

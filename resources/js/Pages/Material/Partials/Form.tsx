@@ -42,6 +42,7 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useDispatch();
+console.log('Form data',formData)  
   const [values, setValues] = useState({
     name: formData.name,
     price: formData.price,
@@ -337,6 +338,7 @@ export default function Form({
       return <></>;
     }
   };
+  
   const renderSearchUnitResult = () => {
     if (serchUnitResults.length > 0) {
       return (

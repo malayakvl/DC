@@ -11,9 +11,11 @@ class Material extends Model
         'clinic_id',
         'category_id',
         'unit_id',
-        'size_id',
+        'weight',
+        'weightunit_id',
+        'retail_price',
         'producer_id',
         'price',
-        'retail_price'
+        'price_per_unit'
     ];
 }
