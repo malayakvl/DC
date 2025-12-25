@@ -47,11 +47,14 @@ export default function NavStores() {
                   </Link>
                 </MenuItem>
               )}
-              <MenuItem>
-                <Link href={'/stores'} className="submenu">
-                  {lng.get('menu.stores')}
-                </Link>
-              </MenuItem>
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/suppliers'}>
+                    {lng.get('menu.material.suppliers')}
+                  </Link>
+                </MenuItem>
+              )}
+              
 
               {permissions['store-create'] && (
                 <MenuItem>

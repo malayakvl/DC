@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UnitUpdateRequest;
-use App\Models\Clinic;
-use App\Models\Unit;
+use App\Http\Requests\ProducerUpdateRequest;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -13,7 +12,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class UnitController extends Controller
+class SupplierController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -43,6 +42,7 @@ class UnitController extends Controller
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
     }
+    
     /**
      * Display a listing of the resource.
      */
@@ -53,11 +53,12 @@ class UnitController extends Controller
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
-            $listData = Unit::get();
-
-            return Inertia::render('Unit/List', [
+            $listData = DB::table('suppliers')
+                ->select('suppliers.*')
+                ->orderBy('name')->get();
+            return Inertia::render('Supplier/List', [
                 'clinicData' => $clinic,
-                'listData'   => $listData,
+                'listData' => $listData
             ]);
         });
     }
@@ -67,9 +68,13 @@ class UnitController extends Controller
      */
     public function create(Request $request) {
         $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        
         return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
-            $formData = new Unit();
-            return Inertia::render('Unit/Create', [
+            if (!$request->user()->canClinic('store-create')) {
+                return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
+            }
+            $formData = new Supplier();
+            return Inertia::render('Supplier/Create', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
             ]);
@@ -82,55 +87,54 @@ class UnitController extends Controller
      */
     public function edit(Request $request, $id) {
         $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
+        
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData, $id) {
             if (!$request->user()->canClinic('store-edit')) {
-                return Inertia::render('Unit/List', ['error' => 'Insufficient permissions']);
+                return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
             }
-            $formData = Unit::find($id);
-            return Inertia::render('Unit/Edit', [
+            $formData = Supplier::find($id);
+            return Inertia::render('Supplier/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
             ]);
         });
-        
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UnitUpdateRequest $request) {
-        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
-            if (!$request->user()->canClinic('store-create')) {
-                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+    public function update(ProducerUpdateRequest $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+
+            // Проверка прав внутри схемы клиники
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Store/Edit', [
+                    'error' => 'Insufficient permissions',
+                    'clinicData' => $clinicData
+                ]);
             }
+
+            // Получаем или создаём запись
             if ($request->id)
-                $unit = Unit::find($request->id);
+                $producer = Supplier::find($request->id);
             else {
-                $unit = new Unit();
+                $producer = new Supplier();
             }
-            $unit->fill($request->validated());
-            // $unit->clinic_id = $clinicData->id;
-            $unit->unit_qty = $request->unit_qty;
-            $unit->save();
+            $producer->fill($request->validated());
+            $producer->save();
 
-            return Redirect::route('unit.index');
+            return Redirect::route('supplier.index');
+
         });
-        
-    }
-
-
-    public function delete(Request $request) {
-        $unit = Unit::where('id', '=', $request->id)->get();
-        $unit[0]->delete();
-
-        return Redirect::route('unit.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Unit $unit) {
+    public function destroy(Supplier $producer) {
         //
     }
 }

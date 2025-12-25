@@ -289,7 +289,7 @@ class ClinicSchemaService
 
         // Create size table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS size (
+            CREATE TABLE IF NOT EXISTS sizes(
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 clinic_id BIGINT,
@@ -437,21 +437,47 @@ class ClinicSchemaService
             )
         ");
 
-        // Materials
+        // Suppliers
         DB::statement("
-            CREATE TABLE IF NOT EXISTS materials (
+            CREATE TABLE IF NOT EXISTS suppliers (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                category_id BIGINT NOT NULL,
-                producer_id BIGINT,
-                unit_id BIGINT,
-                size_id BIGINT,
-                price NUMERIC(12,2) DEFAULT 0,
-                discount_percent DOUBLE PRECISION DEFAULT 0,
+                contact_name VARCHAR(255),
+                email VARCHAR(255),
+                phone VARCHAR(50),
+                address TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        // Materials
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS materials (
+                id BIGSERIAL PRIMARY KEY,
+
+                -- Основное
+                name VARCHAR(255) NOT NULL,
+                category_id BIGINT NOT NULL,
+                producer_id BIGINT NOT NULL,
+
+                -- Единицы
+                unit_id BIGINT NOT NULL,           -- шт / тюбик / флакон
+                weight NUMERIC(10,3),               -- 2.2
+                weightunit_id BIGINT,               -- г / мл
+
+                -- Цены (ДОВІДНИК, не склад)
+                price NUMERIC(12,2) DEFAULT 0,       -- закупочная
+                retail_price NUMERIC(12,2) DEFAULT 0,
+                percent NUMERIC(6,2) DEFAULT 0,
+                price_per_unit NUMERIC(12,4) DEFAULT 0,
+
+                -- Служебное
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
 
         // Service categories
         DB::statement("
@@ -527,13 +553,19 @@ class ClinicSchemaService
                 'parent_id' => null,
                 'children' => [
                     [
-                        'name' => 'Композити',
+                        'name' => 'Реставраційні пломбувальні матеріали',
                         'special' => false,
                         'percent' => 20,
                         'parent_id' => null,
                     ],
                     [
-                        'name' => 'Склоіономери',
+                        'name' => 'Адгезивні системи та травильні гелі',
+                        'special' => false,
+                        'percent' => 15,
+                        'parent_id' => null,
+                    ],
+                    [
+                        'name' => 'Цементи для Фіксації',
                         'special' => false,
                         'percent' => 15,
                         'parent_id' => null,
@@ -614,21 +646,13 @@ class ClinicSchemaService
             
             // Упаковки
             ['name' => 'упаковка', 'unit_qty' => 1],   // упаковка (без деталізації)
-            ['name' => 'коробка_10', 'unit_qty' => 10],
-            ['name' => 'коробка_20', 'unit_qty' => 20],
-            ['name' => 'коробка_50', 'unit_qty' => 50],
-            ['name' => 'коробка_100', 'unit_qty' => 100],
+            ['name' => 'коробка', 'unit_qty' => 10],
             
             // Інші одиниці
             ['name' => 'набір', 'unit_qty' => 1],      // набір
             ['name' => 'комплект', 'unit_qty' => 1],   // комплект
-            ['name' => 'тюбик_1г', 'unit_qty' => 1],
-            ['name' => 'тюбик_2г', 'unit_qty' => 2],
-            ['name' => 'тюбик_5г', 'unit_qty' => 5],
-            ['name' => 'тюбик_10г', 'unit_qty' => 10],
-            ['name' => 'флакон_5мл', 'unit_qty' => 5],    // 5 мл
-            ['name' => 'флакон_10мл', 'unit_qty' => 10],  // 10 мл
-            ['name' => 'флакон_20мл', 'unit_qty' => 20],  // 20 мл
+            ['name' => 'тюбикг', 'unit_qty' => 1],
+            ['name' => 'флакон', 'unit_qty' => 5],    // 5 мл
             ['name' => 'рулон', 'unit_qty' => 1],      // рулон (коффердам і т.д.)
         ];
 
@@ -726,6 +750,16 @@ class ClinicSchemaService
             )
         ");
 
+         // Invoices (Приход/Расход)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS invoice_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
         // Invoices (Приход/Расход)
         DB::statement("
             CREATE TABLE IF NOT EXISTS invoices (
@@ -733,6 +767,7 @@ class ClinicSchemaService
                 filial_id BIGINT NOT NULL,
                 store_id BIGINT NOT NULL,
                 supplier_id BIGINT,
+                customer_id BIGINT,
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
