@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClinicUpdateRequest;
 use App\Models\Clinic;
-use App\Models\ClinicFilial;
 use App\Models\Currency;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,11 +12,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+
 
 class ClinicController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
     /**
      * Helper для работы с текущей схемой клиники
      */
@@ -170,20 +177,29 @@ class ClinicController extends Controller
     }
 
     
-    public function filialEnter(Request $request, $filialId) {
+    public function filialEnter(Request $request) {
+        // Get clinicId and filialId from query parameters
+        $clinicId = $request->query('clinicId');
+        $filialId = $request->query('filialId');
+        
+        // Validate that both parameters are provided
+        if (!$clinicId || !$filialId) {
+            return Redirect::back()->withErrors(['error' => 'Clinic ID and Filial ID are required']);
+        }
+        
         // get role for current filial from the clinic schema
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
         
         try {
-            // Get clinic_id for this filial
-            $clinicFilial = DB::table('clinic_filials')->where('id', $filialId)->first();
-            if (!$clinicFilial) {
-                return Redirect::back()->withErrors(['error' => 'Filial not found']);
-            }
-            
-            $clinicId = $clinicFilial->clinic_id;
+            // Set search path to the clinic schema to access clinic_filials table
             $schemaName = 'clinic_' . $clinicId;
             DB::statement("SET search_path TO {$schemaName}");
+            
+            // Get clinic_id for this filial (validation)
+            $clinicFilial = DB::table('clinic_filials')->where('id', $filialId)->where('clinic_id', $clinicId)->first();
+            if (!$clinicFilial) {
+                return Redirect::back()->withErrors(['error' => 'Filial not found or does not belong to the specified clinic']);
+            }
             
             // get role for current filial from clinic schema
             $data = DB::table('clinic_filial_user')
@@ -223,12 +239,16 @@ class ClinicController extends Controller
 
     public function findProducer(Request $request) {
         $name = $request->searchName;
-        $producerData = DB::table('producers')->select('name', 'id')
-            ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
-            ->get();
-        return response()->json([
-            'items' => $producerData
-        ]);
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData, $name) {
+            $producerData = DB::table('producers')->select('name', 'id')
+                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->get();
+            return response()->json([
+                'items' => $producerData
+            ]);
+        });
+        
     }
 
 

@@ -1,60 +1,84 @@
 import AuthenticatedLayout from '../Layouts/AuthenticatedLayout';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngDashboard from '../Lang/Dashboard/translation';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '../Redux/Layout/selectors';
-import { emptyUserAutocompleteAction } from '../Redux/Clinic';
 import React from 'react';
 
-export default function Dashboard({ filialData }) {
-  const appLang = useSelector(appLangSelector);
-  const msg = new Lang({
-    messages: lngDashboard,
-    locale: appLang,
-  });
-  const dispatch = useDispatch();
+export default function Dashboard({ clinicsData }) {
+    const appLang = useSelector(appLangSelector);
+    const msg = new Lang({
+        messages: lngDashboard,
+        locale: appLang,
+    });
 
-  const renderFilialData = data => {
+    const renderClinicBlock = clinic => {
+        console.log('clinic render', clinic);
+        return (
+            <div key={clinic.clinic_id} className="mb-6 border border-gray-600 rounded p-4">
+                {/* Название клиники */}
+                <h3 className="text-xl text-white mb-3 font-bold">
+                    {clinic.clinic_name}!
+                </h3>
+
+                {/* Таблица филиалов */}
+                <table className="data-table w-full bg-red">
+                    <thead>
+                        <tr>
+                            <th className="text-left text-white py-2">Филиал</th>
+                            <th className="text-right text-white py-2">Действие</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {clinic.filials.length === 0 && (
+                            <tr>
+                                <td colSpan="2" className="text-center text-gray-400 py-3">
+                                    Нет назначенных филиалов
+                                </td>
+                            </tr>
+                        )}
+
+                        {clinic.filials.map(filial => (
+                            <tr key={filial.id} className="border-t border-gray-700">
+                                <td className="text-white py-2">{filial.name}</td>
+
+                                <td className="text-right py-2">
+                                    <Link
+                                        className="btn-grad"
+                                        href={`/enter-filial?clinicId=${clinic.clinic_id}&filialId=${filial.id}`}
+                                        onClick={() => {
+                                            localStorage.setItem('filialName', filial.name);
+                                            localStorage.setItem('filialId', filial.id);
+                                            localStorage.setItem('clinicId', clinic.clinic_id);
+                                            localStorage.setItem('clinicName', clinic.clinic_name);
+                                        }}
+                                    >
+                                        {msg.get('dashboard.enter')}
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+
     return (
-      <>
-        <Head title={msg.get('dashboard.title')} />
-        {data.map(_res => (
-          <tr key={`${_res.clinicName}_${_res.filialName}`}>
-            <td>{_res.clinicName}</td>
-            <td>{_res.filialName}</td>
-            <td>{_res.roleName}</td>
-            <td className="text-right" width="200">
-              <Link
-                className="btn-grad"
-                onClick={() => {
-                  localStorage.setItem('filialName', _res.filialName);
-                  localStorage.setItem('filialId', _res.id);
-                }}
-                title={msg.get('customer.back')}
-                href={`/enter-filial/${_res.filialId}`}
-              >
-                {msg.get('dashboard.enter')}
-              </Link>
-            </td>
-          </tr>
-        ))}
-      </>
-    );
-  };
+        <AuthenticatedLayout header={<Head title="Dashboard Select" />}>
+            <div className="p-4 shadow-md">
+                <h2 className="text-2xl text-white mb-4">{msg.get('dashboard.title')}</h2>
 
-  return (
-    <AuthenticatedLayout header={<Head title="Dashboard Select" />}>
-      <div className="p-4 bg-white shadow-md mt-[0px]">
-        <h2>{msg.get('dashboard.title')}</h2>
-        <div className="w-full">
-          <div className="bg-white rounded">
-            <table className="data-table p-2">
-              <tbody>{renderFilialData(filialData)}</tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </AuthenticatedLayout>
-  );
+                {clinicsData.length === 0 && (
+                    <div className="text-gray-300">
+                        У вас нет доступных клиник или филиалов.
+                    </div>
+                )}
+
+                {clinicsData.map(clinic => renderClinicBlock(clinic))}
+            </div>
+        </AuthenticatedLayout>
+    );
 }

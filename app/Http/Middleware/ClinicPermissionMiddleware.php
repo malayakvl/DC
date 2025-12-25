@@ -12,37 +12,51 @@ class ClinicPermissionMiddleware
     public function handle(Request $request, Closure $next, ...$permissions)
     {
         $clinicId = $request->session()->get('clinic_id');
+        $filialId = $request->session()->get('filial_id');
+
         if (!$clinicId) {
-            abort(403, 'Clinic not selected in session.');
+            abort(403, 'No clinic selected.');
         }
 
-        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        if (!$filialId) {
+            abort(403, 'No filial selected.');
+        }
+
+        // Проверяем что user состоит в этом filial
+        $exists = DB::table('clinic_' . $clinicId . '.clinic_filial_user')
+            ->where('clinic_id', $clinicId)
+            ->where('filial_id', $filialId)
+            ->where('user_id', $request->user()->id)
+            ->exists();
+
+        if (!$exists) {
+            abort(403, 'User not assigned to this filial.');
+        }
+
+        $originalPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            // Переключаемся на схему клиники
             DB::statement("SET search_path TO clinic_{$clinicId}");
 
-            // 🔹 Сбрасываем кеш Spatie, чтобы увидеть свежие permissions в этой схеме
+            // ❗ Используем core.users.id в clinic_x.model_has_roles
             app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-            // Разделяем разрешения, если они переданы через '|'
-            $allPermissions = [];
+            // Множество permissions из мультипараметров
+            $allPerms = [];
             foreach ($permissions as $perm) {
-                $allPermissions = array_merge($allPermissions, explode('|', $perm));
+                $allPerms = [...$allPerms, ...explode('|',$perm)];
             }
 
-            // Проверяем каждое разрешение отдельно с явным указанием guard 'web'
-            foreach ($allPermissions as $permission) {
-                if (!$request->user()->hasPermissionTo($permission, 'web')) {
-                    abort(403, 'User does not have the right permissions.');
+            foreach ($allPerms as $perm) {
+                if (!$request->user()->hasPermissionTo($perm, 'web')) {
+                    abort(403, "No permission: {$perm}");
                 }
             }
 
             return $next($request);
 
         } finally {
-            // Возвращаем оригинальный search_path
-            DB::statement("SET search_path TO {$originalSearchPath}");
+            DB::statement("SET search_path TO {$originalPath}");
         }
     }
 }

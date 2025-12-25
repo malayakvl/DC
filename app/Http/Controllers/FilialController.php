@@ -14,9 +14,21 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+
 
 class FilialController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+
     /**
      * Helper для работы с текущей схемой клиники
      */
@@ -111,7 +123,8 @@ class FilialController extends Controller
      */
     public function edit(Request $request, $id)
     {
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
 
             // Проверка прав уже внутри схемы clinic_X
             if (!$request->user()->canClinic('filial-edit')) {
@@ -122,18 +135,18 @@ class FilialController extends Controller
             if (file_exists($serverFilePath)) {
                 $imagePath = asset('storage/clinic/stamps/filial-stamp-' .$id. '.png');
             }
-
             $clinic = $this->getClinicFromCoreSchema($clinicId);
             $storeData = Store::where('clinic_id', $clinicId)->get();
             $filial = ClinicFilial::find($id);
             $filial->stamp = $imagePath;
-
+            $customerData = $clinicData->employees();
+            
             return Inertia::render('Clinic/FilialEdit', [
                 'filialData' => $filial,
                 'clinicData' => $clinic,
                 'storeData'  => $storeData,
                 'stampPath'  => $imagePath,
-                'employeesData' => array()
+                'employeesData' => $customerData
             ]);
         });
     }
@@ -148,15 +161,27 @@ class FilialController extends Controller
             if (!$request->user()->canClinic('filial-edit')) {
                 return Inertia::render('Layouts/NoPermission');
             }
-            if ($request->id)
+            if ($request->id) {
                 $filial = ClinicFilial::find($request->id);
-            else {
+                // Capture old data before updating
+                $oldData = $filial->toArray();
+                $filial->fill($request->validated());
+                $filial->store_id = $request->store_id;
+                $filial->clinic_id = $clinicId;
+                // Prepare new data
+                $newData = $filial->toArray();
+                $this->auditLogService->log($request->user(), 'filial.updated', $filial, $oldData, $newData);
+                $filial->save();
+            } else {
                 $filial = new ClinicFilial();
+                $filial->fill($request->validated());
+                $filial->store_id = $request->store_id;
+                $filial->clinic_id = $clinicId;
+                // Prepare new data
+                $newData = $filial->toArray();
+                $this->auditLogService->log($request->user(), 'filial.created', $filial, null, $newData);
+                $filial->save();
             }
-            $filial->fill($request->validated());
-            $filial->store_id = $request->store_id;
-            $filial->clinic_id = $clinicId;
-            $filial->save();
             $filialId = $filial->id;
             if ($request->file) {
                 $ext = $request->file->getClientOriginalExtension();

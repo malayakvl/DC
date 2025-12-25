@@ -36,65 +36,25 @@ class Clinic extends Model
     public function employees(): Collection
     {
         $clinicId = $this->id;
+        // $usersTable = "clinic_{$clinicId}.clinic_users";
 
-        // 1) Попробуем взять связи из схемы клиники (clinic_{id}.clinic_filial_user)
-        //    — это основной источник прав/назначений у вас
-        $filialTable = "clinic_{$clinicId}.clinic_filial_user";
+        // $exists = DB::select("SELECT to_regclass(?) as tbl", [$usersTable])[0]->tbl ?? null;
+        // if (!$exists) return collect();
 
-        // Проверим, существует ли таблица в схеме клиники (на всякий случай)
-        $tbl = DB::select("SELECT to_regclass(?) as tbl", [$filialTable])[0]->tbl ?? null;
-
-        if ($tbl) {
-            // Если таблица есть — берем пользователей через неё (и отдаём также роль/filial info)
-            $employees = DB::table("{$filialTable} as cf")
-                ->join('core.users as u', 'cf.user_id', '=', 'u.id')
-                ->where('cf.clinic_id', $clinicId) // если вы храните clinic_id внутри таблицы
+        $customerData = DB::table('core.clinic_user')
+                ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
                 ->select(
-                    'u.id',
-                    'u.name',
-                    'u.email',
-                    'cf.filial_id',
-                    'cf.role_id',
-                    'cf.created_at as assigned_at'
+                    'users.id',
+                    'users.first_name',
+                    'users.last_name',
+                    DB::raw("CONCAT(users.first_name, ' ', users.last_name) as name"),
+                    'users.email'
                 )
-                ->get()
-                ->groupBy('id') // сгруппируем по пользователю, чтобы потом легко собрать филиалы
-                ->map(function ($items, $userId) {
-                    // items — коллекция назначений одного пользователя (может быть несколько филиалов)
-                    $first = $items->first();
-                    return (object)[
-                        'id' => $first->id,
-                        'name' => $first->name,
-                        'email' => $first->email,
-                        'assignments' => $items->map(function($it){
-                            return [
-                                'filial_id' => $it->filial_id,
-                                'role_id' => $it->role_id,
-                                'assigned_at' => $it->assigned_at,
-                            ];
-                        })->values()
-                    ];
-                })->values();
-
-            return $employees;
-        }
-
-        // 2) Fallback: если по какой-то причине таблицы clinic_filial_user нет — 
-        //    попробуем core.clinic_users (если вы решите её добавить)
-        $existsCore = DB::select("SELECT to_regclass('core.clinic_users') as tbl")[0]->tbl ?? null;
-
-        if ($existsCore) {
-            $employees = DB::table('core.users as u')
-                ->join('core.clinic_users as cu', 'cu.user_id', '=', 'u.id')
-                ->where('cu.clinic_id', $clinicId)
-                ->select('u.id', 'u.name', 'u.email')
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->orderBy('users.last_name')
                 ->get();
 
-            return $employees;
-        }
-
-        // 3) Нигде не найдено — вернём пустую коллекцию
-        return collect();
+        return $customerData;
     }
 
     /**

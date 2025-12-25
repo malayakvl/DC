@@ -4,83 +4,119 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UnitUpdateRequest;
 use App\Models\Clinic;
-use App\Models\MaterialCategories;
 use App\Models\Unit;
-use App\Models\Filial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+
 
 class UnitController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $listData = DB::table('units')
-            ->select('units.*')
-            ->where('units.clinic_id', $clinic->id)
-            ->orderBy('name')->get();
-        return Inertia::render('Unit/List', [
-            'clinicData' => $clinic,
-            'listData' => $listData
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('store-view')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $listData = Unit::get();
 
+            return Inertia::render('Unit/List', [
+                'clinicData' => $clinic,
+                'listData'   => $listData,
+            ]);
+        });
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response {
-        if ($request->user()->can('store-create')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $storeData = new Unit();
+    public function create(Request $request) {
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+            $formData = new Unit();
             return Inertia::render('Unit/Create', [
                 'clinicData' => $clinicData,
-                'formData' => $storeData,
+                'formData' => $formData,
             ]);
-        }
+        });
+        
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('store-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Unit/List', ['error' => 'Insufficient permissions']);
+            }
             $formData = Unit::find($id);
             return Inertia::render('Unit/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
             ]);
-        } else {
-
-        }
+        });
+        
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UnitUpdateRequest $request) {
-        if ($request->user()->can('store-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+            if (!$request->user()->canClinic('store-create')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
             if ($request->id)
                 $unit = Unit::find($request->id);
             else {
                 $unit = new Unit();
             }
             $unit->fill($request->validated());
-            $unit->clinic_id = $clinicData->id;
+            // $unit->clinic_id = $clinicData->id;
             $unit->unit_qty = $request->unit_qty;
             $unit->save();
 
             return Redirect::route('unit.index');
-        }
+        });
+        
     }
 
 

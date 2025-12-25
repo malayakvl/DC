@@ -64,7 +64,7 @@ export default function AssignFilial({
                 <div className="grid grid-cols-4 gap-4">
                   {filialData?.map(item => (
                     <div key={item.id}>
-                      <h5>{item.name}</h5>
+                      <h5 className="text-lg font-bold text-[#f344b8]">{item.name}</h5>
                       <InputRoleSelect
                         name={`role_id_${item.id}`}
                         options={rolesData}

@@ -11,7 +11,7 @@ export default function Edit({
 }) {
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Store'} />
+      <Head title={'Producers'} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

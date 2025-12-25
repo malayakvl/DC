@@ -33,6 +33,7 @@ export default function Form({
   formData,
   categoryData,
   unitsData,
+  producerData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
@@ -41,6 +42,7 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useDispatch();
+console.log('Form data',formData)  
   const [values, setValues] = useState({
     name: formData.name,
     price: formData.price,
@@ -68,23 +70,23 @@ export default function Form({
     }
   }, [categoryPercent]);
 
-  const handleChangeSelect = e => {
-    console.log('key', e.target)
-    const key = e.target.id;
-    const value = e.target.value;
-    dispatch(findPercentAction(e.target.value));
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
-    if (key === 'unit_id') {
-      const _fUnit = unitsData.find(_d => _d.id == value);
-      values['weight'] = _fUnit.unit_qty;
-      values['price_per_unit'] = parseFloat(values['retail_price'])/parseFloat(_fUnit.unit_qty ? _fUnit.unit_qty : 1).toFixed(2);
-    }
+  // const handleChangeSelect = e => {
+  //   console.log('key', e.target)
+  //   const key = e.target.id;
+  //   const value = e.target.value;
+  //   dispatch(findPercentAction(e.target.value));
+  //   setValues(values => ({
+  //     ...values,
+  //     [key]: value,
+  //   }));
+  //   if (key === 'unit_id') {
+  //     const _fUnit = unitsData.find(_d => _d.id == value);
+  //     values['weight'] = _fUnit.unit_qty;
+  //     values['price_per_unit'] = parseFloat(values['retail_price'])/parseFloat(_fUnit.unit_qty ? _fUnit.unit_qty : 1).toFixed(2);
+  //   }
 
-  };
-console.log(values)
+  // };
+
   const handleChange = e => {
     const key = e.target.id;
     const value = e.target.value;
@@ -110,33 +112,134 @@ console.log(values)
       // calcPricePerUnit();
     } else {
       const _cat = categoryData.find(_d => _d.id == values['category_id']);
-      dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
+      if (_cat)
+        dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
     }
   }, [values.price]);
 
-  const handleChangePrice = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
 
+  // NEW
+  const handleChangePrice = e => {
+    const value = e.target.value;
+
+    setValues(prev => {
+      const percent = categoryPercent
+        ? 1 + parseFloat(categoryPercent) / 100
+        : 1;
+
+      const retail = value
+        ? (parseFloat(value) * percent).toFixed(2)
+        : '';
+
+      return {
+        ...prev,
+        price: value,
+        retail_price: retail,
+        price_per_unit: calcPricePerUnit(retail, prev.weight),
+      };
+    });
   };
 
   const handleChangeRetailPrice = e => {
+    const value = e.target.value;
+
+    setValues(prev => ({
+      ...prev,
+      retail_price: value,
+      price_per_unit: calcPricePerUnit(value, prev.weight),
+    }));
+
+    if (values.price) {
+      const percent = ((value - values.price) / values.price) * 100;
+      dispatch(setPercentAction(percent.toFixed(2)));
+    }
+  };
+
+  const handleChangeSize = e => {
+    const value = e.target.value;
+
+    if (value.length >= 1) {
+      dispatch(findSizeAction(value));
+    } else {
+      dispatch(emptySizeAction());
+      setHideFields(false);
+    }
+
+    setValues(prev => ({
+      ...prev,
+      weight: value,
+      price_per_unit: calcPricePerUnit(prev.retail_price, value),
+    }));
+  };
+
+  const handleChangeSelect = e => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
-      ...values,
+
+    // Одиниця вимірювання
+    if (key === 'unit_id') {
+      const unit = unitsData.find(u => u.id == value);
+
+      setValues(prev => ({
+        ...prev,
+        unit_id: value,
+        weight: unit?.unit_qty ?? prev.weight,
+        price_per_unit: calcPricePerUnit(
+          prev.retail_price,
+          unit?.unit_qty ?? prev.weight
+        ),
+      }));
+      return;
+    }
+
+    // Категорія
+    if (key === 'category_id') {
+      dispatch(findPercentAction(value));
+    }
+
+    setValues(prev => ({
+      ...prev,
       [key]: value,
     }));
-    // calculate percent
-    const _pRice = parseFloat(values.price);
-    const _rPrice = parseFloat(value);
-    const percent = ((_rPrice - _pRice) / _pRice).toFixed(2);
-    dispatch(setPercentAction(percent * 100));
   };
+
+
+
+
+  // const handleChangeRetailPrice = e => {
+  //   const key = e.target.id;
+  //   const value = e.target.value;
+  //   setValues(values => ({
+  //     ...values,
+  //     [key]: value,
+  //   }));
+  //   // calculate percent
+  //   const _pRice = parseFloat(values.price);
+  //   const _rPrice = parseFloat(value);
+  //   const percent = ((_rPrice - _pRice) / _pRice).toFixed(2);
+  //   dispatch(setPercentAction(percent * 100));
+  // };
+  // const handleChangePrice = e => {
+  //   const value = e.target.value;
+
+  //   setValues(prev => {
+  //     const percent = categoryPercent
+  //       ? 1 + parseFloat(categoryPercent) / 100
+  //       : 1;
+
+  //     const retail = value
+  //       ? (parseFloat(value) * percent).toFixed(2)
+  //       : '';
+
+  //     return {
+  //       ...prev,
+  //       price: value,
+  //       retail_price: retail,
+  //       price_per_unit: calcPricePerUnit(retail, prev.weight),
+  //     };
+  //   });
+  // };
+
 
   const handleChangeProducer = e => {
     const key = e.target.id;
@@ -168,27 +271,36 @@ console.log(values)
     }));
   };
 
-  const handleChangeSize = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    if (value.length >= 1) {
-      dispatch(findSizeAction(e.target.value));
-    } else {
-      dispatch(emptySizeAction());
-      setHideFields(false);
-    }
-    calcPricePerUnit();
+  // const handleChangeSize = e => {
+  //   const key = e.target.id;
+  //   const value = e.target.value;
+  //   if (value.length >= 1) {
+  //     dispatch(findSizeAction(e.target.value));
+  //   } else {
+  //     dispatch(emptySizeAction());
+  //     setHideFields(false);
+  //   }
+  //   calcPricePerUnit();
 
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
+  //   setValues(values => ({
+  //     ...values,
+  //     [key]: value,
+  //   }));
+  // };
+
+  // const calcPricePerUnit = () => {
+  //   // пересчитиваем в одно функции для всех вариантов изменения цени, ретейл цени, еденици измерения
+  //   values['price_per_unit'] = (parseFloat(values['retail_price']) / parseFloat(values['weight'] ? values['weight'] : 1)).toFixed(2)
+  // }
+  const calcPricePerUnit = (retailPrice, weight) => {
+    const p = parseFloat(retailPrice);
+    const w = parseFloat(weight);
+
+    if (!p || !w || w <= 0) return '';
+
+    return (p / w).toFixed(2);
   };
 
-  const calcPricePerUnit = () => {
-    // пересчитиваем в одно функции для всех вариантов изменения цени, ретейл цени, еденици измерения
-    values['price_per_unit'] = (parseFloat(values['retail_price']) / parseFloat(values['weight'] ? values['weight'] : 1)).toFixed(2)
-  }
 
   const submit = e => {
     e.preventDefault();
@@ -226,6 +338,7 @@ console.log(values)
       return <></>;
     }
   };
+  
   const renderSearchUnitResult = () => {
     if (serchUnitResults.length > 0) {
       return (
@@ -253,6 +366,7 @@ console.log(values)
       return <></>;
     }
   };
+  
   const renderSearchSizeResult = () => {
     if (serchSizeResults.length > 0) {
       return (
@@ -389,7 +503,7 @@ console.log(values)
           values={values}
           dataValue={values.price_per_unit}
           value={values.price_per_unit}
-          onChange={handleChangeRetailPrice}
+          // onChange={handleChangeRetailPrice}
           required
           label={msg.get('material.price.per.unit')}
         />

@@ -22,7 +22,7 @@ use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PatientStatusController;
-use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/clinic/create', [ClinicController::class, 'create'])->name('clinic.create');
     Route::post('/clinic/update', [ClinicController::class, 'update'])->name('clinic.update');
-    Route::get('/enter-filial/{id}', [ClinicController::class, 'filialEnter'])->name('filial.enter');
+    Route::get('/enter-filial', [ClinicController::class, 'filialEnter'])->name('filial.enter');
     Route::post('/clinic/findProducers', [ClinicController::class, 'findProducer'])->name('find.producer');
 
 //    Route::get('/clinic/accept', [ClinicController::class, 'accept'])->name('clinic.accept');
@@ -135,6 +135,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/producer/create', [ProducerController::class, 'create'])->name('producer.create');
     Route::get('/producer/edit/{id}', [ProducerController::class, 'edit'])->name('producer.edit');
     Route::post('/producer/update', [ProducerController::class, 'update'])->name('producer.update');
+
+    Route::get('/suppliers', [SupplierController::class, 'index'])->name('supplier.index');
+    Route::get('/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
+    Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
+    Route::post('/supplier/update', [SupplierController::class, 'update'])->name('supplier.update');
 
     Route::get('/sizes', [SizeController::class, 'index'])->name('size.index');
     Route::get('/size/create', [SizeController::class, 'create'])->name('size.create');

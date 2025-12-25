@@ -299,3 +299,20 @@ to-green-400 {
 .hlogin-btn {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold;
 }
+
+.lang-block {
+  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[-8px] relative md:mr-[150px] pt-[10px];
+}
+.body-main .lang-block {
+  @apply md:mr-[30px]
+}
+
+.profile-top-btn {
+  @apply inline-flex items-center
+         px-2 text-sm font-medium leading-4;
+  text-align: left;
+}
+.clinic-role {
+  text-transform: uppercase;
+  color: #f345b9;
+}

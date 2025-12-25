@@ -31,7 +31,22 @@ class ClinicSchemaService
         try {
             // Create required tables in the new schema
             $this->createClinicTables();
-            
+
+            // Create default catalogs (materials, producers, etc.)
+            $this->createDefaultCatalogs();
+
+            // Seed default material categories
+            $this->seedDefaultMaterialCategories();
+
+            // Seed default units
+            $this->seedDefaultUnits();
+
+            // Seed default taxes
+            $this->seedDefaultTaxes();
+
+            // Create default documents
+            $this->createDefaultDocuments();
+
             // Create default roles
             $this->createDefaultRoles();
             
@@ -79,18 +94,18 @@ class ClinicSchemaService
         
         // Create users table (simplified version for clinic schema)
         // Spatie permissions require the users table to be in the same schema as the permission tables
-        DB::statement("
-            CREATE TABLE IF NOT EXISTS users (
-                id BIGSERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                email_verified_at TIMESTAMP NULL,
-                password VARCHAR(255) NOT NULL,
-                remember_token VARCHAR(100) NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
+        // DB::statement("
+        //     CREATE TABLE IF NOT EXISTS users (
+        //         id BIGSERIAL PRIMARY KEY,
+        //         name VARCHAR(255) NOT NULL,
+        //         email VARCHAR(255) UNIQUE NOT NULL,
+        //         email_verified_at TIMESTAMP NULL,
+        //         password VARCHAR(255) NOT NULL,
+        //         remember_token VARCHAR(100) NULL,
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        //     )
+        // ");
         
         // Create roles table for Spatie permissions
         DB::statement("
@@ -235,6 +250,8 @@ class ClinicSchemaService
             )
         ");
 
+        
+
         // Create schedulers table
         DB::statement("
             CREATE TABLE IF NOT EXISTS schedulers (
@@ -272,7 +289,7 @@ class ClinicSchemaService
 
         // Create size table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS size (
+            CREATE TABLE IF NOT EXISTS sizes(
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 clinic_id BIGINT,
@@ -283,7 +300,7 @@ class ClinicSchemaService
 
         // Create unit table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS unit (
+            CREATE TABLE IF NOT EXISTS units (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 unit_qty INTEGER,
@@ -297,7 +314,9 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS taxes (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                value DOUBLE PRECISION NOT NULL
+                value DOUBLE PRECISION NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
@@ -391,6 +410,516 @@ class ClinicSchemaService
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_entity_type_entity_id_idx ON audit_logs (entity_type, entity_id)");
         DB::statement("CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON audit_logs (created_at)");
     }
+
+    protected function createDefaultCatalogs(): void
+    {
+        // Material categories
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS material_categories (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                special BOOLEAN,
+                percent DOUBLE PRECISION DEFAULT 0,
+                parent_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Producers
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS producers (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                percent DOUBLE PRECISION DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Suppliers
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS suppliers (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                contact_name VARCHAR(255),
+                email VARCHAR(255),
+                phone VARCHAR(50),
+                address TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Materials
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS materials (
+                id BIGSERIAL PRIMARY KEY,
+
+                -- Основное
+                name VARCHAR(255) NOT NULL,
+                category_id BIGINT NOT NULL,
+                producer_id BIGINT NOT NULL,
+
+                -- Единицы
+                unit_id BIGINT NOT NULL,           -- шт / тюбик / флакон
+                weight NUMERIC(10,3),               -- 2.2
+                weightunit_id BIGINT,               -- г / мл
+
+                -- Цены (ДОВІДНИК, не склад)
+                price NUMERIC(12,2) DEFAULT 0,       -- закупочная
+                retail_price NUMERIC(12,2) DEFAULT 0,
+                percent NUMERIC(6,2) DEFAULT 0,
+                price_per_unit NUMERIC(12,4) DEFAULT 0,
+
+                -- Служебное
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+
+        // Service categories
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS service_categories (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                special BOOLEAN,
+                parent_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Services
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS services (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                category_id BIGINT,
+                price NUMERIC(12,2) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS service_components (
+                id BIGSERIAL PRIMARY KEY,
+                service_id BIGINT NOT NULL REFERENCES services(id) ON DELETE CASCADE,
+                component_type VARCHAR(50) NOT NULL,   -- 'material' или 'work'
+                component_id BIGINT,                   -- material_id или null для работы врача
+                qty NUMERIC(12,2) DEFAULT 1,          -- количество материала/работы
+                price NUMERIC(12,2) DEFAULT 0,        -- цена материала/работы
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Cabinets
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS cabinets (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                filial_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Payment methods
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS payment_methods (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+    }
+
+    /**
+     * Seed default material categories
+     *
+     * @return void
+     */
+    protected function seedDefaultMaterialCategories(): void
+    {
+        $materialCategories = [
+            [
+                'name' => 'Пломбувальні матеріали',
+                'special' => false,
+                'percent' => 10,
+                'parent_id' => null,
+                'children' => [
+                    [
+                        'name' => 'Реставраційні пломбувальні матеріали',
+                        'special' => false,
+                        'percent' => 20,
+                        'parent_id' => null,
+                    ],
+                    [
+                        'name' => 'Адгезивні системи та травильні гелі',
+                        'special' => false,
+                        'percent' => 15,
+                        'parent_id' => null,
+                    ],
+                    [
+                        'name' => 'Цементи для Фіксації',
+                        'special' => false,
+                        'percent' => 15,
+                        'parent_id' => null,
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Ортопедія',
+                'special' => false,
+                'percent' => 25,
+                'parent_id' => null,
+            ],
+            [
+                'name' => 'Хірургія',
+                'special' => false,
+                'percent' => 30,
+                'parent_id' => null,
+            ],
+            [
+                'name' => 'Анестезія',
+                'special' => false,
+                'percent' => 0,
+                'parent_id' => null,
+            ],
+        ];
+
+        // Check if we already have material categories to avoid duplicates
+        $existingCategories = DB::table('material_categories')->count();
+        
+        if ($existingCategories > 0) {
+            // Categories already exist, don't insert duplicates
+            return;
+        }
+
+        foreach ($materialCategories as $category) {
+            // Extract children if they exist
+            $children = $category['children'] ?? [];
+            unset($category['children']);
+            
+            // Add timestamps
+            $category['created_at'] = now();
+            $category['updated_at'] = now();
+            
+            // Insert the parent category
+            $parentId = DB::table('material_categories')->insertGetId($category);
+            
+            // Insert children if they exist
+            foreach ($children as $child) {
+                $child['parent_id'] = $parentId;
+                $child['created_at'] = now();
+                $child['updated_at'] = now();
+                unset($child['children']); // Remove children if nested deeper
+                DB::table('material_categories')->insert($child);
+            }
+        }
+    }
+
+    /**
+     * Seed default units
+     *
+     * @return void
+     */
+    protected function seedDefaultUnits(): void
+    {
+        $units = [
+            // Базові одиниці
+            ['name' => 'шт', 'unit_qty' => 1],          // штука
+            ['name' => 'мл', 'unit_qty' => 1],          // мілілітр
+            ['name' => 'г', 'unit_qty' => 1],           // грам
+            ['name' => 'мг', 'unit_qty' => 1],          // міліграм
+            ['name' => 'доза', 'unit_qty' => 1],       // доза
+            
+            // Медичні одиниці
+            ['name' => 'ампула', 'unit_qty' => 1],     // ампула
+            ['name' => 'карпула', 'unit_qty' => 1],    // карпула
+            ['name' => 'шприц', 'unit_qty' => 1],      // шприц
+            ['name' => 'капсула', 'unit_qty' => 1],    // капсула
+            
+            // Упаковки
+            ['name' => 'упаковка', 'unit_qty' => 1],   // упаковка (без деталізації)
+            ['name' => 'коробка', 'unit_qty' => 10],
+            
+            // Інші одиниці
+            ['name' => 'набір', 'unit_qty' => 1],      // набір
+            ['name' => 'комплект', 'unit_qty' => 1],   // комплект
+            ['name' => 'тюбикг', 'unit_qty' => 1],
+            ['name' => 'флакон', 'unit_qty' => 5],    // 5 мл
+            ['name' => 'рулон', 'unit_qty' => 1],      // рулон (коффердам і т.д.)
+        ];
+
+
+        // Check if we already have units to avoid duplicates
+        $existingUnits = DB::table('units')->count();
+        
+        if ($existingUnits > 0) {
+            // Units already exist, don't insert duplicates
+            return;
+        }
+
+        // Insert default units with timestamps
+        foreach ($units as $unit) {
+            $unit['created_at'] = now();
+            $unit['updated_at'] = now();
+            DB::table('units')->insert($unit);
+        }
+    }
+
+    /**
+     * Seed default taxes
+     *
+     * @return void
+     */
+    protected function seedDefaultTaxes(): void
+    {
+        $taxes = [
+            // VAT taxes
+            ['name' => 'Без ПДВ', 'value' => 0],
+            ['name' => 'ПДВ 20%', 'value' => 20],
+            ['name' => 'ПДВ 7%', 'value' => 7],
+            
+            // Single taxes
+            ['name' => 'Єдиний податок 5%', 'value' => 5],
+            ['name' => 'Єдиний податок 3%', 'value' => 3],
+            
+            // Other taxes
+            ['name' => 'Страховий збір 2%', 'value' => 2],
+            ['name' => 'Сервісний збір 1.5%', 'value' => 1.5],
+        ];
+
+        // Check if we already have taxes to avoid duplicates
+        $existingTaxes = DB::table('taxes')->count();
+        
+        if ($existingTaxes > 0) {
+            // Taxes already exist, don't insert duplicates
+            return;
+        }
+
+        // Insert default taxes
+        foreach ($taxes as $tax) {
+            $tax['created_at'] = now();
+            $tax['updated_at'] = now();
+            DB::table('taxes')->insert($tax);
+        }
+    }
+
+    /**
+    * Create all document-related tables inside clinic schema
+     * Create all document-related tables inside clinic schema
+     * @return void
+    */
+    protected function createDefaultDocuments(): void
+    {
+        
+        // Acts (Акты выполненных работ)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS acts (
+                id BIGSERIAL PRIMARY KEY,
+                filial_id BIGINT NOT NULL,
+                act_number VARCHAR(50),
+                act_date TIMESTAMP NOT NULL,
+                patient_id BIGINT NOT NULL,
+                doctor_id BIGINT,
+                visit_id BIGINT,
+                total_amount NUMERIC(12,2) NOT NULL,
+                status VARCHAR(50) DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Act items
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS act_items (
+                id BIGSERIAL PRIMARY KEY,
+                act_id BIGINT NOT NULL,
+                service_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) NOT NULL DEFAULT 1,
+                price NUMERIC(12,2) NOT NULL,
+                total NUMERIC(12,2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+         // Invoices (Приход/Расход)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS invoice_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Invoices (Приход/Расход)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS invoices (
+                id BIGSERIAL PRIMARY KEY,
+                filial_id BIGINT NOT NULL,
+                store_id BIGINT NOT NULL,
+                supplier_id BIGINT,
+                customer_id BIGINT,
+                invoice_number VARCHAR(100),
+                invoice_date TIMESTAMP NOT NULL,
+                total_amount NUMERIC(12,2) NOT NULL,
+                document_type VARCHAR(50) NOT NULL DEFAULT 'income', -- 'income' или 'expense'
+                status VARCHAR(50) DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Invoice items
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS invoice_items (
+                id BIGSERIAL PRIMARY KEY,
+                invoice_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) NOT NULL,         -- количество по документу
+                price NUMERIC(12,2) NOT NULL,
+                total NUMERIC(12,2) NOT NULL,
+                pack_qty NUMERIC(12,2) DEFAULT 1,   -- количество в упаковке
+                fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
+                unit_id BIGINT,                      -- единица измерения материала
+                pack_unit_id BIGINT,                 -- единица упаковки
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Displacements (перемещения материалов)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS displacements (
+                id BIGSERIAL PRIMARY KEY,
+                filial_id BIGINT NOT NULL,
+                store_from_id BIGINT,
+                store_to_id BIGINT,
+                disp_number VARCHAR(100),
+                disp_date TIMESTAMP NOT NULL,
+                status VARCHAR(50) DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Displacement items
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS displacement_items (
+                id BIGSERIAL PRIMARY KEY,
+                displacement_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) NOT NULL,        -- количество по документу
+                pack_qty NUMERIC(12,2) DEFAULT 1,  -- количество в упаковке
+                fact_qty NUMERIC(12,2) DEFAULT 0,  -- фактически перемещено
+                unit_id BIGINT,                     -- единица измерения материала
+                pack_unit_id BIGINT,                -- единица упаковки
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Payments
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS payments (
+                id BIGSERIAL PRIMARY KEY,
+                filial_id BIGINT NOT NULL,
+                patient_id BIGINT NOT NULL,
+                act_id BIGINT,
+                payment_date TIMESTAMP NOT NULL,
+                amount NUMERIC(12,2) NOT NULL,
+                method VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Unified document operations log
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS document_operations (
+                id BIGSERIAL PRIMARY KEY,
+                operation_date TIMESTAMP NOT NULL,
+                operation_number VARCHAR(255),
+                document_id BIGINT NOT NULL,
+                document_type VARCHAR(255) NOT NULL,
+                operation_dt VARCHAR(255),
+                subconto_dt JSONB,
+                operation_kt VARCHAR(255),
+                subconto_kt JSONB,
+                quantity DOUBLE PRECISION,
+                amount DOUBLE PRECISION,
+                comment TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Store balances
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_balances (
+                id BIGSERIAL PRIMARY KEY,
+                store_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) NOT NULL DEFAULT 0,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Visit services table — чтобы акт знал какие услуги в визите
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS visit_services (
+                id BIGSERIAL PRIMARY KEY,
+                visit_id BIGINT NOT NULL,
+                service_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) DEFAULT 1,
+                price NUMERIC(12,2) NOT NULL,
+                total NUMERIC(12,2) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Ввод остатков
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS opening_balances (
+                id BIGSERIAL PRIMARY KEY,
+                filial_id BIGINT NOT NULL,
+                store_id BIGINT NOT NULL,
+                ob_number VARCHAR(50),
+                ob_date TIMESTAMP NOT NULL,
+                comment TEXT,
+                status VARCHAR(50) DEFAULT 'draft',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS opening_balance_items (
+                id BIGSERIAL PRIMARY KEY,
+                opening_balance_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                qty NUMERIC(12,2) NOT NULL DEFAULT 0,
+                pack_qty NUMERIC(12,2) DEFAULT 1,   -- количество в упаковке
+                fact_qty NUMERIC(12,2) DEFAULT 0,  -- фактически получено
+                price NUMERIC(12,2) DEFAULT 0,
+                total NUMERIC(12,2) DEFAULT 0,
+                unit_id BIGINT,                     -- единица измерения материала
+                pack_unit_id BIGINT,                -- единица упаковки
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+    }
+
     
     /**
      * Create default roles for the clinic
@@ -489,6 +1018,38 @@ class ClinicSchemaService
      * @return void
      */
     protected function createDefaultPatientStatuses(int $clinicId): void
+    {
+        $statuses = [
+            'planned',
+            'confirm',
+            'done',
+            'missed',
+            'postponed',
+            'noanswer',
+            'late',
+            'inclicnic',
+            'incabinet',
+            'decline',
+        ];
+
+        foreach ($statuses as $status) {
+            DB::table('patient_statuses')->insert([
+                'name' => $status,
+                'discount' => 0,
+                'clinic_id' => $clinicId,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+    }
+
+    /**
+     * Create default patient statuses for the clinic
+     *
+     * @param int $clinicId
+     * @return void
+     */
+    protected function createDefaultInvoiceStatuses(int $clinicId): void
     {
         $statuses = [
             'planned',

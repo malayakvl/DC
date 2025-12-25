@@ -4,39 +4,54 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PatientUpdateRequest;
 use App\Models\Clinic;
-use App\Models\ClinicFilial;
 use App\Models\ClinicUser;
-use App\Models\DocumentOperations;
-use App\Models\Patient;
 use App\Models\User;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Rap2hpoutre\FastExcel\FastExcel;
-use File;
-use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\Xls;
+use Illuminate\Support\Facades\File;
 
 class ImportController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
     //
-    function __construct()
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
     {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
     }
 
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
 
     public function index(Request $request) {
-        if ($request->user()->can('import')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('clinic-create')) {
+                return Inertia::render('Layout/Error', ['error' => 'Insufficient permissions']);
+            }
             return Inertia::render('Import/Index', [
             ]);
-        } else {
-            return Inertia::render('Layout/NoPermission', []);
-        }
+        });
+
     }
 
     public function parsePersonData($string) {
@@ -49,7 +64,7 @@ class ImportController extends Controller
 
         // Проверка на пустую строку
         if (empty($string) || !is_string($string)) {
-            \Log::warning("Некорректная строка для парсинга: " . json_encode($string));
+            Log::warning("Некорректная строка для парсинга: " . json_encode($string));
             return $result;
         }
 
@@ -69,7 +84,7 @@ class ImportController extends Controller
 
         // Назначаем части в зависимости от их количества
         if (empty($parts)) {
-            \Log::warning("Не удалось разобрать строку: " . $string);
+            Log::warning("Не удалось разобрать строку: " . $string);
             return $result;
         }
 
@@ -89,9 +104,166 @@ class ImportController extends Controller
         return $result;
     }
 
+    function generateDoctorEmail(string $lastName, string $firstName, ?int $clinicId = null): string
+    {
+        $base = $lastName . '.' . $firstName;
+
+        // 1) Попытка через intl (Transliterator) — лучше всего
+        $transliterated = null;
+        if (class_exists(\Transliterator::class)) {
+            $trans = \Transliterator::create('Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC');
+            if ($trans) {
+                $transliterated = $trans->transliterate($base);
+            }
+        }
+
+        // 2) Фоллбэк на iconv, если intl недоступен
+        if ($transliterated === null) {
+            $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $base);
+        }
+
+        // 3) Нормализация в нижний регистр и замена всего, что не a-z0-9, на '-'
+        $slug = strtolower($transliterated ?: $base);
+        $slug = preg_replace('/[^a-z0-9]+/i', '-', $slug);
+        $slug = trim($slug, '-');
+
+        // 4) Если получилось пусто — fallback
+        if (empty($slug)) {
+            $slug = 'doctor-' . uniqid();
+        }
+
+        // Опционально: добавить clinicId, чтобы гарантировать уникальность между клиниками
+        if ($clinicId) {
+            $slug .= '-' . $clinicId;
+        }
+
+        return $slug . '@clinicdoctor.com';
+    }
+
+    private function processEmployees($employees, $clinicData, $request = null)
+    {
+        // Remove duplicates from the employees array
+        $uniqueEmployees = array_unique($employees, SORT_REGULAR);
+        if (count($uniqueEmployees) > 0) {
+            foreach ($uniqueEmployees as $employeeData) {
+                // Определяем формат данных - строка (Фамилия Имя) или массив (из JSON)
+                if (is_string($employeeData)) {
+                    // Разбиваем "Фамилия Имя"
+                    $parts = preg_split('/\s+/', trim($employeeData));
+                    if (count($parts) < 2) {
+                        Log::warning("Некорректное имя сотрудника: " . $employeeData);
+                        continue;
+                    }
+                    $lastName = $parts[0];
+                    $firstName = $parts[1];
+                } else if (is_array($employeeData) && isset($employeeData['lastname']) && isset($employeeData['firstname'])) {
+                    // Данные из JSON
+                    $lastName = $employeeData['lastname'];
+                    $firstName = $employeeData['firstname'];
+                } else {
+                    Log::warning("Некорректный формат данных сотрудника: " . json_encode($employeeData));
+                    continue;
+                }
+
+                // Ищем сотрудника в core.users
+                $existingUser = User::where('first_name', $firstName)
+                    ->where('last_name', $lastName)
+                    ->first();
+                // Создаём, если нет
+                if (!$existingUser) {
+                    $email = $this->generateDoctorEmail($firstName, $lastName, $clinicData->id);
+
+                    try {
+                        $existingUser = User::create([
+                            'name'       => $lastName . ' ' . $firstName,
+                            'first_name' => $firstName,
+                            'last_name'  => $lastName,
+                            'email'      => $email,
+                            'password'   => Hash::make('doctor123'),
+                        ]);
+
+                        Log::info("Создан новый сотрудник: {$existingUser->id}");
+                    } catch (\Exception $e) {
+                        Log::error("Ошибка при создании сотрудника {$lastName} {$firstName}: " . $e->getMessage());
+                        continue;
+                    }
+                }
+                // Проверяем существование связи в clinic_{id}.clinic_users
+                ClinicUser::createInCore([
+                    'clinic_id' => $clinicData->id,
+                    'user_id' => $existingUser->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                // try {
+                //     // Используем правильное переключение схемы для доступа к таблице clinic_users
+                //     $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+                //     DB::statement("SET search_path TO clinic_{$clinicData->id}");
+                //     $existsPivot = DB::table("clinic_users")
+                //         ->where('clinic_id', $clinicData->id)
+                //         ->where('user_id', $existingUser->id)
+                //         ->exists();
+
+                //     if (!$existsPivot) {
+                //         // Получаем ID роли из таблицы roles схемы клиники по имени
+                //         $roleName = 'doctor'; // по умолчанию
+                //         if (is_array($employeeData) && isset($employeeData['role'])) {
+                //             $roleName = strtolower($employeeData['role']);
+                //         }
+                        
+                //         // Получаем ID роли из таблицы roles в схеме клиники
+                //         $roleRecord = DB::table('roles')->where('name', $roleName)->first();
+                //         if ($roleRecord) {
+                //             $roleId = $roleRecord->id;
+                //         } else {
+                //             // Если роль не найдена, используем значение по умолчанию
+                //             $roleId = 15; // DOCTOR по умолчанию
+                //         }
+                        
+                //         $insertResult = DB::table("clinic_users")->insert([
+                //             'clinic_id'  => $clinicData->id,
+                //             'user_id'    => $existingUser->id,
+                //             'role_id'    => $roleId,
+                //             'created_at' => now(),
+                //             'updated_at' => now(),
+                //         ]);
+                        
+                //         if ($insertResult) {
+                //             Log::info("Пользователь {$existingUser->id} успешно привязан к clinic_{$clinicData->id}.clinic_users с ролью {$roleId}");
+                //         } else {
+                //             Log::warning("Не удалось привязать пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users");
+                //         }
+                //     }       
+                    
+                //     // Добавляем логирование через AuditLogService если доступен request
+                //     if ($request) {
+                //         $this->auditLogService->log(
+                //             $request->user(), 
+                //             'employee_imported', 
+                //             null, 
+                //             null, 
+                //             ['user_id' => $existingUser->id, 'clinic_id' => $clinicData->id]
+                //         );
+                //     }
+
+                //     // Восстанавливаем исходный search_path
+                //     DB::statement("SET search_path TO {$originalSearchPath}");
+                // } catch (\Exception $e) {
+                //     // Восстанавливаем исходный search_path в случае ошибки
+                //     if (isset($originalSearchPath)) {
+                //         DB::statement("SET search_path TO {$originalSearchPath}");
+                //     }
+                //     Log::error("Ошибка при проверке/привязке пользователя {$existingUser->id} к clinic_{$clinicData->id}.clinic_users: " . $e->getMessage());
+                // }
+            }
+        }
+        // Return the count of processed employees
+        return count($uniqueEmployees);
+    }
+
     public function update(Request $request) {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        if ($request->user()->can('import')) {
+        if ($request->user()->can('import') || $request->user()->canClinic('clinic-create')) {
             $filialId = $request->session()->get('filial_id');
             if ($request->file) {
                 $extension = $request->file->extension();
@@ -116,135 +288,71 @@ class ImportController extends Controller
                         }
                     });
 
-                    // Счетчик для логов и уникальных email
-                    $rowCount = 0;
-                    $emailCounter = 0;
-
                     // Обработка в транзакции для целостности
-                    DB::transaction(function () use ($lazyCollection, $batchSize, &$rowCount, &$emailCounter, &$clinicData) {
-                        $lazyCollection->chunk($batchSize)->each(function ($chunk) use (&$rowCount, &$emailCounter, &$clinicData) {
-                            // Преобразование чанка в массив для вставки
-                            $dataToInsert = $chunk->map(function ($row) use (&$emailCounter, &$clinicData) {
-                                // Парсинг данных пациента
-                                $pData = $this->parsePersonData($row['Пацієнт']);
-                                $gender = '';
-                                if ($row['Стать'] === 'Чоловік') {
-                                    $gender = 'male';
-                                } else if ($row['Стать'] === 'Жінка') {
-                                    $gender = 'female';
-                                }
-                                $dateB = null;
-                                if ($row['Дата народження']) {
-                                    $dateB = Carbon::createFromFormat('d.m.Y', $row['Дата народження'])->format('Y-m-d');
-                                }
-
-                                $dtBalance = $row['Оплачено'];
-                                $ktBalance = $row['Виконано на суму'];
-//                                dd($dtBalance);exit;
-                                $dateR = null;
-                                if ($row['Дата реєстрації']) {
-                                    $dateR = Carbon::createFromFormat('d.m.Y', $row['Дата реєстрації'])->format('Y-m-d');
-                                }
-                                // Генерация уникального email
-                                $email = $row['email'] ?? date('YmdHis') . '_' . $emailCounter++ . '@noemail.com';
-
-                                return [
-                                    'first_name' => $pData['name'] ?? null,
-                                    'last_name' => $pData['surname'] ?? null,
-                                    'patronomic_name' => $pData['patronymic'] ?? null,
-                                    'discount' => $pData['percent'] ?? null,
-                                    'phone' => $row['Телефон'] ?? null,
-                                    'gender' => $gender ?: null,
-                                    'birthday' => $dateB,
-                                    'register_date' => $dateR,
-                                    'email' => $email,
-                                    'dt_balance' => $dtBalance,
-                                    'kt_balance' => $ktBalance,
-                                    'created_at' => now(),
-                                    'updated_at' => now(),
-                                ];
-                            })->filter(function ($row) {
-                                // Фильтрация некорректных строк
-                                return !is_null($row['first_name']);
+                    $allEmployees = [];
+                    DB::transaction(function () use ($lazyCollection, $batchSize, &$clinicData, &$allEmployees) {
+                        $lazyCollection->chunk($batchSize)->each(function ($chunk) use (&$clinicData, &$allEmployees) {
+                            $employees = $chunk->map(function ($row) use (&$clinicData) {
+                                return $row['Куратор'];
                             })->toArray();
 
-                            if (!empty($dataToInsert)) {
-                                // Вставка в таблицу patients
-                                DB::table('patients')->insert($dataToInsert);
-                                $rowCount += count($dataToInsert);
-                                \Log::info("Обработано и добавлено в базу: " . $rowCount . " строк");
-
-                                // Получение ID вставленных записей по email
-                                $emails = array_column($dataToInsert, 'email');
-                                $insertedPatients = DB::table('patients')
-                                    ->whereIn('email', $emails)
-                                    ->pluck('id', 'email')
-                                    ->toArray();
-
-                                // Подготовка данных для pivot-таблицы
-                                $pivotData = array_map(function ($row) use ($insertedPatients, $clinicData) {
-                                    return [
-                                        'patient_id' => $insertedPatients[$row['email']] ?? null,
-                                        'filial_id' => 1,
-                                        'clinic_id' => $clinicData->id, // Замените на нужный clinic_id
-                                        'created_at' => now(),
-                                        'updated_at' => now(),
-                                    ];
-                                }, $dataToInsert);
-
-
-
-                                // Вставка в pivot-таблицу
-                                DB::table('clinic_patient')->insert($pivotData);
-                                \Log::info("Добавлено в pivot-таблицу: " . count($pivotData) . " записей");
-                            }
+                            // Собираем всех сотрудников для последующей обработки
+                            $allEmployees = array_merge($allEmployees, $employees);
 
                             gc_collect_cycles(); // Очистка памяти
                         });
                     });
 
-                    \Log::info("Всего загружено в базу: " . $rowCount . " строк");
+                    // Обрабатываем сотрудников после завершения транзакции пациентов
+                    $employeeCount = 0;
+                    if (!empty($allEmployees)) {
+                        $this->processEmployees($allEmployees, $clinicData, $request);
+                        $employeeCount = count(array_unique(array_filter($allEmployees)));
+                    }
+
+                    // Добавляем одну запись в лог через AuditLogService
+                    $this->auditLogService->log(
+                        $request->user(),
+                        'employee_import',
+                        null,
+                        null,
+                        ['employee_count' => $employeeCount, 'file_name' => $fileName]
+                    );
 
                 } catch (\Exception $e) {
-                    \Log::error("Ошибка при загрузке в базу: " . $e->getMessage());
-                    return response()->json(['error' => $e->getMessage()], 500);
+                    Log::error("Ошибка при загрузке в базу: " . $e->getMessage());
+                    return Inertia::render('Import/Index', [
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
             if ($extension === 'json') {
                 $contents = File::get((public_path('clinic-import/patients/'.$fileName)));
                 $jsonData = json_decode(json: $contents, associative: true);
-                foreach ($jsonData as $doctor) {
-                    $user = new User();
-                    $user->name = $doctor['lastname'].' '.$doctor['firstname'];
-                    $user->email = $doctor['phone'];
-                    $user->password = Hash::make($doctor['phone']);
-                    $user->first_name = $doctor['firstname'];
-                    $user->last_name = $doctor['lastname'];
-                    $user->phone = $doctor['phone'];
-                    $user->save();
-
-                    $clinicUser = new ClinicUser();
-                    $clinicUser->clinic_id = $clinicData->id;
-                    $clinicUser->user_id = $user->id;
-                    if ($doctor['role'] === 'MANAGER') {
-                        $clinicUser->role_id = 9;
-                    } else if ($doctor['role'] === 'DOCTOR') {
-                        $clinicUser->role_id = 15;
-                    } else if ($doctor['role'] === 'ADMINISTRATOR') {
-                        $clinicUser->role_id = 10;
-                    }
-                    $clinicUser->save();
-
-                    DB::table('clinic_patient')->insert(
-                        [
-                            'patient_id' => $user->id,
-                            'filial_id' => $request->session()->get('filial_id'),
-                            'clinic_id' => $clinicData->id
-                        ]
-                    );
+                
+                // Обрабатываем только сотрудников из JSON
+                $employeeCount = 0;
+                if (!empty($jsonData)) {
+                    $this->processEmployees($jsonData, $clinicData, $request);
+                    $employeeCount = count($jsonData);
                 }
-
+                
+                // Добавляем одну запись в лог через AuditLogService
+                $this->auditLogService->log(
+                    $request->user(),
+                    'employee_import',
+                    null,
+                    null,
+                    ['employee_count' => $employeeCount, 'file_name' => $fileName, 'format' => 'json']
+                );
             }
+            return redirect()->back()->with([
+                'message' => 'Данные успешно загружены',
+                'success' => true,
+                'employee_count' => $employeeCount,
+                'file_name' => $fileName,
+                'format' => $extension,
+            ]);
         }
     }
 }

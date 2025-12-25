@@ -13,7 +13,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Montserrat', ...defaultTheme.fontFamily.sans],
+                sans: ['Google Sans', ...defaultTheme.fontFamily.sans],
                 monospace: ['Libertinus Mono', 'monospace'],
             },
         },
