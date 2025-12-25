@@ -200,7 +200,7 @@ export default function AddDynamicInputFields({
             </div>
           </td>
           <td className="w-qty pb-2 mx-auto">
-            <div className="row flex ml-[40px] pl-[7px]">
+            <div className="row flex ml-[40px] pl-[10px] input-inv-group">
               <button
                 name="minusBtn"
                 onClick={event => {
@@ -231,17 +231,19 @@ export default function AddDynamicInputFields({
             </div>
           </td>
           <td className="w-unit text-center pb-2 min-w-[120px]">
-            <InputSelect
-              translatable={false}
-              name={'unit_id'}
-              className={'w-unit'}
-              values={item.unit_id}
-              value={item.unit_id}
-              defaultValue={item.unit_id}
-              options={unitsData}
-              required
-              label={null}
-            />
+            <div className="mt-[-7px]">
+              <InputSelect
+                translatable={false}
+                name={'unit_id'}
+                className={'w-unit'}
+                values={item.unit_id}
+                value={item.unit_id}
+                defaultValue={item.unit_id}
+                options={unitsData}
+                required
+                label={null}
+              />
+            </div>
           </td>
           <td className="w-price text-center pb-2">
             <input

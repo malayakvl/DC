@@ -58,9 +58,9 @@ export default function List({ listData, permissions }) {
                   <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
-                      src={`../../images/document-icons/${item.statusName}.svg`}
-                      title={msgDropdown.get(`dropdown.${item.statusName}`)}
-                      alt={msgDropdown.get(`dropdown.${item.statusName}`)}
+                      src={`../../images/document-icons/${item.status}.svg`}
+                      title={msgDropdown.get(`dropdown.${item.status}`)}
+                      alt={msgDropdown.get(`dropdown.${item.status}`)}
                       className="icon-doc"
                     />
                   </td>

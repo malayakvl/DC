@@ -88,6 +88,8 @@
 .btn-qty-minus, .btn-qty-plus {
     @apply py-1 px-4 text-center text-sm text-white
         bg-gradient-to-r from-[#b44dd6] to-[#7974e3] shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+    min-width: 40px;
+    max-width: 40px;
 }
 // .btn-qty-plus {
 //     @apply rounded-md rounded-l-none bg-slate-800 py-1 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700
@@ -101,6 +103,10 @@
     color: #fff;
     height: 40px;
     padding: 0 10px;
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    background: transparent;
+    color: #fff;
+    border: solid 1px #35466d;
 }
 .price {
     width: 100px !important;
@@ -355,4 +361,7 @@ label.float-label {
     @apply rounded;
     background: transparent;
     border-color: #01bff8;
+}
+.input-inv-group {
+    margin-top: -8px !important;
 }

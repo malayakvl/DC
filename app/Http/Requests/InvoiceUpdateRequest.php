@@ -18,9 +18,8 @@ class InvoiceUpdateRequest extends FormRequest
         return [
             'invoice_number' => ['required', 'string', 'max:255'],
             'invoice_date' => ['required', 'date'],
-            'producer_id' => ['required'],
+            'supplier_id' => ['required'],
             'customer_id' => ['required'],
-            'clinic_id' => ['required'],
             'store_id' => ['required'],
             'status_id' => ['required'],
             'currency_id' => ['required'],
