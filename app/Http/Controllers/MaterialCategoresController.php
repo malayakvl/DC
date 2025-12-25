@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
@@ -179,6 +178,9 @@ class MaterialCategoresController extends Controller
                 $data->percent = $request->percent;
                 $data->save();
             }
+            // Log the material category creation
+            $this->auditLogService->log($request->user(), 'material_category.updated', $data, null, $data->toArray());
+
 
             return Redirect::route('material.categories.index');
         }

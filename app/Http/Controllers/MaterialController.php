@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProducerUpdateRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Material;
-use App\Models\Filial;
 use App\Models\MaterialCategories;
 use App\Models\Producer;
 use App\Models\Store;
@@ -16,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
 use DateTime;
 use Exception;
 use App\Services\AuditLogService;
@@ -34,7 +31,7 @@ class MaterialController extends Controller
         $this->auditLogService = $auditLogService;
     }
 
-/**
+    /**
      * Helper для работы с текущей схемой клиники
      */
     private function withClinicSchema(Request $request, \Closure $callback)
@@ -71,8 +68,6 @@ class MaterialController extends Controller
                 ->leftJoin('material_categories', 'material_categories.id', '=', 'materials.category_id')
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
-                // ->leftJoin('sizes', 'sizes.id', '=', 'materials.size_id')
-                // ->where('materials.clinic_id', $clinic->id)
                 ->orderBy('name')->get();
 
             return Inertia::render('Material/List', [
@@ -161,7 +156,6 @@ class MaterialController extends Controller
             if (count($category)) {
                 $formData->percent = $category[0]->percent;
             }
-            // dd($formData);exit;
             return Inertia::render('Material/Edit', [
                 'clinicData' => $clinicData,
                 'categoryData' => $tree,
@@ -172,53 +166,8 @@ class MaterialController extends Controller
         });
         
     }
-    // public function edit(Request $request, $id) {
-    //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-    //     return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $clinicData) {
-    //         dd($request->user()->can('store-view'));exit;
-    //         if ($request->user()->can('store-view')) {
-            
-    //             $categories = MaterialCategories::where('parent_id', null)
-    //                 ->where('clinic_id', $clinicData->id)
-    //                 ->orWhere('special', true)
-    //                 ->get();
-    //             $arrCat = array();
-    //             $tree = $this->generateCategories($categories, $arrCat, 0);
-    //             $formData = Material::find($id);
-    //             $producer = Producer::where('id', '=', $formData->producer_id)->get();
-    //             $unitsData = Unit::all();
-    //             if (count($producer)) {
-    //                 $formData->producer = $producer[0]->name;
-    //             }
-    //             $unit = Unit::where('id', '=', $formData->unit_id)->get();
-    //             if (count($unit)) {
-    //                 $formData->unit = $unit[0]->name;
-    //             }
-    //             $size = Size::where('id', '=', $formData->size_id)->get();
-    //             if (count($size)) {
-    //                 $formData->size = $size[0]->name;
-    //             }
-    //             $category = MaterialCategories::where('id', '=', $formData->category_id)->get();
-    //             if (count($category)) {
-    //                 $formData->percent = $category[0]->percent;
-    //             }
-    //             return Inertia::render('Material/Edit', [
-    //                 'clinicData' => $clinicData,
-    //                 'categoryData' => $tree,
-    //                 'formData' => $formData,
-    //                 'percent' => $formData->percent,
-    //                 'unitsData' => $unitsData
-    //             ]);
 
-    //         } else {
-    //             return Inertia::render('Layouts/NoPermission', [
-    //             ]);
-    //         }
-    //     });
-
-    // }
-
-        /**
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request) {
@@ -242,23 +191,7 @@ class MaterialController extends Controller
                 $producerNew->save();
                 $producerId = $producerNew->id;
             }
-            // // find unit
-            // $unit = Unit::where('id', '=', $request->unit_id)->first();
-            // $unitWeight = '';
-            // if ($request->weightunit_id) {
-            //     $unitWeight = Unit::where('id', '=', $request->weightunit_id)->first();
-            // }
-            // find size
-            // $size = Size::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->weightunit_id). '%')->get();
-            // dd($size);exit;
-            // if (count($size) > 0) {
-            //     $sizeId = $size[0]->id;
-            // } else {
-            //     $sizeNew = new Size();
-            //     $sizeNew->name = $request->size;
-            //     $sizeNew->save();
-            //     $sizeId = $sizeNew->id;
-            // }
+
             $material->name = $request->name;
             $material->price = (float)$request->price;
             $material->retail_price = (float)$request->retail_price;

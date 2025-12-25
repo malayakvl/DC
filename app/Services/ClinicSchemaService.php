@@ -750,6 +750,16 @@ class ClinicSchemaService
             )
         ");
 
+         // Invoices (Приход/Расход)
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS invoice_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
         // Invoices (Приход/Расход)
         DB::statement("
             CREATE TABLE IF NOT EXISTS invoices (
@@ -757,6 +767,7 @@ class ClinicSchemaService
                 filial_id BIGINT NOT NULL,
                 store_id BIGINT NOT NULL,
                 supplier_id BIGINT,
+                customer_id BIGINT,
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
