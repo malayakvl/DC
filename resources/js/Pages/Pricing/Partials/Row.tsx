@@ -38,8 +38,6 @@ export default function AddDynamicInputFields({
         product: '',
         quantity: '',
         maxQty: '',
-        price: '',
-        total: '',
       },
     ]);
   };
@@ -175,7 +173,7 @@ export default function AddDynamicInputFields({
               options={unitData}
               onChange={event => handleChange(event, index)}
               required
-              label={``}
+              label={null}
             />
           </td>
           <td className="w-qty pb-2 px-2 mx-auto">
@@ -189,26 +187,7 @@ export default function AddDynamicInputFields({
               />
             </div>
           </td>
-          <td className="w-qty pb-2 px-2 mx-auto pl-[10px]">
-            <input
-              className="input-text price text-center"
-              name="price"
-              type="text"
-              readOnly={true}
-              value={item.price}
-              onChange={event => handleChange(event, index)}
-            />
-          </td>
-          <td className="w-qty pb-2 px-2 mx-auto pl-[10px]">
-            <input
-              className="input-text price text-center"
-              name="total"
-              type="text"
-              readOnly={true}
-              value={item.total}
-              onChange={event => handleChange(event, index)}
-            />
-          </td>
+          
 
           <td className="w-btn pb-2 px-2">
             {inputs.length > 1 && (

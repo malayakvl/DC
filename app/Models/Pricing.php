@@ -8,7 +8,7 @@ class Pricing extends Model
 {
     protected $fillable = [
         'name',
-        'clinic_id',
         'category_id',
+        'price'
     ];
 }

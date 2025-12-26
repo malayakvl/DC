@@ -243,8 +243,20 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS pricings (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                clinic_id BIGINT NOT NULL,
+                price DECIMAL(10, 2),
                 category_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement(
+            "CREATE TABLE IF NOT EXISTS pricing_items (
+                id BIGSERIAL PRIMARY KEY,
+                pricing_id BIGINT NOT NULL,
+                material_id BIGINT,
+                quantity DECIMAL(10, 2),
+                unit_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -724,15 +736,22 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS acts (
                 id BIGSERIAL PRIMARY KEY,
                 filial_id BIGINT NOT NULL,
-                act_number VARCHAR(50),
+                act_number VARCHAR(50) NOT NULL,
                 act_date TIMESTAMP NOT NULL,
+
                 patient_id BIGINT NOT NULL,
                 doctor_id BIGINT,
                 visit_id BIGINT,
-                total_amount NUMERIC(12,2) NOT NULL,
-                status VARCHAR(50) DEFAULT 'draft',
+
+                total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+
+                status VARCHAR(20) NOT NULL DEFAULT 'draft'
+                    CHECK (status IN ('draft', 'posted', 'cancelled')),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                UNIQUE (filial_id, act_number)
             )
         ");
 
@@ -742,11 +761,16 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 act_id BIGINT NOT NULL,
                 service_id BIGINT NOT NULL,
-                qty NUMERIC(12,2) NOT NULL DEFAULT 1,
-                price NUMERIC(12,2) NOT NULL,
-                total NUMERIC(12,2) NOT NULL,
+
+                qty NUMERIC(12,2) NOT NULL DEFAULT 1 CHECK (qty > 0),
+                price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+                total NUMERIC(12,2) NOT NULL CHECK (total >= 0),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT fk_act_items_act
+                    FOREIGN KEY (act_id) REFERENCES acts(id) ON DELETE CASCADE
             )
         ");
 

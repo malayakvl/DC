@@ -23,6 +23,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PatientStatusController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ActController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -129,7 +130,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/material-category/create', [MaterialCategoresController::class, 'create'])->name('material.categories.create');
     Route::get('/material-category/edit/{id}', [MaterialCategoresController::class, 'edit'])->name('material.categories.edit');
     Route::get('/material-category/delete/{id}', [MaterialCategoresController::class, 'delete'])->name('material.categories.delete');
-    Route::get('/material-category/update', [MaterialCategoresController::class, 'update'])->name('material.categories.update');
+    Route::post('/material-category/update', [MaterialCategoresController::class, 'update'])->name('material.categories.update');
 
     Route::get('/producers', [ProducerController::class, 'index'])->name('producer.index');
     Route::get('/producer/create', [ProducerController::class, 'create'])->name('producer.create');
@@ -163,6 +164,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/store-report', [MaterialController::class, 'storeReport'])->name('materials.report');
     Route::post('/material/generateStoreReport', [MaterialController::class, 'generateStoreReportData'])->name('materials.report.data');
+
+    Route::get('/acts', [ActController::class, 'index'])->name('act.index');
+    Route::get('/act/create', [ActController::class, 'create'])->name('act.create');
+    Route::get('/act/edit/{id}', [ActController::class, 'edit'])->name('act.edit');
+    Route::post('/act/update', [ActController::class, 'update'])->name('act.updated');
+
 
     Route::get('/invoice-incoming', [IncomingInvoiceController::class, 'index'])->name('invoice.incoming.index');
     Route::get('/invoice-incoming/create', [IncomingInvoiceController::class, 'create'])->name('invoice.incoming.create');

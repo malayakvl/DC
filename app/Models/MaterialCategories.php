@@ -8,9 +8,7 @@ class MaterialCategories extends Model
 {
     protected $fillable = [
         'name',
-        'clinic_id',
         'parent_id',
-        'producer_id',
         'percent'
     ];
 
