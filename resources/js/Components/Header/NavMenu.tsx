@@ -10,6 +10,7 @@ import NavCustomers from './Menu/NavCustomers';
 import NavScheduler from './Menu/NavScheduler';
 import NavInvoices from './Menu/NavInvoices';
 import NavPatients from './Menu/NavPatients';
+import NavServices from './Menu/NavServices';
 
 export default function NavMenu(props) {
   const appLang = useSelector(appLangSelector);
@@ -38,6 +39,8 @@ export default function NavMenu(props) {
             <NavPatients />
 
             <NavStores />
+
+            <NavServices />
 
             <NavInvoices />
 

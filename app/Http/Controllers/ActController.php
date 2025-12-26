@@ -164,17 +164,6 @@ class ActController extends Controller
             if ($request->user()->can('invoice-incoming-create')) {
                 // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
-                // $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-                $statusData = InvoiceStatus::all();
-                $currencyData = Currency::all();
-                $unitsData = Unit::all();
-                $taxData = Tax::all();
                 $typeData = array();
                 $formData = new Invoice();
                 $lastInvoiceNum = DB::table('invoices')
@@ -204,24 +193,13 @@ class ActController extends Controller
                     ->orderBy('users.last_name')
                     ->get();
 
-
-                // $customerData = DB::table('core.users')
-                //     ->select('core.users.*')
-                //     ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                //     ->where('clinic_id', $clinicData->id)
-                //     ->orderBy('name')->get();
-                return Inertia::render('InvoiceIncoming/Create', [
+                return Inertia::render('Act/Create', [
                     'clinicData' => $clinicData,
-                    'filialData' => $storeData,
                     'formData' => $formData,
-                    'storeData' => $storeData,
                     'customerData' => $customerData,
                     'producerData' => $producerData,
                     'statusData' => Invoices::INVOICE_STATUSES,
                     'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
                 ]);
             } else {
                 return Inertia::render('Layouts/NoPermission', [

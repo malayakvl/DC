@@ -60,9 +60,9 @@ export default function Form({
     values['rows'] = invoiceItems;
 
     if (formData.id) {
-      router.post(`/pricing/update?id=${formData.id}`, values);
+      router.post(`/service/update?id=${formData.id}`, values);
     } else {
-      router.post('/pricing/update', {
+      router.post('/service/update', {
         clinic_id: values.clinic_id,
         category_id: values.category_id,
         name: values.name,
@@ -76,12 +76,12 @@ export default function Form({
     <section className={className}>
       <header>
         <h2>
-          <Link className="icon-back" href={'/pricing'}>
+          <Link className="icon-back" href={'/services'}>
             &nbsp;
           </Link>
           {formData?.id
-            ? msg.get('mCategories.pricing.edit')
-            : msg.get('mCategories.service.create')}
+            ? msg.get('service.pricing.edit')
+            : msg.get('service.service.create')}
         </h2>
       </header>
 
@@ -97,7 +97,7 @@ export default function Form({
           value={values.name}
           onChange={handleChange}
           required
-          label={msg.get('mCategories.name')}
+          label={msg.get('service.name')}
         />
         <InputSelect
           name={'category_id'}
@@ -106,7 +106,7 @@ export default function Form({
           options={categoryData}
           onChange={handleChangeSelect}
           required
-          label={msg.get('mCategories.category')}
+          label={msg.get('service.category')}
         />
         <InputText
           name={'price'}
@@ -116,19 +116,19 @@ export default function Form({
           onChange={handleChange}
           // className={'max-w-[200px]'}
           required
-          label={msg.get('mCategories.price')}
+          label={msg.get('service.price')}
         />
         <div className="relative">
           <table className="w-full1">
             <thead>
               <tr>
                 <th className="pb-3 w-[65%]">
-                  {msg.get('mCategories.product')}
+                  {msg.get('service.product')}
                 </th>
-                <th className="pb-3 w-unit">{msg.get('mCategories.unit')}</th>
-                <th className="pb-3 w-qty">{msg.get('mCategories.qty')}</th>
-                <th className="pb-3 w-btn">{msg.get('mCategories.price')}</th>
-                <th className="pb-3 w-btn">{msg.get('mCategories.total')}</th>
+                <th className="pb-3 w-unit">{msg.get('service.unit')}</th>
+                <th className="pb-3 w-qty">{msg.get('service.qty')}</th>
+                <th className="pb-3 w-btn">{msg.get('service.price')}</th>
+                <th className="pb-3 w-btn">{msg.get('service.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
@@ -157,7 +157,7 @@ export default function Form({
             </tbody>
           </table>
           <div className="w-full border-t-2 text-right mt-4 font-bold">
-            {msg.get('mCategories.total')}:{' '}
+            {msg.get('service.total')}:{' '}
             {(
               Number(values['price'] ? values['price'] : 0) + totalItemPrice
             ).toFixed(2)}{' '}
@@ -167,13 +167,13 @@ export default function Form({
         <div className="flex items-center">
           <Link
             className="btn-back"
-            title={msg.get('mCategories.back')}
-            href={`/pricing`}
+            title={msg.get('service.back')}
+            href={`/services`}
           >
-            {msg.get('mCategories.back')}
+            {msg.get('service.back')}
           </Link>
           <PrimaryButton disabled={processing}>
-            {msg.get('mCategories.save')}
+            {msg.get('service.save')}
           </PrimaryButton>
 
           <Transition
@@ -184,7 +184,7 @@ export default function Form({
             leaveTo="opacity-0"
           >
             <p className="text-sm text-gray-600">
-              {msg.get('mCategories.saved')}
+              {msg.get('service.saved')}
             </p>
           </Transition>
         </div>

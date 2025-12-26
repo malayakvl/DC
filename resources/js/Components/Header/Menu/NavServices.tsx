@@ -6,7 +6,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 
-export default function NavPrice() {
+export default function NavServices() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -18,10 +18,10 @@ export default function NavPrice() {
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['price-all']) && (
+        permissions['service-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="inline-flex items-center text-sm">
-            <NavLink href={'/pricing'}>{lng.get('menu.price')}</NavLink>
+            <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>
           </MenuButton>
         </Menu>
       )}

@@ -23,7 +23,8 @@ class Permissions
         'settings',
         'act',
         'role',
-        'currency'
+        'currency',
+        'price'
     ];
 
     // Default permissions created for each clinic
