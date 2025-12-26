@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngInvoice from '../../Lang/Invoice/translation';
+import lngAct from '../../Lang/Act/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
@@ -17,7 +17,7 @@ export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngInvoice,
+    messages: lngAct,
     locale: appLang,
   });
   const msgDropdown = new Lang({
@@ -30,18 +30,18 @@ export default function List({ listData, permissions }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Invoice Incoming'} />
+      <Head title={'Act'} />
       <div className="">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
-                  <h2>{msg.get('invoice.incoming.title.list')}</h2>
+                  <h2>{msg.get('act.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
-                      <NavLink href={'/invoice-incoming/create'}>
-                        {msg.get('invoice.create')}
+                      <NavLink href={'/act/create'}>
+                        {msg.get('act.create')}
                       </NavLink>
                     </PrimaryButton>
                   </div>

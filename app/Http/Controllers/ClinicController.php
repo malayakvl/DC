@@ -166,14 +166,33 @@ class ClinicController extends Controller
      * Update the user's profile information.
      */
     public function update(ClinicUpdateRequest $request) {
-        $clinic = Clinic::where('user_id', $request->user()->id)->first();
+        // $clinic = Clinic::where('id', 18)->first();
+        // dd($clinic);exit;
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+            if ($request->user()->can('clinic-create')) {
+                $clinicData->fill($request->validated());
+                $clinicData->save();
+                $clinicData->currency_id = $request->validated('currency_id');
+                $clinicData->save();
 
-        if (!$request->user()->can('clinic-create')) {
-            $clinic->fill($request->validated());
-            $clinic->save();
-        }
+                $this->auditLogService->log($request->user(), 'clinic.updated', $clinicData, null, $request->validated());
+
+            }
 
         return Redirect::route('dashboard.index');
+        // return $this->withClinicSchema($request, function($clinicId) use ($request) {
+        //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
+        //     if ($request->user()->can('clinic-create')) {
+        //         $clinicData->fill($request->validated());
+        //         $clinicData->save();
+        //             dd($request->validated('currency_id'));exit;
+        //         $clinicData->currency_id = $request->validated('currency_id');
+        //         $clinicData->save();
+        //     }
+
+        //     return Redirect::route('dashboard.index');
+        // });
+        
     }
 
     

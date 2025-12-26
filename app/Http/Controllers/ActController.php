@@ -25,12 +25,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class IncomingInvoiceController extends Controller
+class ActController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -61,10 +60,46 @@ class IncomingInvoiceController extends Controller
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
     }
+    
+
+    public function index(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $filialId = $request->session()->get('filial_id');
+            $query = DB::table('acts')
+                ->select(
+                    'acts.*',
+                    'patient_user.name as patientName',
+                    'doctor_user.name as doctorName'
+                )
+                ->leftJoin('clinic_filial_user as patient_cf', 'patient_cf.id', '=', 'acts.patient_id')
+                ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patient_cf.user_id')
+                ->leftJoin('clinic_filial_user as doctor_cf', 'doctor_cf.id', '=', 'acts.doctor_id')
+                ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'doctor_cf.user_id')
+                ->orderBy('acts.act_number', 'DESC');
+
+            if ($request->user()->roles[0]->name !== 'Admin') {
+                $query->where('acts.filial_id', $filialId);
+            }
+
+            $acts = $query->get();
+// dd($acts);exit;
+            return Inertia::render('Act/List', [
+                'clinicData' => $clinic,
+                'listData'   => $acts
+            ]);
+        });
+    }
+
+
+
+
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function indexOld(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);

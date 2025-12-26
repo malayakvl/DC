@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 
-export default function InputSelect({
+export default function InputCustomerSelect({
   className = '',
   elId = '',
   name,
@@ -29,7 +29,7 @@ export default function InputSelect({
   
   return (
     <div className={`relative`}>
-      {label && <InputLabel htmlFor={name} value={label} children={null} />}  
+      <InputLabel htmlFor={name} value={label} children={null} />
       {props.options.length > 0 && (
         <select
           id={`${elId || name}`}
@@ -41,7 +41,7 @@ export default function InputSelect({
           <option value="">{msg.get('dropdown.select')}</option>
           {props.options.map((option: any) => (
             <option key={option.id} value={option.id} selected={option.id === defaultValue}>
-              {translatable ? msg.get('dropdown.' + option.name) : option.name}
+              {option.first_name} {option.last_name}
             </option>
           ))}
         </select>

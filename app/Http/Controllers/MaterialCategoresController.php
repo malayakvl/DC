@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
+
 class MaterialCategoresController extends Controller
 {
     protected AuditLogService $auditLogService;
@@ -91,9 +92,8 @@ class MaterialCategoresController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request) {
-        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-        
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('store-create')) {
                 return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
             }
@@ -134,6 +134,7 @@ class MaterialCategoresController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
+        
         if ($request->user()->can('store-edit')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $formData = MaterialCategories::find($id);
@@ -161,29 +162,32 @@ class MaterialCategoresController extends Controller
      * Update the specified resource in storage.
      */
     public function update(MaterialCategoryUpdateRequest $request) {
-        if ($request->user()->can('store-edit')) {
-            if ($request->id)
-                $data = MaterialCategories::find($request->id);
-            else {
-                $data = new MaterialCategories();
-            }
-            $data->fill($request->validated());
-            $data->save();
-            $data->producer_id = $request->producer_id;
-            if ($request->parent_id) {
-                $data->parent_id = $request->parent_id;
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if ($request->user()->can('store-edit')) {
+                if ($request->id)
+                    $data = MaterialCategories::find($request->id);
+                else {
+                    $data = new MaterialCategories();
+                }
+                $data->fill($request->validated());
                 $data->save();
-            }
-            if ($request->percent) {
-                $data->percent = $request->percent;
-                $data->save();
-            }
-            // Log the material category creation
-            $this->auditLogService->log($request->user(), 'material_category.updated', $data, null, $data->toArray());
+                // $data->producer_id = $request->producer_id;
+                if ($request->parent_id) {
+                    $data->parent_id = $request->parent_id;
+                    $data->save();
+                }
+                if ($request->percent) {
+                    $data->percent = $request->percent;
+                    $data->save();
+                }
+                // Log the material category creation
+                $this->auditLogService->log($request->user(), 'material_category.updated', $data, null, $data->toArray());
 
 
-            return Redirect::route('material.categories.index');
-        }
+                return Redirect::route('material.categories.index');
+            }
+        });
+        
     }
 
     public function delete(Request $request) {

@@ -65,7 +65,7 @@ export default function List({ clinicData, tree, services, currency }) {
                 </div>
                 <div className="price-value">
                   <span className="px-[5px] py-[4px] ">
-                    {_item.total} {currency}
+                    {_item.price} {currency}
                   </span>
                 </div>
               </div>
@@ -110,8 +110,8 @@ export default function List({ clinicData, tree, services, currency }) {
           </div>
         </div>
         <Modal show={confirmingCategory} onClose={closeModal}>
-          <form className="p-6">
-            <h2 className="text-lg font-medium text-gray-900">
+          <form className="p-6 bg-black">
+            <h2>
               {msg.get('mCategories.create')}
             </h2>
 

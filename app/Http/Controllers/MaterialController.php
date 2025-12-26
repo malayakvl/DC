@@ -451,8 +451,8 @@ class MaterialController extends Controller
     }
 
     public function findMaterial(Request $request) {
-        $name = $request->searchName;
-        return $this->withClinicSchema($request, function($clinicId, $name) use ($request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
             $resData = DB::table('materials')->select('*')
                 ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
                 ->get();

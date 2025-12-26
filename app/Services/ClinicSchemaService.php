@@ -243,8 +243,20 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS pricings (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                clinic_id BIGINT NOT NULL,
+                price DECIMAL(10, 2),
                 category_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement(
+            "CREATE TABLE IF NOT EXISTS pricing_items (
+                id BIGSERIAL PRIMARY KEY,
+                pricing_id BIGINT NOT NULL,
+                material_id BIGINT,
+                quantity DECIMAL(10, 2),
+                unit_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -724,15 +736,22 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS acts (
                 id BIGSERIAL PRIMARY KEY,
                 filial_id BIGINT NOT NULL,
-                act_number VARCHAR(50),
+                act_number VARCHAR(50) NOT NULL,
                 act_date TIMESTAMP NOT NULL,
+
                 patient_id BIGINT NOT NULL,
                 doctor_id BIGINT,
                 visit_id BIGINT,
-                total_amount NUMERIC(12,2) NOT NULL,
-                status VARCHAR(50) DEFAULT 'draft',
+
+                total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+
+                status VARCHAR(20) NOT NULL DEFAULT 'draft'
+                    CHECK (status IN ('draft', 'posted', 'cancelled')),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                UNIQUE (filial_id, act_number)
             )
         ");
 
@@ -742,11 +761,16 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 act_id BIGINT NOT NULL,
                 service_id BIGINT NOT NULL,
-                qty NUMERIC(12,2) NOT NULL DEFAULT 1,
-                price NUMERIC(12,2) NOT NULL,
-                total NUMERIC(12,2) NOT NULL,
+
+                qty NUMERIC(12,2) NOT NULL DEFAULT 1 CHECK (qty > 0),
+                price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+                total NUMERIC(12,2) NOT NULL CHECK (total >= 0),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT fk_act_items_act
+                    FOREIGN KEY (act_id) REFERENCES acts(id) ON DELETE CASCADE
             )
         ");
 
@@ -768,11 +792,13 @@ class ClinicSchemaService
                 store_id BIGINT NOT NULL,
                 supplier_id BIGINT,
                 customer_id BIGINT,
+                currency_id BIGINT,
+                tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
-                document_type VARCHAR(50) NOT NULL DEFAULT 'income', -- 'income' или 'expense'
-                status VARCHAR(50) DEFAULT 'draft',
+                status ENUM ('draft', 'posted', 'cancelled'),
+                document_type ENUM ('income', 'expense', 'transfer'),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -786,6 +812,7 @@ class ClinicSchemaService
                 material_id BIGINT NOT NULL,
                 qty NUMERIC(12,2) NOT NULL,         -- количество по документу
                 price NUMERIC(12,2) NOT NULL,
+                price_per_unit NUMERIC(12,2) NOT NULL,
                 total NUMERIC(12,2) NOT NULL,
                 pack_qty NUMERIC(12,2) DEFAULT 1,   -- количество в упаковке
                 fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
@@ -827,6 +854,43 @@ class ClinicSchemaService
             )
         ");
 
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_batches (
+                id BIGSERIAL PRIMARY KEY,
+                store_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                supplier_id BIGINT NOT NULL,
+                invoice_id BIGINT NOT NULL,
+                arrived_at DATE NOT NULL,
+                qty NUMERIC(12,4) NOT NULL,
+                qty_left NUMERIC(12,4) NOT NULL,
+                fact_qty NUMERIC(12,4) NOT NULL,
+                fact_qty_left NUMERIC(12,4) NOT NULL,
+                price_per_unit NUMERIC(12,4) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_movements (
+                id BIGSERIAL PRIMARY KEY,
+                store_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                batch_id BIGINT NOT NULL,
+
+                direction SMALLINT NOT NULL,
+                -- 1 = приход
+                -- -1 = расход
+                qty NUMERIC(12,4) NOT NULL,
+                fact_qty NUMERIC(12,4) NOT NULL,
+                document_type VARCHAR(50),
+                document_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
         // Payments
         DB::statement("
             CREATE TABLE IF NOT EXISTS payments (
@@ -863,13 +927,14 @@ class ClinicSchemaService
 
         // Store balances
         DB::statement("
-            CREATE TABLE IF NOT EXISTS store_balances (
-                id BIGSERIAL PRIMARY KEY,
-                store_id BIGINT NOT NULL,
-                material_id BIGINT NOT NULL,
-                qty NUMERIC(12,2) NOT NULL DEFAULT 0,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+            CREATE TABLE clinic_18.store_balances (
+                store_id bigint NOT NULL,
+                material_id bigint NOT NULL,
+                qty numeric(12,4) NOT NULL DEFAULT 0,
+                fact_qty numeric(12,4) NOT NULL DEFAULT 0,
+                updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (store_id, material_id)
+            );
         ");
 
         // Visit services table — чтобы акт знал какие услуги в визите

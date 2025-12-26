@@ -46,26 +46,10 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function indexOld(Request $request)
-    {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $filialData = ClinicFilial::where('clinic_id', '=', $clinic->id)->get();
-        $customerData = DB::table('users')
-            ->select('users.*', 'roles.name AS role_name')
-            ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
-            ->where('clinic_user.clinic_id', $clinic->id)->orderBy('name')->get();
-        return Inertia::render('Customer/List', [
-            'clinicData' => $clinic,
-            'filialData' => $filialData,
-            'customerData' => $customerData
-        ]);
-    }
     public function index(Request $request)
     {
         $clinicId = session('clinic_id');
         $clinicData = $request->user()->clinicByFilial($clinicId);
-
         return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
 
             // Проверка прав
