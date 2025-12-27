@@ -15,8 +15,8 @@ export default function Create({
   taxData,
 }) {
   return (
-    <AuthenticatedLayout header={<Head title="Invoice" />}>
-      <Head title="Invoice" />
+    <AuthenticatedLayout header={<Head title="Act" />}>
+      <Head title="Act" />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

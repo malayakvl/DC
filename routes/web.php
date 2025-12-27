@@ -191,6 +191,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/service/create', [ServiceController::class, 'create'])->name('service.categories.create');
     Route::get('/service/edit/{id}', [ServiceController::class, 'edit'])->name('service.categories.edit');
     Route::post('/service/update', [ServiceController::class, 'update'])->name('service.categories.update');
+    Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
+    Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
 
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');

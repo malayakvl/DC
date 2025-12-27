@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { emptyProducersAutocompleteAction } from '../../../Redux/Clinic';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchResultMaterialsSelector } from '../../../Redux/Material/selectors';
+import { searchResultServicesSelector, searchResultServicesElementsSelector } from '../../../Redux/Service/selectors';
 import {
-  emptyMaterialsAutocompleteAction,
-  findMaterialAction,
-} from '../../../Redux/Material';
+  emptyServicesAutocompleteAction,
+  findServiceAction,
+  fincServiceMaterialsAction
+} from '../../../Redux/Service';
 import {
   setPriceItems,
   setShowTableError,
   setTotalPrice,
-} from '../../../Redux/Pricing';
-import { pricingItemsSelector } from '../../../Redux/Pricing/selectors';
+} from '../../../Redux/Service';
 import Lang from 'lang.js';
-import { emptyMaterialsQtyAutocompleteAction } from '../../../Redux/Material/actions';
+import { emptyServicesQtyAutocompleteAction } from '../../../Redux/Service/actions';
 import InputSelect from '../../../Components/Form/InputSelect';
 
 export default function AddDynamicInputFields({
@@ -24,7 +24,8 @@ export default function AddDynamicInputFields({
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useDispatch();
   const [hideFields, setHideFields] = useState(false);
-  const serchResults = useSelector(searchResultMaterialsSelector);
+  const serchResults = useSelector(searchResultServicesSelector);
+  const serviceItemsResult = useSelector(searchResultServicesElementsSelector);
   const [numRow, setNumRow] = useState(0);
   const [weightIntutId, setWeightIntutId] = useState(null);
   const [availableWeights, setAvailableWeights] = useState(null);
@@ -50,13 +51,11 @@ export default function AddDynamicInputFields({
     setNumRow(index);
     if (name === 'product') {
       if (value.length > 3) {
-        dispatch(findMaterialAction(value));
+        dispatch(findServiceAction(value));
       } else {
-        dispatch(emptyProducersAutocompleteAction());
+        dispatch(emptyServicesAutocompleteAction());
         setHideFields(false);
       }
-    } else if (name === 'unit_id') {
-      inputs[index].unit_id = event.target.value;
     } else {
       inputs[index].quantity = event.target.value;
       inputs[index].total = event.target.value
@@ -82,26 +81,6 @@ export default function AddDynamicInputFields({
     dispatch(setTotalPrice(totalItemPrice));
   }, [inputs]);
 
-  useEffect(() => {
-    if (weightIntutId > 0) {
-      const weightSelect = document.getElementById(`${weightIntutId}`)
-      if (weightSelect) {
-        Array.from(weightSelect['options']).forEach(option => {
-          // Get the value of the current option
-          const optionValue = option.value;
-          // Check if the option's value is in the allowedValues array
-          if (!availableWeights.includes(parseInt(optionValue))) {
-            // If not in the array, disable the option
-            option.disabled = true;
-          } else {
-            // If in the array, ensure it's enabled (in case it was previously disabled)
-            option.disabled = false;
-          }
-        });
-      }
-    }
-  }, [availableWeights, weightIntutId])
-
   const renderSearchProducerResult = index => {
     if (serchResults.length > 0) {
       return (
@@ -120,7 +99,7 @@ export default function AddDynamicInputFields({
                   tmpWeight.push(_res.unit_id);
                   tmpWeight.push(_res.weightunit_id);
                   setAvailableWeights(tmpWeight);
-                  dispatch(emptyMaterialsAutocompleteAction());
+                  dispatch(emptyServicesAutocompleteAction());
                   inputs[index].product = _res.name;
                   inputs[index].product_id = _res.id;
                   inputs[index].quantity = 1;

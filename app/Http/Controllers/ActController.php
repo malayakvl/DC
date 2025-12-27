@@ -10,19 +10,18 @@ use App\Models\Currency;
 use App\Models\StoreBatches;
 use App\Models\StoreMovements;
 use App\Models\InvoiceItems;
+use App\Models\Act;
+use App\Models\ActItem;
 use App\Models\InvoiceStatus;
 use App\Models\InvoiceType;
-use App\Models\Material;
 use App\Models\Producer;
 use App\Models\Store;
 use App\Models\Invoice;
-use App\Models\StoreMaterials;
 use App\Models\Supplier;
 use App\Models\Tax;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Services\AuditLogService;
@@ -166,9 +165,8 @@ class ActController extends Controller
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $typeData = array();
                 $formData = new Invoice();
-                $lastInvoiceNum = DB::table('invoices')
-                    // ->where('clinic_id', $clinicData->id)
-                    ->max('invoice_number');
+                $lastInvoiceNum = DB::table('acts')
+                    ->max('act_number');
                 if (!$lastInvoiceNum) {
                     $num = 1;
                 } else {
@@ -394,97 +392,143 @@ class ActController extends Controller
     }
 
 
-    public function update(InvoiceUpdateRequest $request)
+    public function update(Request $request)
     {
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        
         return $this->withClinicSchema($request, function ($clinicId) use ($request) {
 
-            if (!$request->user()->can('invoice-incoming-edit')) {
+            if (!$request->user()->can('act-edit')) {
                 abort(403, 'No permission');
             }
-            // Создаем или обновляем накладную
-            $invoice = $request->id ? Invoice::find($request->id) : new Invoice();
-            $invoice->fill($request->validated());
-            $invoice->invoice_number = $request->invoice_number;
-            $invoice->invoice_date = $request->invoice_date;
-            $invoice->status = $request->status_id; // draft / done
-            $invoice->type_id = 1; // 1 = приход
-            $invoice->tax_id = $request->tax_id;
-            $invoice->currency_id = $request->currency_id;
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+            $storeId = $filialData[0]->store_id;
+            DB::beginTransaction();
             
-            $invoice->filial_id = 1; // изменить на реальний филиал
-            $invoice->total_amount = $request->total_amount ?? 0;
 
-            $invoice->save();
-            $invoiceId = $invoice->id;
+            try {
+                // Создаем или обновляем акт
+                $act = $request->id ? Act::find($request->id) : new Act();
+                $act->fill($request->only(['filial_id', 'patient_id', 'doctor_id', 'act_date', 'status']));
+                $act->act_number = $request->act_number;
+                $act->total_amount = 0; // пока 0, потом суммируем
+                $act->filial_id = 1; // изменить на реальный филиал
+                $act->save();
 
-            // Если обновляем, удаляем старые позиции и движения
-            if ($request->id) {
-                DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_batches')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_movements')->where('document_id', $invoiceId)->where('document_type', 'iinv')->delete();
-            }
+                $actId = $act->id;
+                $totalAmount = 0;
 
-            // $producer = Producer::find($request->supplier_id);
-            $storeId = $request->store_id;
-
-            $totalAmount = 0;
-
-            foreach ($request->rows as $row) {
-                $qty = $row['quantity'];      // количество в единицах материала
-                $factQty = $row['fact_qty'];  // фактический вес/объем
-                $pricePerUnit = $row['total'] / $factQty;
-
-                // Создаем позицию накладной
-                $invoiceItem = new InvoiceItems();
-                $invoiceItem->invoice_id = $invoiceId;
-                $invoiceItem->material_id = $row['product_id'];
-                $invoiceItem->qty = $qty;
-                $invoiceItem->fact_qty = $factQty;
-                $invoiceItem->price = $row['price'];
-                $invoiceItem->total = $row['total'];
-                $invoiceItem->price_per_unit = $pricePerUnit;
-                $invoiceItem->unit_id = $row['unit_id'];
-                $invoiceItem->save();
-
-                $totalAmount += $row['total'];
-
-                if ($request->status_id === 'posted') {
-                    // Создаем партию на складе
-                    $batch = new StoreBatches();
-                    $batch->store_id = $storeId;
-                    $batch->material_id = $row['product_id'];
-                    $batch->supplier_id = $request->supplier_id;
-                    $batch->invoice_id = $invoiceId;
-                    $batch->arrived_at = $request->invoice_date;
-                    $batch->qty = $qty;
-                    $batch->qty_left = $qty;
-                    $batch->fact_qty = $factQty;
-                    $batch->fact_qty_left = $factQty;
-                    $batch->price_per_unit = $pricePerUnit;
-                    $batch->save();
-
-                    // Создаем движение на склад (приход)
-                    $movement = new StoreMovements();
-                    $movement->store_id = $storeId;
-                    $movement->material_id = $row['product_id'];
-                    $movement->batch_id = $batch->id;
-                    $movement->direction = 1; // 1 = приход
-                    $movement->qty = $qty;
-                    $movement->fact_qty = $factQty;
-                    $movement->document_type = 'iinv';
-                    $movement->document_id = $invoiceId;
-                    $movement->save();
+                // Если обновляем, удаляем старые позиции и движения
+                if ($request->id) {
+                    ActItem::where('act_id', $actId)->delete();
+                    StoreMovements::where('document_type', 'act')
+                        ->where('document_id', $actId)
+                        ->delete();
+                    // PatientService::where('act_id', $actId)->delete();
                 }
+
+                $filialStoreId = $storeId;// метод для получения store_id филиала
+
+                // Обработка строк акта
+                foreach ($request->rows as $row) {
+                    $serviceQty = $row['quantity'];
+                    $serviceTotal = $row['total'];
+                    $totalAmount += $serviceTotal;
+
+                    // 1️⃣ Создаем элемент акта
+                    $actItem = ActItem::create([
+                        'act_id' => $actId,
+                        'service_id' => $row['service_id'],
+                        'components' => json_encode($row['components']),
+                        'qty' => $serviceQty,
+                        'price' => $row['price'],
+                        'total' => $serviceTotal
+                    ]);
+
+                    // 2️⃣ Создаем запись оказанной услуги для оплаты
+                    // PatientService::create([
+                    //     'patient_id' => $act->patient_id,
+                    //     'doctor_id' => $act->doctor_id,
+                    //     'service_id' => $row['service_id'],
+                    //     'act_id' => $actId,
+                    //     'qty' => $serviceQty,
+                    //     'price' => $row['price'],
+                    //     'total' => $serviceTotal
+                    // ]);
+                    // 3️⃣ Списание материалов по компонентам
+                    foreach ($row['components'] as $component) {
+                        $remainingFactQty = (float)$component['quantity']; // граммы / мл
+
+                        if ($remainingFactQty <= 0) {
+                            continue;
+                        }
+
+                        $batches = StoreBatches::where('store_id', $filialStoreId)
+                            ->where('material_id', $component['material_id'])
+                            ->where('fact_qty_left', '>', 0)
+                            ->orderBy('arrived_at', 'ASC') // FIFO
+                            ->get();
+
+                        foreach ($batches as $batch) {
+                            if ($remainingFactQty <= 0) {
+                                break;
+                            }
+
+                            // сколько можем списать по факту
+                            $deductFactQty = min($remainingFactQty, $batch->fact_qty_left);
+
+                            // коэффициент партии (сколько fact в 1 qty)
+                            $factPerQty = $batch->fact_qty / $batch->qty;
+
+                            // сколько это в qty
+                            $deductQty = $deductFactQty / $factPerQty;
+
+                            // обновляем партию
+                            $batch->fact_qty_left -= $deductFactQty;
+                            $batch->qty_left -= $deductQty;
+                            $batch->save();
+
+                            // движение
+                            StoreMovements::create([
+                                'store_id'      => $filialStoreId,
+                                'material_id'   => $component['material_id'],
+                                'batch_id'      => $batch->id,
+                                'direction'     => -1,
+                                'qty'           => $deductQty,
+                                'fact_qty'      => $deductFactQty,
+                                'document_type' => 'act',
+                                'document_id'   => $actId,
+                                'act_item_id'   => $actItem->id   // ← ВОТ ОНО
+                            ]);
+
+                            $remainingFactQty -= $deductFactQty;
+                        }
+
+                        if ($remainingFactQty > 0) {
+                            throw new \Exception(
+                                "Недостаточно материала material_id={$component['material_id']}, не хватает {$remainingFactQty}"
+                            );
+                        }
+                    }
+                }
+
+                // Обновляем итоговую сумму акта
+                $act->total_amount = $totalAmount;
+                $act->save();
+
+                DB::commit();
+
+                if ($request->status === 'posted')
+                    $this->updateStoreBalancesAndMaterials($storeId, $actId );
+                
+                return redirect()->route('act.index')->with('success', 'Акт успешно сохранен');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->withErrors(['error' => $e->getMessage()]);
             }
 
-            // Обновляем общую сумму накладной
-            $invoice->total_amount = $totalAmount;
-            $invoice->save();
-            if ($request->status_id === 'posted')
-                $this->updateStoreBalancesAndMaterials($request->store_id, $invoice->id);
-
-
-            return redirect()->route('invoice.incoming.index');
+            return redirect()->route('act.index');
         });
     }
 

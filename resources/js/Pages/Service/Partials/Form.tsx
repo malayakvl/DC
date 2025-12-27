@@ -12,7 +12,7 @@ import AddDynamicInputFields from '../Partials/Row';
 import {
   pricingItemsSelector,
   totalPriceItemsSelector,
-} from '../../../Redux/Pricing/selectors';
+} from '../../../Redux/Service/selectors';
 
 export default function Form({
   categoryData = null,
@@ -148,10 +148,8 @@ export default function Form({
                       quantity: '',
                       price: '',
                       total: '',
-                      unit_id: '',
                     },
                   ]}
-                  unitData={unitData}
                 />
               )}
             </tbody>

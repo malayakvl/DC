@@ -13,10 +13,11 @@ import AddDynamicInputFields from './Row';
 import InputCalendar from '../../../Components/Form/InputCalendar';
 import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import {
-  invoiceItemsSelector,
+  actItemsSelector,
   invoiceTaxSelector,
   tableErrorSelector,
-} from '../../../Redux/Incominginvoice/selectors';
+} from '../../../Redux/Act/selectors';
+import { getSearchResultServicesElementsByRow } from '../../../Redux/Service/selectors';
 import {
   setInvoiceTax,
   setShowTableError,
@@ -43,10 +44,10 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useDispatch();
-  const invoiceItems = useSelector(invoiceItemsSelector);
+  const actItems = useSelector(actItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
-  // const [showRowsError, setShowRowsError] = useState(false);
+  const actRows = useSelector(actItemsSelector);
 
   const [values, setValues] = useState({
     act_number: formData.invoice_number ? formData.invoice_number : '',
@@ -54,7 +55,7 @@ export default function Form({
     clinic_id: clinicData.id,
     patient_id: formData.patient_id,
     doctor_id: formData.doctor_id,
-    status_id: formData.status_id,
+    status: formData.status,
     visit_id: formData.visit_id,
     comment: formData.comment,
   });
@@ -74,7 +75,7 @@ export default function Form({
   };
 
   const handleChangeCalendar = data => {
-    const key = 'invoice_date';
+    const key = 'act_date';
     const value = data;
     setValues(values => ({
       ...values,
@@ -91,49 +92,52 @@ export default function Form({
     }));
   };
 
+  const buildPayloadRows = () => {
+    return actItems.map(row => ({
+      service_id: row.product_id,
+      quantity: Number(row.quantity),
+      price: Number(row.price),
+      total: Number(row.total),
+      components: (row.components || []).map(component => ({
+        material_id: component.material_id || component.product_id,
+        quantity: Number(component.quantity),
+        unit_id: component.unit_id,
+      }))
+    }));
+  };
+
+
   const submit = e => {
     e.preventDefault();
-    if (!values['act_date']) {
-      values['act_date'] = new Date();
-    }
-
-    values['rows'] = invoiceItems;
-    let haveErrorInRow = false;
-    invoiceItems.forEach(_row => {
-      if (!_row.product_id) {
-        haveErrorInRow = true;
-      }
-    });
+console.log(values)
+    const rows = buildPayloadRows();
+    // Проверка на пустые строки
+    const haveErrorInRow = rows.some(row => !row.service_id);
     if (haveErrorInRow) {
       dispatch(setShowTableError(true));
+      return;
+    }
+    const payload = {
+      act_number: values.act_number,
+      act_date: values.act_date,
+      clinic_id: values.clinic_id,
+      patient_id: values.patient_id,
+      doctor_id: values.doctor_id,
+      status: values.status,
+      visit_id: values.visit_id,
+      rows,
+    };
+    
+    if (formData.id) {
+      router.post(`/act/update?id=${formData.id}`, payload);
     } else {
-      const taxData = documentTax.split('_');
-      if (formData.id) {
-        console.log(values);
-        router.post(`/invoice-incoming/update?id=${formData.id}`, {
-          act_number: values.act_number,
-          act_date: values.act_date,
-          clinic_id: values.clinic_id,
-          patient_id: values.patient_id,
-          doctor_id: values.doctor_id,
-          status_id: values.status_id,
-          type_id: values.type_id,
-          rows: invoiceItems,
-        });
-      } else {
-        router.post('/invoice-incoming/update', {
-          act_number: values.act_number,
-          act_date: values.act_date,
-          clinic_id: values.clinic_id,
-          patient_id: values.patient_id,
-          doctor_id: values.doctor_id,
-          status_id: values.status_id,
-          type_id: values.type_id,
-          rows: invoiceItems,
-        });
-      }
+      router.post('/act/update', payload);
     }
   };
+
+
+  
+
 
   return (
     <section className={className}>
@@ -181,7 +185,7 @@ export default function Form({
                 <div className={`w-1/4`}>
                   <InputSelect
                     translatable={true}
-                    name={'status_id'}
+                    name={'status'}
                     className={'mb-1'}
                     values={values}
                     value={values.status_id}
@@ -208,11 +212,11 @@ export default function Form({
               <div className="mb-2">
                 <div className="flex gap-2">
                   <div className="w-1/4">
-                    <InputSelect
+                    <InputCustomerSelect
                       name={'patient_id'}
                       values={values}
                       value={values.patient_id}
-                      options={producerData}
+                      options={customerData}
                       onChange={handleChangeSelect}
                       required
                       label={msg.get('act.patient')}
@@ -238,16 +242,13 @@ export default function Form({
         </div>
 
         <div className="relative">
-          <table className="w-full invoice-table">
+          <table className="w-full invoice-table act-table">
             <thead>
               <tr>
-                <th className="pb-3">{msg.get('invoice.product')}</th>
-                <th className="pb-3 w-qty">{msg.get('invoice.qty')}</th>
-                <th className="pb-3">{msg.get('invoice.unit')}</th>
-                <th className="pb-3">{msg.get('invoice.factqty')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.price')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.tax')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.total')}</th>
+                <th className="pb-3">{msg.get('act.product')}</th>
+                <th className="pb-3 w-qty">{msg.get('act.qty')}</th>
+                <th className="pb-3 w-price">{msg.get('act.price')}</th>
+                <th className="pb-3 w-price">{msg.get('act.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
@@ -287,7 +288,7 @@ export default function Form({
               title={msg.get('invoice.back')}
               href={`/invoice-incoming`}
             >
-              {msg.get('invoice.back')}
+              {msg.get('act.back')}
             </Link>
             {formData.status_id != 2 && (
               <Link
@@ -295,7 +296,7 @@ export default function Form({
                 className="btn-submit"
                 onClick={e => submit(e)}
               >
-                {msg.get('invoice.save')}
+                {msg.get('act.save')}
               </Link>
             )}
 
@@ -307,7 +308,7 @@ export default function Form({
               leaveTo="opacity-0"
             >
               <p className="text-sm text-gray-600">
-                {msg.get('invoice.saved')}
+                {msg.get('act.saved')}
               </p>
             </Transition>
           </div>

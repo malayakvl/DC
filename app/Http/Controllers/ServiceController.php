@@ -166,6 +166,33 @@ class ServiceController extends Controller
         });
     }
 
+    public function findService(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+            
+            $resData = DB::table('pricings')->select('*')
+                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->get();
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findServiceItems(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $serviceId = $request->serviceId;
+            
+            $resData = DB::table('pricing_items')->select('pricing_items.*','materials.name AS product')
+                ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                ->where('pricing_id', '=', $serviceId)
+                ->get();
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
 
     /**
      * Update the specified resource in storage.
@@ -194,14 +221,10 @@ class ServiceController extends Controller
                         $pricingItem->unit_id = $row["unit_id"];
                         $pricingItem->material_id = $row["product_id"];
                         $pricingItem->quantity = $row["quantity"];
-                        // $pricingItem->price = $row["price"];
-                        // $pricingItem->total = ($row["quantity"])*floatval($row["price"]);
-                        // $total += ($row["quantity"])*floatval($row["price"]);
                         $pricingItem->save();
                     }
 
                 }
-                // $pricing->total = floatval($total) + floatval($request->price ? $request->price : 0);
                 $pricing->save();
             }
 

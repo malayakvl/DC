@@ -54,8 +54,8 @@ export default function List({ listData, permissions }) {
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
-                  <td className="">{item.invoice_number}</td>
-                  <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">{item.act_number}</td>
+                  <td className="">{format(new Date(item.act_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
                       src={`../../images/document-icons/${item.status}.svg`}

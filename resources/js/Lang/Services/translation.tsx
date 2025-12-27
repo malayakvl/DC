@@ -41,7 +41,7 @@ const lngServiceCategories = {
     back: 'Повернутись',
     percent: 'Наценка',
     'add': 'Додати послугу',
-    product: 'Матеріал',
+    product: 'Послуга',
     qty: 'Кількість',
     price: 'Ціна',
     total: 'Усього',

@@ -21,7 +21,7 @@ class InvoiceUpdateRequest extends FormRequest
             'supplier_id' => ['required'],
             'customer_id' => ['required'],
             'store_id' => ['required'],
-            'status_id' => ['required'],
+            'status' => ['required'],
             'currency_id' => ['required'],
             'tax_id' => ['required']
         ];

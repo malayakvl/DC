@@ -365,3 +365,23 @@ label.float-label {
 .input-inv-group {
     margin-top: -8px !important;
 }
+.service-item {
+    text-align: left;
+    color: #fff;
+    font-family: 'Roboto', Courier, monospace;
+    font-size: 14px;;
+}
+.services-block {
+    border: solid 1px #35466d;
+    background-color: #0f1525;
+}
+.title-service {
+    text-align: left;
+    color: #a486f0;
+    font-family: 'Montserrat', Courier, monospace;
+    font-size: 14px;
+    display: inline-block;
+    width: 100%;
+    padding-left: 10px;
+    font-weight: bold;
+}

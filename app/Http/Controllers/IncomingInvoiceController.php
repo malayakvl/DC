@@ -135,8 +135,6 @@ class IncomingInvoiceController extends Controller
                     ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
                     ->where('stores.clinic_id', $request->session()->get('clinic_id'))
                     ->orderBy('name')->get();
-                // $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-                $statusData = InvoiceStatus::all();
                 $currencyData = Currency::all();
                 $unitsData = Unit::all();
                 $taxData = Tax::all();
@@ -170,11 +168,6 @@ class IncomingInvoiceController extends Controller
                     ->get();
 
 
-                // $customerData = DB::table('core.users')
-                //     ->select('core.users.*')
-                //     ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                //     ->where('clinic_id', $clinicData->id)
-                //     ->orderBy('name')->get();
                 return Inertia::render('InvoiceIncoming/Create', [
                     'clinicData' => $clinicData,
                     'filialData' => $storeData,
@@ -201,42 +194,56 @@ class IncomingInvoiceController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('invoice-incoming-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-//            $storeData = Store::where('clinic_id', $clinicData->id)->get();
-            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-            $statusData = InvoiceStatus::all();
-            $typeData = InvoiceType::all();
-            $unitsData = Unit::all();
-            $formData = Invoice::find($id);
-            $currencyData = Currency::all();
-            $taxData = Tax::all();
-            $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
-                ->leftJoin('materials', 'materials.id', '=', 'invoice_items.product_id')
-                ->where('invoice_id', $id)->get();
-            $producerData = Producer::all();
-            $customerData = DB::table('users')
-                ->select('users.*')
-                ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            return Inertia::render('InvoiceIncoming/Edit', [
-                'clinicData' => $clinicData,
-                'filialData' => $storeData,
-                'formData' => $formData,
-                'formRowData' => $rowData,
-                'storeData' => $storeData,
-                'customerData' => $customerData,
-                'producerData' => $producerData,
-                'statusData' => $statusData,
-                'typeData' => $typeData,
-                'currencyData' => $currencyData,
-                'unitsData' => $unitsData,
-                'taxData' => $taxData
-            ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('invoice-incoming-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                $storeData = DB::table('stores')
+                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
+                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
+                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
+                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
+                    ->orderBy('name')->get();
+                $typeData = array();
+                $unitsData = Unit::all();
+                $formData = Invoice::find($id);
+                $currencyData = Currency::all();
+                $taxData = Tax::all();
+                $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
+                    ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
+                    ->where('invoice_id', $id)->get();
+                $producerData = Producer::all();
+                
+                $customerData = DB::table('core.clinic_user')
+                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                    ->select(
+                        'users.id',
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email'
+                    )
+                    ->where('clinic_user.clinic_id', $clinicId)
+                    ->orderBy('users.last_name')
+                    ->get();
 
-        } else {
+                return Inertia::render('InvoiceIncoming/Edit', [
+                    'clinicData' => $clinicData,
+                    'filialData' => $storeData,
+                    'formData' => $formData,
+                    'formRowData' => $rowData,
+                    'storeData' => $storeData,
+                    'customerData' => $customerData,
+                    'producerData' => $producerData,
+                    'statusData' => Invoices::INVOICE_STATUSES,
+                    'typeData' => $typeData,
+                    'currencyData' => $currencyData,
+                    'unitsData' => $unitsData,
+                    'taxData' => $taxData
+                ]);
 
-        }
+            } else {
+
+            }
+        });
     }
 
 
@@ -393,7 +400,7 @@ class IncomingInvoiceController extends Controller
             $invoice->fill($request->validated());
             $invoice->invoice_number = $request->invoice_number;
             $invoice->invoice_date = $request->invoice_date;
-            $invoice->status = $request->status_id; // draft / done
+            $invoice->status = $request->status; // draft / done
             $invoice->type_id = 1; // 1 = приход
             $invoice->tax_id = $request->tax_id;
             $invoice->currency_id = $request->currency_id;
@@ -435,7 +442,7 @@ class IncomingInvoiceController extends Controller
 
                 $totalAmount += $row['total'];
 
-                if ($request->status_id === 'posted') {
+                if ($request->status === 'posted') {
                     // Создаем партию на складе
                     $batch = new StoreBatches();
                     $batch->store_id = $storeId;
@@ -467,9 +474,8 @@ class IncomingInvoiceController extends Controller
             // Обновляем общую сумму накладной
             $invoice->total_amount = $totalAmount;
             $invoice->save();
-            if ($request->status_id === 'posted')
+            if ($request->status === 'posted')
                 $this->updateStoreBalancesAndMaterials($request->store_id, $invoice->id);
-
 
             return redirect()->route('invoice.incoming.index');
         });
@@ -496,6 +502,7 @@ class IncomingInvoiceController extends Controller
                 ],
                 [
                     'qty' => $batch->qty,
+                    'created_at' => now(),
                     'updated_at' => now()
                 ]
             );

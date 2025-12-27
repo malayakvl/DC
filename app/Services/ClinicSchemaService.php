@@ -761,6 +761,7 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 act_id BIGINT NOT NULL,
                 service_id BIGINT NOT NULL,
+                components JSONB,
 
                 qty NUMERIC(12,2) NOT NULL DEFAULT 1 CHECK (qty > 0),
                 price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
@@ -886,6 +887,7 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,4) NOT NULL,
                 document_type VARCHAR(50),
                 document_id BIGINT,
+                act_item_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

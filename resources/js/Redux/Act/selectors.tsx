@@ -5,10 +5,11 @@ import { useSelector } from 'react-redux';
 // ------------------------------------
 const rootSelector = createSelector(
   state => state,
-  pricing => pricing
+  act => act
 );
 
-export const pricingItemsSelector = state => state.pricing.priceItems;
-export const totalPriceItemsSelector = state => state.pricing.totalPrice;
+export const actItemsSelector = state =>
+  state.act.invoiceItems;
+export const invoiceTaxSelector = state => state.act.invoiceTax;
 export const tableErrorSelector = state =>
-  state.incominginvoices.showTableError;
+  state.act.showTableError;
