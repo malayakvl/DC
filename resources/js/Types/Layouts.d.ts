@@ -22,6 +22,8 @@ declare namespace Layouts {
         isSidebarOpen: boolean;
         isMobileDevice: boolean | null;
         isDataLoading: boolean;
+        isPopupActive: boolean;
+        showOverlay: boolean;
         toasts: Toast[];
         checkedIds: checkedIds[];
         modalConfirmationMeta: ModalConfirmationMeta | null;
@@ -40,6 +42,7 @@ declare namespace Layouts {
         showTextingMenu: boolean;
         showProfileMenu: boolean;
         selectedLng: string;
+        appLang: string;
         showEmailNotification: boolean;
         nativeBrowser: boolean;
         openRealBrowser: boolean;

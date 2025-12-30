@@ -4,6 +4,7 @@ import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
@@ -26,7 +27,6 @@ import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
 
 export default function Form({
   clinicData,
-  storeData,
   statusData,
   typeData,
   patientsData,
@@ -35,7 +35,6 @@ export default function Form({
   formRowData = null,
   currencyData,
   unitsData,
-  taxData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
@@ -43,7 +42,7 @@ export default function Form({
     messages: lngAct,
     locale: appLang,
   });
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const actItems = useSelector(actItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
@@ -56,6 +55,7 @@ export default function Form({
     patient_id: formData.patient_id,
     doctor_id: formData.doctor_id,
     status: formData.status,
+    status_id: formData.status,
     visit_id: formData.visit_id,
     comment: formData.comment,
   });
@@ -126,14 +126,13 @@ export default function Form({
       visit_id: values.visit_id,
       rows,
     };
-    
+
     if (formData.id) {
       router.post(`/act/update?id=${formData.id}`, payload);
     } else {
       router.post('/act/update', payload);
     }
   };
-
 
   return (
     <section className={className}>
@@ -192,15 +191,15 @@ export default function Form({
                   />
                 </div>
                 <div className="w-1/4">
-                    <InputCustomerSelect
-                      name={'doctor_id'}
-                      values={values}
-                      value={values.doctor_id}
-                      options={customerData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('act.doctor')}
-                    />
+                  <InputCustomerSelect
+                    name={'doctor_id'}
+                    values={values}
+                    value={values.doctor_id}
+                    options={customerData}
+                    onChange={handleChangeSelect}
+                    required
+                    label={msg.get('act.doctor')}
+                  />
                 </div>
               </div>
             </div>
@@ -277,23 +276,22 @@ export default function Form({
           >
             {msg.get('invoice.rows.error')}
           </div>
-          <hr/>
+          <hr />
           <div className="float-right pt-3">
             <Link
               className="btn-back"
               title={msg.get('invoice.back')}
-              href={`/invoice-incoming`}
+              href={`/acts`}
             >
               {msg.get('act.back')}
             </Link>
             {formData.status_id != 2 && (
-              <Link
+              <PrimaryButton
                 disabled={processing}
-                className="btn-submit"
                 onClick={e => submit(e)}
               >
                 {msg.get('act.save')}
-              </Link>
+              </PrimaryButton>
             )}
 
             <Transition

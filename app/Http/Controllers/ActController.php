@@ -214,15 +214,51 @@ class ActController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if ($request->user()->can('act-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-    //            $storeData = Store::where('clinic_id', $clinicData->id)->get();
-                // $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-                // $typeData = InvoiceType::all();
                 $formData = Act::find($id);
                 $currencyData = Currency::all();
                 $taxData = Tax::all();
                 $rowData = ActItem::select('act_items.*', 'pricings.name as product')
                     ->leftJoin('pricings', 'pricings.id', '=', 'act_items.service_id')
                     ->where('act_id', $id)->get();
+
+                // Collection of IDs to batch load names
+                $materialIds = [];
+                $unitIds = [];
+                foreach ($rowData as $item) {
+                    $components = is_array($item->components) ? $item->components : json_decode($item->components ?? '[]', true);
+                    foreach ($components as $component) {
+                        if (!empty($component['material_id'])) $materialIds[] = $component['material_id'];
+                        if (!empty($component['unit_id'])) $unitIds[] = $component['unit_id'];
+                    }
+                }
+
+                // Create associative arrays for quick lookup: [id => name]
+                $materialMap = DB::table('materials')
+                    ->whereIn('id', array_unique($materialIds))
+                    ->pluck('name', 'id')
+                    ->toArray();
+
+                $unitMap = Unit::whereIn('id', array_unique($unitIds))
+                    ->pluck('name', 'id')
+                    ->toArray();
+
+                // Enrich components with display names
+                $rowData->each(function ($item) use ($materialMap, $unitMap) {
+                    $components = is_array($item->components) ? $item->components : json_decode($item->components ?? '[]', true);
+                    foreach ($components as &$component) {
+                        $mId = $component['material_id'] ?? null;
+                        $uId = $component['unit_id'] ?? null;
+                        
+                        if ($mId && isset($materialMap[$mId])) {
+                            $component['product'] = $materialMap[$mId];
+                        }
+                        if ($uId && isset($unitMap[$uId])) {
+                            $component['unit_name'] = $unitMap[$uId];
+                        }
+                    }
+                    $item->components = $components;
+                });
+                
                 $typeData = array();
                 $patientsData = DB::table('patients')
                     ->join('core.users', 'core.users.id', '=', 'patients.user_id')
@@ -232,9 +268,9 @@ class ActController extends Controller
                         'users.email',
                         'patients.id'
                     )
+                    ->distinct()
                     ->orderBy('users.last_name')
                     ->get();
-// dd($patientsData);exit;
                 $customerData = DB::table('core.clinic_user')
                     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
                     ->select(
@@ -244,6 +280,7 @@ class ActController extends Controller
                         'users.email'
                     )
                     ->where('clinic_user.clinic_id', $clinicId)
+                    ->distinct()
                     ->orderBy('users.last_name')
                     ->get();
 

@@ -1,7 +1,8 @@
 declare namespace State {
     interface Root {
-        layouts: Layouts;
+        layout: Layouts;
         staff: Staffs;
+        service: any;
     }
 
     type Layouts = Layouts.Root;

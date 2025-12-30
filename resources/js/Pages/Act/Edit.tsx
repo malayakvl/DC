@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
+import React from 'react';
 
 export default function Edit({
   clinicData,
@@ -16,8 +17,8 @@ export default function Edit({
 }) {
   console.log(unitsData)
   return (
-    <AuthenticatedLayout header={<Head title="Invoice" />}>
-      <Head title="Invoice" />
+    <AuthenticatedLayout header={<Head title="Act" />}>
+      <Head title="Act" />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
@@ -31,7 +32,6 @@ export default function Edit({
               formRowData={formRowData}
               currencyData={currencyData}
               unitsData={unitsData}
-              taxData={taxData}
               className="w-full"
             />
           </div>

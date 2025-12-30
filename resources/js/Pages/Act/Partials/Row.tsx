@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
-  emptyServicesAutocompleteAction, 
+  emptyServicesAutocompleteAction,
   findServiceAction,
   fincServiceItemsAction
 } from '../../../Redux/Service';
@@ -23,18 +24,18 @@ export default function AddDynamicInputFields({
   lastRow = null,
   unitsData
 }) {
-  const appLang = useSelector(appLangSelector);
+  const appLang = useAppSelector(appLangSelector);
   const msg = new Lang({
     messages: lngAct,
     locale: appLang,
   });
-
+  console.log(formRowData);
   const [inputs, setInputs] = useState(formRowData);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [hideFields, setHideFields] = useState(false);
-  const serchResults = useSelector(searchResultServicesSelector);
-  const serviceItemsByRow = useSelector(state => state.service.searchResultElementsServices);
-  const actRows = useSelector(actItemsSelector);
+  const serchResults = useAppSelector(searchResultServicesSelector);
+  const serviceItemsByRow = useAppSelector(state => state.service.searchResultElementsServices);
+  const actRows = useAppSelector(actItemsSelector);
   const [numRow, setNumRow] = useState(0);
   const inputRefs = useRef([]);
   const [autocompletePos, setAutocompletePos] = useState({
@@ -43,8 +44,8 @@ export default function AddDynamicInputFields({
     width: 0
   });
   const [activeRow, setActiveRow] = useState(0);
-  
 
+  console.log(inputs);
   const handleAddInput = () => {
     setInputs([
       ...inputs,
@@ -91,21 +92,21 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
-      
+
     } else if (name === 'minusBtn') {
-      const _factPerUnit = inputs[index].fact_qty/inputs[index].quantity;
+      const _factPerUnit = inputs[index].fact_qty / inputs[index].quantity;
       inputs[index].quantity =
         inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
       inputs[index].total = (
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
-      
-    } 
+
+    }
     setInputs(onChangeValue);
   };
 
-// Removed old reference to serviceItems as it's no longer used directly
+  // Removed old reference to serviceItems as it's no longer used directly
 
   const handleDeleteInput = index => {
     const newArray = [...inputs];
@@ -148,18 +149,18 @@ export default function AddDynamicInputFields({
     dispatch(updateServiceItemQtyAction(rowIndex, itemIndex, newQty));
   };
 
-  // const calcPos = (index) => {
-  //   // Get service items for this specific row to calculate height adjustment
-  //   const rowServiceItems = serviceItemsByRow[index] || [];
-  //   // Base position calculation plus additional space for service components if they exist
-  //   const serviceComponentsHeight = rowServiceItems.length > 0 ? rowServiceItems.length * 25 : 0; // Approximate height per service component
-    
-  //   if (index >= 1) {
-  //     return (73 + index*10) + 33*index + serviceComponentsHeight;
-  //   } else {
-  //     return (index + 1)*73 + serviceComponentsHeight;
-  //   }
-  // }
+  const calcPos = (index) => {
+    // Get service items for this specific row to calculate height adjustment
+    const rowServiceItems = serviceItemsByRow[index] || [];
+    // Base position calculation plus additional space for service components if they exist
+    const serviceComponentsHeight = rowServiceItems.length > 0 ? rowServiceItems.length * 25 : 0; // Approximate height per service component
+
+    if (index >= 1) {
+      return (73 + index * 10) + 33 * index + serviceComponentsHeight;
+    } else {
+      return (index + 1) * 73 + serviceComponentsHeight;
+    }
+  }
 
   const renderSearchProducerResultOld = index => {
     if (serchResults.length > 0) {
@@ -231,7 +232,7 @@ export default function AddDynamicInputFields({
 
                   return updated;
                 });
-                
+
                 // Fetch service components and update the Redux state
                 dispatch(fincServiceItemsAction(_res.id, numRow));
               }}
@@ -253,47 +254,54 @@ export default function AddDynamicInputFields({
           <td className="w-product  pb-2">
             <div className="relative">
               <input
-                ref={el => inputRefs.current[index] = el}
+                ref={el => { inputRefs.current[index] = el; }}
                 name="product"
                 className="input-text input-invoice material-input"
                 type="text"
                 value={item.product}
                 onChange={event => handleChange(event, index)}
               />
-              {
-                (() => {
-                  const currentInput = inputs[index];
-                  const rowComponents = currentInput?.components || [];
-                  return rowComponents.length > 0 && (
-                    <div className="mt-1 text-xs bg-black p-2 text-white services-block">
-                      <span className="title-service">{msg.get('act.title.components')}</span>
-                      <ul className="list-disc pl-5 mt-1">
-                        {rowComponents.map((component, idx) => (
-                          <li key={idx} className="flex items-center justify-between py-0.5">
-                            <span className="flex-1 text-white service-item">{component.product}</span>
-                            <div className="flex items-center space-x-2">
-                              <input
-                                type="text"
-                                className="input-text w-16 px-1 py-0.5 text-xs"
-                                value={component.quantity}
-                                onChange={(e) => {
-                                  const newQty = parseFloat(e.target.value) || 0;
-                                  handleServiceItemQuantityChange(index, idx, newQty);
-                                }}
-                              />
-                              <span>{component.unit_name || component.unit || ''}</span>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })()
-              }
+              {(() => {
+                const currentInput = inputs[index];
+                let rowComponents = currentInput?.components || [];
+
+                if (typeof rowComponents === 'string') {
+                  try {
+                    rowComponents = JSON.parse(rowComponents);
+                  } catch (e) {
+                    rowComponents = [];
+                  }
+                }
+
+                return rowComponents.length > 0 && (
+                  <div className="mt-1 text-xs bg-black p-2 text-white services-block">
+                    <span className="title-service">{msg.get('act.title.components')}</span>
+                    <ul className="list-disc pl-5 mt-1">
+                      {rowComponents.map((component, idx) => (
+                        <li key={idx} className="flex items-center justify-between py-0.5 border-b border-gray-800 last:border-0">
+                          <span className="flex-1 text-white service-item truncate">{component.product}</span>
+                          <div className="flex items-center space-x-2 shrink-0">
+                            <input
+                              type="text"
+                              className="input-text w-16 px-1 py-0.5 text-xs text-center"
+                              value={component.quantity}
+                              onChange={(e) => {
+                                const newQty = parseFloat(e.target.value) || 0;
+                                handleServiceItemQuantityChange(index, idx, newQty);
+                              }}
+                            />
+                            <span className="w-12 text-left text-[10px] text-gray-400">{component.unit_name || component.unit || ''}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
             </div>
 
           </td>
-          <td className="w-qty pb-2 mx-auto" style={{verticalAlign: 'top'}}>
+          <td className="w-qty pb-2 mx-auto" style={{ verticalAlign: 'top' }}>
             <div className="row flex ml-[40px] pl-[10px] input-inv-group pt-[8px]">
               <button
                 name="minusBtn"
@@ -324,7 +332,7 @@ export default function AddDynamicInputFields({
               </button>
             </div>
           </td>
-          <td className="w-price text-center pb-2 pl-[30px]" style={{verticalAlign: 'top'}}>
+          <td className="w-price text-center pb-2 pl-[30px]" style={{ verticalAlign: 'top' }}>
             <input
               className="input-text price input-invoice text-center"
               name="price"
@@ -333,7 +341,7 @@ export default function AddDynamicInputFields({
               onChange={event => handleChange(event, index)}
             />
           </td>
-          <td className="w-price text-center pb-2 pl-[30px]" style={{verticalAlign: 'top'}}>
+          <td className="w-price text-center pb-2 pl-[30px]" style={{ verticalAlign: 'top' }}>
             <input
               className="input-text price input-invoice text-center"
               name="total"
@@ -342,7 +350,7 @@ export default function AddDynamicInputFields({
             />
           </td>
           {/* BUTTUNS */}
-          <td className="w-btn pb-2" style={{verticalAlign: 'top'}}>
+          <td className="w-btn pb-2" style={{ verticalAlign: 'top' }}>
             {inputs.length > 1 && (
               <button
                 onClick={() => handleDeleteInput(index)}
@@ -350,7 +358,7 @@ export default function AddDynamicInputFields({
               />
             )}
           </td>
-          <td className="w-btn pb-2" style={{verticalAlign: 'top'}}>
+          <td className="w-btn pb-2" style={{ verticalAlign: 'top' }}>
             {index === inputs.length - 1 && !lastRow && (
               <button onClick={() => handleAddInput()} className="btn-plus" />
             )}
@@ -360,7 +368,7 @@ export default function AddDynamicInputFields({
       <tr>
         <td colSpan={6}>
           <div className="body hidden"> {JSON.stringify(inputs)} </div>
-          <div className="text-left">{renderSearchProducerResult(numRow)}</div>
+          <div className="text-left">{renderSearchProducerResult()}</div>
         </td>
       </tr>
     </>

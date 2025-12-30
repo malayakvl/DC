@@ -14,4 +14,8 @@ class ActItem extends Model
         'total',
         'components'
     ];
+
+    protected $casts = [
+        'components' => 'array',
+    ];
 }
