@@ -29,7 +29,7 @@ export default function Form({
   storeData,
   statusData,
   typeData,
-  producerData,
+  patientsData,
   customerData,
   formData,
   formRowData = null,
@@ -50,8 +50,8 @@ export default function Form({
   const actRows = useSelector(actItemsSelector);
 
   const [values, setValues] = useState({
-    act_number: formData.invoice_number ? formData.invoice_number : '',
-    act_date: formData.invoice_date,
+    act_number: formData.act_number ? formData.act_number : '',
+    act_date: formData.act_date,
     clinic_id: clinicData.id,
     patient_id: formData.patient_id,
     doctor_id: formData.doctor_id,
@@ -59,7 +59,6 @@ export default function Form({
     visit_id: formData.visit_id,
     comment: formData.comment,
   });
-
   const { processing, recentlySuccessful } = useForm();
 
   const handleChangeSelect = e => {
@@ -109,7 +108,7 @@ export default function Form({
 
   const submit = e => {
     e.preventDefault();
-console.log(values)
+
     const rows = buildPayloadRows();
     // Проверка на пустые строки
     const haveErrorInRow = rows.some(row => !row.service_id);
@@ -136,14 +135,11 @@ console.log(values)
   };
 
 
-  
-
-
   return (
     <section className={className}>
       <header>
         <h2>
-          <Link className="icon-back" href={'/invoice-incoming'}>
+          <Link className="icon-back" href={'/acts'}>
             &nbsp;
           </Link>
           {formData?.id
@@ -216,7 +212,7 @@ console.log(values)
                       name={'patient_id'}
                       values={values}
                       value={values.patient_id}
-                      options={customerData}
+                      options={patientsData}
                       onChange={handleChangeSelect}
                       required
                       label={msg.get('act.patient')}

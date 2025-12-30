@@ -309,7 +309,7 @@ export default function AddDynamicInputFields({
                 className="qty text-center"
                 name="qty"
                 type="text"
-                value={item.quantity}
+                value={item.qty}
                 onChange={event => handleChange(event, index)}
               />
               <button

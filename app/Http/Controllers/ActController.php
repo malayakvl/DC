@@ -84,7 +84,6 @@ class ActController extends Controller
             }
 
             $acts = $query->get();
-// dd($acts);exit;
             return Inertia::render('Act/List', [
                 'clinicData' => $clinic,
                 'listData'   => $acts
@@ -212,42 +211,56 @@ class ActController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('invoice-incoming-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-//            $storeData = Store::where('clinic_id', $clinicData->id)->get();
-            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-            $statusData = InvoiceStatus::all();
-            $typeData = InvoiceType::all();
-            $unitsData = Unit::all();
-            $formData = Invoice::find($id);
-            $currencyData = Currency::all();
-            $taxData = Tax::all();
-            $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
-                ->leftJoin('materials', 'materials.id', '=', 'invoice_items.product_id')
-                ->where('invoice_id', $id)->get();
-            $producerData = Producer::all();
-            $customerData = DB::table('users')
-                ->select('users.*')
-                ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            return Inertia::render('InvoiceIncoming/Edit', [
-                'clinicData' => $clinicData,
-                'filialData' => $storeData,
-                'formData' => $formData,
-                'formRowData' => $rowData,
-                'storeData' => $storeData,
-                'customerData' => $customerData,
-                'producerData' => $producerData,
-                'statusData' => $statusData,
-                'typeData' => $typeData,
-                'currencyData' => $currencyData,
-                'unitsData' => $unitsData,
-                'taxData' => $taxData
-            ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('act-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+    //            $storeData = Store::where('clinic_id', $clinicData->id)->get();
+                // $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
+                // $typeData = InvoiceType::all();
+                $formData = Act::find($id);
+                $currencyData = Currency::all();
+                $taxData = Tax::all();
+                $rowData = ActItem::select('act_items.*', 'pricings.name as product')
+                    ->leftJoin('pricings', 'pricings.id', '=', 'act_items.service_id')
+                    ->where('act_id', $id)->get();
+                $typeData = array();
+                $patientsData = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->select(
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email',
+                        'patients.id'
+                    )
+                    ->orderBy('users.last_name')
+                    ->get();
+// dd($patientsData);exit;
+                $customerData = DB::table('core.clinic_user')
+                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                    ->select(
+                        'users.id',
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email'
+                    )
+                    ->where('clinic_user.clinic_id', $clinicId)
+                    ->orderBy('users.last_name')
+                    ->get();
 
-        } else {
-
-        }
+                return Inertia::render('Act/Edit', [
+                    'clinicData' => $clinicData,
+                    'formData' => $formData,
+                    'patientsData'=> $patientsData,
+                    'formRowData' => $rowData,
+                    'customerData' => $customerData,
+                    'statusData' => Invoices::INVOICE_STATUSES,
+                    'typeData' => $typeData,
+                ]);
+            } else {
+                return Inertia::render('Layouts/NoPermission', [
+                ]);
+            }
+        });
     }
 
 

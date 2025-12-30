@@ -71,12 +71,12 @@ export default function List({ listData, permissions }) {
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}
-                      href={`invoice-incoming/edit/${item.id}`}
+                      href={`act/edit/${item.id}`}
                     />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                      href={`invoice-incoming/delete/${item.id}`}
+                        href={`act/delete/${item.id}`}
                     />
                   </td>
                 </tr>

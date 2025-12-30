@@ -71,7 +71,7 @@ export default function Form({
       });
     }
   };
-
+console.log('here')
   return (
     <section className={className}>
       <header>
@@ -146,10 +146,12 @@ export default function Form({
                       product_id: '',
                       product: '',
                       quantity: '',
+                      unit_id: '',
                       price: '',
                       total: '',
                     },
                   ]}
+                  unitData={unitData}
                 />
               )}
             </tbody>

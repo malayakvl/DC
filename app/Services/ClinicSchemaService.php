@@ -293,7 +293,6 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 discount DOUBLE PRECISION NOT NULL DEFAULT 0,
-                clinic_id INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -548,6 +547,41 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        DB::statement("
+            CREATE TABLE patients (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                medical_card_no VARCHAR(50),
+                registered_at DATE,
+                patient_status_id BIGINT,
+                discount DOUBLE PRECISION DEFAULT 0,
+                balance NUMERIC(12,2) DEFAULT 0,
+                visits_count INT DEFAULT 0,
+                last_visit DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+        CREATE TABLE patient_login_links (
+            id BIGSERIAL PRIMARY KEY,
+            patient_id BIGINT NOT NULL,
+            token VARCHAR(255) NOT NULL,
+            expires_at TIMESTAMP WITHOUT TIME ZONE,
+            used_at TIMESTAMP WITHOUT TIME ZONE,
+            created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            CONSTRAINT patient_login_links_patient_fk
+                FOREIGN KEY (patient_id)
+                REFERENCES clinic_18.patients(id)
+                ON DELETE CASCADE
+        );
+
+            CREATE UNIQUE INDEX patient_login_links_token_uq
+                ON clinic_18.patient_login_links (token);
+            ");
+
     }
 
     /**

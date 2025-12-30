@@ -102,8 +102,6 @@ class ServiceController extends Controller
             if ($request->user()->can('store-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $categories = PriceCategory::where('parent_id', null)
-                    // ->where('clinic_id', $clinicData->id)
-                    // ->orWhere('special', true)
                     ->get();
                 $arrCat = array();
                 $tree = $this->generateCategories($categories, $arrCat, 0);

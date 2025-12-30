@@ -7,8 +7,7 @@ export default function Edit({
   statusData,
   typeData,
   customerData,
-  producerData,
-  storeData,
+  patientsData,
   formData,
   formRowData,
   currencyData,
@@ -27,13 +26,12 @@ export default function Edit({
               statusData={statusData}
               typeData={typeData}
               customerData={customerData}
-              producerData={producerData}
-              storeData={storeData}
+              patientsData={patientsData}
               formData={formData}
               formRowData={formRowData}
               currencyData={currencyData}
-              taxData={taxData}
               unitsData={unitsData}
+              taxData={taxData}
               className="w-full"
             />
           </div>

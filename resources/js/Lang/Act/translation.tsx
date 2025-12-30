@@ -43,7 +43,10 @@ const lngAct = {
     'rows.error': 'Заповніть табличну частину',
     cancelissue: 'Відмінити проведення',
     factqty: 'Фактична кіл-ть',
-    unit: 'Од. вим.'
+    unit: 'Од. вим.',
+    doctor: 'Лікар' ,
+    patient: 'Пацієнт',
+    visits: 'Візит',
   },
 };
 export default lngAct;
