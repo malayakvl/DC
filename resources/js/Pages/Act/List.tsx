@@ -49,7 +49,7 @@ export default function List({ listData, permissions }) {
               </header>
             </section>
             <DataTable
-              paginationType={PaginationType.INCOMINGINVOICES}
+              paginationType={PaginationType.ACTS}
               sendRequest={sendRequest}
             >
               {listData?.map(item => (
@@ -64,9 +64,9 @@ export default function List({ listData, permissions }) {
                       className="icon-doc"
                     />
                   </td>
-                  <td className="">{item.storeName}</td>
-                  <td className="">{item.producerName}</td>
-                  <td className="">{item.customerName}</td>
+                  <td className="">{item.patientName}</td>
+                  <td className="">{item.doctorName}</td>
+                  <td className="">{item.total_amount}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"

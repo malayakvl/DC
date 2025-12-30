@@ -23,6 +23,7 @@ const initialState: State.Layouts = {
         [PaginationType.INCOMINGINVOICES]: { ...initPagination },
         [PaginationType.OUTGOINGINVOICES]: { ...initPagination },
         [PaginationType.CHANGEINVOICES]: { ...initPagination },
+        [PaginationType.ACTS]: { ...initPagination },
         [PaginationType.CURRENCY]: { ...initPagination },
         [PaginationType.SERVCATEGORIES]: { ...initPagination },
         [PaginationType.UNITS]: { ...initPagination },

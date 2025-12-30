@@ -24,7 +24,8 @@ const lngHeader = {
     clinic: 'Мy Clinic',
     currencies: 'Currencies',
     taxes: 'Taxes',
-    import: 'Import'
+    import: 'Import',
+    act: 'Акти виконаних робіт',
   },
   'uk.menu': {
     dashboard: 'Панель керування',
@@ -69,6 +70,7 @@ const lngHeader = {
     register: 'Зареєструватись',
     'no.filial': 'Філіал не обрано',
     'no.clinic': 'Клініка не обрана',
+    act: 'Акти виконаних робіт',
 
   },
 };

@@ -70,7 +70,7 @@ class ActController extends Controller
             $query = DB::table('acts')
                 ->select(
                     'acts.*',
-                    'patient_user.name as patientName',
+                    'patient_user.first_name as patientName',
                     'doctor_user.name as doctorName'
                 )
                 ->leftJoin('clinic_filial_user as patient_cf', 'patient_cf.id', '=', 'acts.patient_id')

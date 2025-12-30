@@ -995,7 +995,7 @@ class ClinicSchemaService
      */
     protected function createDefaultRoles(): void
     {
-        $defaultRoles = ['ceo', 'ceo_filial', 'doctor', 'nurse', 'receptionist'];
+        $defaultRoles = ['ceo', 'ceo_filial', 'doctor', 'nurse', 'receptionist', 'patient'];
         
         foreach ($defaultRoles as $roleName) {
             DB::table('roles')->insert([

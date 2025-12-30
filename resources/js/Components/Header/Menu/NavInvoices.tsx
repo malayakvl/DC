@@ -17,7 +17,9 @@ export default function NavInvoices(props) {
   if (
     permissions['invoice-incoming-all'] ||
     permissions['invoice-outgoing-all'] ||
-    permissions['invoice-exchange-all']
+    permissions['invoice-exchange-all'] ||
+    permissions['report-all'] ||
+    permissions['act-all']
   ) {
     showMenuInvoice = true;
   }
@@ -39,13 +41,6 @@ export default function NavInvoices(props) {
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
           >
             <div>
-              {permissions['price-all'] && (
-                <MenuItem>
-                  <Link className="submenu" href={'/pricing'}>
-                    {lng.get('menu.price')}
-                  </Link>
-                </MenuItem>
-              )}
               {permissions['store-create'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/store-report'}>
@@ -71,6 +66,13 @@ export default function NavInvoices(props) {
                 <MenuItem>
                   <Link className="submenu" href={'/invoice-change'}>
                     {lng.get('menu.invoice-change')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['act-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/acts'}>
+                    {lng.get('menu.act')}
                   </Link>
                 </MenuItem>
               )}
