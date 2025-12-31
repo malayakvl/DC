@@ -52,6 +52,11 @@ const lngHeaders = {
     role: 'Роль',
     first_name: 'Ім\'я',
     last_name: 'Прізвище',
+    patient: 'Пацієнт',
+    doctor: 'Лікар',
+    total_amount: 'Загальна сума',
+    amount: 'Сума',
+    payment: 'Сплачено',
   },
 };
 export default lngHeaders;

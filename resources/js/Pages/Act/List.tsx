@@ -64,9 +64,10 @@ export default function List({ listData, permissions }) {
                       className="icon-doc"
                     />
                   </td>
-                  <td className="">{item.patientName}</td>
-                  <td className="">{item.doctorName}</td>
+                  <td className="">{item.patient_first_name} {item.patient_last_name}</td>
+                  <td className="">{item.doctor_first_name} {item.doctor_last_name}</td>
                   <td className="">{item.total_amount}</td>
+                  <td className="">{item.payment_amount}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"
@@ -76,8 +77,7 @@ export default function List({ listData, permissions }) {
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                        href={`act/delete/${item.id}`}
-                    />
+                      href={`act/delete/${item.id}`} children={undefined} />
                   </td>
                 </tr>
               ))}
