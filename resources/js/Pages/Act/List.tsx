@@ -13,6 +13,7 @@ import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import Pagination from './Partials/Pagination';
+import Filters from './Partials/Filters';
 
 export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
@@ -49,6 +50,9 @@ export default function List({ listData, permissions }) {
                 </div>
               </header>
             </section>
+
+            <Filters />
+
             <Pagination listData={listData} />
             <DataTable
               paginationType={PaginationType.ACTS}

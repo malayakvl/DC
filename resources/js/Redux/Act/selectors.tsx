@@ -13,3 +13,5 @@ export const actItemsSelector = state =>
 export const invoiceTaxSelector = state => state.act.invoiceTax;
 export const tableErrorSelector = state =>
   state.act.showTableError;
+export const actFiltersSelector = state => state.act.filters;
+export const actClearFiltersSelector = state => state.act.isClear;

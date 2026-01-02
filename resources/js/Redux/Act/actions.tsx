@@ -11,3 +11,6 @@ export const updateServiceItemQtyAction = createAction(
   'act/UPDATE_SERVICE_ITEM_QTY',
   (rowIndex, itemIndex, qty) => ({ rowIndex, itemIndex, qty })
 );
+export const setFilters = createAction('act/SET_FILTERS');
+
+export const clearFilters = createAction('act/CLEAR_FILTERS');

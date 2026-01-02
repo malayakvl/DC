@@ -71,13 +71,13 @@ const ACTION_HANDLERS: any = {
         })
     },
     [setPopupAction]: {
-        next: (state: State.Layouts, action: Action<string>): State.Layouts => ({
+        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
             ...state,
             isPopupActive: action.payload
         })
     },
     [showOverlayAction]: {
-        next: (state: State.Layouts, action: Action<string>): State.Layouts => ({
+        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
             ...state,
             showOverlay: action.payload
         })
