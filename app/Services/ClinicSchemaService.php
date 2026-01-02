@@ -401,17 +401,16 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS audit_logs (
                 id BIGSERIAL PRIMARY KEY,
                 user_id BIGINT NOT NULL,
-                action VARCHAR(50) NOT NULL,
-                entity_type VARCHAR(100),
-                entity_id BIGINT,
+                entity_type VARCHAR(255) NOT NULL,
+                entity_id BIGINT NOT NULL,
+                action VARCHAR(255) NOT NULL,
+                old_data JSON,
+                new_data JSON,
                 clinic_id BIGINT,
                 filial_id BIGINT,
-                old_data JSONB,
-                new_data JSONB,
-                ip_address VARCHAR(45),
-                user_agent TEXT,
-                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                ip_address VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 

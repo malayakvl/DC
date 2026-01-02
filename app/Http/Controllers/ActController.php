@@ -67,19 +67,6 @@ class ActController extends Controller
 
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
-            // $query = DB::table('acts')
-            //     ->select(
-            //         'acts.*', 'doctor_cf.user_id as doctor_id',
-            //         'patient_user.first_name as patient_first_name',
-            //         'patient_user.last_name as patient_last_name',
-            //         'doctor_user.first_name as doctor_first_name',
-            //         'doctor_user.last_name as doctor_last_name',
-            //         'payments.amount as payment_amount'
-            //     )
-            //     ->leftJoin('patients', 'patients.id', '=', 'acts.patient_id')
-            //     ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patients.user_id')
-            //     ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'acts.doctor_id')
-            //     ->orderBy('acts.act_number', 'DESC');
             $query = DB::table("clinic_{$clinicId}.acts as acts")
             ->select(
                 'acts.*',
@@ -108,7 +95,7 @@ class ActController extends Controller
             if ($request->user()->roles[0]->name !== 'Admin') {
                 $query->where('acts.filial_id', $filialId);
             }
-            $acts = $query->get();
+            $acts = $query->paginate(20);
         // dd($acts);exit;
             return Inertia::render('Act/List', [
                 'clinicData' => $clinic,

@@ -17,11 +17,14 @@ use Illuminate\Support\LazyCollection;
 use Inertia\Inertia;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
 
 class ImportController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
+    protected array $statusCache = [];
+    protected array $generatedEmails = [];
     //
     public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
     {
@@ -133,18 +136,28 @@ class ImportController extends Controller
             $slug = 'doctor-' . uniqid();
         }
 
-        // Опционально: добавить clinicId, чтобы гарантировать уникальность между клиниками
-        // if ($clinicId) {
-        //     $slug .= '-' . $clinicId;
-        // }
+        return $this->makeEmailUnique($slug . '@clinicdoctor.com');
+    }
 
-        return $slug . '@clinicdoctor.com';
+    private function makeEmailUnique(string $email): string
+    {
+        $originalEmail = $email;
+        $counter = 1;
+
+        while (User::where('email', $email)->exists() || in_array($email, $this->generatedEmails)) {
+            $counter++;
+            $parts = explode('@', $originalEmail);
+            $email = $parts[0] . $counter . '@' . $parts[1];
+        }
+
+        $this->generatedEmails[] = $email;
+        return $email;
     }
 
     function generatePatientEmail(string $lastName, string $firstName, string $phone): string
     {
         if ($phone) {
-            return $phone . '@clinicpatient.com';
+            return $this->makeEmailUnique($phone . '@clinicpatient.com');
         } 
         $base = $lastName . '.' . $firstName;
 
@@ -172,12 +185,25 @@ class ImportController extends Controller
             $slug = 'doctor-' . uniqid();
         }
 
-        // Опционально: добавить clinicId, чтобы гарантировать уникальность между клиниками
-        // if ($clinicId) {
-        //     $slug .= '-' . $clinicId;
-        // }
+        return $this->makeEmailUnique($slug . '@clinicpatient.com');
+    }
 
-        return $slug . '@clinicpatient.com';
+    private function parseImportDate($date)
+    {
+        if (!$date) return null;
+        if ($date instanceof \DateTime) return $date->format('Y-m-d');
+        
+        // Handle "DD.MM.YYYY"
+        if (is_string($date) && preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $date)) {
+            $parts = explode('.', $date);
+            return "{$parts[2]}-{$parts[1]}-{$parts[0]}";
+        }
+
+        try {
+            return Carbon::parse($date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return $date;
+        }
     }
 
     private function processEmployees($employees, $clinicData, $request = null)
@@ -186,6 +212,7 @@ class ImportController extends Controller
         $uniqueEmployees = array_unique($employees, SORT_REGULAR);
         if (count($uniqueEmployees) > 0) {
             foreach ($uniqueEmployees as $employeeData) {
+                @set_time_limit(60);
                 // Определяем формат данных - строка (Фамилия Имя) или массив (из JSON)
                 if (is_string($employeeData)) {
                     // Разбиваем "Фамилия Имя"
@@ -287,11 +314,11 @@ class ImportController extends Controller
             $patientId = DB::table("clinic_{$clinicData->id}.patients")->insertGetId([
                 'user_id' => $user->id,
                 'medical_card_no' => $patientData['Номер картки'] ?? null,
-                'registered_at' => $patientData['Дата реєстрації'] ?? now(),
+                'registered_at' => $this->parseImportDate($patientData['Дата реєстрації'] ?? now()),
                 'discount' => $discount,
                 'balance' => $patientData['Баланс'] ?? 0,
                 'visits_count' => $patientData['Було візитів'] ?? 0,
-                'last_visit' => $patientData['Останній візит'] ?? null,
+                'last_visit' => $this->parseImportDate($patientData['Останній візит'] ?? null),
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
@@ -344,11 +371,11 @@ class ImportController extends Controller
             ['user_id' => $user->id],
             [
                 'medical_card_no' => $patientData['Номер картки'] ?? null,
-                'registered_at' => $patientData['Дата реєстрації'] ?? now(),
+                'registered_at' => $this->parseImportDate($patientData['Дата реєстрації'] ?? now()),
                 'discount' => $discount,
                 'balance' => $patientData['Баланс'] ?? 0,
                 'visits_count' => $patientData['Було візитів'] ?? 0,
-                'last_visit' => $patientData['Останній візит'] ?? null,
+                'last_visit' => $this->parseImportDate($patientData['Останній візит'] ?? null),
                 'created_at' => now(),
                 'updated_at' => now()
             ]
@@ -435,22 +462,30 @@ class ImportController extends Controller
     {
         $statusName = trim($statusName);
         
+        if (isset($this->statusCache[$statusName])) {
+            return $this->statusCache[$statusName];
+        }
+
         // Ищем статус по имени
         $status = DB::table("clinic_{$clinicId}.patient_statuses")
             ->where('name', $statusName)
             ->first();
 
         if ($status) {
+            $this->statusCache[$statusName] = $status->id;
             return $status->id;
         }
 
         // Если нет — создаём новый
-        return DB::table("clinic_{$clinicId}.patient_statuses")->insertGetId([
+        $statusId = DB::table("clinic_{$clinicId}.patient_statuses")->insertGetId([
             'name' => $statusName,
             'discount' => 0, // можно изменить, если нужно
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $this->statusCache[$statusName] = $statusId;
+        return $statusId;
     }
 
 
@@ -539,6 +574,7 @@ class ImportController extends Controller
                     });
                     $filialId = $request->session()->get('filial_id');
                     $lazyCollection->each(function ($row) use ($clinicData, $filialId) {
+                        @set_time_limit(60);
                         DB::transaction(function () use ($row, $clinicData, $filialId) {
                             try {
                                 $this->importPatientWithActsAndPayments($row, $clinicData, $filialId);

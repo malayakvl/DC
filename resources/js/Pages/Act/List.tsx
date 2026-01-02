@@ -12,6 +12,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
+import Pagination from './Partials/Pagination';
 
 export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
@@ -48,11 +49,12 @@ export default function List({ listData, permissions }) {
                 </div>
               </header>
             </section>
+            <Pagination listData={listData} />
             <DataTable
               paginationType={PaginationType.ACTS}
               sendRequest={sendRequest}
             >
-              {listData?.map(item => (
+              {listData.data?.map(item => (
                 <tr className="" key={item.id}>
                   <td className="">{item.act_number}</td>
                   <td className="">{format(new Date(item.act_date), 'dd.MM.yyyy HH:mm')}</td>
@@ -82,6 +84,7 @@ export default function List({ listData, permissions }) {
                 </tr>
               ))}
             </DataTable>
+            <Pagination listData={listData} />
           </div>
         </div>
       </div>
