@@ -10,12 +10,11 @@ import InputSelect from '../../Components/Form/InputSelect';
 import {
     generateBalanceReportAction,
     emptyBalanceReportAction,
-} from '../../Redux/Report';
+} from '../../Redux/Report/actions';
 import { reportResultSelector } from '../../Redux/Report/selectors';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import InputCustomerSelect from '../../Components/Form/InputCustomerSelect';
-import { useRef } from 'react';
 import axios from 'axios';
 
 interface BalanceProps {
@@ -43,6 +42,7 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
     const [reportFromDate, setReportFromDate] = useState(new Date());
     const [reportToDate, setReportToDate] = useState(new Date());
     const [serchResults, setSerchResults] = useState([]);
+    const [reportResult, setReportResult] = useState([]);
 
     const handleChangeSelect = e => {
         const key = e.target.id;
@@ -65,19 +65,139 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
             }));
         }
 
-        if (!filialId) {
-            setStoreError(msg.get('report.error.filial'));
-            return;
-        } else {
-            setStoreError('');
-            // Format dates to YYYY-MM-DD format
-            const formattedFromDate = reportFromDate instanceof Date ?
-                reportFromDate.toISOString().split('T')[0] : reportFromDate;
-            const formattedToDate = reportToDate instanceof Date ?
-                reportToDate.toISOString().split('T')[0] : reportToDate;
-            dispatch(generateBalanceReportAction(filialId, formattedFromDate, formattedToDate, values));
-        }
+        setStoreError('');
+        // Format dates to YYYY-MM-DD format
+        const formattedFromDate = reportFromDate instanceof Date ?
+            reportFromDate.toISOString().split('T')[0] : reportFromDate;
+        const formattedToDate = reportToDate instanceof Date ?
+            reportToDate.toISOString().split('T')[0] : reportToDate;
+
+        axios.post(`/report/generateBalanceReport`, { values }, {})
+            .then(res => {
+                setReportResult(res.data);
+            })
     };
+
+    const clearReport = () => {
+        setReportResult([]);
+    };
+
+
+    const renderReportResult = () => {
+        if (!reportResult || reportResult.length === 0) return null;
+
+        let lastPatientId: number | null = null;
+
+        // финальный баланс пациента
+        const finalBalanceByPatient: Record<number, number> = {};
+        for (const row of reportResult) {
+            finalBalanceByPatient[row.patient_id] = Number(row.running_balance) || 0;
+        }
+
+        return (
+            <div style={{ marginTop: 16, marginLeft: 40, marginRight: 40 }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                    <thead>
+                        <tr>
+                            <th style={th}>Пацієнт</th>
+                            <th style={th}>Дата</th>
+                            <th style={th}>Документ</th>
+                            <th style={{ ...th, textAlign: 'right' }}>Сума</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {reportResult.map((item: any, index: number) => {
+                            const isNewPatient = item.patient_id !== lastPatientId;
+                            const finalBalance = finalBalanceByPatient[item.patient_id];
+
+                            if (isNewPatient) {
+                                lastPatientId = item.patient_id;
+                            }
+
+                            const isAct = item.document_type === 'act';
+                            const amountSign = isAct ? '−' : '+';
+                            const amountColor = isAct ? '#c62828' : '#2e7d32';
+
+                            return (
+                                <React.Fragment key={index}>
+                                    {isNewPatient && (
+                                        <tr
+                                            style={{
+                                                background:
+                                                    finalBalance < 0
+                                                        ? '#610b0b'
+                                                        : finalBalance > 0
+                                                            ? '#f67d1a'
+                                                            : '#427245',
+                                                fontWeight: 600,
+                                                color: '#fff'
+                                            }}
+                                        >
+                                            <td colSpan={4} style={{ padding: '10px 8px' }}>
+                                                {item.patient_name}
+                                                <span style={{ marginLeft: 12, fontWeight: 500 }}>
+                                                    {finalBalance === 0 && '✅ Оплачено'}
+                                                    {finalBalance < 0 &&
+                                                        ` ❗ Задолженность ${Math.abs(finalBalance).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                                                    {finalBalance > 0 &&
+                                                        ` 🟢 Переплата ${finalBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    )}
+
+                                    <tr>
+                                        <td style={td}></td>
+
+                                        <td style={td}>
+                                            {new Date(item.document_date).toLocaleDateString()}
+                                        </td>
+
+                                        <td style={td}>
+                                            {isAct ? '🧾 Act' : '💳 Payment'}{' '}
+                                            <strong>{item.document_number}</strong>
+                                        </td>
+
+                                        <td
+                                            style={{
+                                                ...td,
+                                                textAlign: 'right',
+                                                fontWeight: 500,
+                                                color: amountColor
+                                            }}
+                                        >
+                                            {amountSign}
+                                            {Number(item.amount).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2
+                                            })}
+                                        </td>
+                                    </tr>
+                                </React.Fragment>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+
+
+
+    const th: React.CSSProperties = {
+        borderBottom: '2px solid #ddd',
+        padding: '8px',
+        textAlign: 'left',
+        background: '#fff',
+        color: '#000'
+    };
+
+    const td: React.CSSProperties = {
+        borderBottom: '1px solid #eee',
+        background: '#fff',
+        padding: '8px',
+        color: '#000'
+    };
+
 
 
 
@@ -333,16 +453,6 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
                                                 />
                                                 {renderSearchPatientResult(0)}
                                             </div>
-                                            {/* <InputCustomerSelect
-                                                name={'patient_id'}
-                                                className={'mb-1 input-report-store'}
-                                                value={values.patient_id}
-                                                options={customerData}
-                                                onChange={handleChangeSelect}
-                                                required
-                                                label={``}
-                                                values={values}
-                                            /> */}
                                             <div className="ml-4">
                                                 <PrimaryButton>
                                                     <div
@@ -361,6 +471,9 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
                             </header>
                         </section>
 
+                    </div>
+                    <div>
+                        {renderReportResult()}
                     </div>
                 </div>
             </div>

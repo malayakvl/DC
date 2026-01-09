@@ -42,6 +42,13 @@ const lngReport = {
     save: 'Зберегти',
     back: 'Назад',
     saved: 'Збережено.',
-  },
+    'balance': {
+      patient: 'Пацієнт',
+      date: 'Дата',
+      document: 'Документ',
+      amount: 'Сума'
+    }
+
+  }
 };
 export default lngReport;

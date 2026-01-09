@@ -197,6 +197,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
     Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
+    Route::post('/report/generateBalanceReport', [ReportController::class, 'generateBalanceReport'])->name('report.generateBalanceReport');
 
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');

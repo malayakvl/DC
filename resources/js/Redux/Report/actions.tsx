@@ -9,6 +9,7 @@ export const generateBalanceReportAction: any = createAction(
   async (data: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
+      console.log(data);
       return axios
         .post(`/report/generateBalanceReport`, { data }, {})
         .then(async res => {
