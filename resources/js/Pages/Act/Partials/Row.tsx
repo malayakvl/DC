@@ -29,7 +29,7 @@ export default function AddDynamicInputFields({
     messages: lngAct,
     locale: appLang,
   });
-  console.log(formRowData);
+
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useAppDispatch();
   const [hideFields, setHideFields] = useState(false);

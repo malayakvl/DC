@@ -52,6 +52,20 @@ class ImportController extends Controller
             if (!$request->user()->canClinic('clinic-create')) {
                 return Inertia::render('Layout/Error', ['error' => 'Insufficient permissions']);
             }
+
+            // // Update payment numbers to format DDMMYY-XXXXXXX
+            // $payments = DB::table("clinic_{$clinicId}.payments")->orderBy('id')->get();
+            // $num = 1;
+            // $datePrefix = date('dmy');
+            // foreach ($payments as $payment) {
+            //     $paymentNumber = $datePrefix . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
+            //     DB::table("clinic_{$clinicId}.payments")->where('id', $payment->id)->update([
+            //         'payment_number' => $paymentNumber
+            //     ]);
+            //     $num++;
+            // }
+            // echo "Payments updated successfully.";exit;
+
             return Inertia::render('Import/Index', [
             ]);
         });
@@ -296,10 +310,10 @@ class ImportController extends Controller
         );
 
         // 5. Создаём связь с клиникой в core.clinic_users
-        ClinicUser::firstOrCreate([
-            'clinic_id' => $clinicData->id,
-            'user_id' => $user->id
-        ]);
+        // ClinicUser::firstOrCreate([
+        //     'clinic_id' => $clinicData->id,
+        //     'user_id' => $user->id
+        // ]);
 
         // 6. Создаём запись пациента в локальной таблице клиники
         // Проверяем существование пациента в схеме клиники
@@ -356,11 +370,10 @@ class ImportController extends Controller
         // ---------------------------
         // 2️⃣ Связь с клиникой в core.clinic_users
         // ---------------------------
-        ClinicUser::firstOrCreate([
-            'clinic_id' => $clinicData->id,
-            'user_id' => $user->id
-        ]);
-
+        // ClinicUser::firstOrCreate([
+        //     'clinic_id' => $clinicData->id,
+        //     'user_id' => $user->id
+        // ]);
         // ---------------------------
         // 3️⃣ Локальный пациент в clinic_{id}.patients
         // ---------------------------
@@ -395,25 +408,51 @@ class ImportController extends Controller
         $workAmount = $patientData['Виконано на суму'] ?? 0;
         $paymentAmount = $patientData['Оплачено'] ?? 0;
         if ($workAmount > 0) {
+            $serviceName = 'Переніс даних (введення залишків)';
+            $categoryName = 'Переніс даних';
+
             $price = DB::table("clinic_{$clinicData->id}.pricings")
-                ->where('name', 'Переніс даних')
+                ->where('name', $serviceName)
                 ->first();
-            // if (!$priceItem) {
-            //     Log::warning("Услуга {$priceItem['name']} не найдена в клинике {$clinicData->id} среди перенесённых данных");
-            //     return false; // или return false; в зависимости от логики вашего кода
-            // }
+
+            if (!$price) {
+                // Find or create category
+                $category = DB::table("clinic_{$clinicData->id}.price_categories")
+                    ->where('name', $categoryName)
+                    ->first();
+
+                if (!$category) {
+                    $categoryId = DB::table("clinic_{$clinicData->id}.price_categories")->insertGetId([
+                        'name' => $categoryName,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    $categoryId = $category->id;
+                }
+
+                // Create service
+                $priceId = DB::table("clinic_{$clinicData->id}.pricings")->insertGetId([
+                    'name' => $serviceName,
+                    'price' => 0,
+                    'category_id' => $categoryId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $price = DB::table("clinic_{$clinicData->id}.pricings")
+                    ->where('id', $priceId)
+                    ->first();
+            }
             $lastInvoiceNum = DB::table("clinic_{$clinicData->id}.acts")
                     ->max('act_number');
             if (!$lastInvoiceNum) {
                 $num = 1;
             } else {
                 $maxNum = (explode('-', $lastInvoiceNum));
-                if (intval($maxNum[1])) {
-                    $num = intval($maxNum[1]);
-                }
-                ++$num;
+                $num = isset($maxNum[1]) && intval($maxNum[1]) ? intval($maxNum[1]) + 1 : 1;
             }
-            $invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
+            $invoice_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
             $actId = DB::table("clinic_{$clinicData->id}.acts")->insertGetId([
                 'patient_id' => $patientId,
                 'doctor_id' => 55,
@@ -440,12 +479,14 @@ class ImportController extends Controller
         // ---------------------------
         // 5️⃣ Импорт платежей
         // ---------------------------
+        $payment_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
         if ($paymentAmount > 0) {
             DB::table("clinic_{$clinicData->id}.payments")->insert([
                 'patient_id' => $patientId,
                 'filial_id' => $filialId,
                 'act_id' => $actId,
                 'payment_date' => date('Y-m-d H:i:s'),
+                'payment_number' => $payment_number,
                 'amount' => $paymentAmount,
                 'method' => 'cash',
                 'created_at' => now(),

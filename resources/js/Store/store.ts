@@ -17,6 +17,7 @@ import staffReducer from '../Redux/Staff/index';
 import formulaReducer from '../Redux/Formula/index';
 import patientReducer from '../Redux/Patient/index';
 import actReducer from '../Redux/Act/index';
+import reportReducer from '../Redux/Report/index';
 
 const reducers = combineReducers({
     layout: layoutReducer,
@@ -31,9 +32,10 @@ const reducers = combineReducers({
     formula: formulaReducer,
     patient: patientReducer,
     act: actReducer,
+    report: reportReducer,
 });
 
-const initStore = (initialState:any = {}) => {
+const initStore = (initialState: any = {}) => {
     return createStore(
         reducers,
         initialState,

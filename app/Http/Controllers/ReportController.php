@@ -14,9 +14,7 @@ use App\Models\Act;
 use App\Models\ActItem;
 use App\Models\InvoiceStatus;
 use App\Models\InvoiceType;
-use App\Models\Producer;
-use App\Models\Store;
-use App\Models\Invoice;
+use App\Models\Patient;
 use App\Models\Supplier;
 use App\Models\Tax;
 use App\Models\Unit;
@@ -28,7 +26,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class ActController extends Controller
+class ReportController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -61,48 +59,35 @@ class ActController extends Controller
     }
     
 
-    public function index(Request $request)
+    public function balance(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if (!$request->user()->canClinic('act-view')) {
-                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            if (!$request->user()->canClinic('store-all')) {
+                return Inertia::render('Report/Balance', ['error' => 'Insufficient permissions']);
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
-            $filialId = $request->session()->get('filial_id');
-            $query = DB::table("clinic_{$clinicId}.acts as acts")
-                ->select(
-                'acts.*',
-                'payments.amount as payment_amount',
-
-                // Пациент
-                'patient_user.first_name as patient_first_name',
-                'patient_user.last_name  as patient_last_name',
-
-                // Доктор
-                'doctor_user.first_name  as doctor_first_name',
-                'doctor_user.last_name   as doctor_last_name'
-            )
-
-                // --- пациент ---
-                ->leftJoin("clinic_{$clinicId}.patients as patients", 'patients.id', '=', 'acts.patient_id')
-                ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patients.user_id')
-
-                // --- доктор ---
-                ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'acts.doctor_id')
-                ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
-
-                ->orderBy('acts.act_number', 'DESC');
-
-
-            if ($request->user()->roles[0]->name !== 'Admin') {
-                $query->where('acts.filial_id', $filialId);
-            }
-            $acts = $query->paginate(20);
-        // dd($acts);exit;
-            return Inertia::render('Act/List', [
+            $filials = ClinicFilial::where('clinic_id', $clinicId)->get();
+            $dateFrom = $request->input('date_from', now()->startOfWeek()->format('Y-m-d'));
+            $dateTo = $request->input('date_to', now()->endOfWeek()->format('Y-m-d'));
+            return Inertia::render('Report/Balance', [
                 'clinicData' => $clinic,
-                'listData'   => $acts
+                'filials'   => $filials,
+                'dateFrom'  => $dateFrom,
+                'dateTo'    => $dateTo,
             ]);
+        });
+    }
+
+    public function fetchPatient(Request $request, $value) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $value) {
+            return Patient::leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
+                ->select('core.users.id', 'core.users.first_name', 'core.users.last_name', 'core.users.email', 'core.users.name')
+                ->where('core.users.name', 'like', "%{$value}%")
+                ->orWhere('core.users.email', 'like', "%{$value}%")
+                ->orWhere('core.users.first_name', 'like', "%{$value}%")
+                ->orWhere('core.users.last_name', 'like', "%{$value}%")
+                // ->orWhere('core.users.phone', 'like', "%{$value}%")
+                ->get();
         });
     }
 

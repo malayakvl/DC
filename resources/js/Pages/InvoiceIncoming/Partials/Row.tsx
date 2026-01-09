@@ -4,6 +4,7 @@ import {
   findProducersAction,
 } from '../../../Redux/Clinic';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   emptyMaterialsAutocompleteAction,
   findMaterialAction,
@@ -22,11 +23,11 @@ export default function AddDynamicInputFields({
   unitsData
 }) {
   const [inputs, setInputs] = useState(formRowData);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [hideFields, setHideFields] = useState(false);
-  const serchResults = useSelector(searchResultMaterialsSelector);
+  const serchResults = useAppSelector(searchResultMaterialsSelector);
   const [numRow, setNumRow] = useState(0);
-  const documentTax = useSelector(invoiceTaxSelector);
+  const documentTax = useAppSelector(invoiceTaxSelector);
   const [taxPercent, setTaxPercent] = useState(0);
 
   const handleAddInput = () => {
@@ -71,7 +72,7 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].pack_qty))
       ).toFixed(2);
     } else if (name === 'minusBtn') {
-      const _factPerUnit = inputs[index].fact_qty/inputs[index].quantity;
+      const _factPerUnit = inputs[index].fact_qty / inputs[index].quantity;
       inputs[index].quantity =
         inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
       inputs[index].total = (
@@ -88,7 +89,7 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].quantity)) *
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
-      inputs[index].tax_amount = inputs[index].total*20/100;
+      inputs[index].tax_amount = inputs[index].total * 20 / 100;
       console.log('reaclc tax', inputs[index].total, inputs[index].tax_amount)
       // inputs[index].total = (
       //   parseFloat(String(inputs[index].quantity)) *
@@ -98,7 +99,7 @@ export default function AddDynamicInputFields({
     console.log(inputs[index].total)
     inputs[index].tax = (
       parseFloat(String(inputs[index].total)) *
-      20/100
+      20 / 100
     ).toFixed(2);
     setInputs(onChangeValue);
   };
@@ -111,7 +112,7 @@ export default function AddDynamicInputFields({
     setTaxPercent(parseInt(taxData[1]));
   }, [documentTax]);
 
-  useEffect(() => {}, [taxPercent]);
+  useEffect(() => { }, [taxPercent]);
 
   const handleDeleteInput = index => {
     const newArray = [...inputs];
@@ -128,7 +129,7 @@ export default function AddDynamicInputFields({
     // recalculate total
     let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
     inputs[index].total = total.toFixed(2);
-    inputs[index].tax_amount = total*20/100;
+    inputs[index].tax_amount = total * 20 / 100;
     console.log('reaclc tax', total, inputs[index].tax_amount)
     setInputs(onChangeValue);
   }
@@ -139,9 +140,9 @@ export default function AddDynamicInputFields({
 
   const calcPos = (index) => {
     if (index >= 1) {
-      return (70 + index*10) + 33*index;
+      return (70 + index * 10) + 33 * index;
     } else {
-      return (index + 1)*70;
+      return (index + 1) * 70;
     }
 
   }
@@ -184,6 +185,8 @@ export default function AddDynamicInputFields({
       return <></>;
     }
   };
+
+
   return (
     <>
       {inputs.map((item, index) => (
@@ -241,8 +244,7 @@ export default function AddDynamicInputFields({
                 defaultValue={item.unit_id}
                 options={unitsData}
                 required
-                label={null}
-              />
+                label={null} onChange={undefined} />
             </div>
           </td>
           <td className="w-price text-center pb-2">
@@ -269,7 +271,7 @@ export default function AddDynamicInputFields({
               name="total"
               type="text"
               value={item.tax_amount}
-              // onChange={(event) => handleChange(event, index)}
+            // onChange={(event) => handleChange(event, index)}
             />
           </td>
           <td className="w-price text-center pb-2">
@@ -278,7 +280,7 @@ export default function AddDynamicInputFields({
               name="total"
               type="text"
               value={item.total}
-              // onChange={(event) => handleChange(event, index)}
+            // onChange={(event) => handleChange(event, index)}
             />
           </td>
           <td className="w-btn pb-2">

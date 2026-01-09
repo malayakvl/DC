@@ -1,3 +1,5 @@
+import { Balance } from "@mui/icons-material";
+
 const lngHeader = {
   'en.menu': {
     dashboard: 'Dashboard',
@@ -71,7 +73,9 @@ const lngHeader = {
     'no.filial': 'Філіал не обрано',
     'no.clinic': 'Клініка не обрана',
     act: 'Акти виконаних робіт',
-
+    reports: 'Звіти',
+    balance: 'Баланс по пацієнтам',
+    storeBalance: 'Баланс по складу',
   },
 };
 export default lngHeader;

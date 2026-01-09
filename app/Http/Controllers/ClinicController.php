@@ -165,35 +165,44 @@ class ClinicController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ClinicUpdateRequest $request) {
-        // $clinic = Clinic::where('id', 18)->first();
-        // dd($clinic);exit;
+    public function update(ClinicUpdateRequest $request)
+    {
         $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-            if ($request->user()->can('clinic-create')) {
-                $clinicData->fill($request->validated());
-                $clinicData->save();
-                $clinicData->currency_id = $request->validated('currency_id');
-                $clinicData->save();
 
-                $this->auditLogService->log($request->user(), 'clinic.updated', $clinicData, null, $request->validated());
-
+        return $this->withClinicSchema($request, function () use ($request, $clinicData) {
+            if (!$request->user()->canClinic('clinic-create')) {
+                return Inertia::render('Act/List', [
+                    'error' => 'Insufficient permissions'
+                ]);
             }
 
-        return Redirect::route('dashboard.index');
-        // return $this->withClinicSchema($request, function($clinicId) use ($request) {
-        //     $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
-        //     if ($request->user()->can('clinic-create')) {
-        //         $clinicData->fill($request->validated());
-        //         $clinicData->save();
-        //             dd($request->validated('currency_id'));exit;
-        //         $clinicData->currency_id = $request->validated('currency_id');
-        //         $clinicData->save();
-        //     }
+            $validated = $request->validated();
 
-        //     return Redirect::route('dashboard.index');
-        // });
-        
+            // Заполняем все разрешённые поля разом
+            $clinicData->fill($validated);
+            DB::connection('pgsql')->table('core.clinics')
+                ->where('id', $clinicData->id)
+                ->update([
+                    'name'        => $validated['name'],
+                    'address'     => $validated['address'] ?? null,
+                    'uraddress'   => $validated['uraddress'] ?? null,
+                    'currency_id' => $validated['currency_id'],
+                    'updated_at'  => now(),
+                ]);
+
+            // Аудит
+            $this->auditLogService->log(
+                $request->user(),
+                'clinic.updated',
+                $clinicData,
+                null,
+                $validated
+            );
+
+            return Redirect::route('dashboard.index');
+        });
     }
+
 
     
     public function filialEnter(Request $request) {

@@ -11,6 +11,8 @@ import NavScheduler from './Menu/NavScheduler';
 import NavInvoices from './Menu/NavInvoices';
 import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
+import React from 'react';
+import NavReports from './Menu/NavReports';
 
 export default function NavMenu(props) {
   const appLang = useSelector(appLangSelector);
@@ -43,6 +45,8 @@ export default function NavMenu(props) {
             <NavServices />
 
             <NavInvoices />
+
+            <NavReports />
 
             <NavScheduler />
           </div>

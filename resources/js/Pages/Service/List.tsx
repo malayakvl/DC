@@ -53,7 +53,7 @@ export default function List({ clinicData, tree, services, currency }) {
 
     return (
       <>
-        <div className={`price-container pr-${num}`}>
+        <div className={`price-container prс-${num}`}>
           <b className="mb-4 block">{item.name}</b>
           {services[item.id]?.map((_item, _index) => (
             <Link href={`service/edit/${_item.id}`}>
@@ -119,8 +119,7 @@ export default function List({ clinicData, tree, services, currency }) {
               <InputLabel
                 htmlFor="password"
                 value="Password"
-                className="sr-only"
-              />
+                className="sr-only" children={undefined} />
               <InputText
                 name={'name'}
                 values={''}

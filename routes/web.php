@@ -24,6 +24,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PatientStatusController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ActController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -193,6 +194,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/service/update', [ServiceController::class, 'update'])->name('service.categories.update');
     Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
     Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
+
+    Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
+    Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
 
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');

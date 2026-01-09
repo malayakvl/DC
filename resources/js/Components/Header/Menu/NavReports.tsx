@@ -6,7 +6,7 @@ import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 
-export default function NavPatients(props) {
+export default function NavReports(props) {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -17,10 +17,10 @@ export default function NavPatients(props) {
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['patient-edit']) && (
+        permissions['customer-all']) && (
           <Menu as="div" className="relative top-menu-nav">
             <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.patients')}
+              {lng.get('menu.reports')}
             </MenuButton>
             <MenuItems
               transition
@@ -32,17 +32,17 @@ export default function NavPatients(props) {
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
             >
               <div>
-                {permissions['patient-edit'] && (
+                {permissions['customer-all'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/patients'}>
-                      {lng.get('menu.patients')}
+                    <Link className="submenu" href={'/report-balance'}>
+                      {lng.get('menu.balance')}
                     </Link>
                   </MenuItem>
                 )}
-                {permissions['patient-edit'] && (
+                {permissions['customer-all'] && (
                   <MenuItem>
-                    <Link href={'/patient-statuses'} className="submenu">
-                      {lng.get('menu.patient.statuses')}
+                    <Link href={'/roles'} className="submenu">
+                      {lng.get('menu.storeBalance')}
                     </Link>
                   </MenuItem>
                 )}

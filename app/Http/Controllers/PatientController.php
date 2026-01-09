@@ -71,14 +71,12 @@ class PatientController extends Controller
                 ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id');
             if ($request->filterName) {
                 $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
-                //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
             }
             if ($request->filterPhone) {
                 $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
             }
-            // $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
-            //     ->orderBy('first_name');
-            $query->orderBy('core.users.name');
+            $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
+                ->orderBy('core.users.name');
             $listData = $query->paginate(50);
             $currency = $clinic->currency->symbol;
             

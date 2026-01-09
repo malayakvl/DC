@@ -60,14 +60,13 @@ class ServiceController extends Controller
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinicData = $request->user()->clinicByFilial($clinicId);
-            $categories = PriceCategory::where('parent_id', null)
-                // ->where('clinic_id', $clinicData->id)
-                ->get();
+            $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
                 $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
             }
             $arrCat = array();
+            
             $tree = $this->generateCategories($categories, $arrCat, 0);
             return Inertia::render('Service/List', [
                 'clinicData' => $clinicData,
@@ -83,11 +82,11 @@ class ServiceController extends Controller
     public function generateCategories($categories, &$arrCat, $level) {
         foreach ($categories as $category) {
             $category->level = $level;
-            $category->producerName = $category->producer();
+            // $category->producerName = $category->producer();
             $arrCat[] = $category;
-            if (count($category->children) > 0) {
-                $this->generateCategories($category->children, $arrCat, ($level+1));
-            }
+            // if (count($category->children) > 0) {
+            //     $this->generateCategories($category->children, $arrCat, ($level+1));
+            // }
         }
 
         return $arrCat;
@@ -101,8 +100,7 @@ class ServiceController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if ($request->user()->can('store-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $categories = PriceCategory::where('parent_id', null)
-                    ->get();
+                $categories = PriceCategory::get();
                 $arrCat = array();
                 $tree = $this->generateCategories($categories, $arrCat, 0);
                 $unitData = Unit::all();
@@ -126,8 +124,7 @@ class ServiceController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if ($request->user()->can('service-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $categories = PriceCategory::where('parent_id', null)
-                    ->get();
+                $categories = PriceCategory::get();
                 $arrCat = array();
                 $tree = $this->generateCategories($categories, $arrCat, 0);
                 $unitData = Unit::all();
@@ -152,15 +149,15 @@ class ServiceController extends Controller
 
     public function updateServiceCategory(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('store-edit')) {
-                if (!$request->id) {
-                    $priceCategory = new PriceCategory();
-                    $priceCategory->name = $request->name;
-                    $priceCategory->clinic_id = $request->clinic_id;
-                    $priceCategory->save();
-                }
-                return to_route('service.categories.index');
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Layouts/NoPermission', ['error' => 'Insufficient permissions']);
             }
+            if (!$request->id) {
+                $priceCategory = new PriceCategory();
+                $priceCategory->name = $request->name;
+                $priceCategory->save();
+            }
+            return to_route('service.categories.index');
         });
     }
 

@@ -25,7 +25,7 @@ const lngServiceCategories = {
   },
   'uk.service': {
     'title.create': 'Нова Категорія',
-    'title.list': 'Редагування сервісу',
+    'title.list': 'Послуги',
     'title.edit': 'Редагувати категорію',
     'title.view': 'Переглянути Категорія',
     create: 'Створити розділ',
