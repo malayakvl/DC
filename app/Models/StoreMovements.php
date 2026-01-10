@@ -18,6 +18,7 @@ class StoreMovements extends Model
         'fact_qty',
         'document_type',
         'document_id',
+        'act_item_id'
     ];
 
     protected $casts = [

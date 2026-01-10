@@ -12,6 +12,8 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
+import Pagination from './Partials/Pagination';
+import Filters from './Partials/Filters';
 
 export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
@@ -48,14 +50,18 @@ export default function List({ listData, permissions }) {
                 </div>
               </header>
             </section>
+
+            <Filters />
+
+            <Pagination listData={listData} />
             <DataTable
-              paginationType={PaginationType.INCOMINGINVOICES}
+              paginationType={PaginationType.ACTS}
               sendRequest={sendRequest}
             >
-              {listData?.map(item => (
+              {listData.data?.map(item => (
                 <tr className="" key={item.id}>
-                  <td className="">{item.invoice_number}</td>
-                  <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">{item.act_number}</td>
+                  <td className="">{format(new Date(item.act_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
                       src={`../../images/document-icons/${item.status}.svg`}
@@ -64,24 +70,25 @@ export default function List({ listData, permissions }) {
                       className="icon-doc"
                     />
                   </td>
-                  <td className="">{item.storeName}</td>
-                  <td className="">{item.producerName}</td>
-                  <td className="">{item.customerName}</td>
+                  <td className="">{item.patient_first_name} {item.patient_last_name}</td>
+                  <td className="">{item.doctor_first_name} {item.doctor_last_name}</td>
+                  <td className="">{item.total_amount}</td>
+                  <td className="">{item.payment_amount}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}
-                      href={`invoice-incoming/edit/${item.id}`}
+                      href={`act/edit/${item.id}`}
                     />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                      href={`invoice-incoming/delete/${item.id}`}
-                    />
+                      href={`act/delete/${item.id}`} children={undefined} />
                   </td>
                 </tr>
               ))}
             </DataTable>
+            <Pagination listData={listData} />
           </div>
         </div>
       </div>

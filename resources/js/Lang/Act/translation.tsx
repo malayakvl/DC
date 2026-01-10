@@ -18,6 +18,7 @@ const lngAct = {
     'change.title.list': 'Накладні переміщення',
     'title.edit': 'Редагувати накладну',
     'title.view': 'Переглянути накладну',
+    'title.components': 'Компоненти',
     create: 'Створити акт',
     name: 'Назва',
     save: 'Зберегти',
@@ -33,7 +34,7 @@ const lngAct = {
     type: 'Тип',
     number: 'Номер',
     comment: 'Коментар',
-    product: 'Продукт',
+    product: 'Послуга',
     qty: 'Кількість',
     price: 'Ціна',
     total: 'Сума',
@@ -42,7 +43,10 @@ const lngAct = {
     'rows.error': 'Заповніть табличну частину',
     cancelissue: 'Відмінити проведення',
     factqty: 'Фактична кіл-ть',
-    unit: 'Од. вим.'
+    unit: 'Од. вим.',
+    doctor: 'Лікар' ,
+    patient: 'Пацієнт',
+    visits: 'Візит',
   },
 };
 export default lngAct;

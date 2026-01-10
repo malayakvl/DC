@@ -10,19 +10,18 @@ use App\Models\Currency;
 use App\Models\StoreBatches;
 use App\Models\StoreMovements;
 use App\Models\InvoiceItems;
+use App\Models\Act;
+use App\Models\ActItem;
 use App\Models\InvoiceStatus;
 use App\Models\InvoiceType;
-use App\Models\Material;
 use App\Models\Producer;
 use App\Models\Store;
 use App\Models\Invoice;
-use App\Models\StoreMaterials;
 use App\Models\Supplier;
 use App\Models\Tax;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Services\AuditLogService;
@@ -65,27 +64,41 @@ class ActController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-
+            if (!$request->user()->canClinic('act-view')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            }
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
-            $query = DB::table('acts')
+            $query = DB::table("clinic_{$clinicId}.acts as acts")
                 ->select(
-                    'acts.*',
-                    'patient_user.name as patientName',
-                    'doctor_user.name as doctorName'
-                )
-                ->leftJoin('clinic_filial_user as patient_cf', 'patient_cf.id', '=', 'acts.patient_id')
-                ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patient_cf.user_id')
-                ->leftJoin('clinic_filial_user as doctor_cf', 'doctor_cf.id', '=', 'acts.doctor_id')
-                ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'doctor_cf.user_id')
+                'acts.*',
+                'payments.amount as payment_amount',
+
+                // Пациент
+                'patient_user.first_name as patient_first_name',
+                'patient_user.last_name  as patient_last_name',
+
+                // Доктор
+                'doctor_user.first_name  as doctor_first_name',
+                'doctor_user.last_name   as doctor_last_name'
+            )
+
+                // --- пациент ---
+                ->leftJoin("clinic_{$clinicId}.patients as patients", 'patients.id', '=', 'acts.patient_id')
+                ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patients.user_id')
+
+                // --- доктор ---
+                ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'acts.doctor_id')
+                ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
+
                 ->orderBy('acts.act_number', 'DESC');
+
 
             if ($request->user()->roles[0]->name !== 'Admin') {
                 $query->where('acts.filial_id', $filialId);
             }
-
-            $acts = $query->get();
-// dd($acts);exit;
+            $acts = $query->paginate(20);
+        // dd($acts);exit;
             return Inertia::render('Act/List', [
                 'clinicData' => $clinic,
                 'listData'   => $acts
@@ -161,38 +174,28 @@ class ActController extends Controller
      */
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('invoice-incoming-create')) {
-                // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
-                // $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-                $statusData = InvoiceStatus::all();
-                $currencyData = Currency::all();
-                $unitsData = Unit::all();
-                $taxData = Tax::all();
-                $typeData = array();
-                $formData = new Invoice();
-                $lastInvoiceNum = DB::table('invoices')
-                    // ->where('clinic_id', $clinicData->id)
-                    ->max('invoice_number');
-                if (!$lastInvoiceNum) {
-                    $num = 1;
-                } else {
-                    $maxNum = (explode('-', $lastInvoiceNum));
-                    if (intval($maxNum[1])) {
-                        $num = intval($maxNum[1]);
-                    }
-                    ++$num;
+            if (!$request->user()->canClinic('act-create')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            }
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $typeData = array();
+
+            $formData = new Act();
+            $lastInvoiceNum = DB::table('acts')
+                ->max('act_number');
+            if (!$lastInvoiceNum) {
+                $num = 1;
+            } else {
+                $maxNum = (explode('-', $lastInvoiceNum));
+                if (intval($maxNum[1])) {
+                    $num = intval($maxNum[1]);
                 }
-                $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
-                $producerData = Supplier::all();
-                
-                $customerData = DB::table('core.clinic_user')
+                ++$num;
+            }
+            $formData->act_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);
+            
+            $producerData = Supplier::all();
+            $customerData = DB::table('core.clinic_user')
                     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
                     ->select(
                         'users.id',
@@ -203,75 +206,110 @@ class ActController extends Controller
                     ->where('clinic_user.clinic_id', $clinicId)
                     ->orderBy('users.last_name')
                     ->get();
+            dd($customerData);exit;
 
-
-                // $customerData = DB::table('core.users')
-                //     ->select('core.users.*')
-                //     ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                //     ->where('clinic_id', $clinicData->id)
-                //     ->orderBy('name')->get();
-                return Inertia::render('InvoiceIncoming/Create', [
-                    'clinicData' => $clinicData,
-                    'filialData' => $storeData,
-                    'formData' => $formData,
-                    'storeData' => $storeData,
-                    'customerData' => $customerData,
-                    'producerData' => $producerData,
-                    'statusData' => Invoices::INVOICE_STATUSES,
-                    'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
-                ]);
-            } else {
-                return Inertia::render('Layouts/NoPermission', [
-                ]);
-            }
+            return Inertia::render('Act/Create', [
+                'clinicData' => $clinicData,
+                'formData' => $formData,
+                'customerData' => $customerData,
+                'producerData' => $producerData,
+                'statusData' => Invoices::INVOICE_STATUSES,
+                'typeData' => $typeData,
+            ]);
         });
-
-        
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('invoice-incoming-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-//            $storeData = Store::where('clinic_id', $clinicData->id)->get();
-            $storeData = Store::where('clinic_id', $clinicData->id)->where('filial_id', $request->session()->get('filial_id'))->get();
-            $statusData = InvoiceStatus::all();
-            $typeData = InvoiceType::all();
-            $unitsData = Unit::all();
-            $formData = Invoice::find($id);
-            $currencyData = Currency::all();
-            $taxData = Tax::all();
-            $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
-                ->leftJoin('materials', 'materials.id', '=', 'invoice_items.product_id')
-                ->where('invoice_id', $id)->get();
-            $producerData = Producer::all();
-            $customerData = DB::table('users')
-                ->select('users.*')
-                ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            return Inertia::render('InvoiceIncoming/Edit', [
-                'clinicData' => $clinicData,
-                'filialData' => $storeData,
-                'formData' => $formData,
-                'formRowData' => $rowData,
-                'storeData' => $storeData,
-                'customerData' => $customerData,
-                'producerData' => $producerData,
-                'statusData' => $statusData,
-                'typeData' => $typeData,
-                'currencyData' => $currencyData,
-                'unitsData' => $unitsData,
-                'taxData' => $taxData
-            ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('act-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                $formData = Act::find($id);
+                $currencyData = Currency::all();
+                $taxData = Tax::all();
+                $rowData = ActItem::select('act_items.*', 'pricings.name as product')
+                    ->leftJoin('pricings', 'pricings.id', '=', 'act_items.service_id')
+                    ->where('act_id', $id)->get();
 
-        } else {
+                // Collection of IDs to batch load names
+                $materialIds = [];
+                $unitIds = [];
+                foreach ($rowData as $item) {
+                    $components = is_array($item->components) ? $item->components : json_decode($item->components ?? '[]', true);
+                    foreach ($components as $component) {
+                        if (!empty($component['material_id'])) $materialIds[] = $component['material_id'];
+                        if (!empty($component['unit_id'])) $unitIds[] = $component['unit_id'];
+                    }
+                }
 
-        }
+                // Create associative arrays for quick lookup: [id => name]
+                $materialMap = DB::table('materials')
+                    ->whereIn('id', array_unique($materialIds))
+                    ->pluck('name', 'id')
+                    ->toArray();
+
+                $unitMap = Unit::whereIn('id', array_unique($unitIds))
+                    ->pluck('name', 'id')
+                    ->toArray();
+
+                // Enrich components with display names
+                $rowData->each(function ($item) use ($materialMap, $unitMap) {
+                    $components = is_array($item->components) ? $item->components : json_decode($item->components ?? '[]', true);
+                    foreach ($components as &$component) {
+                        $mId = $component['material_id'] ?? null;
+                        $uId = $component['unit_id'] ?? null;
+                        
+                        if ($mId && isset($materialMap[$mId])) {
+                            $component['product'] = $materialMap[$mId];
+                        }
+                        if ($uId && isset($unitMap[$uId])) {
+                            $component['unit_name'] = $unitMap[$uId];
+                        }
+                    }
+                    $item->components = $components;
+                });
+                
+                $typeData = array();
+                $patientsData = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->select(
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email',
+                        'patients.id'
+                    )
+                    ->distinct()
+                    ->orderBy('users.last_name')
+                    ->get();
+                $customerData = DB::table('core.clinic_user')
+                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                    ->select(
+                        'users.id',
+                        'users.first_name',
+                        'users.last_name',
+                        'users.email'
+                    )
+                    ->where('clinic_user.clinic_id', $clinicId)
+                    ->distinct()
+                    ->orderBy('users.last_name')
+                    ->get();
+
+                return Inertia::render('Act/Edit', [
+                    'clinicData' => $clinicData,
+                    'formData' => $formData,
+                    'patientsData'=> $patientsData,
+                    'formRowData' => $rowData,
+                    'customerData' => $customerData,
+                    'statusData' => Invoices::INVOICE_STATUSES,
+                    'typeData' => $typeData,
+                ]);
+            } else {
+                return Inertia::render('Layouts/NoPermission', [
+                ]);
+            }
+        });
     }
 
 
@@ -416,97 +454,143 @@ class ActController extends Controller
     }
 
 
-    public function update(InvoiceUpdateRequest $request)
+    public function update(Request $request)
     {
+        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        
         return $this->withClinicSchema($request, function ($clinicId) use ($request) {
 
-            if (!$request->user()->can('invoice-incoming-edit')) {
+            if (!$request->user()->can('act-edit')) {
                 abort(403, 'No permission');
             }
-            // Создаем или обновляем накладную
-            $invoice = $request->id ? Invoice::find($request->id) : new Invoice();
-            $invoice->fill($request->validated());
-            $invoice->invoice_number = $request->invoice_number;
-            $invoice->invoice_date = $request->invoice_date;
-            $invoice->status = $request->status_id; // draft / done
-            $invoice->type_id = 1; // 1 = приход
-            $invoice->tax_id = $request->tax_id;
-            $invoice->currency_id = $request->currency_id;
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+            $storeId = $filialData[0]->store_id;
+            DB::beginTransaction();
             
-            $invoice->filial_id = 1; // изменить на реальний филиал
-            $invoice->total_amount = $request->total_amount ?? 0;
 
-            $invoice->save();
-            $invoiceId = $invoice->id;
+            try {
+                // Создаем или обновляем акт
+                $act = $request->id ? Act::find($request->id) : new Act();
+                $act->fill($request->only(['filial_id', 'patient_id', 'doctor_id', 'act_date', 'status']));
+                $act->act_number = $request->act_number;
+                $act->total_amount = 0; // пока 0, потом суммируем
+                $act->filial_id = 1; // изменить на реальный филиал
+                $act->save();
 
-            // Если обновляем, удаляем старые позиции и движения
-            if ($request->id) {
-                DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_batches')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_movements')->where('document_id', $invoiceId)->where('document_type', 'iinv')->delete();
-            }
+                $actId = $act->id;
+                $totalAmount = 0;
 
-            // $producer = Producer::find($request->supplier_id);
-            $storeId = $request->store_id;
-
-            $totalAmount = 0;
-
-            foreach ($request->rows as $row) {
-                $qty = $row['quantity'];      // количество в единицах материала
-                $factQty = $row['fact_qty'];  // фактический вес/объем
-                $pricePerUnit = $row['total'] / $factQty;
-
-                // Создаем позицию накладной
-                $invoiceItem = new InvoiceItems();
-                $invoiceItem->invoice_id = $invoiceId;
-                $invoiceItem->material_id = $row['product_id'];
-                $invoiceItem->qty = $qty;
-                $invoiceItem->fact_qty = $factQty;
-                $invoiceItem->price = $row['price'];
-                $invoiceItem->total = $row['total'];
-                $invoiceItem->price_per_unit = $pricePerUnit;
-                $invoiceItem->unit_id = $row['unit_id'];
-                $invoiceItem->save();
-
-                $totalAmount += $row['total'];
-
-                if ($request->status_id === 'posted') {
-                    // Создаем партию на складе
-                    $batch = new StoreBatches();
-                    $batch->store_id = $storeId;
-                    $batch->material_id = $row['product_id'];
-                    $batch->supplier_id = $request->supplier_id;
-                    $batch->invoice_id = $invoiceId;
-                    $batch->arrived_at = $request->invoice_date;
-                    $batch->qty = $qty;
-                    $batch->qty_left = $qty;
-                    $batch->fact_qty = $factQty;
-                    $batch->fact_qty_left = $factQty;
-                    $batch->price_per_unit = $pricePerUnit;
-                    $batch->save();
-
-                    // Создаем движение на склад (приход)
-                    $movement = new StoreMovements();
-                    $movement->store_id = $storeId;
-                    $movement->material_id = $row['product_id'];
-                    $movement->batch_id = $batch->id;
-                    $movement->direction = 1; // 1 = приход
-                    $movement->qty = $qty;
-                    $movement->fact_qty = $factQty;
-                    $movement->document_type = 'iinv';
-                    $movement->document_id = $invoiceId;
-                    $movement->save();
+                // Если обновляем, удаляем старые позиции и движения
+                if ($request->id) {
+                    ActItem::where('act_id', $actId)->delete();
+                    StoreMovements::where('document_type', 'act')
+                        ->where('document_id', $actId)
+                        ->delete();
+                    // PatientService::where('act_id', $actId)->delete();
                 }
+
+                $filialStoreId = $storeId;// метод для получения store_id филиала
+
+                // Обработка строк акта
+                foreach ($request->rows as $row) {
+                    $serviceQty = $row['quantity'];
+                    $serviceTotal = $row['total'];
+                    $totalAmount += $serviceTotal;
+
+                    // 1️⃣ Создаем элемент акта
+                    $actItem = ActItem::create([
+                        'act_id' => $actId,
+                        'service_id' => $row['service_id'],
+                        'components' => json_encode($row['components']),
+                        'qty' => $serviceQty,
+                        'price' => $row['price'],
+                        'total' => $serviceTotal
+                    ]);
+
+                    // 2️⃣ Создаем запись оказанной услуги для оплаты
+                    // PatientService::create([
+                    //     'patient_id' => $act->patient_id,
+                    //     'doctor_id' => $act->doctor_id,
+                    //     'service_id' => $row['service_id'],
+                    //     'act_id' => $actId,
+                    //     'qty' => $serviceQty,
+                    //     'price' => $row['price'],
+                    //     'total' => $serviceTotal
+                    // ]);
+                    // 3️⃣ Списание материалов по компонентам
+                    foreach ($row['components'] as $component) {
+                        $remainingFactQty = (float)$component['quantity']; // граммы / мл
+
+                        if ($remainingFactQty <= 0) {
+                            continue;
+                        }
+
+                        $batches = StoreBatches::where('store_id', $filialStoreId)
+                            ->where('material_id', $component['material_id'])
+                            ->where('fact_qty_left', '>', 0)
+                            ->orderBy('arrived_at', 'ASC') // FIFO
+                            ->get();
+
+                        foreach ($batches as $batch) {
+                            if ($remainingFactQty <= 0) {
+                                break;
+                            }
+
+                            // сколько можем списать по факту
+                            $deductFactQty = min($remainingFactQty, $batch->fact_qty_left);
+
+                            // коэффициент партии (сколько fact в 1 qty)
+                            $factPerQty = $batch->fact_qty / $batch->qty;
+
+                            // сколько это в qty
+                            $deductQty = $deductFactQty / $factPerQty;
+
+                            // обновляем партию
+                            $batch->fact_qty_left -= $deductFactQty;
+                            $batch->qty_left -= $deductQty;
+                            $batch->save();
+
+                            // движение
+                            StoreMovements::create([
+                                'store_id'      => $filialStoreId,
+                                'material_id'   => $component['material_id'],
+                                'batch_id'      => $batch->id,
+                                'direction'     => -1,
+                                'qty'           => $deductQty,
+                                'fact_qty'      => $deductFactQty,
+                                'document_type' => 'act',
+                                'document_id'   => $actId,
+                                'act_item_id'   => $actItem->id   // ← ВОТ ОНО
+                            ]);
+
+                            $remainingFactQty -= $deductFactQty;
+                        }
+
+                        if ($remainingFactQty > 0) {
+                            throw new \Exception(
+                                "Недостаточно материала material_id={$component['material_id']}, не хватает {$remainingFactQty}"
+                            );
+                        }
+                    }
+                }
+
+                // Обновляем итоговую сумму акта
+                $act->total_amount = $totalAmount;
+                $act->save();
+
+                DB::commit();
+
+                if ($request->status === 'posted')
+                    $this->updateStoreBalancesAndMaterials($storeId, $actId );
+                
+                return redirect()->route('act.index')->with('success', 'Акт успешно сохранен');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->withErrors(['error' => $e->getMessage()]);
             }
 
-            // Обновляем общую сумму накладной
-            $invoice->total_amount = $totalAmount;
-            $invoice->save();
-            if ($request->status_id === 'posted')
-                $this->updateStoreBalancesAndMaterials($request->store_id, $invoice->id);
-
-
-            return redirect()->route('invoice.incoming.index');
+            return redirect()->route('act.index');
         });
     }
 

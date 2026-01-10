@@ -4,19 +4,21 @@ import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngInvoice from '../../../Lang/Invoice/translation';
+import lngAct from '../../../Lang/Act/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import AddDynamicInputFields from './Row';
 import InputCalendar from '../../../Components/Form/InputCalendar';
 import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import {
-  invoiceItemsSelector,
+  actItemsSelector,
   invoiceTaxSelector,
   tableErrorSelector,
-} from '../../../Redux/Incominginvoice/selectors';
+} from '../../../Redux/Act/selectors';
+import { getSearchResultServicesElementsByRow } from '../../../Redux/Service/selectors';
 import {
   setInvoiceTax,
   setShowTableError,
@@ -25,43 +27,38 @@ import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
 
 export default function Form({
   clinicData,
-  storeData,
   statusData,
   typeData,
-  producerData,
+  patientsData,
   customerData,
   formData,
   formRowData = null,
   currencyData,
   unitsData,
-  taxData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngInvoice,
+    messages: lngAct,
     locale: appLang,
   });
-  const dispatch = useDispatch();
-  const invoiceItems = useSelector(invoiceItemsSelector);
+  const dispatch = useAppDispatch();
+  const actItems = useSelector(actItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
-  // const [showRowsError, setShowRowsError] = useState(false);
+  const actRows = useSelector(actItemsSelector);
 
   const [values, setValues] = useState({
-    invoice_number: formData.invoice_number ? formData.invoice_number : '',
-    invoice_date: formData.invoice_date,
+    act_number: formData.act_number ? formData.act_number : '',
+    act_date: formData.act_date,
     clinic_id: clinicData.id,
-    store_id: formData.store_id,
-    customer_id: formData.customer_id,
-    supplier_id: formData.supplier_id,
-    status_id: formData.status_id,
-    type_id: formData.type_id,
+    patient_id: formData.patient_id,
+    doctor_id: formData.doctor_id,
+    status: formData.status,
+    status_id: formData.status,
+    visit_id: formData.visit_id,
     comment: formData.comment,
-    currency_id: formData.currency_id,
-    tax_id: formData.tax_id,
   });
-
   const { processing, recentlySuccessful } = useForm();
 
   const handleChangeSelect = e => {
@@ -77,7 +74,7 @@ export default function Form({
   };
 
   const handleChangeCalendar = data => {
-    const key = 'invoice_date';
+    const key = 'act_date';
     const value = data;
     setValues(values => ({
       ...values,
@@ -94,53 +91,46 @@ export default function Form({
     }));
   };
 
+  const buildPayloadRows = () => {
+    return actItems.map(row => ({
+      service_id: row.product_id,
+      quantity: Number(row.quantity),
+      price: Number(row.price),
+      total: Number(row.total),
+      components: (row.components || []).map(component => ({
+        material_id: component.material_id || component.product_id,
+        quantity: Number(component.quantity),
+        unit_id: component.unit_id,
+      }))
+    }));
+  };
+
+
   const submit = e => {
     e.preventDefault();
-    if (!values['invoice_date']) {
-      values['invoice_date'] = new Date();
-    }
 
-    values['rows'] = invoiceItems;
-    let haveErrorInRow = false;
-    invoiceItems.forEach(_row => {
-      if (!_row.product_id) {
-        haveErrorInRow = true;
-      }
-    });
+    const rows = buildPayloadRows();
+    // Проверка на пустые строки
+    const haveErrorInRow = rows.some(row => !row.service_id);
     if (haveErrorInRow) {
       dispatch(setShowTableError(true));
+      return;
+    }
+    const payload = {
+      act_number: values.act_number,
+      act_date: values.act_date,
+      clinic_id: values.clinic_id,
+      patient_id: values.patient_id,
+      doctor_id: values.doctor_id,
+      status: values.status,
+      visit_id: values.visit_id,
+      rows,
+    };
+
+    if (formData.id) {
+      router.post(`/act/update?id=${formData.id}`, payload);
     } else {
-      const taxData = documentTax.split('_');
-      if (formData.id) {
-        console.log(values);
-        router.post(`/invoice-incoming/update?id=${formData.id}`, {
-          invoice_number: values.invoice_number,
-          invoice_date: values.invoice_date,
-          clinic_id: values.clinic_id,
-          store_id: values.store_id,
-          customer_id: values.customer_id,
-          supplier_id: values.supplier_id,
-          status_id: values.status_id,
-          currency_id: values.currency_id,
-          type_id: values.type_id,
-          tax_id: values.tax_id,
-          rows: invoiceItems,
-        });
-      } else {
-        router.post('/invoice-incoming/update', {
-          invoice_number: values.invoice_number,
-          invoice_date: values.invoice_date,
-          clinic_id: values.clinic_id,
-          store_id: values.store_id,
-          customer_id: values.customer_id,
-          supplier_id: values.supplier_id,
-          status_id: values.status_id,
-          currency_id: values.currency_id,
-          type_id: values.type_id,
-          tax_id: values.tax_id,
-          rows: invoiceItems,
-        });
-      }
+      router.post('/act/update', payload);
     }
   };
 
@@ -148,12 +138,12 @@ export default function Form({
     <section className={className}>
       <header>
         <h2>
-          <Link className="icon-back" href={'/invoice-incoming'}>
+          <Link className="icon-back" href={'/acts'}>
             &nbsp;
           </Link>
           {formData?.id
-            ? msg.get('invoice.title.edit')
-            : msg.get('invoice.title.create')}
+            ? msg.get('act.title.edit')
+            : msg.get('act.title.create')}
         </h2>
       </header>
       <form
@@ -167,50 +157,48 @@ export default function Form({
               <div className="mb-2 flex gap-2">
                 <div className="w-1/4">
                   <InputText
-                    name={'invoice_number'}
+                    name={'act_number'}
                     values={values}
-                    dataValue={values.invoice_number}
-                    value={values.invoice_number}
+                    dataValue={values.act_number}
+                    value={values.act_number}
                     onChange={handleChange}
                     required
-                    label={msg.get('invoice.number')}
+                    label={msg.get('act.number')}
                   />
                 </div>
                 <div className="w-1/4">
                   <InputCalendar
-                    name={'invoice_date'}
+                    name={'act_date'}
                     values={values}
-                    dataValue={values.invoice_date}
-                    value={values.invoice_date}
+                    dataValue={values.act_date}
+                    value={values.act_date}
                     onChange={handleChangeCalendar}
                     required
-                    label={msg.get('invoice.date')}
-                  />
-                </div>
-                <div className="w-1/4">
-                  <InputSelect
-                    translatable={true}
-                    name={'currency_id'}
-                    className={'mb-1'}
-                    values={values}
-                    value={values.currency_id}
-                    options={currencyData}
-                    onChange={handleChangeSelect}
-                    required
-                    label={msg.get('invoice.currency')}
+                    label={msg.get('act.date')}
                   />
                 </div>
                 <div className={`w-1/4`}>
                   <InputSelect
                     translatable={true}
-                    name={'status_id'}
+                    name={'status'}
                     className={'mb-1'}
                     values={values}
                     value={values.status_id}
                     options={statusData}
                     onChange={handleChangeSelect}
                     required
-                    label={msg.get('invoice.status')}
+                    label={msg.get('act.status')}
+                  />
+                </div>
+                <div className="w-1/4">
+                  <InputCustomerSelect
+                    name={'doctor_id'}
+                    values={values}
+                    value={values.doctor_id}
+                    options={customerData}
+                    onChange={handleChangeSelect}
+                    required
+                    label={msg.get('act.doctor')}
                   />
                 </div>
               </div>
@@ -219,49 +207,27 @@ export default function Form({
               <div className="mb-2">
                 <div className="flex gap-2">
                   <div className="w-1/4">
-                    <InputSelect
-                      name={'supplier_id'}
-                      values={values}
-                      value={values.supplier_id}
-                      options={producerData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('invoice.producer')}
-                    />
-                  </div>
-                  <div className="w-1/4">
-                    <InputSelect
-                      name={'store_id'}
-                      values={values}
-                      value={values.store_id}
-                      options={storeData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('invoice.store')}
-                    />
-                  </div>
-                  <div className="w-1/4">
-                    <InputTaxSelect
-                      translatable={true}
-                      name={'tax_id'}
-                      className={'mb-1 t-select'}
-                      values={values}
-                      value={values.tax_id}
-                      options={taxData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('invoice.tax')}
-                    />
-                  </div>
-                  <div className="w-1/4">
                     <InputCustomerSelect
-                      name={'customer_id'}
+                      name={'patient_id'}
                       values={values}
-                      value={values.customer_id}
-                      options={customerData}
+                      value={values.patient_id}
+                      options={patientsData}
                       onChange={handleChangeSelect}
                       required
-                      label={msg.get('invoice.person')}
+                      label={msg.get('act.patient')}
+                    />
+                  </div>
+                  <div className={`w-1/4`}>
+                    <InputSelect
+                      translatable={true}
+                      name={'visit_id'}
+                      className={'mb-1'}
+                      values={values}
+                      value={values.visit_id}
+                      options={statusData}
+                      onChange={handleChangeSelect}
+                      required
+                      label={msg.get('act.visits')}
                     />
                   </div>
                 </div>
@@ -271,16 +237,13 @@ export default function Form({
         </div>
 
         <div className="relative">
-          <table className="w-full invoice-table">
+          <table className="w-full invoice-table act-table">
             <thead>
               <tr>
-                <th className="pb-3">{msg.get('invoice.product')}</th>
-                <th className="pb-3 w-qty">{msg.get('invoice.qty')}</th>
-                <th className="pb-3">{msg.get('invoice.unit')}</th>
-                <th className="pb-3">{msg.get('invoice.factqty')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.price')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.tax')}</th>
-                <th className="pb-3 w-price">{msg.get('invoice.total')}</th>
+                <th className="pb-3">{msg.get('act.product')}</th>
+                <th className="pb-3 w-qty">{msg.get('act.qty')}</th>
+                <th className="pb-3 w-price">{msg.get('act.price')}</th>
+                <th className="pb-3 w-price">{msg.get('act.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
@@ -313,23 +276,22 @@ export default function Form({
           >
             {msg.get('invoice.rows.error')}
           </div>
-          <hr/>
+          <hr />
           <div className="float-right pt-3">
             <Link
               className="btn-back"
               title={msg.get('invoice.back')}
-              href={`/invoice-incoming`}
+              href={`/acts`}
             >
-              {msg.get('invoice.back')}
+              {msg.get('act.back')}
             </Link>
             {formData.status_id != 2 && (
-              <Link
+              <PrimaryButton
                 disabled={processing}
-                className="btn-submit"
                 onClick={e => submit(e)}
               >
-                {msg.get('invoice.save')}
-              </Link>
+                {msg.get('act.save')}
+              </PrimaryButton>
             )}
 
             <Transition
@@ -340,7 +302,7 @@ export default function Form({
               leaveTo="opacity-0"
             >
               <p className="text-sm text-gray-600">
-                {msg.get('invoice.saved')}
+                {msg.get('act.saved')}
               </p>
             </Transition>
           </div>

@@ -21,43 +21,99 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
 use DateTime;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+
 
 class PatientController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+
+
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        if ($request->session()->get('filial_id')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $filialId = $request->session()->get('filial_id');
+
             $query = DB::table('patients')
-                ->select('patients.*')
-                ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
-                ->where('clinic_patient.clinic_id', $clinic->id);
+                ->select('patients.*', 'core.users.*')
+                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id');
             if ($request->filterName) {
                 $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
-                //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
             }
             if ($request->filterPhone) {
                 $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
             }
             $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
-                ->orderBy('first_name');
-        } else {
-            $query = DB::table('patients')
-                ->select('patients.*')
-                ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
-                ->where('clinic_patient.clinic_id', $clinic->id)
-                ->orderBy('first_name');
-        }
-        $listData = $query->paginate(50);
+                ->orderBy('core.users.name');
+            $listData = $query->paginate(50);
+            $currency = $clinic->currency->symbol;
+            
+            return Inertia::render('Patient/List', [
+                'clinicData' => $clinic,
+                'listData' => $listData,
+                'currency' => $currency
+            ]);
+        });
+        // if ($request->session()->get('filial_id')) {
+        //     $query = DB::table('patients')
+        //         ->select('patients.*')
+        //         ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
+        //         ->where('clinic_patient.clinic_id', $clinic->id);
+        //     if ($request->filterName) {
+        //         $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
+        //         //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
+        //     }
+        //     if ($request->filterPhone) {
+        //         $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
+        //     }
+        //     $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
+        //         ->orderBy('first_name');
+        // } else {
+        //     $query = DB::table('patients')
+        //         ->select('patients.*')
+        //         ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
+        //         ->where('clinic_patient.clinic_id', $clinic->id)
+        //         ->orderBy('first_name');
+        // }
+        // $listData = $query->paginate(50);
 
-        return Inertia::render('Patient/List', [
-            'clinicData' => $clinic,
-            'listData' => $listData,
-            'currency' => $clinic->currency->symbol
-        ]);
+        // return Inertia::render('Patient/List', [
+        //     'clinicData' => $clinic,
+        //     'listData' => $listData,
+        //     'currency' => $clinic->currency->symbol
+        // ]);
     }
 
     /**

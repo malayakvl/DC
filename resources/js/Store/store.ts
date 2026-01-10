@@ -11,11 +11,13 @@ import meterialReducer from '../Redux/Material/index';
 import incominginvoiceReducer from '../Redux/Incominginvoice/index';
 import outgoinginvoiceReducer from '../Redux/Incominginvoice/index';
 import changeinvoiceReducer from '../Redux/Changeinvoice/index';
-import pricingReducer from '../Redux/Pricing/index';
+import serviceReducer from '../Redux/Service/index';
 import schedulerReducer from '../Redux/Scheduler/index';
 import staffReducer from '../Redux/Staff/index';
 import formulaReducer from '../Redux/Formula/index';
 import patientReducer from '../Redux/Patient/index';
+import actReducer from '../Redux/Act/index';
+import reportReducer from '../Redux/Report/index';
 
 const reducers = combineReducers({
     layout: layoutReducer,
@@ -24,14 +26,16 @@ const reducers = combineReducers({
     incominginvoices: incominginvoiceReducer,
     outgoinginvoices: outgoinginvoiceReducer,
     changeinvoices: changeinvoiceReducer,
-    pricing: pricingReducer,
+    service: serviceReducer,
     scheduler: schedulerReducer,
     staff: staffReducer,
     formula: formulaReducer,
-    patient: patientReducer
+    patient: patientReducer,
+    act: actReducer,
+    report: reportReducer,
 });
 
-const initStore = (initialState:any = {}) => {
+const initStore = (initialState: any = {}) => {
     return createStore(
         reducers,
         initialState,

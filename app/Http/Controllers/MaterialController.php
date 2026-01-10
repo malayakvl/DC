@@ -406,29 +406,6 @@ class MaterialController extends Controller
         $name = $request->searchName;
         $storeId = $request->storeId;
 
-//        $resData = DB::table('materials m')
-//            ->select('m.name', 'producers.name AS producerName', 'm.price', 'store_materials.weight',
-//                'store_materials.quantity', 'units.name AS unitName', 'materials.id', 'materials.producer_id',
-//                'materials.unit_id', 'materials.weight AS material_weight', 'material.weightunit_id'
-//            )
-//            ->leftJoin('store_materials', 'store_materials.material_id', '=', 'm.id')
-//            ->leftJoin('producers', 'producers.id', '=', 'store_materials.producer_id')
-//            ->leftJoin('units u', 'u.id', '=', 'm.unit_id')
-//            ->leftJoin('units u2', 'u2.id', '=', 'm.weightunit_id')
-//            ->whereRaw('LOWER(m.name) LIKE ?', '%' .mb_strtolower($name). '%')
-//            ->where('store_id', $storeId)
-//            ->get();
-//        $resData = DB::select('
-//            SELECT m.name, m.unit_id, m.fact_unit_id, u.name AS packunit_name, u2.name as perunit_name,
-//                m.id AS product_id,
-//                m.price, sm.fact_qty, sm.quantity
-//            FROM materials m
-//            LEfT JOIN store_materials sm ON sm.material_id = m.id
-//            LEFT JOIN units u ON u.id = sm.unit_id
-//            LEFT JOIN units u2 ON u2.id = sm.fact_unit_id
-//            WHERE
-//              LOWER(m.name) LIKE \'%' .mb_strtolower($name). '%\'
-//        ');
         $resData = DB::select('
             SELECT SUM(sm.fact_qty) AS unit_total, SUM(sm.qty) AS pack_total, u.name AS pack_name, 
                    u2.name as unit_name, sm.material_id, m.name AS material_name,

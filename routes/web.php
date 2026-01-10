@@ -12,7 +12,7 @@ use App\Http\Controllers\OutgoingInvoiceController;
 use App\Http\Controllers\SchedulerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MaterialCategoresController;
-use App\Http\Controllers\PricingController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProducerController;
 use App\Http\Controllers\CurrencyController;
@@ -24,6 +24,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\PatientStatusController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ActController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -186,11 +187,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoice-outgoing/edit/{id}', [OutgoingInvoiceController::class, 'edit'])->name('invoice.edit');
     Route::post('/invoice-outgoing/update', [OutgoingInvoiceController::class, 'update'])->name('invoice.updated');
 
-    Route::post('/price-category/update', [PricingController::class, 'updatePriceCategory'])->name('pricing.categories.parent.update');
-    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.categories.index');
-    Route::get('/pricing/create', [PricingController::class, 'create'])->name('pricing.categories.create');
-    Route::get('/pricing/edit/{id}', [PricingController::class, 'edit'])->name('pricing.categories.edit');
-    Route::post('/pricing/update', [PricingController::class, 'update'])->name('pricing.categories.update');
+    Route::post('/service-category/update', [ServiceController::class, 'updateServiceCategory'])->name('service.categories.parent.update');
+    Route::get('/services', [ServiceController::class, 'index'])->name('service.categories.index');
+    Route::get('/service/create', [ServiceController::class, 'create'])->name('service.categories.create');
+    Route::get('/service/edit/{id}', [ServiceController::class, 'edit'])->name('service.categories.edit');
+    Route::post('/service/update', [ServiceController::class, 'update'])->name('service.categories.update');
+    Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
+    Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
+
+    Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
+    Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
+    Route::post('/report/generateBalanceReport', [ReportController::class, 'generateBalanceReport'])->name('report.generateBalanceReport');
 
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');

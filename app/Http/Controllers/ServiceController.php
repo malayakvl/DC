@@ -21,7 +21,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class PricingController extends Controller
+class ServiceController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -60,16 +60,15 @@ class PricingController extends Controller
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinicData = $request->user()->clinicByFilial($clinicId);
-            $categories = PriceCategory::where('parent_id', null)
-                // ->where('clinic_id', $clinicData->id)
-                ->get();
+            $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
                 $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
             }
             $arrCat = array();
+            
             $tree = $this->generateCategories($categories, $arrCat, 0);
-            return Inertia::render('Pricing/List', [
+            return Inertia::render('Service/List', [
                 'clinicData' => $clinicData,
                 'categoriesData' => $categories,
                 'services' => $arrServices,
@@ -83,11 +82,11 @@ class PricingController extends Controller
     public function generateCategories($categories, &$arrCat, $level) {
         foreach ($categories as $category) {
             $category->level = $level;
-            $category->producerName = $category->producer();
+            // $category->producerName = $category->producer();
             $arrCat[] = $category;
-            if (count($category->children) > 0) {
-                $this->generateCategories($category->children, $arrCat, ($level+1));
-            }
+            // if (count($category->children) > 0) {
+            //     $this->generateCategories($category->children, $arrCat, ($level+1));
+            // }
         }
 
         return $arrCat;
@@ -101,15 +100,12 @@ class PricingController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if ($request->user()->can('store-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $categories = PriceCategory::where('parent_id', null)
-                    // ->where('clinic_id', $clinicData->id)
-                    // ->orWhere('special', true)
-                    ->get();
+                $categories = PriceCategory::get();
                 $arrCat = array();
                 $tree = $this->generateCategories($categories, $arrCat, 0);
                 $unitData = Unit::all();
                 $formData = new Pricing();
-                return Inertia::render('Pricing/Create', [
+                return Inertia::render('Service/Create', [
                     'clinicData' => $clinicData,
                     'categoryData' => $tree,
                     'unitData' => $unitData,
@@ -125,43 +121,70 @@ class PricingController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('store-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $categories = PriceCategory::where('parent_id', null)
-                ->where('clinic_id', $clinicData->id)
-                ->orWhere('special', true)
-                ->get();
-            $arrCat = array();
-            $tree = $this->generateCategories($categories, $arrCat, 0);
-            $unitData = Unit::all();
-            $formData = Pricing::find($request->id);
-            $formRow = DB::table('pricing_items')
-                ->select('pricing_items.*', 'materials.name AS product', "materials.id AS product_id")
-                ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
-                ->where('pricing_id', $request->id)->get();
-            return Inertia::render('Pricing/Edit', [
-                'clinicData' => $clinicData,
-                'categoryData' => $tree,
-                'unitData' => $unitData,
-                'formData' => $formData,
-                'formRowData' => $formRow
-            ]);
-        } else {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if ($request->user()->can('service-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                $categories = PriceCategory::get();
+                $arrCat = array();
+                $tree = $this->generateCategories($categories, $arrCat, 0);
+                $unitData = Unit::all();
+                $formData = Pricing::find($request->id);
+                $formRow = DB::table('pricing_items')
+                    ->select('pricing_items.*', 'materials.name AS product', "materials.id AS product_id")
+                    ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                    ->where('pricing_id', $request->id)->get();
+                return Inertia::render('Service/Edit', [
+                    'clinicData' => $clinicData,
+                    'categoryData' => $tree,
+                    'unitData' => $unitData,
+                    'formData' => $formData,
+                    'formRowData' => $formRow
+                ]);
+            } else {
 
-        }
+            }
+        });
+        
     }
 
-    public function updatePriceCategory(Request $request) {
+    public function updateServiceCategory(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('store-edit')) {
-                if (!$request->id) {
-                    $priceCategory = new PriceCategory();
-                    $priceCategory->name = $request->name;
-                    $priceCategory->clinic_id = $request->clinic_id;
-                    $priceCategory->save();
-                }
-                return to_route('pricing.categories.index');
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Layouts/NoPermission', ['error' => 'Insufficient permissions']);
             }
+            if (!$request->id) {
+                $priceCategory = new PriceCategory();
+                $priceCategory->name = $request->name;
+                $priceCategory->save();
+            }
+            return to_route('service.categories.index');
+        });
+    }
+
+    public function findService(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+            
+            $resData = DB::table('pricings')->select('*')
+                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->get();
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findServiceItems(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $serviceId = $request->serviceId;
+            
+            $resData = DB::table('pricing_items')->select('pricing_items.*','materials.name AS product')
+                ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                ->where('pricing_id', '=', $serviceId)
+                ->get();
+            return response()->json([
+                'items' => $resData
+            ]);
         });
     }
 
@@ -171,7 +194,7 @@ class PricingController extends Controller
      */
     public function update(PricingUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('store-edit')) {
+            if ($request->user()->can('service-edit')) {
                 if ($request->id) {
                     $pricing = Pricing::find($request->id);
                     DB::table('pricing_items')->where('pricing_id', $request->id)->delete();
@@ -193,18 +216,14 @@ class PricingController extends Controller
                         $pricingItem->unit_id = $row["unit_id"];
                         $pricingItem->material_id = $row["product_id"];
                         $pricingItem->quantity = $row["quantity"];
-                        // $pricingItem->price = $row["price"];
-                        // $pricingItem->total = ($row["quantity"])*floatval($row["price"]);
-                        $total += ($row["quantity"])*floatval($row["price"]);
                         $pricingItem->save();
                     }
 
                 }
-                // $pricing->total = floatval($total) + floatval($request->price ? $request->price : 0);
                 $pricing->save();
             }
 
-            return Redirect::route('pricing.categories.index');
+            return Redirect::route('service.categories.index');
         });
         
     }

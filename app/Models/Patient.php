@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Patient extends Authenticatable
 {
@@ -19,21 +21,11 @@ class Patient extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'phone',
-        'discount',
-        'address',
-        'email',
-        'important_info',
-        'card_number',
-        'notice',
-        'curator_id',
-        'status_id',
-        'contact',
-        'payment',
-        'birthday',
-        'register_date'
+        'user_id',
+        'medical_card_no',
+        'patient_status_id',
+        'curator_user_id',
+        'registered_at',
     ];
 
     /**
@@ -64,5 +56,25 @@ class Patient extends Authenticatable
     public function discountStatus(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PatientStatus::class,'id','status_id');
+    }
+
+    public static function createInCore($attributes, $additionalData = [])
+    {
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+        
+        try {
+            DB::statement("SET search_path TO core");
+            $patient = static::create(array_merge($attributes, $additionalData));
+            return $patient;
+        } catch (\Exception $e) {
+            Log::error('Error creating patient in core schema: ' . $e->getMessage(), [
+                'attributes' => $attributes,
+                'additional_data' => $additionalData,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
     }
 }

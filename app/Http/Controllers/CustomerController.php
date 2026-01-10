@@ -48,9 +48,8 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $clinicId = session('clinic_id');
-        $clinicData = $request->user()->clinicByFilial($clinicId);
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial($clinicId);
 
             // Проверка прав
             if (!$request->user()->canClinic('customer-view')) {
@@ -72,7 +71,6 @@ class CustomerController extends Controller
                 ->where('clinic_user.clinic_id', $clinicId)
                 ->orderBy('users.last_name')
                 ->get();
-
             return Inertia::render('Customer/List', [
                 'clinicData'   => $clinicData,
                 'filialData'   => $filialData,
@@ -99,31 +97,32 @@ class CustomerController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, $id) {
-        if ($request->user()->can('customer-view')) {
-            $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-
-            $serverFilePath = public_path('storage/clinic/users/customer-' .$id. '.png');
-            $imagePath = '';
-            if (file_exists($serverFilePath)) {
-                $imagePath = asset('storage/clinic/users/customer-' .$id. '.png');
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if ($request->user()->can('customer-view')) {
+                $clinic = $request->user()->clinicByFilial($clinicId);
+                $serverFilePath = public_path('storage/clinic/users/customer-' .$id. '.png');
+                $imagePath = '';
+                if (file_exists($serverFilePath)) {
+                    $imagePath = asset('storage/clinic/users/customer-' .$id. '.png');
+                }
+                $formData = User::where('id', $id)->get();
+                $assignedData = DB::table('clinic_filial_user')
+                    ->select('roles.name AS roleName', 'roles.special', 'clinic_filials.name AS filialName', 'roles.clinic_id AS clinicId')
+                    ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
+                    ->where('clinic_filial_user.user_id', $id)
+                    ->where('clinic_filial_user.clinic_id', $clinic->id)
+                    ->get();
+                return Inertia::render('Customer/CustomerShow', [
+                    'formData' => $formData[0],
+                    'rolesData' => $assignedData,
+                    'imagePath' => $imagePath
+                ]);
+            } else {
+                return Inertia::render('Clinic/FilialView', [
+                ]);
             }
-            $formData = User::where('id', $id)->get();
-            $assignedData = DB::table('clinic_filial_user')
-                ->select('roles.name AS roleName', 'roles.special', 'clinic_filials.name AS filialName', 'roles.clinic_id AS clinicId')
-                ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
-                ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
-                ->where('clinic_filial_user.user_id', $id)
-                ->where('clinic_filial_user.clinic_id', $clinic->id)
-                ->get();
-            return Inertia::render('Customer/CustomerShow', [
-                'formData' => $formData[0],
-                'rolesData' => $assignedData,
-                'imagePath' => $imagePath
-            ]);
-        } else {
-            return Inertia::render('Clinic/FilialView', [
-            ]);
-        }
+        });
     }
 
     public function findByEmail(Request $request) {
@@ -143,9 +142,12 @@ class CustomerController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('customer-edit')) {
-            $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));;
-            $formData = User::where('id', $id)->get();
+        $formData = User::where('id', $id)->get();
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $formData) {
+            if (!$request->user()->canClinic('customer-edit')) {
+                return Inertia::render('Layout/NoPermission', ['error' => 'Insufficient permissions']);
+            }
+            $clinicData = $request->user()->clinicByFilial($clinicId);;
             $serverFilePath = public_path('/uploads/users/' .$formData[0]->file);
             $photoPath = '';
             if (file_exists($serverFilePath)) {
@@ -159,7 +161,7 @@ class CustomerController extends Controller
                 'roleData' => $rolesData,
                 'photoPath' => $photoPath
             ]);
-        }
+        });
     }
 
 
@@ -167,8 +169,11 @@ class CustomerController extends Controller
      * Update the specified resource in storage.
      */
     public function update(CustomerUpdateRequest $request) {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        if ($request->user()->can('customer-create')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+            if (!$request->user()->canClinic('customer-edit')) {
+                return Inertia::render('Layout/NoPermission', ['error' => 'Insufficient permissions']);
+            }
             if ($request->id) {
                 $user = User::find($request->id);
                 $user->email = $request->email;
@@ -177,15 +182,18 @@ class CustomerController extends Controller
                 $user->last_name = $request->last_name;
                 $user->phone = $request->phone;
                 $user->inn = $request->inn;
-                $user->color = $request->color;
+                // $user->color = $request->color;
                 $user->save();
                 if ($request->file) {
-                    $fileName = 'Patient'.$request->id.'.'.$request->file->extension();
+                    $fileName = 'Customer'.$request->id.'.'.$request->file->extension();
                     $user->file = $fileName;
 //                    $patient->avatar = $fileName;
                     $user->save();
                     $request->file->move(public_path('uploads/users'), $fileName);
                 }
+                ClinicFilialUser::where('user_id', $request->id)->update([
+                    'color' => $request->color,
+                ]);
                 return Inertia::location(route('customer.index'));
             }
             else {
@@ -213,6 +221,10 @@ class CustomerController extends Controller
                 $clinicUser->clinic_id = $request->clinic_id;
                 $clinicUser->clinic_token = Str::random(60);
                 $clinicUser->save();
+                ClinicFilialUser::where('user_id', $request->id)->update([
+                    'color' => $request->color,
+                    'phone' => $request->phone,
+                ]);
 
                 // send invitation email
                 $invitationLink = route('clinic.accept', ['access_token' => $clinicUser->clinic_token]);
@@ -220,7 +232,8 @@ class CustomerController extends Controller
 
                 return Inertia::location(route('customer.assign', ['id' => $userId]));
             }
-        }
+        });
+        
     }
 
     public function assignOld(Request $request, $id) {

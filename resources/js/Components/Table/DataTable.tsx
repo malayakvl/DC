@@ -15,26 +15,25 @@ import {
 export default function DataTable({
   paginationType,
   children,
-  totalAmount,
-  sendRequest,
-  switcherOnClick,
-  hideBulk,
-  sendDeleteRequest,
-  sendCopyRequest,
+  totalAmount = 0,
+  sendRequest = () => { },
+  switcherOnClick = null,
+  sendDeleteRequest = () => { },
+  sendCopyRequest = () => { },
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngHeaders,
     locale: appLang,
   });
-  const { PRODUCTS } = PaginationType;
+  // const { PRODUCTS } = PaginationType;
   let dropdownOptions = ['copy', 'delete'];
   const [loading, setLoading] = useState(false);
   const switchAllHeader = false;
   const [allChecked, setAllChecked] = useState(false);
   const headers = TableHeaders[paginationType];
   const dispatch = useDispatch();
-  const { includes } = [PRODUCTS];
+  const { includes } = [paginationType];
   const { limit, sort, column, offset, query, filters }: Layouts.Pagination =
     useSelector(paginationSelectorFactory(paginationType));
   let showIds: boolean = false;

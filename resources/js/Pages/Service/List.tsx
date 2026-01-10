@@ -41,7 +41,7 @@ export default function List({ clinicData, tree, services, currency }) {
   };
 
   const submitForm = () => {
-    router.post(`/price-category/update`, {
+    router.post(`/service-category/update`, {
       name: categoryName,
       clinic_id: clinicData.id,
     });
@@ -53,10 +53,10 @@ export default function List({ clinicData, tree, services, currency }) {
 
     return (
       <>
-        <div className={`price-container pr-${num}`}>
+        <div className={`price-container prс-${num}`}>
           <b className="mb-4 block">{item.name}</b>
           {services[item.id]?.map((_item, _index) => (
-            <Link href={`pricing/edit/${_item.id}`}>
+            <Link href={`service/edit/${_item.id}`}>
               <div
                 className={`mt-0 price-row ${_index === 0 ? 'first-child' : ''}`}
               >
@@ -73,8 +73,8 @@ export default function List({ clinicData, tree, services, currency }) {
           ))}
           <div className="mt-4">
             <div className="price-btn">
-              <NavLink href={'/pricing/create'}>
-                {msg.get('mCategories.add.price')}
+              <NavLink href={'/service/create'}>
+                {msg.get('service.add')}
               </NavLink>
             </div>
           </div>
@@ -93,11 +93,11 @@ export default function List({ clinicData, tree, services, currency }) {
             <section>
               <header>
                 <div className="flex inline-flex">
-                  <h2>{msg.get('mCategories.title.list')}</h2>
+                  <h2>{msg.get('service.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
                       <a onClick={() => setConfirmingCategory(true)} href={'#'}>
-                        {msg.get('mCategories.create')}
+                        {msg.get('service.create')}
                       </a>
                     </PrimaryButton>
                   </div>
@@ -112,15 +112,14 @@ export default function List({ clinicData, tree, services, currency }) {
         <Modal show={confirmingCategory} onClose={closeModal}>
           <form className="p-6 bg-black">
             <h2>
-              {msg.get('mCategories.create')}
+              {msg.get('service.create')}
             </h2>
 
             <div className="mt-0">
               <InputLabel
                 htmlFor="password"
                 value="Password"
-                className="sr-only"
-              />
+                className="sr-only" children={undefined} />
               <InputText
                 name={'name'}
                 values={''}
@@ -128,7 +127,7 @@ export default function List({ clinicData, tree, services, currency }) {
                 value={''}
                 onChange={e => setCategoryName(e.target.value)}
                 required
-                label={msg.get('mCategories.name')}
+                label={msg.get('service.name')}
               />
 
               <InputError message={errors.password} className="mt-2" />
@@ -141,7 +140,7 @@ export default function List({ clinicData, tree, services, currency }) {
                   closeModal();
                 }}
               >
-                {msg.get('mCategories.close')}
+                {msg.get('service.close')}
               </SecondaryButton>
 
               <SecondaryButton
@@ -149,7 +148,7 @@ export default function List({ clinicData, tree, services, currency }) {
                 disabled={processing}
                 onClick={() => submitForm()}
               >
-                {msg.get('mCategories.save')}
+                {msg.get('service.save')}
               </SecondaryButton>
             </div>
           </form>

@@ -202,6 +202,60 @@ class StoreController extends Controller
         });
     }
 
+    public function storeMovementsReport(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $query = DB::table('clinic_18.store_movements AS sm')
+                ->leftJoin('clinic_18.act_items AS ai', 'ai.id', '=', 'sm.act_item_id')
+                ->leftJoin('clinic_18.acts AS a', 'a.id', '=', 'ai.act_id')
+                ->leftJoin('clinic_18.pricing AS p', 'p.id', '=', 'ai.service_id')
+                ->leftJoin('clinic_18.invoices AS i', function($join) {
+                    $join->on('i.id', '=', 'sm.document_id')
+                        ->where('sm.document_type', '=', 'iinv');
+                })
+                ->leftJoin('clinic_18.materials AS m', 'm.id', '=', 'sm.material_id')
+                ->leftJoin('clinic_18.store_batches AS sb', 'sb.id', '=', 'sm.batch_id')
+                ->leftJoin('clinic_18.stores AS s', 's.id', '=', 'sm.store_id')
+                ->select([
+                    'sm.id AS movement_id',
+                    'sm.created_at',
+                    'sm.document_type',
+                    'sm.direction',
+                    'sm.qty',
+                    'sm.fact_qty',
+                    'sm.document_id',
+                    DB::raw('COALESCE(a.act_number, i.invoice_number) AS document_number'),
+                    DB::raw('COALESCE(p.name, m.name) AS service_or_material'),
+                    'm.name AS material_name',
+                    'sb.price_per_unit',
+                    DB::raw('sm.fact_qty * sb.price_per_unit AS cost'),
+                    's.name AS store_name',
+                    'a.act_date',
+                    'i.invoice_date'
+                ])
+                ->orderByDesc('sm.created_at');
+
+            // Фильтры (опционально)
+            if ($request->store_id) {
+                $query->where('sm.store_id', $request->store_id);
+            }
+            if ($request->from_date) {
+                $query->whereDate('sm.created_at', '>=', $request->from_date);
+            }
+            if ($request->to_date) {
+                $query->whereDate('sm.created_at', '<=', $request->to_date);
+            }
+
+            $movements = $query->get();
+
+            return Inertia::render('Reports/StoreMovements', [
+                'movements' => $movements
+            ]);
+        });
+        
+    }
+
+
     /**
      * Remove the specified resource from storage.
      */

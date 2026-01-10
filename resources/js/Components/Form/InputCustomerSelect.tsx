@@ -26,10 +26,10 @@ export default function InputCustomerSelect({
     locale: appLang,
   });
   const displayError = error || pageErrors[name];
-  
+
   return (
     <div className={`relative`}>
-      <InputLabel htmlFor={name} value={label} children={null} />
+      {label && <InputLabel htmlFor={name} value={label} children={null} />}
       {props.options.length > 0 && (
         <select
           id={`${elId || name}`}

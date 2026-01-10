@@ -10,25 +10,25 @@ export default function InputCalendar({
   label,
   values,
   onChange,
-  type,
+  type = 'text',
   ...props
 }) {
   const { errors } = usePage().props;
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(values[name] ? new Date(values[name]) : new Date());
 
   return (
     <div className={`relative`}>
-      <InputLabel htmlFor={name} value={label} />
+      <InputLabel htmlFor={name} value={label} children={null} />
       <DatePicker
         id={name}
         name={name}
-        value={values[name]}
-        className={`input-text`}
+        className={`input-text ${className}`}
         selected={startDate}
-        onChange={date => {
+        onChange={(date: any) => {
           setStartDate(date);
           onChange(date);
         }}
+        {...props}
       />
       {/*<input*/}
       {/*    id={name}*/}

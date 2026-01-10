@@ -58,7 +58,7 @@ export default function List({ listData, clinicData, currency }) {
             <ul className="mt-5">
               {listData.data?.map(item => (
                 <li
-                  className={`patient-item grid grid-cols-1 place-content-between ${item.discount ? 'bg-discount' : ''}`}  
+                  className={`patient-item grid grid-cols-1 place-content-between ${item.discount ? 'bg-discount' : ''}`}
                   key={item.id}
                 >
                   <Link href={`/patient/view/${item.id}`}>
@@ -85,7 +85,7 @@ export default function List({ listData, clinicData, currency }) {
                         {item.discount ? <i className="discount-patient">{item.discount}%</i> : null}
                         <span className="ml-3 mt-3 text-[13px]">
                           <b>{msg.get('patient.worked.at')}:</b> <span className="text-kt">{item.kt_balance}{currency}&nbsp;</span>
-                          <b>{msg.get('patient.payed.at')}:</b> <span className="text-dt">{item. dt_balance}{currency}&nbsp;</span>
+                          <b>{msg.get('patient.payed.at')}:</b> <span className="text-dt">{item.dt_balance}{currency}&nbsp;</span>
                           {item.kt_balance > item.dt_balance && <span className='p-dept'><b>{msg.get('patient.dept.at')}:</b> <span className="text-debt">{item.kt_balance - item.dt_balance}{currency}</span></span>}
                         </span>
                       </div>
@@ -97,7 +97,7 @@ export default function List({ listData, clinicData, currency }) {
                     </Link>
                     <Link href="/patient/visits">
                       <FontAwesomeIcon
-                        icon={faPersonWalking} 
+                        icon={faPersonWalking}
                         style={{ color: 'white' }}
                         title={msg.get('patient.list.visits')}
                         className="mr-5 font-gra"
