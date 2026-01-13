@@ -7,7 +7,7 @@ import layout from './index';
 import { createSelector } from 'reselect';
 
 const rootSelector = createSelector(
-  (state: State.Root) => state.layout,
+  (state: any) => state.layout,
   (layout: State.Layouts): State.Layouts => layout
 );
 
@@ -35,7 +35,7 @@ export const checkedIdsSelector = createSelector(
 );
 export const isShowOverlaySelector = createSelector(
   rootSelector,
-  (layout: State.Layouts): Layouts.checkedIds[] => layout.showOverlay
+  (layout: State.Layouts): boolean => layout.showOverlay
 );
 export const isDataLoadingSelector = createSelector(
   rootSelector,

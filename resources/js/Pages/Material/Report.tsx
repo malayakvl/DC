@@ -16,7 +16,7 @@ import { reportResultSelector } from '../../Redux/Material/selectors';
 import InputCalendar from '../../Components/Form/InputCalendar';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-console.log(11111)
+
 export default function List({ storesData, firstStoreId, initialReportData }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);

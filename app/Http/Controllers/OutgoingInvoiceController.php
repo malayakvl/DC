@@ -21,35 +21,70 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
 
 class OutgoingInvoiceController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+
+
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $invoiceData = DB::table('invoices')
-            ->select('invoices.*',
-                'stores.name AS storeName',
-                'invoice_statuses.name as statusName',
-                'invoice_types.name as typeName',
-                'users.name AS customerName',
-                'producers.name AS producerName'
-            )
-            ->leftJoin('stores', 'stores.id', '=', 'invoices.store_id')
-            ->leftJoin('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.status_id')
-            ->leftJoin('invoice_types', 'invoice_types.id', '=', 'invoices.type_id')
-            ->leftJoin('producers', 'producers.id', '=', 'invoices.producer_id')
-            ->leftJoin('users', 'users.id', '=', 'invoices.customer_id')
-            ->where('invoices.clinic_id', $clinic->id)
-            ->where('invoices.type_id', 2)
-            ->orderBy('invoice_number', 'DESC')->get();
-        return Inertia::render('InvoiceOutgoing/List', [
-            'clinicData' => $clinic,
-            'listData' => $invoiceData
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $invoiceData = DB::table('invoices')
+                ->select('invoices.*',
+                    'stores.name AS storeName',
+                    'invoice_statuses.name as statusName',
+                    'invoice_types.name as typeName',
+                    'users.name AS customerName',
+                    'producers.name AS producerName'
+                )
+                ->leftJoin('stores', 'stores.id', '=', 'invoices.store_id')
+                ->leftJoin('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.status_id')
+                ->leftJoin('invoice_types', 'invoice_types.id', '=', 'invoices.type_id')
+                ->leftJoin('producers', 'producers.id', '=', 'invoices.producer_id')
+                ->leftJoin('users', 'users.id', '=', 'invoices.customer_id')
+                // ->where('invoices.clinic_id', $clinic->id)
+                ->where('invoices.type_id', 2)
+                ->orderBy('invoice_number', 'DESC')->get();
+            return Inertia::render('InvoiceOutgoing/List', [
+                'clinicData' => $clinic,
+                'listData' => $invoiceData
+            ]);
+        });
+        
     }
 
     /**

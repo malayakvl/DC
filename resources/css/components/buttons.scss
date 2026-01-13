@@ -8,6 +8,7 @@
     display: inline-block;
     margin: 0 8px;
 }
+
 .btn-edit {
     background-image: url('../../images/action-icons/edit.svg');
     background-repeat: no-repeat;
@@ -18,6 +19,7 @@
     display: inline-block;
     margin: 0 8px;
 }
+
 .btn-delete {
     background-image: url('../../images/action-icons/trash.svg');
     background-repeat: no-repeat;
@@ -28,6 +30,7 @@
     display: inline-block;
     margin: 0 8px;
 }
+
 .btn-store {
     background-image: url('../../images/action-icons/store.svg');
     background-repeat: no-repeat;
@@ -38,6 +41,7 @@
     display: inline-block;
     margin: 0 8px;
 }
+
 .btn-assign {
     background-image: url('../../images/action-icons/attach.svg');
     background-repeat: no-repeat;
@@ -48,6 +52,7 @@
     display: inline-block;
     margin: 0 8px;
 }
+
 .btn-submit {
     display: inline-block;
     color: white;
@@ -56,10 +61,10 @@
     text-transform: uppercase;
     cursor: pointer;
     font-weight: bold;
-    font-size: 14px !important;
     @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
     margin: 5px;
 }
+
 .btn-back {
     // background: #343335;
     //background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
@@ -75,9 +80,11 @@
     margin: 5px;
     // text-transform: uppercase;
 }
+
 .btn-back:hover {
     background-image: linear-gradient(to left top, rgb(166, 120, 153), rgb(137, 108, 122)) !important;
 }
+
 .btn-invite {
     background: #663399;
     display: inline-block;
@@ -88,6 +95,7 @@
     font-weight: bold;
     font-size: 14px;
 }
+
 .btn-submit {
     display: inline-block;
     color: white;
@@ -100,31 +108,39 @@
     font-size: 12px !important;
     @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
 }
+
 .main-submit {
     background-image: linear-gradient(to left top, #090f11, #eff4f6) !important;
 }
+
 .btn-dash {
     background-image: linear-gradient(to left top, #0e3446, #4c8ea6) !important;
 }
+
 .btn-submit:hover {
     background-image: linear-gradient(to left top, #abb6e1, #4a588e) !important;
 }
+
 .btn-plus {
     background-image: url('../../images/action-icons/plus.svg');
     background-repeat: no-repeat;
     background-size: contain;
-    width: 16px;
-    height: 16px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
     display: inline-block;
     margin-left: 10px;
 }
+
 .btn-cancelissue {
     background: #7a1055;
 }
 
 
-.btn-grad {background-image: linear-gradient(to right, #0e3446 0%, #5FC3E4  51%, #6ea5b9  100%)}
+.btn-grad {
+    background-image: linear-gradient(to right, #0e3446 0%, #5FC3E4 51%, #6ea5b9 100%)
+}
+
 .btn-grad {
     //margin: 10px;
     padding: 5px 10px;
@@ -140,22 +156,28 @@
 }
 
 .btn-grad:hover {
-    background-position: right center; /* change the direction of the change here */
+    background-position: right center;
+    /* change the direction of the change here */
     color: #fff;
     text-decoration: none;
 }
 
 
 .btn-grad:hover {
-    background-position: right center; /* change the direction of the change here */
+    background-position: right center;
+    /* change the direction of the change here */
     color: #fff;
     text-decoration: none;
 }
+
 .gradient-btn-small {
     box-shadow: 0 10px 20px rgba(247, 109, 109, 0.2), inset 0px -4px 0px rgba(0, 0, 0, 0.1);
     /*@apply basic-btn red-yellow-gradient font-bold text-sm text-white rounded-lg px-2 py-1.5*/
 }
-.btn-sch-act, .btn-sch-payment, .btn-sch-icon {
+
+.btn-sch-act,
+.btn-sch-payment,
+.btn-sch-icon {
     padding: 5px 10px;
     text-align: center;
     //text-transform: uppercase;
@@ -167,9 +189,11 @@
     font-weight: bold;
     border-radius: 4px;
 }
+
 .btn-sch-payment {
     background: #98a1ec;
 }
+
 .btn-sch-icon {
     background: none;
     color: gray;
@@ -189,7 +213,10 @@
     font-weight: bold;
     border-radius: 4px;
 }
-.btn-quickact,.btn-acceptpayment, .btn-returnmoney {
+
+.btn-quickact,
+.btn-acceptpayment,
+.btn-returnmoney {
     padding: 10px 13px;
     text-align: center;
     text-transform: uppercase;
@@ -202,12 +229,15 @@
 
     background: palevioletred;
 }
+
 .btn-acceptpayment {
     background: #078825;
 }
+
 .btn-returnmoney {
     background: #7608ad;
 }
+
 .btn-white {
     padding: 8px 13px;
     text-align: center;
@@ -221,6 +251,7 @@
     border-radius: 4px;
     border: solid 1px;
 }
+
 .btn-white.active {
     background: #ece7e7;
     color: #565252;

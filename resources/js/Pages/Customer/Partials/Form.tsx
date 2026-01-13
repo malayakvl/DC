@@ -2,6 +2,7 @@ import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCustomer from '../../../Lang/Customer/translation';
@@ -24,8 +25,8 @@ export default function CustomerForm({
   photoPath,
   className = '',
 }) {
-  const dispatch = useDispatch();
-  const appLang = useSelector(appLangSelector);
+  const dispatch = useAppDispatch();
+  const appLang = useAppSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
     locale: appLang,
@@ -44,9 +45,9 @@ export default function CustomerForm({
   });
   const [hideFields, setHideFields] = useState(false);
   const [_, setCustomerColor] = useState('#000000');
-  const colorSettings = useSelector(paletterDataSelector);
-  const serchResults = useSelector(userSearchResultsSelector);
-  const [selectedFile, setSelectedFile] = useState();
+  const colorSettings = useAppSelector(paletterDataSelector);
+  const serchResults = useAppSelector(userSearchResultsSelector);
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-photo.png');
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
@@ -153,7 +154,7 @@ export default function CustomerForm({
     }
   };
 
-console.log(formData.photo)
+  console.log(formData.photo)
   return (
     <section>
       <header>
@@ -179,7 +180,7 @@ console.log(formData.photo)
                 {(!selectedFile && !photoPath) && (
                   <img src="/images/no-photo.png" width={197} height={250} />
                 )}
-                {(!selectedFile && photoPath) &&  (
+                {(!selectedFile && photoPath) && (
                   <div className={'patient-avatar'} style={{
                     background: `url(${photoPath})`,
                   }}></div>
@@ -216,7 +217,7 @@ console.log(formData.photo)
               <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
                 <div
                   className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                  width={progress.percentage}
+                  style={{ width: `${progress.percentage}%` }}
                 >
                   {progress.percentage}%
                 </div>
@@ -276,34 +277,7 @@ console.log(formData.photo)
                 label={msg.get('customer.phone')}
               />
 
-              {/*<InputLabel htmlFor="name" value={msg.get('customer.photo')} />*/}
-              {/*<div className="mb-0">*/}
-              {/*  <label className="">File</label>*/}
-              {/*  <input*/}
-              {/*    type="file"*/}
-              {/*    className="w-full px-4 py-2"*/}
-              {/*    label="File"*/}
-              {/*    name="file"*/}
-              {/*    onChange={(e) =>*/}
-              {/*      setData("file", e.target.files[0])*/}
-              {/*    }*/}
-              {/*  />*/}
-              {/*  <span className="text-red-600">*/}
-              {/*    {errors.file}*/}
-              {/*  </span>*/}
 
-              {/*</div>*/}
-              {/*<div className="input-container">*/}
-              {/*  <input*/}
-              {/*    type="file"*/}
-              {/*    id="file"*/}
-              {/*    className="w-full px-0 py-0 mt-4"*/}
-              {/*    style={{width: '100px', height: '40px', color: '#fff'}}*/}
-              {/*    name="file"*/}
-              {/*    onChange={handleChangeFile}*/}
-              {/*  />*/}
-              {/*  <InputError className="mt-2" message={errors.file} />*/}
-              {/*</div>*/}
             </div>
           </div>
         </div>

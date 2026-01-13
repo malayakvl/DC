@@ -11,6 +11,7 @@ import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import AddDynamicInputFields from './Row';
 import InputCalendar from '../../../Components/Form/InputCalendar';
+import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import {
   invoiceItemsSelector,
   invoiceTaxSelector,
@@ -53,14 +54,15 @@ export default function Form({
     clinic_id: clinicData.id,
     store_id: formData.store_id,
     customer_id: formData.customer_id,
-    producer_id: formData.producer_id,
+    supplier_id: formData.supplier_id,
     status_id: formData.status_id,
+    status: formData.status,
     type_id: formData.type_id,
     comment: formData.comment,
     currency_id: formData.currency_id,
     tax_id: formData.tax_id,
   });
-
+console.log(formData);
   const { processing, recentlySuccessful } = useForm();
 
   const handleChangeSelect = e => {
@@ -118,8 +120,9 @@ export default function Form({
           clinic_id: values.clinic_id,
           store_id: values.store_id,
           customer_id: values.customer_id,
-          producer_id: values.producer_id,
+          supplier_id: values.supplier_id,
           status_id: values.status_id,
+          status: values.status,
           currency_id: values.currency_id,
           type_id: values.type_id,
           tax_id: values.tax_id,
@@ -131,8 +134,9 @@ export default function Form({
           invoice_date: values.invoice_date,
           clinic_id: values.clinic_id,
           store_id: values.store_id,
+          status: values.status,
           customer_id: values.customer_id,
-          producer_id: values.producer_id,
+          supplier_id: values.supplier_id,
           status_id: values.status_id,
           currency_id: values.currency_id,
           type_id: values.type_id,
@@ -202,10 +206,10 @@ export default function Form({
                 <div className={`w-1/4`}>
                   <InputSelect
                     translatable={true}
-                    name={'status_id'}
+                    name={'status'}
                     className={'mb-1'}
                     values={values}
-                    value={values.status_id}
+                    value={values.status}
                     options={statusData}
                     onChange={handleChangeSelect}
                     required
@@ -219,9 +223,9 @@ export default function Form({
                 <div className="flex gap-2">
                   <div className="w-1/4">
                     <InputSelect
-                      name={'producer_id'}
+                      name={'supplier_id'}
                       values={values}
-                      value={values.producer_id}
+                      value={values.supplier_id}
                       options={producerData}
                       onChange={handleChangeSelect}
                       required
@@ -253,7 +257,7 @@ export default function Form({
                     />
                   </div>
                   <div className="w-1/4">
-                    <InputSelect
+                    <InputCustomerSelect
                       name={'customer_id'}
                       values={values}
                       value={values.customer_id}

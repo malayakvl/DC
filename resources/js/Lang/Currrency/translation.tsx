@@ -15,7 +15,7 @@ const lngCurrency = {
     'title.list': 'Валюти',
     'title.edit': 'Редагувати Валюту',
     'title.view': 'Переглянути Валюту',
-    create: 'Створити виробника',
+    create: 'Створити валюту',
     name: 'Назва',
     save: 'Зберегти',
     saved: 'Збережено.',

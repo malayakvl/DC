@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('clinic_id')->index();
             $table->unsignedBigInteger('user_id')->index();
+            $table->string('avatar')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('phone_2')->nullable();
+            
             $table->timestamps();
         });
     }

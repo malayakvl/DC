@@ -18,66 +18,81 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
 use DateTime; // Import the DateTime class from the global namespace
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
 
 class SchedulerController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+    }
+
+
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            DB::statement("SET search_path TO clinic_{$clinicId}");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $filialId = $request->session()->get('filial_id');
-        $customerSelectData = DB::select('
-            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
-                   roles.name AS role_name
-            FROM users
-            LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = users.id
-            LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
-            WHERE clinic_filial_user.role_id != 20 
-            AND clinic_filial_user.clinic_id = ? AND clinic_filial_user.filial_id =?
-            ORDER BY name
-        ', [$clinicData->id, $filialId]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $filialId = $request->session()->get('filial_id');
+            
+            $customerSelectData = DB::select('
+                SELECT core.users.id, core.users.file, (core.users.first_name || \' \' || core.users.last_name) AS name,
+                    roles.name AS role_name
+                FROM core.users
+                LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = core.users.id
+                LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
+                WHERE clinic_filial_user.role_id != 20 
+                AND clinic_filial_user.clinic_id = ? AND clinic_filial_user.filial_id =?
+                ORDER BY name
+            ', [$clinicData->id, $filialId]);
+            dd($customerSelectData);exit;
 
-        $assistantSelectData = DB::select('
-            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
-                   roles.name AS role_name
-            FROM users
-            LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = users.id
-            LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
-            WHERE clinic_filial_user.role_id = 20 
-              AND clinic_filial_user.clinic_id = ?
-                AND clinic_filial_user.filial_id =?
-            ORDER BY name
-        ', [$clinicData->id, $filialId]);
+            $assistantSelectData = DB::select('
+                SELECT core.users.id, core.users.file, core.users.color, (core.users.first_name || \' \' || core.users.last_name) AS name,
+                    roles.name AS role_name
+                FROM core.users
+                LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = core.users.id
+                LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
+                WHERE clinic_filial_user.role_id = 20 
+                AND clinic_filial_user.clinic_id = ?
+                    AND clinic_filial_user.filial_id =?
+                ORDER BY name
+            ', [$clinicData->id, $filialId]);
 
-//        $tmp = DB::table('users')
-//            ->select('users.id', "users.file", 'users.color', '(users.first_name || \' \' || users.last_name) AS name',
-//            'roles.name AS role_name')
-//            ->leftJoin('clinic_filials', 'clinic_user.user_id', '=', 'users.id')
-//            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
-//            ->where('clinic_user.clinic_id', $clinicData->id)
-//            ->where('clinic_user.role_id', 20)
-//            ->orderBy('name')->get();
-//        dd($tmp[0]);exit;
 
-//        $assistantSelectData = DB::select('
-//            SELECT users.id, users.file, users.color, (users.first_name || \' \' || users.last_name) AS name,
-//                   roles.name AS role_name
-//            FROM users
-//            LEFT JOIN clinic_user ON clinic_user.user_id = users.id
-//            LEFT JOIN roles ON roles.id = clinic_user.role_id
-//            WHERE clinic_user.role_id = 20 AND clinic_user.clinic_id = ?
-//            ORDER BY name
-//        ');
-//        dd($assistantSelectData);exit;
-
-        $customerData = DB::table('users')
-            ->select([
-                'users.id',
-                'users.file',
-                'users.color',
-                'users.first_name',
+            $customerData = DB::table('users')
+                ->select([
+                    'users.id',
+                    'users.file',
+                    'users.color',
+                    'users.first_name',
                 'users.last_name',
                 'roles.name AS role_name'
             ])
@@ -88,30 +103,30 @@ class SchedulerController extends Controller
             ->orderBy('last_name')
             ->get();
 
-        $categories = PriceCategory::where('parent_id', null)
-            ->where('clinic_id', $clinicData->id)
-            ->get();
-        $arrServices = [];
-        foreach ($categories as $category) {
-            $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
-        }
-        $arrCat = array();
-        $tree = $this->generateCategories($categories, $arrCat, 0);
+            $categories = PriceCategory::where('parent_id', null)
+                ->where('clinic_id', $clinicData->id)
+                ->get();
+            $arrServices = [];
+            foreach ($categories as $category) {
+                $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+            }
+            $arrCat = array();
+            $tree = $this->generateCategories($categories, $arrCat, 0);
 
-        // Group users by role_name and format into groupedOptions
-        App::setLocale($request->user()->locale);
-        $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
-            return [
-                'label' => __('roles.'.$roleName),
-                'options' => $group->map(function ($user) {
-                    return [
-                        'value' => $user->id,
-                        'label' => $user->first_name . ' ' . $user->last_name,
-                        'color' => $user->color
-                    ];
-                })->values()->toArray()
-            ];
-        })->values()->toArray();
+            // Group users by role_name and format into groupedOptions
+            App::setLocale($request->user()->locale);
+            $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
+                return [
+                    'label' => __('roles.'.$roleName),
+                    'options' => $group->map(function ($user) {
+                        return [
+                            'value' => $user->id,
+                            'label' => $user->first_name . ' ' . $user->last_name,
+                            'color' => $user->color
+                        ];
+                    })->values()->toArray()
+                ];
+            })->values()->toArray();
         if ($request->session()->get('filial_id')) {
             $listCabinets = DB::table('cabinets')
                 ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
@@ -137,6 +152,7 @@ class SchedulerController extends Controller
                 })->values()->toArray()
             ];
         })->values()->toArray();
+        
         $weekStart = date("Y-m-d");
         $weekEnd = date("Y-m-d", strtotime('+3 days'));
         $eventsData = DB::table('schedulers')
@@ -158,28 +174,30 @@ class SchedulerController extends Controller
                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
                 'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
             )
-            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
+            ->leftJoin('core.users', 'core.users.id', '=', 'schedulers.doctor_id')
             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
             ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
             ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
             ->where('schedulers.clinic_id', $clinicData->id)
             ->whereBetween('event_date', [$weekStart, $weekEnd])
             ->get();
-        $formData = new Scheduler();
-        return Inertia::render('Scheduler/Index', [
-            'clinicData' => $clinicData,
-            'customerData' => $customerSelectData,
-            'assistantData' => $assistantSelectData,
-            'customerGroupped' => $groupedOptions,
-            'cabinetGroupped' => $groupedCabinets,
-            'cabinetData' => $listCabinets,
-            'formData' => $formData,
-            'eventsData' => $eventsData,
-            'categoriesData' => $categories,
-            'services' => $arrServices,
-            'tree' => $tree,
-            'currency' => $clinicData->currency->symbol
-        ]);
+            
+            $formData = new Scheduler();
+            return Inertia::render('Scheduler/Index', [
+                'clinicData' => $clinicData,
+                'customerData' => $customerSelectData,
+                'assistantData' => $assistantSelectData,
+                'customerGroupped' => $groupedOptions,
+                'cabinetGroupped' => $groupedCabinets,
+                'cabinetData' => $listCabinets,
+                'formData' => $formData,
+                'eventsData' => $eventsData,
+                'categoriesData' => $categories,
+                'services' => $arrServices,
+                'tree' => $tree,
+                'currency' => $clinicData->currency->symbol
+            ]);
+        });
     }
 
     public function generateCategories($categories, &$arrCat, $level) {

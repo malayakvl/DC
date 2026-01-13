@@ -86,21 +86,17 @@ export default function Index() {
             <section>
                 <div className="">
                   <h2 className={'w-full'}>{msg.get('import.title.list')}</h2>
-                  {/*<div>*/}
-                  {/*  <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />*/}
-                  {/*  <label for={'patients'} className={'ml-2 text-white'}>{msg.get('import.patients')}</label>*/}
-                  {/*</div>*/}
                   <div>
-                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'customers'} />
-                    <label htmlFor={'customers'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.customers')}</label>
+                    <input type="radio" id={'customers'} onClick={() => setImportType('customers')} name="type" value={'customers'} />
+                    <label htmlFor={'customers'} onClick={() => setImportType('customers')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.customers')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'patients'} />
-                    <label htmlFor={'patients'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.patients')}</label>
+                    <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />
+                    <label htmlFor={'patients'} onClick={() => setImportType('patients')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.patients')}</label>
                   </div>
                   <div>
-                    <input type="radio" id={'patients'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
-                    <label htmlFor={'dia'} className={'ml-2 text-white text-[14px]'}>{msg.get('import.dia')}</label>
+                    <input type="radio" id={'dia'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
+                    <label htmlFor={'dia'} onClick={() => setImportType('dia')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.dia')}</label>
                   </div>
 
                   <div className="mt-2">

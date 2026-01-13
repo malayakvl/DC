@@ -12,9 +12,11 @@ class Invoice extends Model
         'clinic_id',
         'store_id',
         'customer_id',
-        'producer_id',
+        'supplier_id',
         'currency_id',
         'tax_id',
+        'type_id',
+        'total_amount'
     ];
 
 }

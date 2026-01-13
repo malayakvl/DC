@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { SketchPicker } from 'react-color';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { paletterDataSelector } from '../../Redux/Staff/selectors';
 import { setPaletteAction } from '../../Redux/Staff/';
 
 interface Props {
   defaultColor: string;
-  style: string | null;
-  icon: string | null;
+  style?: string;
+  icon?: string;
   name: string;
-  label: string | null;
-  placeholder: string | null;
-  tips: string | null;
+  label?: string;
+  placeholder?: string;
+  tips?: string;
   disabled?: boolean;
 }
 
@@ -29,8 +29,8 @@ const InputColor: React.FC<Props> = ({
   const [selectedColor, setSelectedColor] = useState(defaultColor);
   const [_, setOpen] = useState(false);
   const node = useRef<HTMLDivElement>(null);
-  const dispatch = useDispatch();
-  const colorSettings = useSelector(paletterDataSelector);
+  const dispatch = useAppDispatch();
+  const colorSettings = useAppSelector(paletterDataSelector);
   const handleFocus = (e: any) => {
     e.target.select();
   };
@@ -72,7 +72,7 @@ const InputColor: React.FC<Props> = ({
   }, [defaultColor]);
 
   return (
-    <div className={`${style}`} ref={node}>
+    <div className={style || ''} ref={node}>
       {label && (
         <label className="control-label" htmlFor={name}>
           {label}

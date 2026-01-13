@@ -30,7 +30,20 @@ const lngDropdown = {
     'Swedish Krona': 'Swedish Krona',
     'Swiss Franc': 'Swiss Franc',
     'South African Rand': 'South African Rand',
-    'Australian Dollar': 'Australian Dollar'
+    'Australian Dollar': 'Australian Dollar',
+    'Draft': 'Нова',
+    'Posted': 'Проведена',
+    'Canceled': 'Відмінена',
+    'draft': 'Нова',
+    'posted': 'Проведена',
+    'canceled': 'Відмінена',
+    'Без ПДВ': 'Без ПДВ',
+    'ПДВ 20%':'ПДВ 20%',
+    'ПДВ 7%':'ПДВ 7%',
+    'Єдиний податок 5%':"Єдиний податок 5%",
+    'Єдиний податок 3%':'Єдиний податок 3%',
+    'Страховий збір 2%':'Страховий збір 2%',
+    'Сервісний збір 1.5%':'Сервісний збір 1.5%'
   },
 };
 export default lngDropdown;

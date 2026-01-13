@@ -11,7 +11,7 @@ import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 
-export default function List({ clinicData, filialData, customerData }) {
+export default function List({ clinicData, customerData }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -19,6 +19,7 @@ export default function List({ clinicData, filialData, customerData }) {
     locale: appLang,
   });
   console.log(customerData)
+
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -53,7 +54,7 @@ export default function List({ clinicData, filialData, customerData }) {
                 <tr className="" key={item.id}>
                   <td style={{ width: '100px' }}>
                     <img
-                      src={item.file ? `/uploads/users/${item.file}` : '/images/no-photo.png'}
+                      src={item.avatar ? `/storage/users/${item.avatar}` : '/images/no-photo.png'}
                       width={40}
                       className="float-left rounded"
                       height="auto"
@@ -80,13 +81,11 @@ export default function List({ clinicData, filialData, customerData }) {
                     <NavLink
                       className="btn-view"
                       title={msg.get('customer.view')}
-                      href={`customer/show/${item.id}`}
-                    />
+                      href={`customer/show/${item.id}`} children={undefined} />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('customer.delete')}
-                      href={`customer/delete/${item.id}`}
-                    />
+                      href={`customer/delete/${item.id}`} children={undefined} />
                   </td>
                 </tr>
               ))}

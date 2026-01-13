@@ -120,10 +120,14 @@ class StoreController extends Controller
                 return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
             }
 
-            $serverFilePath = public_path('storage/clinic/stamps/store-stamp-' .$id. '.png');
             $imagePath = '';
-            if (file_exists($serverFilePath)) {
-                $imagePath = asset('storage/clinic/stamps/store-stamp-'.$id.'.png');
+            $extensions = ['png', 'jpg', 'jpeg'];
+            foreach ($extensions as $ext) {
+                $serverFilePath = public_path('storage/clinic/stamps/store-stamp-' . $id . '.' . $ext);
+                if (file_exists($serverFilePath)) {
+                    $imagePath = asset('storage/clinic/stamps/store-stamp-' . $id . '.' . $ext);
+                    break;
+                }
             }
             $filailData = ClinicFilial::where('clinic_id', $clinicData->id)->get();
             
@@ -190,17 +194,77 @@ class StoreController extends Controller
             }
 
             // Загружаем файл штампа, если передан
-            if ($request->file) {
-                $ext = $request->file->getClientOriginalExtension();
-                Storage::disk('public')->put(
-                    'clinic/stamps/store-stamp-' . $store->id . '.' . $ext,
-                    file_get_contents($request->file)
-                );
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $ext = $file->getClientOriginalExtension();
+                $fileName = 'store-stamp-' . $store->id . '.' . $ext;
+                
+                // Remove old files with different extensions if they exist
+                $extensions = ['png', 'jpg', 'jpeg'];
+                foreach ($extensions as $existingExt) {
+                    Storage::disk('public')->delete('clinic/stamps/store-stamp-' . $store->id . '.' . $existingExt);
+                }
+
+                $file->storeAs('clinic/stamps', $fileName, 'public');
             }
 
             return Redirect::route('store.index')->with('success', 'Store updated successfully');
         });
     }
+
+    public function storeMovementsReport(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $query = DB::table('clinic_18.store_movements AS sm')
+                ->leftJoin('clinic_18.act_items AS ai', 'ai.id', '=', 'sm.act_item_id')
+                ->leftJoin('clinic_18.acts AS a', 'a.id', '=', 'ai.act_id')
+                ->leftJoin('clinic_18.pricing AS p', 'p.id', '=', 'ai.service_id')
+                ->leftJoin('clinic_18.invoices AS i', function($join) {
+                    $join->on('i.id', '=', 'sm.document_id')
+                        ->where('sm.document_type', '=', 'iinv');
+                })
+                ->leftJoin('clinic_18.materials AS m', 'm.id', '=', 'sm.material_id')
+                ->leftJoin('clinic_18.store_batches AS sb', 'sb.id', '=', 'sm.batch_id')
+                ->leftJoin('clinic_18.stores AS s', 's.id', '=', 'sm.store_id')
+                ->select([
+                    'sm.id AS movement_id',
+                    'sm.created_at',
+                    'sm.document_type',
+                    'sm.direction',
+                    'sm.qty',
+                    'sm.fact_qty',
+                    'sm.document_id',
+                    DB::raw('COALESCE(a.act_number, i.invoice_number) AS document_number'),
+                    DB::raw('COALESCE(p.name, m.name) AS service_or_material'),
+                    'm.name AS material_name',
+                    'sb.price_per_unit',
+                    DB::raw('sm.fact_qty * sb.price_per_unit AS cost'),
+                    's.name AS store_name',
+                    'a.act_date',
+                    'i.invoice_date'
+                ])
+                ->orderByDesc('sm.created_at');
+
+            // Фильтры (опционально)
+            if ($request->store_id) {
+                $query->where('sm.store_id', $request->store_id);
+            }
+            if ($request->from_date) {
+                $query->whereDate('sm.created_at', '>=', $request->from_date);
+            }
+            if ($request->to_date) {
+                $query->whereDate('sm.created_at', '<=', $request->to_date);
+            }
+
+            $movements = $query->get();
+
+            return Inertia::render('Reports/StoreMovements', [
+                'movements' => $movements
+            ]);
+        });
+        
+    }
+
 
     /**
      * Remove the specified resource from storage.

@@ -165,16 +165,44 @@ class ClinicController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ClinicUpdateRequest $request) {
-        $clinic = Clinic::where('user_id', $request->user()->id)->first();
+    public function update(ClinicUpdateRequest $request)
+    {
+        $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
 
-        if (!$request->user()->can('clinic-create')) {
-            $clinic->fill($request->validated());
-            $clinic->save();
-        }
+        return $this->withClinicSchema($request, function () use ($request, $clinicData) {
+            if (!$request->user()->canClinic('clinic-create')) {
+                return Inertia::render('Act/List', [
+                    'error' => 'Insufficient permissions'
+                ]);
+            }
 
-        return Redirect::route('dashboard.index');
+            $validated = $request->validated();
+
+            // Заполняем все разрешённые поля разом
+            $clinicData->fill($validated);
+            DB::connection('pgsql')->table('core.clinics')
+                ->where('id', $clinicData->id)
+                ->update([
+                    'name'        => $validated['name'],
+                    'address'     => $validated['address'] ?? null,
+                    'uraddress'   => $validated['uraddress'] ?? null,
+                    'currency_id' => $validated['currency_id'],
+                    'updated_at'  => now(),
+                ]);
+
+            // Аудит
+            $this->auditLogService->log(
+                $request->user(),
+                'clinic.updated',
+                $clinicData,
+                null,
+                $validated
+            );
+
+            return Redirect::route('dashboard.index');
+        });
     }
+
 
     
     public function filialEnter(Request $request) {

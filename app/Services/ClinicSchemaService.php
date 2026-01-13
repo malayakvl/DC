@@ -38,6 +38,9 @@ class ClinicSchemaService
             // Seed default material categories
             $this->seedDefaultMaterialCategories();
 
+            // Create default catalogs (materials, producers, etc.)
+            $this->seedDefaultServices();
+
             // Seed default units
             $this->seedDefaultUnits();
 
@@ -203,11 +206,19 @@ class ClinicSchemaService
                 clinic_id BIGINT NOT NULL,
                 filial_id BIGINT NOT NULL,
                 user_id BIGINT NOT NULL,
+                color VARCHAR(7) DEFAULT NULL,
+                phone VARCHAR(20) DEFAULT NULL,
+                avatar VARCHAR(255) DEFAULT NULL,
+                invite_token VARCHAR(255) DEFAULT NULL,
                 role_id BIGINT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+        DB::statement("CREATE UNIQUE INDEX clinic_filial_user_unique
+            ON clinic_filial_user (clinic_id, filial_id, user_id);
+        ");
+
         // Create stores table
         DB::statement("
             CREATE TABLE IF NOT EXISTS stores (
@@ -229,22 +240,39 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS price_categories (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                clinic_id BIGINT NOT NULL,
-                parent_id BIGINT,
-                producer_id BIGINT,
-                percent DECIMAL(5, 2) DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        // DB::statement("
+        //     CREATE TABLE IF NOT EXISTS price_categories (
+        //         id BIGSERIAL PRIMARY KEY,
+        //         name VARCHAR(255) NOT NULL,
+        //         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        //     )
+        // ");
 
         // Create pricings table
         DB::statement("
             CREATE TABLE IF NOT EXISTS pricings (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                clinic_id BIGINT NOT NULL,
+                price DECIMAL(10, 2),
                 category_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement(
+            "CREATE TABLE IF NOT EXISTS pricing_items (
+                id BIGSERIAL PRIMARY KEY,
+                pricing_id BIGINT NOT NULL,
+                material_id BIGINT,
+                quantity DECIMAL(10, 2),
+                unit_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -281,7 +309,6 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 discount DOUBLE PRECISION NOT NULL DEFAULT 0,
-                clinic_id INTEGER,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -389,18 +416,17 @@ class ClinicSchemaService
         DB::statement("
             CREATE TABLE IF NOT EXISTS audit_logs (
                 id BIGSERIAL PRIMARY KEY,
-                user_id BIGINT NOT NULL,
-                action VARCHAR(50) NOT NULL,
-                entity_type VARCHAR(100),
+                user_id BIGINT,
+                entity_type VARCHAR(255) NOT NULL,
                 entity_id BIGINT,
+                action VARCHAR(255) NOT NULL,
+                old_data JSON,
+                new_data JSON,
                 clinic_id BIGINT,
                 filial_id BIGINT,
-                old_data JSONB,
-                new_data JSONB,
-                ip_address VARCHAR(45),
-                user_agent TEXT,
-                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+                ip_address VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
@@ -536,6 +562,40 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        DB::statement("
+            CREATE TABLE patients (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                medical_card_no VARCHAR(50),
+                registered_at DATE,
+                patient_status_id BIGINT,
+                discount DOUBLE PRECISION DEFAULT 0,
+                balance NUMERIC(12,2) DEFAULT 0,
+                visits_count INT DEFAULT 0,
+                last_visit DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE patient_login_links (
+                id BIGSERIAL PRIMARY KEY,
+                patient_id BIGINT NOT NULL,
+                token VARCHAR(255) NOT NULL,
+                expires_at TIMESTAMP WITHOUT TIME ZONE,
+                used_at TIMESTAMP WITHOUT TIME ZONE,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT patient_login_links_patient_fk
+                    FOREIGN KEY (patient_id)
+                    REFERENCES patients(id)
+                    ON DELETE CASCADE
+            );
+        ");
+
+        DB::statement("CREATE UNIQUE INDEX patient_login_links_token_uq ON patient_login_links (token);");
+
     }
 
     /**
@@ -620,6 +680,55 @@ class ClinicSchemaService
                 unset($child['children']); // Remove children if nested deeper
                 DB::table('material_categories')->insert($child);
             }
+        }
+    }
+
+    /**
+     * Seed default material categories
+     *
+     * @return void
+     */
+    protected function seedDefaultServices(): void
+    {
+        $materialCategories = [
+            [
+                'name' => 'Переніс даних',
+            ],
+            [
+                'name' => 'Обстеження',
+            ],
+            [
+                'name' => 'Профілактичні проходження',
+            ],
+            [
+                'name' => 'Лікування карієрних хвороб/Реставрації',
+            ],
+            [
+                'name' => 'Ендодонія',
+            ],
+            [
+                'name' => 'Хірургія',
+            ],
+            [
+                'name' => 'Ортопедія',
+            ],
+        ];
+
+        // Check if we already have material categories to avoid duplicates
+        $existingCategories = DB::table('price_categories')->count();
+        
+        if ($existingCategories > 0) {
+            // Categories already exist, don't insert duplicates
+            return;
+        }
+
+        foreach ($materialCategories as $category) {
+            // Add timestamps
+            $category['created_at'] = now();
+            $category['updated_at'] = now();
+            
+            // Insert the parent category
+            DB::table('price_categories')->insert($category);
         }
     }
 
@@ -724,15 +833,22 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS acts (
                 id BIGSERIAL PRIMARY KEY,
                 filial_id BIGINT NOT NULL,
-                act_number VARCHAR(50),
+                act_number VARCHAR(50) NOT NULL,
                 act_date TIMESTAMP NOT NULL,
+
                 patient_id BIGINT NOT NULL,
                 doctor_id BIGINT,
                 visit_id BIGINT,
-                total_amount NUMERIC(12,2) NOT NULL,
-                status VARCHAR(50) DEFAULT 'draft',
+
+                total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+
+                status VARCHAR(20) NOT NULL DEFAULT 'draft'
+                    CHECK (status IN ('draft', 'posted', 'cancelled')),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                UNIQUE (filial_id, act_number)
             )
         ");
 
@@ -742,11 +858,17 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 act_id BIGINT NOT NULL,
                 service_id BIGINT NOT NULL,
-                qty NUMERIC(12,2) NOT NULL DEFAULT 1,
-                price NUMERIC(12,2) NOT NULL,
-                total NUMERIC(12,2) NOT NULL,
+                components JSONB,
+
+                qty NUMERIC(12,2) NOT NULL DEFAULT 1 CHECK (qty > 0),
+                price NUMERIC(12,2) NOT NULL CHECK (price >= 0),
+                total NUMERIC(12,2) NOT NULL CHECK (total >= 0),
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                CONSTRAINT fk_act_items_act
+                    FOREIGN KEY (act_id) REFERENCES acts(id) ON DELETE CASCADE
             )
         ");
 
@@ -768,11 +890,15 @@ class ClinicSchemaService
                 store_id BIGINT NOT NULL,
                 supplier_id BIGINT,
                 customer_id BIGINT,
+                currency_id BIGINT,
+                tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
-                document_type VARCHAR(50) NOT NULL DEFAULT 'income', -- 'income' или 'expense'
-                status VARCHAR(50) DEFAULT 'draft',
+                status VARCHAR(20) NOT NULL DEFAULT 'draft'
+                    CHECK (status IN ('draft', 'posted', 'cancelled')),
+                document_type VARCHAR(20) NOT NULL
+                    CHECK (document_type IN ('income', 'expense', 'transfer')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -786,6 +912,7 @@ class ClinicSchemaService
                 material_id BIGINT NOT NULL,
                 qty NUMERIC(12,2) NOT NULL,         -- количество по документу
                 price NUMERIC(12,2) NOT NULL,
+                price_per_unit NUMERIC(12,2) NOT NULL,
                 total NUMERIC(12,2) NOT NULL,
                 pack_qty NUMERIC(12,2) DEFAULT 1,   -- количество в упаковке
                 fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
@@ -827,6 +954,44 @@ class ClinicSchemaService
             )
         ");
 
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_batches (
+                id BIGSERIAL PRIMARY KEY,
+                store_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                supplier_id BIGINT NOT NULL,
+                invoice_id BIGINT NOT NULL,
+                arrived_at DATE NOT NULL,
+                qty NUMERIC(12,4) NOT NULL,
+                qty_left NUMERIC(12,4) NOT NULL,
+                fact_qty NUMERIC(12,4) NOT NULL,
+                fact_qty_left NUMERIC(12,4) NOT NULL,
+                price_per_unit NUMERIC(12,4) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS store_movements (
+                id BIGSERIAL PRIMARY KEY,
+                store_id BIGINT NOT NULL,
+                material_id BIGINT NOT NULL,
+                batch_id BIGINT NOT NULL,
+
+                direction SMALLINT NOT NULL,
+                -- 1 = приход
+                -- -1 = расход
+                qty NUMERIC(12,4) NOT NULL,
+                fact_qty NUMERIC(12,4) NOT NULL,
+                document_type VARCHAR(50),
+                document_id BIGINT,
+                act_item_id BIGINT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
         // Payments
         DB::statement("
             CREATE TABLE IF NOT EXISTS payments (
@@ -835,6 +1000,7 @@ class ClinicSchemaService
                 patient_id BIGINT NOT NULL,
                 act_id BIGINT,
                 payment_date TIMESTAMP NOT NULL,
+                payment_number VARCHAR(255),
                 amount NUMERIC(12,2) NOT NULL,
                 method VARCHAR(50),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -863,13 +1029,14 @@ class ClinicSchemaService
 
         // Store balances
         DB::statement("
-            CREATE TABLE IF NOT EXISTS store_balances (
-                id BIGSERIAL PRIMARY KEY,
-                store_id BIGINT NOT NULL,
-                material_id BIGINT NOT NULL,
-                qty NUMERIC(12,2) NOT NULL DEFAULT 0,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
+            CREATE TABLE store_balances (
+                store_id bigint NOT NULL,
+                material_id bigint NOT NULL,
+                qty numeric(12,4) NOT NULL DEFAULT 0,
+                fact_qty numeric(12,4) NOT NULL DEFAULT 0,
+                updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (store_id, material_id)
+            );
         ");
 
         // Visit services table — чтобы акт знал какие услуги в визите
@@ -928,7 +1095,7 @@ class ClinicSchemaService
      */
     protected function createDefaultRoles(): void
     {
-        $defaultRoles = ['ceo', 'ceo_filial', 'doctor', 'nurse', 'receptionist'];
+        $defaultRoles = ['ceo', 'ceo_filial', 'doctor', 'nurse', 'receptionist', 'patient'];
         
         foreach ($defaultRoles as $roleName) {
             DB::table('roles')->insert([
@@ -1036,7 +1203,6 @@ class ClinicSchemaService
             DB::table('patient_statuses')->insert([
                 'name' => $status,
                 'discount' => 0,
-                'clinic_id' => $clinicId,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
