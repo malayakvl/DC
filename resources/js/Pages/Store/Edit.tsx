@@ -8,6 +8,7 @@ export default function Edit({
   formData,
   filialData,
   customerData,
+  stampPath,
 }) {
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -20,6 +21,7 @@ export default function Edit({
               clinicData={clinicData}
               formData={formData}
               customerData={customerData}
+              stampPath={stampPath}
               className="max-w-xl"
             />
           </div>

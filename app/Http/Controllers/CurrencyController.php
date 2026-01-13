@@ -70,19 +70,12 @@ class CurrencyController extends Controller
             if (!$request->user()->canClinic('currency-create')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
-            if ($request->user()->can('currency-create')) {
-                $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                $formData = new Currency();
-                return Inertia::render('Currency/Create', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData,
-                ]);
-            } else {
-                return Inertia::render('Currency/List', [
-                    'clinicData' => $clinicData ?? null,
-                    'error' => 'Insufficient permissions to create currency'
-                ]);
-            }
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            $formData = new Currency();
+            return Inertia::render('Currency/Create', [
+                'clinicData' => $clinicData,
+                'formData' => $formData,
+            ]);
         });
     }
 

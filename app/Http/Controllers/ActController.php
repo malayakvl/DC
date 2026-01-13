@@ -206,7 +206,6 @@ class ActController extends Controller
                     ->where('clinic_user.clinic_id', $clinicId)
                     ->orderBy('users.last_name')
                     ->get();
-            dd($customerData);exit;
 
             return Inertia::render('Act/Create', [
                 'clinicData' => $clinicData,

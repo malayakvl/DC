@@ -11,6 +11,9 @@ import {
     generateBalanceReportAction,
     emptyBalanceReportAction,
 } from '../../Redux/Report/actions';
+import {
+    setDataLoadingAction,
+} from '../../Redux/Layout/actions';
 import { reportResultSelector } from '../../Redux/Report/selectors';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -55,6 +58,7 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
     };
 
     const generateReport = () => {
+        dispatch(setDataLoadingAction(true));
         // If no filial is selected, try to use the first available filial
         let filialId = values['filial_id'];
         if (!filialId && filials && filials.length > 0) {
@@ -75,6 +79,7 @@ export default function Balance({ filials, dateFrom, dateTo, customerData }: Bal
         axios.post(`/report/generateBalanceReport`, { values }, {})
             .then(res => {
                 setReportResult(res.data);
+                dispatch(setDataLoadingAction(false));
             })
     };
 

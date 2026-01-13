@@ -68,7 +68,7 @@ export default function Form({
       notice: formData.notice,
     });
   const { errors } = usePage().props;
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-photo.jpg');
 
   const handleChange = e => {
@@ -133,7 +133,7 @@ export default function Form({
                 {(!selectedFile && !formData.avatar) && (
                   <img src="/images/no-photo.png" width={197} height={244} />
                 )}
-                {(!selectedFile && formData.avatar) &&  (
+                {(!selectedFile && formData.avatar) && (
                   <div className={'patient-avatar'} style={{
                     background: `url(/uploads/patients/${formData.avatar})`
                   }}></div>
@@ -160,7 +160,7 @@ export default function Form({
                     }
 
                     // I've kept this example simple by using the first image instead of multiple
-                    setSelectedFile(e.target.files[0]);
+                    setSelectedFile(e.target.files?.[0] || undefined);
                   }}
                 />
                 <label htmlFor="file" className="btn-2" />
@@ -171,7 +171,7 @@ export default function Form({
               <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
                 <div
                   className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
-                  width={progress.percentage}
+                  style={{ width: `${progress.percentage}%` }}
                 >
                   {progress.percentage}%
                 </div>
