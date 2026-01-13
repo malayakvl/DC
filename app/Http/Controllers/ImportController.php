@@ -53,19 +53,6 @@ class ImportController extends Controller
                 return Inertia::render('Layout/Error', ['error' => 'Insufficient permissions']);
             }
 
-            // // Update payment numbers to format DDMMYY-XXXXXXX
-            // $payments = DB::table("clinic_{$clinicId}.payments")->orderBy('id')->get();
-            // $num = 1;
-            // $datePrefix = date('dmy');
-            // foreach ($payments as $payment) {
-            //     $paymentNumber = $datePrefix . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
-            //     DB::table("clinic_{$clinicId}.payments")->where('id', $payment->id)->update([
-            //         'payment_number' => $paymentNumber
-            //     ]);
-            //     $num++;
-            // }
-            // echo "Payments updated successfully.";exit;
-
             return Inertia::render('Import/Index', [
             ]);
         });

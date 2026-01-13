@@ -120,10 +120,14 @@ class StoreController extends Controller
                 return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
             }
 
-            $serverFilePath = public_path('storage/clinic/stamps/store-stamp-' .$id. '.png');
             $imagePath = '';
-            if (file_exists($serverFilePath)) {
-                $imagePath = asset('storage/clinic/stamps/store-stamp-'.$id.'.png');
+            $extensions = ['png', 'jpg', 'jpeg'];
+            foreach ($extensions as $ext) {
+                $serverFilePath = public_path('storage/clinic/stamps/store-stamp-' . $id . '.' . $ext);
+                if (file_exists($serverFilePath)) {
+                    $imagePath = asset('storage/clinic/stamps/store-stamp-' . $id . '.' . $ext);
+                    break;
+                }
             }
             $filailData = ClinicFilial::where('clinic_id', $clinicData->id)->get();
             
@@ -190,12 +194,18 @@ class StoreController extends Controller
             }
 
             // Загружаем файл штампа, если передан
-            if ($request->file) {
-                $ext = $request->file->getClientOriginalExtension();
-                Storage::disk('public')->put(
-                    'clinic/stamps/store-stamp-' . $store->id . '.' . $ext,
-                    file_get_contents($request->file)
-                );
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $ext = $file->getClientOriginalExtension();
+                $fileName = 'store-stamp-' . $store->id . '.' . $ext;
+                
+                // Remove old files with different extensions if they exist
+                $extensions = ['png', 'jpg', 'jpeg'];
+                foreach ($extensions as $existingExt) {
+                    Storage::disk('public')->delete('clinic/stamps/store-stamp-' . $store->id . '.' . $existingExt);
+                }
+
+                $file->storeAs('clinic/stamps', $fileName, 'public');
             }
 
             return Redirect::route('store.index')->with('success', 'Store updated successfully');

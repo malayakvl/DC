@@ -93,6 +93,9 @@ class MaterialCategoresController extends Controller
      */
     public function create(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('store-create')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
             $clinicData = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('store-create')) {
                 return Inertia::render('Store/Edit', ['error' => 'Insufficient permissions']);
@@ -134,8 +137,11 @@ class MaterialCategoresController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        
-        if ($request->user()->can('store-edit')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('store-edit')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
+            
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $formData = MaterialCategories::find($id);
             $categories = MaterialCategories::where('parent_id', null)
@@ -153,9 +159,8 @@ class MaterialCategoresController extends Controller
                 'categoryData' => $tree
             ]);
 
-        } else {
-
-        }
+            
+        });
     }
 
     /**

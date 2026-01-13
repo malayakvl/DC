@@ -18,7 +18,7 @@ export default function List({ listData, permissions }) {
     messages: lngCurrency,
     locale: appLang,
   });
-console.log(listData);
+
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -33,6 +33,13 @@ console.log(listData);
               <header>
                 <div className="flex inline-flex">
                   <h2>{msg.get('currency.title.list')}</h2>
+                  <div className="pl-5 mt-2">
+                    <PrimaryButton>
+                      <NavLink href={'/currency/create'}>
+                        {msg.get('currency.create')}
+                      </NavLink>
+                    </PrimaryButton>
+                  </div>
                 </div>
               </header>
             </section>

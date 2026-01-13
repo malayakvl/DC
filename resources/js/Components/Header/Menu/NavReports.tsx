@@ -39,10 +39,10 @@ export default function NavReports(props) {
                     </Link>
                   </MenuItem>
                 )}
-                {permissions['customer-all'] && (
+                {permissions['store-create'] && (
                   <MenuItem>
-                    <Link href={'/roles'} className="submenu">
-                      {lng.get('menu.storeBalance')}
+                    <Link className="submenu" href={'/store-report'}>
+                      {lng.get('menu.material.report')}
                     </Link>
                   </MenuItem>
                 )}

@@ -26,52 +26,33 @@ export default function Form({
     locale: appLang,
   });
 
-  const [values, setValues] = useState({
-    name: formData.name,
-    address: formData.address,
-    uraddress: formData.uraddress,
-    phone: formData.phone,
-    filial_id: formData.filial_id,
+  const { data, setData, post, processing, recentlySuccessful, errors } = useForm({
+    id: formData.id || null,
+    name: formData.name || '',
+    address: formData.address || '',
+    uraddress: formData.uraddress || '',
+    phone: formData.phone || '',
+    filial_id: formData.filial_id || (filialData && filialData.length > 0 ? filialData[0].id : null),
     file: null,
-    user_id: formData.user_id,
+    user_id: formData.user_id || (customerData && customerData.length > 0 ? customerData[0].id : null),
     clinic_id: clinicData.id,
   });
 
-  const { processing, recentlySuccessful, errors } = useForm();
-
   const handleChangeSelect = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
+    setData(e.target.name, e.target.value);
   };
 
   const handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
+    setData(e.target.name, e.target.value);
   };
 
   const handleChangeFile = e => {
-    const key = e.target.id;
-    setValues(values => ({
-      ...values,
-      [key]: e.target.files[0],
-    }));
+    setData('file', e.target.files[0]);
   };
 
   const submit = e => {
     e.preventDefault();
-    if (formData.id) {
-      router.post(`/store/update?id=${formData.id}`, values);
-    } else {
-      router.post('/store/update', values);
-    }
+    post('/store/update');
   };
 
   return (
@@ -92,19 +73,10 @@ export default function Form({
         className="mt-0 space-y-4"
         encType="multipart/form-data"
       >
-        {/*<InputSelect*/}
-        {/*  name={'filial_id'}*/}
-        {/*  values={values}*/}
-        {/*  value={values.filial_id}*/}
-        {/*  options={filialData}*/}
-        {/*  onChange={handleChangeSelect}*/}
-        {/*  required*/}
-        {/*  label={msg.get('store.filial')}*/}
-        {/*/>*/}
         <InputSelect
           name={'user_id'}
-          values={values}
-          value={values.user_id}
+          values={data}
+          value={data.user_id}
           options={customerData}
           onChange={handleChangeSelect}
           required
@@ -112,42 +84,42 @@ export default function Form({
         />
         <InputText
           name={'name'}
-          values={values}
-          dataValue={values.name}
-          value={values.name}
+          values={data}
+          dataValue={data.name}
+          value={data.name}
           onChange={handleChange}
           required
           label={msg.get('store.name')}
         />
         <InputText
           name={'address'}
-          values={values}
-          dataValue={values.address}
-          value={values.name}
+          values={data}
+          dataValue={data.address}
+          value={data.address}
           onChange={handleChange}
           required
           label={msg.get('store.address')}
         />
         <InputText
           name={'uraddress'}
-          values={values}
-          dataValue={values.uraddress}
-          value={values.uraddress}
+          values={data}
+          dataValue={data.uraddress}
+          value={data.uraddress}
           onChange={handleChange}
           required
           label={msg.get('store.uraddress')}
         />
         <InputText
           name={'phone'}
-          values={values}
-          dataValue={values.phone}
-          value={values.phone}
+          values={data}
+          dataValue={data.phone}
+          value={data.phone}
           onChange={handleChange}
           required
           label={msg.get('store.phone')}
         />
         <>
-          <InputLabel htmlFor="name" value={msg.get('store.stamp')} />
+          <InputLabel htmlFor="file" value={msg.get('store.stamp')} children={null} />
           <div className="input_container">
             <input
               type="file"
@@ -156,9 +128,11 @@ export default function Form({
               name="file"
               onChange={handleChangeFile}
             />
-            {/*<InputError className="mt-2" message={errors.file} />*/}
+            <InputError className="mt-2" message={errors.file} />
           </div>
-          <div>{stampPath && <img src={stampPath} width={100} />}</div>
+          <div className="mt-4">
+            {stampPath && <img src={stampPath} alt="Store Stamp" width={150} className="border p-2 rounded shadow-sm" />}
+          </div>
         </>
         <div className="flex items-center">
           <Link

@@ -211,9 +211,10 @@ class MaterialController extends Controller
 
 
     public function storeReport(Request $request) {
+        dd(1);exit;
         if ($request->user()->can('store-edit')) {
             $stores = collect(); // Initialize as empty collection
-            
+            dd(1);exit;
             if ($request->user()->roles[0]->name != 'Admin') {
                 // Get store for filial user
                 $filialId = $request->session()->get('filial_id');

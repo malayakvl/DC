@@ -21,7 +21,8 @@ class StoreUpdateRequest extends FormRequest
             'uraddress' => ['required', 'string', 'max:255'],
             'clinic_id' => ['required'],
             'user_id' => ['required'],
-            'phone' => ['required', 'string', 'max:255']
+            'phone' => ['required', 'string', 'max:255'],
+            'file' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ];
     }
 }
