@@ -7,17 +7,19 @@
     margin-right: calc(-.5 * var(--bs-gutter-x));
     margin-left: calc(-.5 * var(--bs-gutter-x));
 }
+
 .card {
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px -1px rgba(0, 0, 0, .1);
 }
+
 .card {
     --bs-card-spacer-y: 1rem;
     --bs-card-spacer-x: 1rem;
     --bs-card-title-spacer-y: 0.5rem;
     --bs-card-border-width: 0;
-    --bs-card-border-color: rgba(0,0,0,.125);
+    --bs-card-border-color: rgba(0, 0, 0, .125);
     --bs-card-border-radius: 0.75rem;
-    --bs-card-box-shadow: 0 20px 27px 0 rgba(0,0,0,.05);
+    --bs-card-box-shadow: 0 20px 27px 0 rgba(0, 0, 0, .05);
     --bs-card-inner-border-radius: 0.75rem;
     --bs-card-cap-padding-y: 0.5rem;
     --bs-card-cap-padding-x: 1rem;
@@ -37,6 +39,7 @@
     border: var(--bs-card-border-width) solid var(--bs-card-border-color);
     border-radius: var(--bs-card-border-radius);
 }
+
 .mask {
     position: absolute;
     background-size: cover;
@@ -47,9 +50,11 @@
     height: 100%;
     opacity: .8;
 }
+
 .border-radius-lg {
     border-radius: .75rem;
 }
+
 .bg-primary {
     background-color: #f97316 !important;
 }
@@ -57,50 +62,62 @@
 .opacity-10 {
     opacity: 1 !important;
 }
+
 .border-radius-2xl {
     border-radius: 1.5rem;
 }
+
 .icon-shape {
     width: 48px;
     height: 48px;
     background-position: 50%;
     border-radius: .75rem;
 }
+
 .shadow {
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1) !important;
 }
+
 .icon {
     display: inline-block;
     color: #111111;
     height: 1em;
     width: 1em;
 }
+
 .icon {
     fill: currentColor;
     stroke: none;
 }
-.h5, h5 {
+
+.h5,
+h5 {
     font-size: 1.25rem;
     line-height: 1.375;
 }
+
 .col-8 {
     flex: 0 0 auto;
     width: 66.66666667%;
 }
+
 .shadow-soft-xl {
-    --tw-shadow: 0 20px 27px 0 rgba(0,0,0,0.05);
+    --tw-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
     --tw-shadow-colored: 0 20px 27px 0 var(--tw-shadow-color);
     box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 20px 27px 0px;
 }
+
 .bg-clip-border {
     background-clip: border-box;
     border: solid 1px #edf1f1
 }
-.border-gray-small-block {
-}
+
+.border-gray-small-block {}
+
 .ni-money-coins::before {
     content: "\ea41";
 }
+
 .icon-money {
     background: url(../../images/dashboard/money.svg);
     background-size: contain;
@@ -110,6 +127,7 @@
     height: 35px;
     margin-top: 8px;
 }
+
 .icon-users {
     background: url(../../images/dashboard/users.svg);
     background-size: contain;
@@ -119,6 +137,7 @@
     height: 35px;
     margin-top: 8px;
 }
+
 .icon-patients {
     background: url(../../images/dashboard/patient.svg);
     background-size: contain;
@@ -130,25 +149,29 @@
 }
 
 .dashboard-block {
-display: inline-block;
-  padding: 12px;
-  border-radius: 16px;
-  border: 2px solid transparent;
-  background: linear-gradient(#0a0f1c, #0a0f1c) padding-box, linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
-  box-shadow: 0 0 20px rgba(183, 75, 213, 0.6), 0 0 40px rgba(0, 198, 255, 0.4);
-  color: #fff;
+    display: inline-block;
+    padding: 12px;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    background: linear-gradient(#0a0f1c, #0a0f1c) padding-box, linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
+    box-shadow: 0 0 20px rgba(183, 75, 213, 0.6), 0 0 40px rgba(0, 198, 255, 0.4);
+    color: #fff;
 }
+
 .dashboard-block h5 {
     color: #fff;
 }
+
 .dashboard-icon {
-    @apply inline-block w-12 h-12 text-center rounded-lg text-sm  bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold;
+    @apply inline-block w-12 h-12 text-center rounded-lg text-sm bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white font-bold;
 }
+
 .d-clinic-name {
     @apply text-xl text-white mb-3 font-bold;
     color: #02bff8 !important;
     text-align: left;
 }
+
 .btn-f-select {
     background-color: #f345b9;
     padding: 5px 10px;

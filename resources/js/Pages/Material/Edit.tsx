@@ -20,7 +20,7 @@ export default function Edit({
               formData={formData}
               categoryData={categoryData}
               unitsData={unitsData}
-              className="max-w-xl"
+              photoPath={formData.image}
             />
           </div>
         </div>
