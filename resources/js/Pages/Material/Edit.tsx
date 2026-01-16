@@ -8,6 +8,7 @@ export default function Edit({
   categoryData,
   unitsData,
   formData,
+  photoPath,
 }) {
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -20,7 +21,7 @@ export default function Edit({
               formData={formData}
               categoryData={categoryData}
               unitsData={unitsData}
-              photoPath={formData.image}
+              photoPath={photoPath}
             />
           </div>
         </div>

@@ -31,10 +31,6 @@ class CustomerService
     {
         $fileName = "user-{$user->id}-{$clinicId}.".$file->extension();
 
-        // Storage::disk('public')->put(
-        //     "clinic/users/{$fileName}",
-        //     file_get_contents($file)
-        // );
         Storage::disk('public')->put(
             "users/{$fileName}",
             $file->getContent()

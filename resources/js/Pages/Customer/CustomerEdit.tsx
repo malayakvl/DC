@@ -1,13 +1,13 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import Form from './Partials/Form.js';
+import Form from './Partials/Form';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCustomer from '../../Lang/Customer/translation';
 
-export default function Create({ formData, clinicData, roleData, photoPath }) {
+export default function Edit({ formData, clinicData, roleData, photoPath }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,

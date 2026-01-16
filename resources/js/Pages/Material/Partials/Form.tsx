@@ -61,7 +61,7 @@ export default function Form({
     articul: formData.articul || '',
     file: null as File | null,
   });
-
+  console.log(photoPath);
   const [_, setHideFields] = useState(false);
   const serchResults = useSelector(userSearchResultsSelector);
   const serchUnitResults = useSelector(unitSearchResultsSelector);
@@ -339,13 +339,13 @@ export default function Form({
         <div className="flex mt-[50px] px-[100px] mb-[50px]">
           <div className="w-1/3">
             <div className="flex flex-row relative">
-              <div className="file-preview inline-block">
+              <div className="product-preview material-preview inline-block">
                 {(!selectedFile && !photoPath) && (
                   <img src="/images/no-image.png" width={250} height={250} />
                 )}
                 {(!selectedFile && photoPath) && (
-                  <div className={'patient-avatar'} style={{
-                    background: `url(${photoPath})`,
+                  <div className={'product-photo'} style={{
+                    backgroundImage: `url(${photoPath})`,
                   }}></div>
                 )}
                 {selectedFile && (
@@ -357,7 +357,7 @@ export default function Form({
                 <div className="btn-upload-photo-patient"></div>
               </div>
             </div>
-            <div className="upload-patient-btn-block ml-[5px] relative">
+            <div className="upload-product-btn-block ml-[5px] relative">
               <input
                 type="file"
                 id="file"

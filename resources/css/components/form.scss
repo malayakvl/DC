@@ -304,9 +304,37 @@ input[type="file"]::file-selector-button {
     background-position-x: center;
 }
 
+.preview-photo {
+    width: 197px;
+    height: 244px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+
+.material-preview {
+    width: 255px;
+    height: 255px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+
+.material-preview .preview-photo {
+    width: 255px;
+    height: 255px;
+}
+
 .upload-patient-btn-block {
     // border: solid 1px;
     display: inline-block;
+}
+
+.upload-product-btn-block {
+    // border: solid 1px;
+    display: inline-block;
+    width: 255px;
+    height: 255px;
 }
 
 [type="text"]:focus,
@@ -447,4 +475,13 @@ label.float-label {
     width: 100%;
     padding-left: 10px;
     font-weight: bold;
+}
+
+.product-photo {
+    width: 255px;
+    height: 255px;
+    background-size: cover !important;
+    background-position: center !important;
+    border: solid 3px #ab7ac1;
+    background-repeat: no-repeat;
 }

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import Form from './Partials/Form.js';
+import Form from './Partials/Form';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -24,8 +24,8 @@ export default function Create({ formData, clinicData, roleData }) {
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <Form
               clinicData={clinicData}
-              roleData={roleData}
               formData={formData}
+              roleData={roleData}
               className="max-w-xl"
             />
           </div>
