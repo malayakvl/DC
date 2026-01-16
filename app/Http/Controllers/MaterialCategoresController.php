@@ -137,21 +137,19 @@ class MaterialCategoresController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if (!$request->user()->canClinic('store-edit')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
             
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            $clinicData = $request->user()->clinicByFilial($clinicId);
             $formData = MaterialCategories::find($id);
             $categories = MaterialCategories::where('parent_id', null)
-                ->where('clinic_id', $clinicData->id)
-                ->orWhere('special', true)
+                ->orderBy('name', 'asc')
                 ->get();
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
-            $producerData = Producer::where('clinic_id', $clinicData->id)
-                ->get();
+            $producerData = Producer::get();
             return Inertia::render('MaterialCategories/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
@@ -196,14 +194,19 @@ class MaterialCategoresController extends Controller
     }
 
     public function delete(Request $request) {
-        $mCategory = MaterialCategories::where('id', '=', $request->id)->get();
-        $child = MaterialCategories::where('parent_id', '=', $request->id)->get();
-        if (count($child)) {
-
-        } else {
-            $mCategory[0]->delete();
-        }
-        return Redirect::route('material.categories.index');
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $mCategory = MaterialCategories::where('id', '=', $request->id)->get();
+            $child = MaterialCategories::where('parent_id', '=', $request->id)->get();
+            if (count($child)) {
+                return Redirect::route('material.categories.index')->with('error', 'Сначала необходимо удалить подкатегории');
+            } else {
+                if ($mCategory->isNotEmpty()) {
+                    $mCategory[0]->delete();
+                }
+            }
+            return Redirect::route('material.categories.index');
+        });
+        
     }
 
 

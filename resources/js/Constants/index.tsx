@@ -60,6 +60,7 @@ export const TableHeaders = {
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.MATERIALS]: [
+    { titleKey: 'datatable.photo', className: '' },
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.price', className: '' },
     { titleKey: 'datatable.retailprice', className: '' },

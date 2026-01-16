@@ -49,6 +49,17 @@ export default function List({ listData, permissions }) {
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
+                  <td style={{ width: '100px' }}>
+                    <img
+                      src={item.image ? `/storage/materials/${item.id}/${item.image}` : '/images/no-photo.png'}
+                      width={40}
+                      className="float-left rounded"
+                      height="auto"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/no-photo.png';
+                      }}
+                    />
+                  </td>
                   <td className="">{item.name}</td>
                   <td className="">{item.price}</td>
                   <td className="">{item.retail_price}</td>

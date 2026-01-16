@@ -19,12 +19,21 @@ import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
 import { SketchPicker } from 'react-color';
 import { paletterDataSelector } from '../../../Redux/Staff/selectors';
 
+interface Props {
+  formData: any;
+  clinicData: any;
+  roleData?: any;
+  photoPath?: any;
+  className?: string;
+}
+
 export default function CustomerForm({
   formData,
   clinicData,
-  photoPath,
+  roleData = null,
+  photoPath = null,
   className = '',
-}) {
+}: Props) {
   const dispatch = useAppDispatch();
   const appLang = useAppSelector(appLangSelector);
   const msg = new Lang({
@@ -182,7 +191,7 @@ export default function CustomerForm({
                 )}
                 {(!selectedFile && photoPath) && (
                   <div className={'patient-avatar'} style={{
-                    background: `url(${photoPath})`,
+                    backgroundImage: `url(${photoPath})`,
                   }}></div>
                 )}
                 {selectedFile && (

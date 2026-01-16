@@ -498,6 +498,9 @@ class ClinicSchemaService
                 percent NUMERIC(6,2) DEFAULT 0,
                 price_per_unit NUMERIC(12,4) DEFAULT 0,
 
+                articul VARCHAR(255) DEFAULT 0,
+                image VARCHAR(255) DEFAULT 0,
+
                 -- Служебное
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
