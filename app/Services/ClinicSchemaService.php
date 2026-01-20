@@ -894,6 +894,9 @@ class ClinicSchemaService
                 supplier_id BIGINT,
                 customer_id BIGINT,
                 currency_id BIGINT,
+                currency_rate NUMERIC(12,2) NOT NULL DEFAULT 1,
+                type VARCHAR(20) NOT NULL
+                    CHECK (type IN ('income', 'expense', 'transfer')),
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,

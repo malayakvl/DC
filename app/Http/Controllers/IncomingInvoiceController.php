@@ -93,7 +93,7 @@ class IncomingInvoiceController extends Controller
                     ->leftJoin('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
                     ->leftJoin('core.users', 'core.users.id', '=', 'invoices.customer_id')
                     // ->where('invoices.clinic_id', $clinic->id)
-                    ->where('invoices.type_id', 1)
+                    ->where('invoices.type', 'income')
                     ->orderBy('invoice_number', 'DESC')->get();
             } else {
                 $invoiceData = DB::table('invoices')
@@ -110,7 +110,7 @@ class IncomingInvoiceController extends Controller
                     ->leftJoin('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
                     ->leftJoin('core.users', 'core.users.id', '=', 'invoices.customer_id')
                     ->whereIn('invoices.store_id', $arrStores)
-                    ->where('invoices.type_id', 1)
+                    ->where('invoices.type', 'income')
                     // ->where('invoices.clinic_id', $clinic->id)
                     ->orderBy('invoice_number', 'DESC')->get();
             }

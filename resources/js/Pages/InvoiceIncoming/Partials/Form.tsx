@@ -3,7 +3,8 @@ import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngInvoice from '../../../Lang/Invoice/translation';
@@ -42,7 +43,7 @@ export default function Form({
     messages: lngInvoice,
     locale: appLang,
   });
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const invoiceItems = useSelector(invoiceItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
@@ -61,8 +62,8 @@ export default function Form({
     comment: formData.comment,
     currency_id: formData.currency_id,
     tax_id: formData.tax_id,
+    rate: formData.rate,
   });
-console.log(formData);
   const { processing, recentlySuccessful } = useForm();
 
   const handleChangeSelect = e => {
@@ -203,6 +204,18 @@ console.log(formData);
                     label={msg.get('invoice.currency')}
                   />
                 </div>
+                <div className="w-1/4">
+                  <InputText
+                    translatable={true}
+                    name={'rate'}
+                    className={'mb-1'}
+                    values={values}
+                    value={values.rate}
+                    onChange={handleChange}
+                    required
+                    label={msg.get('invoice.rate')}
+                  />
+                </div>
                 <div className={`w-1/4`}>
                   <InputSelect
                     translatable={true}
@@ -316,7 +329,7 @@ console.log(formData);
           >
             {msg.get('invoice.rows.error')}
           </div>
-          <hr/>
+          <hr />
           <div className="float-right pt-3">
             <Link
               className="btn-back"
@@ -329,8 +342,7 @@ console.log(formData);
               <Link
                 disabled={processing}
                 className="btn-submit"
-                onClick={e => submit(e)}
-              >
+                onClick={e => submit(e)} href={''}              >
                 {msg.get('invoice.save')}
               </Link>
             )}
