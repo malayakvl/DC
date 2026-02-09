@@ -44,6 +44,8 @@ const lngMaterial = {
     'report.generate': 'Згенерити',
     'report.error.store': 'Оберіть склад',
     'price.per.unit': 'Ціна за одиницю',
+    articul: 'Артикул',
+    image: 'Зображення',
   },
 };
 export default lngMaterial;

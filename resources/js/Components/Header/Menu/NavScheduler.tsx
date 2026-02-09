@@ -35,14 +35,14 @@ export default function NavInvoices(props) {
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
             >
               <div>
-                {permissions['cabinet-all'] && (
+                {permissions['scheduler-create'] && (
                   <MenuItem>
                     <Link className="submenu" href={'/cabinets'}>
                       {lng.get('menu.cabinets')}
                     </Link>
                   </MenuItem>
                 )}
-                {permissions['schedule-all'] && (
+                {permissions['scheduler-all'] && (
                   <MenuItem>
                     <Link className="submenu" href={'/scheduler'}>
                       {lng.get('menu.scheduler')}

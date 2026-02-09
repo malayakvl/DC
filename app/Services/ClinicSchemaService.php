@@ -223,6 +223,7 @@ class ClinicSchemaService
         DB::statement("
             CREATE TABLE IF NOT EXISTS stores (
                 id BIGSERIAL PRIMARY KEY,
+                is_main BOOLEAN   default false,
                 name VARCHAR(255) NOT NULL,
                 address TEXT,
                 uraddress TEXT,
@@ -497,6 +498,9 @@ class ClinicSchemaService
                 retail_price NUMERIC(12,2) DEFAULT 0,
                 percent NUMERIC(6,2) DEFAULT 0,
                 price_per_unit NUMERIC(12,4) DEFAULT 0,
+
+                articul VARCHAR(255) DEFAULT 0,
+                image VARCHAR(255) DEFAULT 0,
 
                 -- Служебное
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -891,6 +895,9 @@ class ClinicSchemaService
                 supplier_id BIGINT,
                 customer_id BIGINT,
                 currency_id BIGINT,
+                currency_rate NUMERIC(12,2) NOT NULL DEFAULT 1,
+                type VARCHAR(20) NOT NULL
+                    CHECK (type IN ('income', 'expense', 'transfer')),
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
@@ -898,7 +905,7 @@ class ClinicSchemaService
                 status VARCHAR(20) NOT NULL DEFAULT 'draft'
                     CHECK (status IN ('draft', 'posted', 'cancelled')),
                 document_type VARCHAR(20) NOT NULL
-                    CHECK (document_type IN ('income', 'expense', 'transfer')),
+                    CHECK (document_type IN ('income', 'expense', 'transfer', 'balance')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -959,7 +966,7 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 store_id BIGINT NOT NULL,
                 material_id BIGINT NOT NULL,
-                supplier_id BIGINT NOT NULL,
+                supplier_id BIGINT,
                 invoice_id BIGINT NOT NULL,
                 arrived_at DATE NOT NULL,
                 qty NUMERIC(12,4) NOT NULL,
@@ -967,6 +974,12 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,4) NOT NULL,
                 fact_qty_left NUMERIC(12,4) NOT NULL,
                 price_per_unit NUMERIC(12,4) NOT NULL,
+
+                source_type VARCHAR(50) NOT NULL,
+                source_id BIGINT NOT NULL,
+                source_item_id BIGINT NOT NULL,
+                
+                total NUMERIC(12,4) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -984,6 +997,7 @@ class ClinicSchemaService
                 -- -1 = расход
                 qty NUMERIC(12,4) NOT NULL,
                 fact_qty NUMERIC(12,4) NOT NULL,
+                price_per_unit NUMERIC(12,4) NOT NULL,
                 document_type VARCHAR(50),
                 document_id BIGINT,
                 act_item_id BIGINT,
@@ -1077,6 +1091,7 @@ class ClinicSchemaService
                 pack_qty NUMERIC(12,2) DEFAULT 1,   -- количество в упаковке
                 fact_qty NUMERIC(12,2) DEFAULT 0,  -- фактически получено
                 price NUMERIC(12,2) DEFAULT 0,
+                price_per_unit NUMERIC(12,2) DEFAULT 0,
                 total NUMERIC(12,2) DEFAULT 0,
                 unit_id BIGINT,                     -- единица измерения материала
                 pack_unit_id BIGINT,                -- единица упаковки
@@ -1172,6 +1187,7 @@ class ClinicSchemaService
     {
         DB::table('stores')->insert([
             'name' => 'Main Store',
+            'is_main' => true,
             'clinic_id' => $clinicId,
             'created_at' => now(),
             'updated_at' => now()

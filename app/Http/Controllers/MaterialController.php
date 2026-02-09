@@ -18,6 +18,7 @@ use DateTime;
 use Exception;
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
+use App\Services\UploadService;
 
 
 class MaterialController extends Controller
@@ -161,7 +162,8 @@ class MaterialController extends Controller
                 'categoryData' => $tree,
                 'formData' => $formData,
                 'percent' => $formData->percent,
-                'unitsData' => $unitsData
+                'unitsData' => $unitsData,
+                'photoPath' => $formData->image ? asset("storage/materials/{$id}/{$formData->image}") : null,
             ]);
         });
         
@@ -170,8 +172,8 @@ class MaterialController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+    public function update(Request $request, UploadService $uploadService) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $uploadService) {
             $clinicData = $request->user()->clinicByFilial(session('clinic_id'));
             if (!$request->user()->canClinic('store-edit')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
@@ -181,6 +183,7 @@ class MaterialController extends Controller
             else {
                 $material = new Material();
             }
+            
             // find producer
             $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
             if (count($producer) > 0) {
@@ -203,6 +206,11 @@ class MaterialController extends Controller
             $material->weightunit_id = $request->weightunit_id ? $request->weightunit_id : null;
             $material->price_per_unit = $request->price_per_unit | null;
             $material->save();
+
+            if ($request->file('file')) {
+                $material->image = $uploadService->uploadPhoto($request->file('file'), $clinicId, 'materials', $material->id);
+                $material->save();
+            }
             $this->auditLogService->log($request->user(), 'material.updated', $material, null, $material->toArray());
 
             return Redirect::route('material.index');
@@ -211,10 +219,8 @@ class MaterialController extends Controller
 
 
     public function storeReport(Request $request) {
-        dd(1);exit;
         if ($request->user()->can('store-edit')) {
             $stores = collect(); // Initialize as empty collection
-            dd(1);exit;
             if ($request->user()->roles[0]->name != 'Admin') {
                 // Get store for filial user
                 $filialId = $request->session()->get('filial_id');

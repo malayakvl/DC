@@ -104,7 +104,7 @@
 
 .btn-qty-minus,
 .btn-qty-plus {
-    @apply py-1 px-4 text-center text-sm text-white bg-gradient-to-r from-[#b44dd6] to-[#7974e3] shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+    @apply py-1 px-4 text-center text-sm text-white bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
     min-width: 40px;
     max-width: 40px;
 }
@@ -304,9 +304,37 @@ input[type="file"]::file-selector-button {
     background-position-x: center;
 }
 
+.preview-photo {
+    width: 197px;
+    height: 244px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+
+.material-preview {
+    width: 255px;
+    height: 255px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+
+.material-preview .preview-photo {
+    width: 255px;
+    height: 255px;
+}
+
 .upload-patient-btn-block {
     // border: solid 1px;
     display: inline-block;
+}
+
+.upload-product-btn-block {
+    // border: solid 1px;
+    display: inline-block;
+    width: 255px;
+    height: 255px;
 }
 
 [type="text"]:focus,
@@ -447,4 +475,13 @@ label.float-label {
     width: 100%;
     padding-left: 10px;
     font-weight: bold;
+}
+
+.product-photo {
+    width: 255px;
+    height: 255px;
+    background-size: cover !important;
+    background-position: center !important;
+    border: solid 3px #ab7ac1;
+    background-repeat: no-repeat;
 }

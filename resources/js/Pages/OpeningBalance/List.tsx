@@ -4,39 +4,44 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngMaterial from '../../Lang/Material/translation';
+import lngOpeningBalance from '../../Lang/OpeningBalance/translation';
+import lngDropdown from '../../Lang/Dropdown/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '../../Constants';
 import { Link } from '@inertiajs/react';
+import { format } from 'date-fns';
 
 export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngMaterial,
+    messages: lngOpeningBalance,
     locale: appLang,
   });
-
+  const msgDropdown = new Lang({
+    messages: lngDropdown,
+    locale: appLang,
+  });
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Producers'} />
-      <div className="py-0">
+      <Head title={'Opening Balance'} />
+      <div className="">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
-                  <h2>{msg.get('material.title.list')}</h2>
+                  <h2>{msg.get('opening_balance.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
-                      <NavLink href={'/material/create'}>
-                        {msg.get('material.create')}
+                      <NavLink href={'/opening-balance/create'}>
+                        {msg.get('opening_balance.title.create')}
                       </NavLink>
                     </PrimaryButton>
                   </div>
@@ -44,47 +49,33 @@ export default function List({ listData, permissions }) {
               </header>
             </section>
             <DataTable
-              paginationType={PaginationType.MATERIALS}
+              paginationType={PaginationType.OPENINGBALANCE}
               sendRequest={sendRequest}
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
-                  <td style={{ width: '100px' }}>
+                  <td className="">{item.ob_number}</td>
+                  <td className="">{format(new Date(item.ob_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">
                     <img
-                      src={item.image ? `/storage/materials/${item.id}/${item.image}` : '/images/no-photo.png'}
-                      width={40}
-                      className="float-left rounded"
-                      height="auto"
-                      onError={(e) => {
-                        e.currentTarget.src = '/images/no-photo.png';
-                      }}
+                      src={`../../images/document-icons/${item.status}.svg`}
+                      title={msgDropdown.get(`dropdown.${item.status}`)}
+                      alt={msgDropdown.get(`dropdown.${item.status}`)}
+                      className="icon-doc"
                     />
                   </td>
-                  <td className="">{item.name}</td>
-                  <td className="">{item.price}</td>
-                  <td className="">{item.retail_price}</td>
-                  <td className="">
-                    {item.percent ? (
-                      <span className="percent-tbl">{item.percent}%</span>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="">{item.categoryName}</td>
-                  <td className="">{item.producerName}</td>
-                  <td className="text-left">{item.unitName}</td>
-                  <td className="text-left">{item.weight}</td>
-                  <td className="text-right w-[100px]">
+                  <td className="">{item.storeName}</td>
+                  <td className="">{item.customerName}</td>
+                  <td className="text-right">
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}
-                      href={`material/edit/${item.id}`}
+                      href={`invoice-incoming/edit/${item.id}`}
                     />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                      href={`material/delete/${item.id}`}
-                      children={null}
+                      href={`invoice-incoming/delete/${item.id}`}
                     />
                   </td>
                 </tr>

@@ -57,6 +57,26 @@ class ReportController extends Controller
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
     }
+
+    public function store(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('report-create')) {
+                return Inertia::render('Report/Store', ['error' => 'Insufficient permissions']);
+            }
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $filials = ClinicFilial::where('clinic_id', $clinicId)->get();
+            // dd($clinic, $filials);exit;
+            $dateFrom = $request->input('date_from', now()->startOfWeek()->format('Y-m-d'));
+            $dateTo = $request->input('date_to', now()->endOfWeek()->format('Y-m-d'));
+            return Inertia::render('Report/Balance', [
+                'clinicData' => $clinic,
+                'filials'   => $filials,
+                'dateFrom'  => $dateFrom,
+                'dateTo'    => $dateTo,
+            ]);
+        });
+    }
     
 
     public function balance(Request $request)
@@ -78,6 +98,7 @@ class ReportController extends Controller
             ]);
         });
     }
+    
 
     public function fetchPatient(Request $request, $value) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $value) {

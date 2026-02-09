@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngInvoice from '../../Lang/Invoice/translation';
+import lngInvoice from '../../Lang/OpeningBalance/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
@@ -30,18 +30,18 @@ export default function List({ listData, permissions }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Invoice Incoming'} />
+      <Head title={'Opening Balance'} />
       <div className="">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
-                  <h2>{msg.get('invoice.incoming.title.list')}</h2>
+                  <h2>{msg.get('opening_balance.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
-                      <NavLink href={'/invoice-incoming/create'}>
-                        {msg.get('invoice.create')}
+                      <NavLink href={'/opening-balance/create'}>
+                        {msg.get('opening_balance.title.create')}
                       </NavLink>
                     </PrimaryButton>
                   </div>

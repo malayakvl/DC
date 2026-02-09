@@ -126,6 +126,9 @@ class SupplierController extends Controller
             $producer->fill($request->validated());
             $producer->save();
 
+            $this->auditLogService->log($request->user(), 'supplier.updated', $producer, null, $producer->toArray());
+
+
             return Redirect::route('supplier.index');
 
         });

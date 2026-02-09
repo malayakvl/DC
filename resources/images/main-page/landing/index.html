@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="uk">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -8,31 +9,39 @@
   <style>
     /* Small helpers for exact-ish glow effects */
     .glass {
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(6px);
     }
+
     /* custom font fallback stack close to the mock */
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
     body {
-    background: linear-gradient(135deg, #0a0f2c, #071225);
-    /* альтернативный вариант с синим и фиолетовым оттенками */
-    /* background: linear-gradient(135deg, #0b1d3a, #0f0f1f); */
-    color: white;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    font-family: 'Arial', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0a0f2c, #071225);
+      /* альтернативный вариант с синим и фиолетовым оттенками */
+      /* background: linear-gradient(135deg, #0b1d3a, #0f0f1f); */
+      color: white;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
     }
   </style>
 </head>
+
 <body class="bg-[#05060b] text-slate-100 antialiased">
 
   <!-- Decorative global neon blobs (to emulate reference) -->
   <div aria-hidden class="pointer-events-none">
-    <div class="absolute -left-20 -top-16 w-72 h-72 rounded-full blur-3xl" style="background: radial-gradient(circle,#08f6ff55,transparent 35%); mix-blend-mode:screen; opacity:0.14;"></div>
-    <div class="absolute right-8 top-10 w-44 h-44 rounded-full blur-2xl" style="background: radial-gradient(circle,#c96cff44,transparent 35%); mix-blend-mode:screen; opacity:0.10;"></div>
-    <div class="absolute right-40 bottom-10 w-64 h-64 rounded-full blur-3xl" style="background: radial-gradient(circle,#53ff8a33,transparent 35%); mix-blend-mode:screen; opacity:0.09;"></div>
+    <div class="absolute -left-20 -top-16 w-72 h-72 rounded-full blur-3xl"
+      style="background: radial-gradient(circle,#08f6ff55,transparent 35%); mix-blend-mode:screen; opacity:0.14;"></div>
+    <div class="absolute right-8 top-10 w-44 h-44 rounded-full blur-2xl"
+      style="background: radial-gradient(circle,#c96cff44,transparent 35%); mix-blend-mode:screen; opacity:0.10;"></div>
+    <div class="absolute right-40 bottom-10 w-64 h-64 rounded-full blur-3xl"
+      style="background: radial-gradient(circle,#53ff8a33,transparent 35%); mix-blend-mode:screen; opacity:0.09;"></div>
   </div>
 
   <!-- Container -->
@@ -42,7 +51,7 @@
     <header class="flex items-center justify-between py-6">
       <div class="flex items-center gap-4">
         <div class="">
-            <img src="logo-e.png" class="h-[50px]">
+          <img src="logo-e.png" class="h-[50px]">
         </div>
         <!-- <div>
           <div class="text-lg font-bold leading-tight">DentalCare</div>
@@ -60,7 +69,9 @@
 
       <div class="flex items-center gap-3">
         <button class="text-sm text-slate-300 px-3 py-2 rounded-md hover:bg-white/2">Log in</button>
-        <button class="text-sm font-semibold px-4 py-2 rounded-md bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 shadow-[0_10px_30px_rgba(21,195,255,0.12)]">Sign Up</button>
+        <button
+          class="text-sm font-semibold px-4 py-2 rounded-md bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 shadow-[0_10px_30px_rgba(21,195,255,0.12)]">Sign
+          Up</button>
       </div>
     </header>
 
@@ -70,11 +81,15 @@
       <div class="space-y-5">
         <div class="text-xs font-semibold tracking-wide text-slate-400">FEATURES</div>
         <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">DENTALCARE — DENTAL ACCOUNTING</h1>
-        <p class="text-slate-300 max-w-xl">Автоматизовані рішення для клінік: запис пацієнтів, білінг, медичні записи й аналітика. Точна копія стилю з ескізу: темне неонове оформлення, м’які розмиті плями та скляні картки.</p>
+        <p class="text-slate-300 max-w-xl">Чесний облік для клінік. Прозорі звіти, реальні залишки, зрозумілі гроші. Не
+          для усих - лише для тих, хто готов бачити правду</p>
 
         <div class="flex gap-4 mt-2">
-          <button class="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 font-semibold shadow-[0_12px_40px_rgba(21,195,255,0.12)]">Learn more</button>
-          <button class="px-5 py-3 rounded-lg border border-slate-700 text-slate-300 hover:bg-white/2">Watch demo</button>
+          <button
+            class="px-5 py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-400 text-slate-900 font-semibold shadow-[0_12px_40px_rgba(21,195,255,0.12)]">Learn
+            more</button>
+          <button class="px-5 py-3 rounded-lg border border-slate-700 text-slate-300 hover:bg-white/2">Watch
+            demo</button>
         </div>
 
         <!-- small stats row similar to eскіз -->
@@ -97,10 +112,13 @@
       <!-- Right column: frame with "tooth" and UI inside -->
       <div class="relative flex items-center justify-center">
         <!-- Outer rounded panel -->
-        <div class="w-[420px] h-[360px] rounded-2xl glass p-6 relative overflow-hidden" style="box-shadow: 0 20px 60px rgba(2,6,23,0.8);">
+        <div class="w-[420px] h-[360px] rounded-2xl glass p-6 relative overflow-hidden"
+          style="box-shadow: 0 20px 60px rgba(2,6,23,0.8);">
           <!-- small decorative strokes like in reference -->
-          <div class="absolute -left-28 -top-20 w-64 h-64 rounded-full blur-2xl" style="background: radial-gradient(circle,#0ff 0%, transparent 60%); opacity:0.06;"></div>
-          <div class="absolute right-6 top-4 w-28 h-28 rounded-full blur-xl" style="background: radial-gradient(circle,#c96cff 0%, transparent 60%); opacity:0.06;"></div>
+          <div class="absolute -left-28 -top-20 w-64 h-64 rounded-full blur-2xl"
+            style="background: radial-gradient(circle,#0ff 0%, transparent 60%); opacity:0.06;"></div>
+          <div class="absolute right-6 top-4 w-28 h-28 rounded-full blur-xl"
+            style="background: radial-gradient(circle,#c96cff 0%, transparent 60%); opacity:0.06;"></div>
 
           <!-- top bar with small pills -->
           <div class="flex items-center justify-between mb-4">
@@ -147,42 +165,43 @@
         </div>
 
         <!-- small screen overlaid glow -->
-        <div class="absolute right-6 -bottom-6 w-20 h-20 rounded-lg" style="background: linear-gradient(135deg,#15c3ff33,#c96cff33); filter: blur(10px); opacity:0.45;"></div>
+        <div class="absolute right-6 -bottom-6 w-20 h-20 rounded-lg"
+          style="background: linear-gradient(135deg,#15c3ff33,#c96cff33); filter: blur(10px); opacity:0.45;"></div>
       </div>
     </section>
 
     <!-- Features row (neon cards) -->
     <section class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-  <!-- Card 1 -->
-  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500">
-    <div class="bg-[#071122] rounded-2xl p-6 h-full">
-      <div class="text-sm font-semibold mb-2">Automated Scheduling</div>
-      <div class="text-slate-400 text-sm">
-        Reminders & confirmations — reduces no-shows. Smart appointment booking for clinics of any size.
+      <!-- Card 1 -->
+      <div class="p-[1px] rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-500">
+        <div class="bg-[#071122] rounded-2xl p-6 h-full">
+          <div class="text-sm font-semibold mb-2">Automated Scheduling</div>
+          <div class="text-slate-400 text-sm">
+            Reminders & confirmations — reduces no-shows. Smart appointment booking for clinics of any size.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Card 2 -->
-  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-emerald-400 via-green-500 to-lime-400">
-    <div class="bg-[#071122] rounded-2xl p-6 h-full">
-      <div class="text-sm font-semibold mb-2">Patient Records & Charting</div>
-      <div class="text-slate-400 text-sm">
-        Secure patient profiles, treatment timelines, and clinical notes.
+      <!-- Card 2 -->
+      <div class="p-[1px] rounded-2xl bg-gradient-to-r from-emerald-400 via-green-500 to-lime-400">
+        <div class="bg-[#071122] rounded-2xl p-6 h-full">
+          <div class="text-sm font-semibold mb-2">Patient Records & Charting</div>
+          <div class="text-slate-400 text-sm">
+            Secure patient profiles, treatment timelines, and clinical notes.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Card 3 -->
-  <div class="p-[1px] rounded-2xl bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500">
-    <div class="bg-[#071122] rounded-2xl p-6 h-full">
-      <div class="text-sm font-semibold mb-2">Billing & Accounting</div>
-      <div class="text-slate-400 text-sm">
-        Treatment tracking, invoicing and financial reports to keep your practice profitable.
+      <!-- Card 3 -->
+      <div class="p-[1px] rounded-2xl bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500">
+        <div class="bg-[#071122] rounded-2xl p-6 h-full">
+          <div class="text-sm font-semibold mb-2">Billing & Accounting</div>
+          <div class="text-slate-400 text-sm">
+            Treatment tracking, invoicing and financial reports to keep your practice profitable.
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
     <!-- How it works + testimonials -->
     <section class="mt-10 grid md:grid-cols-2 gap-6">
@@ -229,9 +248,15 @@
   <!-- Responsive adjustments -->
   <style>
     @media (max-width: 768px) {
-      .w-\[420px\] { width: 100% !important; }
-      .h-\[360px\] { height: auto !important; }
+      .w-\[420px\] {
+        width: 100% !important;
+      }
+
+      .h-\[360px\] {
+        height: auto !important;
+      }
     }
   </style>
 </body>
+
 </html>

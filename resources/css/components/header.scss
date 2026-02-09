@@ -13,7 +13,7 @@ body {
     linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
   box-shadow:
     0 0 20px rgba(183, 75, 213, 0.6),
-    0 0 40px rgba(0, 198, 255,0.4);
+    0 0 40px rgba(0, 198, 255, 0.4);
   z-index: 100;
   //   box-shadow: 0 2px 20px rgba(183, 75, 213, 0.2);
 }
@@ -28,7 +28,7 @@ body {
   height: 3px;
   background: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5);
   box-shadow: 0 0 15px rgba(183, 75, 213, 0.7),
-    0 0 25px rgba(0, 198, 255,0.6);
+    0 0 25px rgba(0, 198, 255, 0.6);
 }
 
 // .top-header {
@@ -140,7 +140,8 @@ body {
 }
 
 .top-gradient {
-  @apply absolute -top-44 h-40 w-[36rem] transform-gpu md:right-20 bg-[linear-gradient(115deg,var(--tw-gradient-stops))] from-[#fff1be] from-[28%] via-[#ee87cb] via-[70%] to-[#452596] rotate-[-10deg] rounded-full blur-3xl
+  @apply absolute -top-44 h-40 w-[36rem] transform-gpu md:right-20 rotate-[-10deg] rounded-full blur-3xl;
+  background: linear-gradient(115deg, #fff1be 28%, #ee87cb 70%, #452596 100%);
 }
 
 .logo {
@@ -241,7 +242,7 @@ to-green-400 {
   border-bottom: 2px solid transparent;
   border-image: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5) 1;
   box-shadow: 0 0 20px rgba(183, 75, 213, 0.25),
-    0 0 40px rgba(0, 198, 255,0.2);
+    0 0 40px rgba(0, 198, 255, 0.2);
   position: relative;
   //   background: #0a0f1c;
   //   position: relative;
@@ -258,7 +259,7 @@ to-green-400 {
   height: 3px;
   background: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5);
   box-shadow: 0 0 15px rgba(183, 75, 213, 0.7),
-    0 0 25px rgba(0, 198, 255,0.6);
+    0 0 25px rgba(0, 198, 255, 0.6);
 }
 
 .neon-header nav ul {
@@ -321,13 +322,13 @@ to-green-400 {
 }
 
 .reg-btn {
-  @apply text-sm font-semibold px-4 py-2 rounded-md bg-gradient-to-r from-cyan-400 to-green-400 text-slate-900 shadow-[0_10px_30px_rgba(21,195,255,0.12)];
+  @apply text-sm font-semibold px-4 py-2 rounded-md bg-gradient-to-r from-cyan-400 to-green-400 text-slate-900;
   font-family: "Marck Script", cursive;
   font-size: 20px;
 }
 
 .hlogin-btn {
-  @apply text-sm text-slate-300 px-3 py-2 rounded-md rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold;
+  @apply text-sm text-slate-300 px-3 py-2 rounded-md rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white font-bold;
 }
 
 .lang-block {

@@ -132,7 +132,6 @@ class StoreController extends Controller
             $filailData = ClinicFilial::where('clinic_id', $clinicData->id)->get();
             
             $customerData = $clinicData->employees();
-            // dd($customerData);exit;
             $storeData = Store::find($id);
 
             return Inertia::render('Store/Edit', [

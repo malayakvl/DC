@@ -70,12 +70,11 @@ const lngHeader = {
     'patient.statuses': 'Статуси і знижки',
     login: 'Увійти',
     register: 'Зареєструватись',
-    'no.filial': 'Філіал не обрано',
-    'no.clinic': 'Клініка не обрана',
     act: 'Акти виконаних робіт',
     reports: 'Звіти',
     balance: 'Баланс по пацієнтам',
     storeBalance: 'Баланс по складу',
+    'opening.balance': 'Ввод залишків',
   },
 };
 export default lngHeader;

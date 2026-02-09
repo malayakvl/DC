@@ -61,7 +61,7 @@
     text-transform: uppercase;
     cursor: pointer;
     font-weight: bold;
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
     margin: 5px;
 }
 
@@ -106,7 +106,7 @@
     //margin-left: 10px;
     font-weight: bold;
     font-size: 12px !important;
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)];
+    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
 }
 
 .main-submit {

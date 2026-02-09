@@ -16,6 +16,8 @@ class Material extends Model
         'retail_price',
         'producer_id',
         'price',
-        'price_per_unit'
+        'price_per_unit',
+        'image',
+        'articul'
     ];
 }
