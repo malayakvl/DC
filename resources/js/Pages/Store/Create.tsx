@@ -20,7 +20,7 @@ export default function Create({
               customerData={customerData}
               clinicData={clinicData}
               formData={formData}
-              className="max-w-xl"
+              className="w-full"
             />
           </div>
         </div>

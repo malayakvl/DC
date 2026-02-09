@@ -284,16 +284,16 @@ export default function Form({
             <Link
               className="btn-back"
               title={msg.get('invoice.back')}
-              href={`/invoice-incoming`}
+              href={`/opening-balance`}
             >
-              {msg.get('invoice.back')}
+              {msg.get('opening_balance.back')}
             </Link>
             {formData.status_id != 2 && (
               <Link
                 disabled={processing}
                 className="btn-submit"
                 onClick={e => submit(e)} href={''}              >
-                {msg.get('invoice.save')}
+                {msg.get('opening_balance.save')}
               </Link>
             )}
 
@@ -305,7 +305,7 @@ export default function Form({
               leaveTo="opacity-0"
             >
               <p className="text-sm text-gray-600">
-                {msg.get('invoice.saved')}
+                {msg.get('opening_balance.saved')}
               </p>
             </Transition>
           </div>

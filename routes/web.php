@@ -25,6 +25,7 @@ use App\Http\Controllers\PatientStatusController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ActController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\OpeningBalanceController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -163,19 +164,22 @@ Route::middleware('auth')->group(function () {
     Route::post('/material/findMaterial', [MaterialController::class, 'findMaterial'])->name('material.findMaterial');
     Route::post('/material/findStoreMaterial', [MaterialController::class, 'findStoreMaterial'])->name('material.findStoreMaterial');
 
-    Route::get('/store-report', [MaterialController::class, 'storeReport'])->name('materials.report');
-    Route::post('/material/generateStoreReport', [MaterialController::class, 'generateStoreReportData'])->name('materials.report.data');
 
     Route::get('/acts', [ActController::class, 'index'])->name('act.index');
     Route::get('/act/create', [ActController::class, 'create'])->name('act.create');
     Route::get('/act/edit/{id}', [ActController::class, 'edit'])->name('act.edit');
     Route::post('/act/update', [ActController::class, 'update'])->name('act.updated');
 
-
     Route::get('/invoice-incoming', [IncomingInvoiceController::class, 'index'])->name('invoice.incoming.index');
     Route::get('/invoice-incoming/create', [IncomingInvoiceController::class, 'create'])->name('invoice.incoming.create');
     Route::get('/invoice-incoming/edit/{id}', [IncomingInvoiceController::class, 'edit'])->name('invoice.incoming.edit');
     Route::post('/invoice-incoming/update', [IncomingInvoiceController::class, 'update'])->name('invoice.incoming.updated');
+
+
+    Route::get('/opening-balance', [OpeningBalanceController::class, 'index'])->name('opening-balance.index');
+    Route::get('/opening-balance/create', [OpeningBalanceController::class, 'create'])->name('opening-balance.create');
+    Route::get('/opening-balance/edit/{id}', [OpeningBalanceController::class, 'edit'])->name('opening-balance.edit');
+    Route::post('/opening-balance/update', [OpeningBalanceController::class, 'update'])->name('opening-balance.updated');
 
     Route::get('/invoice-change', [DisplacementInvoiceController::class, 'index'])->name('invoice.change.index');
     Route::get('/invoice-change/create', [DisplacementInvoiceController::class, 'create'])->name('invoice.change.create');
@@ -198,6 +202,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
     Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
     Route::post('/report/generateBalanceReport', [ReportController::class, 'generateBalanceReport'])->name('report.generateBalanceReport');
+
+    Route::get('/store-report', [ReportController::class, 'store'])->name('report.store');
+    Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReportData'])->name('report.store.data');
+
+
 
     Route::get('/scheduler', [SchedulerController::class, 'index'])->name('scheduler.index');
     Route::post('/scheduler/update', [SchedulerController::class, 'update'])->name('scheduler.update');

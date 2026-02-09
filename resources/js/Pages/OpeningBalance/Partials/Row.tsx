@@ -156,9 +156,9 @@ export default function AddDynamicInputFields({
                   inputs[index].unit_id = _res.unit_id;
                   inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
                   inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
-                  inputs[index].tax_amount = documentTax
-                    ? (_res.retail_price * taxData[1]) / 100
-                    : 0;
+                  // inputs[index].tax_amount = documentTax
+                  //   ? (_res.retail_price * taxData[1]) / 100
+                  //   : 0;
                   inputs[index].quantity = 1;
                   inputs[index].total = parseFloat(String(inputs[index].price));
                 }}
@@ -258,7 +258,7 @@ export default function AddDynamicInputFields({
               className="input-text price input-invoice text-center"
               name="total"
               type="text"
-              value={item.tax_amount}
+              value={item.total}
             // onChange={(event) => handleChange(event, index)}
             />
           </td>

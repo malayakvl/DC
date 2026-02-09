@@ -16,6 +16,7 @@ export enum PaginationType {
   PATIENTSTATUSES = 'patientstatuses',
   STORES = 'stores',
   ACTS = 'acts',
+  OPENINGBALANCE = 'openingbalance',
 }
 export const TableHeaders = {
   [PaginationType.FILIALS]: [
@@ -86,6 +87,14 @@ export const TableHeaders = {
     { titleKey: 'datatable.status', className: '' },
     { titleKey: 'datatable.storefrom', className: '' },
     { titleKey: 'datatable.storeto', className: '' },
+    { titleKey: 'datatable.customer', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
+  [PaginationType.OPENINGBALANCE]: [
+    { titleKey: 'datatable.number', className: '' },
+    { titleKey: 'datatable.date', className: '' },
+    { titleKey: 'datatable.status', className: '' },
+    { titleKey: 'datatable.store', className: '' },
     { titleKey: 'datatable.customer', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],

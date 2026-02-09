@@ -44,6 +44,13 @@ export default function NavInvoices(props) {
               <div>
                 {permissions['invoice-incoming-all'] && (
                   <MenuItem>
+                    <Link className="submenu" href={'/opening-balance'}>
+                      {lng.get('menu.opening.balance')}
+                    </Link>
+                  </MenuItem>
+                )}
+                {permissions['invoice-incoming-all'] && (
+                  <MenuItem>
                     <Link className="submenu" href={'/invoice-incoming'}>
                       {lng.get('menu.invoice-incoming')}
                     </Link>

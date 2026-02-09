@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import {
-  emptyProducersAutocompleteAction,
-  findProducersAction,
-} from '../../../Redux/Clinic';
-import { useDispatch, useSelector } from 'react-redux';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   emptyMaterialsAutocompleteAction,
@@ -90,13 +85,7 @@ export default function AddDynamicInputFields({
         parseFloat(String(inputs[index].price))
       ).toFixed(2);
       inputs[index].tax_amount = inputs[index].total * 20 / 100;
-      console.log('reaclc tax', inputs[index].total, inputs[index].tax_amount)
-      // inputs[index].total = (
-      //   parseFloat(String(inputs[index].quantity)) *
-      //   parseFloat(String(inputs[index].price))
-      // ).toFixed(2);
     }
-    console.log(inputs[index].total)
     inputs[index].tax = (
       parseFloat(String(inputs[index].total)) *
       20 / 100
@@ -130,7 +119,6 @@ export default function AddDynamicInputFields({
     let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
     inputs[index].total = total.toFixed(2);
     inputs[index].tax_amount = total * 20 / 100;
-    console.log('reaclc tax', total, inputs[index].tax_amount)
     setInputs(onChangeValue);
   }
 
@@ -274,15 +262,6 @@ export default function AddDynamicInputFields({
             // onChange={(event) => handleChange(event, index)}
             />
           </td>
-          <td className="w-price text-center pb-2">
-            <input
-              className="input-text price input-invoice text-center"
-              name="total"
-              type="text"
-              value={item.total}
-            // onChange={(event) => handleChange(event, index)}
-            />
-          </td>
           <td className="w-btn pb-2">
             {inputs.length > 1 && (
               <button
@@ -296,19 +275,6 @@ export default function AddDynamicInputFields({
               <button onClick={() => handleAddInput()} className="btn-plus" />
             )}
           </td>
-          {/*<td className="w-btn pb-2">*/}
-          {/*    {inputs.length > 1 && (*/}
-          {/*        <button onClick={() => handleDeleteInput(index)} className="btn-delete" />*/}
-          {/*    )}*/}
-          {/*</td>*/}
-          {/*<td className="w-btn pb-2">*/}
-          {/*    {(index === inputs.length - 1) && (*/}
-          {/*        <button onClick={() => handleAddInput()} className="btn-plus" />*/}
-          {/*    )}*/}
-          {/*    /!*{(item.product_id && lastRow != 2) && (*!/*/}
-          {/*    /!*    <button onClick={() => handleAddInput()} className="btn-plus" />*!/*/}
-          {/*    /!*)}*!/*/}
-          {/*</td>*/}
         </tr>
       ))}
       <tr>

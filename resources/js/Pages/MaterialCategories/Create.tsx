@@ -1,3 +1,4 @@
+import React from 'react';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
@@ -9,7 +10,8 @@ export default function Create({
   formData,
 }) {
   return (
-    <AuthenticatedLayout header={<Head title="Store" />}>
+    <AuthenticatedLayout header={<Head title="Material Category" />}>
+      <Head title={'Material Category Create'} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

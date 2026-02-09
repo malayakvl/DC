@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class InvoiceUpdateRequest extends FormRequest
+class OpeningBalanceRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,12 +18,9 @@ class InvoiceUpdateRequest extends FormRequest
         return [
             'invoice_number' => ['required', 'string', 'max:255'],
             'invoice_date' => ['required', 'date'],
-            'supplier_id' => ['required'],
             'customer_id' => ['required'],
             'store_id' => ['required'],
             'status' => ['required'],
-            'currency_id' => ['required'],
-            'tax_id' => ['required']
         ];
     }
 }

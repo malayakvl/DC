@@ -17,6 +17,7 @@ declare namespace Layouts {
             patientstatuses: Pagination;
             servcategories: Pagination;
             acts: Pagination;
+            openingbalance: Pagination;
         };
         filialName: string;
         isSidebarOpen: boolean;
