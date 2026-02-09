@@ -1,20 +1,20 @@
-const lngInvoice = {
-  'en.invoice': {
-    'title.create': 'New InvoiceIncoming',
-    'title.list': 'Invoices',
-    'title.edit': 'Edit InvoiceIncoming',
-    'title.view': 'View InvoiceIncoming',
-    create: 'Create InvoiceIncoming',
+const lngOpeningBalance = {
+  'en.opening_balance': {
+    'title.create': 'New OpeningBalance',
+    'title.list': 'OpeningBalances',
+    'title.edit': 'Edit OpeningBalance',
+    'title.view': 'View OpeningBalance',
+    create: 'Create OpeningBalance',
     name: 'Name',
     save: 'Save',
     saved: 'Saved.',
     back: 'Back',
   },
-  'uk.invoice': {
+  'uk.opening_balance': {
     'title.create': 'Нова накладна',
     'title.list': 'Накладні',
     'outgoing.title.list': 'Накладні видаткові',
-    'incoming.title.list': 'Накладні прибуткові',
+    'incoming.title.list': 'Ввод залишків',
     'change.title.list': 'Накладні переміщення',
     'title.edit': 'Редагувати накладну',
     'title.view': 'Переглянути накладну',
@@ -46,4 +46,4 @@ const lngInvoice = {
     rate: 'Курс'
   },
 };
-export default lngInvoice;
+export default lngOpeningBalance;

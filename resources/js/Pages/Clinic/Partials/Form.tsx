@@ -20,7 +20,7 @@ export default function ClinicForm({
     locale: appLang,
   });
 
-  const [values, setValues] = useState({
+  const { data, setData, post, processing, recentlySuccessful, errors, setError, clearErrors } = useForm({
     name: clinicData.name || '',
     address: clinicData.address || '',
     uraddress: clinicData.uraddress || '',
@@ -29,44 +29,26 @@ export default function ClinicForm({
     phone: clinicData.phone || '',
     file: null,
     currency_id: clinicData.currency_id || '',
+    form: '',
   });
 
-  const { processing, recentlySuccessful, errors, setError, clearErrors } = useForm();
-
   const handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
+    setData(e.target.id, e.target.value);
   };
 
   const handleChangeSelect = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
+    setData(e.target.id, e.target.value);
   };
 
   const submit = e => {
     e.preventDefault();
-    
+
     // Clear previous errors
     clearErrors();
-    
+
     // Always submit with clinic ID since we're only updating an existing clinic
     if (clinicData.id) {
-      router.post(`/clinic/update?id=${clinicData.id}`, values, {
-        onError: (errors) => {
-          // Set errors to display in the form
-          Object.keys(errors).forEach(key => {
-            setError(key, errors[key]);
-          });
-        }
-      });
+      post(`/clinic/update?id=${clinicData.id}`);
     } else {
       // If for some reason clinicData.id is not set, show an error
       setError('form', 'Clinic data is not properly initialized. Please refresh the page and try again.');
@@ -82,7 +64,7 @@ export default function ClinicForm({
         {errors.form && <div className="form-error mb-4">{errors.form}</div>}
         <InputText
           name={'name'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.name')}
@@ -90,7 +72,7 @@ export default function ClinicForm({
         />
         <InputText
           name={'address'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.address')}
@@ -98,7 +80,7 @@ export default function ClinicForm({
         />
         <InputText
           name={'uraddress'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.uraddress')}
@@ -106,7 +88,7 @@ export default function ClinicForm({
         />
         <InputText
           name={'inn'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.inn')}
@@ -114,7 +96,7 @@ export default function ClinicForm({
         />
         <InputText
           name={'edrpou'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.edrpou')}
@@ -122,7 +104,7 @@ export default function ClinicForm({
         />
         <InputText
           name={'phone'}
-          values={values}
+          values={data}
           onChange={handleChange}
           required
           label={msg.get('clinic.phone')}
@@ -132,8 +114,8 @@ export default function ClinicForm({
           translatable={true}
           name={'currency_id'}
           className={'mb-1'}
-          values={values}
-          value={values.currency_id}
+          values={data}
+          value={data.currency_id}
           options={currencyData}
           onChange={handleChangeSelect}
           required

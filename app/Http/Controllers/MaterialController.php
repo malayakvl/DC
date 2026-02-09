@@ -209,6 +209,7 @@ class MaterialController extends Controller
 
             if ($request->file('file')) {
                 $material->image = $uploadService->uploadPhoto($request->file('file'), $clinicId, 'materials', $material->id);
+                $material->save();
             }
             $this->auditLogService->log($request->user(), 'material.updated', $material, null, $material->toArray());
 
@@ -218,10 +219,8 @@ class MaterialController extends Controller
 
 
     public function storeReport(Request $request) {
-        dd(1);exit;
         if ($request->user()->can('store-edit')) {
             $stores = collect(); // Initialize as empty collection
-            dd(1);exit;
             if ($request->user()->roles[0]->name != 'Admin') {
                 // Get store for filial user
                 $filialId = $request->session()->get('filial_id');

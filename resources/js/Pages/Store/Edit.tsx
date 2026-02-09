@@ -22,7 +22,7 @@ export default function Edit({
               formData={formData}
               customerData={customerData}
               stampPath={stampPath}
-              className="max-w-xl"
+              className="w-full"
             />
           </div>
         </div>

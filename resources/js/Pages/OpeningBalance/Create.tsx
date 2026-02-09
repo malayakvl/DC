@@ -1,26 +1,39 @@
 import React from 'react';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
+
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 
 export default function Create({
-  categoryData,
   clinicData,
+  statusData,
+  typeData,
+  customerData,
   producerData,
+  storeData,
   formData,
+  currencyData,
+  unitsData,
+  taxData,
 }) {
   return (
-    <AuthenticatedLayout header={<Head title="Material Category" />}>
-      <Head title={'Material Category Create'} />
+    <AuthenticatedLayout header={<Head title="Invoice" />}>
+      <Head title="Invoice" />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <Form
-              producerData={producerData}
-              categoryData={categoryData}
               clinicData={clinicData}
+              statusData={statusData}
+              typeData={typeData}
+              customerData={customerData}
+              producerData={producerData}
+              storeData={storeData}
               formData={formData}
-              className="max-w-xl"
+              currencyData={currencyData}
+              unitsData={unitsData}
+              taxData={taxData}
+              className="w-full"
             />
           </div>
         </div>

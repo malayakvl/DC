@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngInvoice from '../../Lang/OpeningBalance/translation';
+import lngOpeningBalance from '../../Lang/OpeningBalance/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
@@ -17,7 +17,7 @@ export default function List({ listData, permissions }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngInvoice,
+    messages: lngOpeningBalance,
     locale: appLang,
   });
   const msgDropdown = new Lang({
@@ -49,13 +49,13 @@ export default function List({ listData, permissions }) {
               </header>
             </section>
             <DataTable
-              paginationType={PaginationType.INCOMINGINVOICES}
+              paginationType={PaginationType.OPENINGBALANCE}
               sendRequest={sendRequest}
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
-                  <td className="">{item.invoice_number}</td>
-                  <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">{item.ob_number}</td>
+                  <td className="">{format(new Date(item.ob_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
                       src={`../../images/document-icons/${item.status}.svg`}
@@ -65,7 +65,6 @@ export default function List({ listData, permissions }) {
                     />
                   </td>
                   <td className="">{item.storeName}</td>
-                  <td className="">{item.producerName}</td>
                   <td className="">{item.customerName}</td>
                   <td className="text-right">
                     <Link

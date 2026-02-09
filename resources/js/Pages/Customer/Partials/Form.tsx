@@ -163,7 +163,6 @@ export default function CustomerForm({
     }
   };
 
-  console.log(formData.photo)
   return (
     <section>
       <header>

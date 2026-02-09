@@ -25,14 +25,27 @@ export default function Form({
     messages: lngStore,
     locale: appLang,
   });
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
+  const [preview, setPreview] = useState(stampPath ? stampPath : '/images/no-photo.png');
 
-  const { data, setData, post, processing, recentlySuccessful, errors } = useForm({
+
+  const [values, setValues] = useState({
+    name: formData.name || '',
+    address: formData.address || '',
+    uraddress: formData.uraddress || '',
+    phone: formData.phone || '',
+    file: null,
+    filial_id: formData.is_main ? null : (formData.filial_id || (filialData && filialData.length > 0 ? filialData[0].id : null)),
+    user_id: formData.user_id || (customerData && customerData.length > 0 ? customerData[0].id : null),
+  });
+
+  const { data, setData, post, processing, recentlySuccessful, errors, progress } = useForm({
     id: formData.id || null,
     name: formData.name || '',
     address: formData.address || '',
     uraddress: formData.uraddress || '',
     phone: formData.phone || '',
-    filial_id: formData.filial_id || (filialData && filialData.length > 0 ? filialData[0].id : null),
+    filial_id: formData.is_main ? null : (formData.filial_id || (filialData && filialData.length > 0 ? filialData[0].id : null)),
     file: null,
     user_id: formData.user_id || (customerData && customerData.length > 0 ? customerData[0].id : null),
     clinic_id: clinicData.id,
@@ -43,7 +56,7 @@ export default function Form({
   };
 
   const handleChange = e => {
-    setData(e.target.name, e.target.value);
+    setData(e.target.id, e.target.value);
   };
 
   const handleChangeFile = e => {
@@ -73,52 +86,60 @@ export default function Form({
         className="mt-0 space-y-4"
         encType="multipart/form-data"
       >
-        <InputSelect
-          name={'user_id'}
-          values={data}
-          value={data.user_id}
-          options={customerData}
-          onChange={handleChangeSelect}
-          required
-          label={msg.get('store.ceo')}
-        />
-        <InputText
-          name={'name'}
-          values={data}
-          dataValue={data.name}
-          value={data.name}
-          onChange={handleChange}
-          required
-          label={msg.get('store.name')}
-        />
-        <InputText
-          name={'address'}
-          values={data}
-          dataValue={data.address}
-          value={data.address}
-          onChange={handleChange}
-          required
-          label={msg.get('store.address')}
-        />
-        <InputText
-          name={'uraddress'}
-          values={data}
-          dataValue={data.uraddress}
-          value={data.uraddress}
-          onChange={handleChange}
-          required
-          label={msg.get('store.uraddress')}
-        />
-        <InputText
-          name={'phone'}
-          values={data}
-          dataValue={data.phone}
-          value={data.phone}
-          onChange={handleChange}
-          required
-          label={msg.get('store.phone')}
-        />
-        <>
+        <div className="flex mt-[50px] px-[0px] mb-[50px]">
+          <div className="md:w-1/2">
+            <InputSelect
+              name={'user_id'}
+              values={values}
+              value={values.user_id}
+              options={customerData}
+              onChange={handleChangeSelect}
+              required
+              label={msg.get('store.ceo')}
+              error={errors.user_id}
+            />
+            <InputText
+              name={'name'}
+              values={data}
+              onChange={handleChange}
+              required
+              label={msg.get('store.name')}
+              error={errors.name}
+            />
+            <InputText
+              name={'address'}
+              values={data}
+              dataValue={data.address}
+              value={data.address}
+              onChange={handleChange}
+              required
+              label={msg.get('store.address')}
+              error={errors.address}
+            />
+            <InputText
+              name={'uraddress'}
+              values={data}
+              dataValue={data.uraddress}
+              value={data.uraddress}
+              onChange={handleChange}
+              required
+              label={msg.get('store.uraddress')}
+              error={errors.uraddress}
+            />
+            <InputText
+              name={'phone'}
+              values={data}
+              dataValue={data.phone}
+              value={data.phone}
+              onChange={handleChange}
+              required
+              label={msg.get('store.phone')}
+              error={errors.phone}
+            />
+          </div>
+        </div>
+
+        {/* <>
           <InputLabel htmlFor="file" value={msg.get('store.stamp')} children={null} />
           <div className="input_container">
             <input
@@ -133,7 +154,7 @@ export default function Form({
           <div className="mt-4">
             {stampPath && <img src={stampPath} alt="Store Stamp" width={150} className="border p-2 rounded shadow-sm" />}
           </div>
-        </>
+        </> */}
         <div className="flex items-center">
           <Link
             className="btn-back"

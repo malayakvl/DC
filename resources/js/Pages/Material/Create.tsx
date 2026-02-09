@@ -2,7 +2,7 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import { setPercentAction } from '../../Redux/Material';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../../hooks';
 import React from 'react';
 export default function Create({
   clinicData,
@@ -10,7 +10,7 @@ export default function Create({
   formData,
   unitsData,
 }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   dispatch(setPercentAction(0));
 
@@ -25,7 +25,6 @@ export default function Create({
               formData={formData}
               categoryData={categoryData}
               unitsData={unitsData}
-              className="max-w-xl"
             />
           </div>
         </div>
