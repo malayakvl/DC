@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngOpeningBalance from '../../../Lang/OpeningBalance/translation';
+import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import AddDynamicInputFields from './Row';
@@ -40,7 +40,7 @@ export default function Form({
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngOpeningBalance,
+    messages: lngInvoiceIncoming,
     locale: appLang,
   });
   const dispatch = useAppDispatch();
@@ -114,8 +114,7 @@ export default function Form({
     } else {
       const taxData = documentTax.split('_');
       if (formData.id) {
-        console.log(values);
-        router.post(`/opening-balance/update?id=${formData.id}`, {
+        router.post(`/invoice-incoming/update?id=${formData.id}`, {
           invoice_number: values.invoice_number,
           invoice_date: values.invoice_date,
           clinic_id: values.clinic_id,
@@ -130,7 +129,7 @@ export default function Form({
           rows: invoiceItems,
         });
       } else {
-        router.post('/opening-balance/update', {
+        router.post('/invoice-incoming/update', {
           invoice_number: values.invoice_number,
           invoice_date: values.invoice_date,
           clinic_id: values.clinic_id,
@@ -152,12 +151,12 @@ export default function Form({
     <section className={className}>
       <header>
         <h2>
-          <Link className="icon-back" href={'/opening-balance'}>
+          <Link className="icon-back" href={'/invoice-incoming'}>
             &nbsp;
           </Link>
           {formData?.id
-            ? msg.get('opening_balance.title.edit')
-            : msg.get('opening_balance.title.create')}
+            ? msg.get('invoice_incoming.title.edit')
+            : msg.get('invoice_incoming.title.create')}
         </h2>
       </header>
       <form
@@ -177,7 +176,7 @@ export default function Form({
                     value={values.invoice_number}
                     onChange={handleChange}
                     required
-                    label={msg.get('opening_balance.number')}
+                    label={msg.get('invoice_incoming.number')}
                   />
                 </div>
                 <div className="w-1/3">
@@ -188,7 +187,7 @@ export default function Form({
                     value={values.invoice_date}
                     onChange={handleChangeCalendar}
                     required
-                    label={msg.get('opening_balance.date')}
+                    label={msg.get('invoice_incoming.date')}
                   />
                 </div>
                 <div className={`w-1/3`}>
@@ -201,7 +200,20 @@ export default function Form({
                     options={statusData}
                     onChange={handleChangeSelect}
                     required
-                    label={msg.get('opening_balance.status')}
+                    label={msg.get('invoice_incoming.status')}
+                  />
+                </div>
+                <div className={`w-1/3`}>
+                  <InputSelect
+                    translatable={false}
+                    name={'supplier_id'}
+                    className={'mb-1'}
+                    values={values}
+                    value={values.supplier_id}
+                    options={producerData}
+                    onChange={handleChangeSelect}
+                    required
+                    label={msg.get('invoice_incoming.producer')}
                   />
                 </div>
               </div>
@@ -217,7 +229,29 @@ export default function Form({
                       options={storeData}
                       onChange={handleChangeSelect}
                       required
-                      label={msg.get('opening_balance.store')}
+                      label={msg.get('invoice_incoming.store')}
+                    />
+                  </div>
+                  <div className="w-1/4">
+                    <InputTaxSelect
+                      name={'tax_id'}
+                      values={values}
+                      value={values.tax_id}
+                      options={taxData}
+                      onChange={handleChangeSelect}
+                      required
+                      label={msg.get('invoice_incoming.tax')}
+                    />
+                  </div>
+                  <div className="w-1/4">
+                    <InputSelect
+                      name={'currency_id'}
+                      values={values}
+                      value={values.currency_id}
+                      options={currencyData}
+                      onChange={handleChangeSelect}
+                      required
+                      label={msg.get('invoice_incoming.currency')}
                     />
                   </div>
                   <div className="w-1/4">
@@ -228,7 +262,7 @@ export default function Form({
                       options={customerData}
                       onChange={handleChangeSelect}
                       required
-                      label={msg.get('opening_balance.person')}
+                      label={msg.get('invoice_incoming.person')}
                     />
                   </div>
                 </div>
@@ -241,12 +275,12 @@ export default function Form({
           <table className="w-full invoice-table">
             <thead>
               <tr>
-                <th className="pb-3">{msg.get('opening_balance.product')}</th>
-                <th className="pb-3 w-qty">{msg.get('opening_balance.qty')}</th>
-                <th className="pb-3">{msg.get('opening_balance.unit')}</th>
-                <th className="pb-3">{msg.get('opening_balance.factqty')}</th>
-                <th className="pb-3 w-price">{msg.get('opening_balance.price')}</th>
-                <th className="pb-3 w-price">{msg.get('opening_balance.total')}</th>
+                <th className="pb-3">{msg.get('invoice_incoming.product')}</th>
+                <th className="pb-3 w-qty">{msg.get('invoice_incoming.qty')}</th>
+                <th className="pb-3">{msg.get('invoice_incoming.unit')}</th>
+                <th className="pb-3">{msg.get('invoice_incoming.factqty')}</th>
+                <th className="pb-3 w-price">{msg.get('invoice_incoming.price')}</th>
+                <th className="pb-3 w-price">{msg.get('invoice_incoming.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
@@ -283,17 +317,17 @@ export default function Form({
           <div className="float-right pt-3">
             <Link
               className="btn-back"
-              title={msg.get('invoice.back')}
+              title={msg.get('invoice_incoming.back')}
               href={`/invoice-incoming`}
             >
-              {msg.get('invoice.back')}
+              {msg.get('invoice_incoming.back')}
             </Link>
             {formData.status_id != 2 && (
               <Link
                 disabled={processing}
                 className="btn-submit"
                 onClick={e => submit(e)} href={''}              >
-                {msg.get('invoice.save')}
+                {msg.get('invoice_incoming.save')}
               </Link>
             )}
 

@@ -15,10 +15,10 @@ export default function Edit({
   unitsData,
   taxData,
 }) {
-  console.log(unitsData)
+  console.log(1111)
   return (
-    <AuthenticatedLayout header={<Head title="Invoice" />}>
-      <Head title="Invoice" />
+    <AuthenticatedLayout header={<Head title="Opening Balance" />}>
+      <Head title="Opening Balance" />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">

@@ -16,8 +16,8 @@ class OpeningBalanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'invoice_number' => ['required', 'string', 'max:255'],
-            'invoice_date' => ['required', 'date'],
+            'doc_number' => ['required', 'string', 'max:255'],
+            'doc_date' => ['required', 'date'],
             'customer_id' => ['required'],
             'store_id' => ['required'],
             'status' => ['required'],

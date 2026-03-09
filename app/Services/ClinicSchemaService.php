@@ -705,7 +705,7 @@ class ClinicSchemaService
                 'name' => 'Профілактичні проходження',
             ],
             [
-                'name' => 'Лікування карієрних хвороб/Реставрації',
+                'name' => 'Лікування карієсних хвороб/Реставрації',
             ],
             [
                 'name' => 'Ендодонія',
@@ -1073,8 +1073,8 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 filial_id BIGINT NOT NULL,
                 store_id BIGINT NOT NULL,
-                ob_number VARCHAR(50),
-                ob_date TIMESTAMP NOT NULL,
+                doc_number VARCHAR(50),
+                doc_date TIMESTAMP NOT NULL,
                 comment TEXT,
                 status VARCHAR(50) DEFAULT 'draft',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

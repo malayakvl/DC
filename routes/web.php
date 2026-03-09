@@ -204,7 +204,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/report/generateBalanceReport', [ReportController::class, 'generateBalanceReport'])->name('report.generateBalanceReport');
 
     Route::get('/store-report', [ReportController::class, 'store'])->name('report.store');
-    Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReportData'])->name('report.store.data');
+    Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReport'])->name('report.store.data');
 
 
 

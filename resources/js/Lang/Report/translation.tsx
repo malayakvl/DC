@@ -47,6 +47,16 @@ const lngReport = {
       date: 'Дата',
       document: 'Документ',
       amount: 'Сума'
+    },
+    document_type: {
+      'invoice': 'Рахунок',
+      'receipt': 'Квитанція',
+      'writeoff': 'Списання',
+      'transfer': 'Переміщення',
+      'opening_balance': 'Введення залишку',
+      'income': 'Прибуткова накладна',
+      'expense': 'Витратна накладна',
+      'closing_balance': 'Залишок',
     }
 
   }

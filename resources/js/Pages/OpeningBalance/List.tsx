@@ -54,8 +54,8 @@ export default function List({ listData, permissions }) {
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
-                  <td className="">{item.ob_number}</td>
-                  <td className="">{format(new Date(item.ob_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">{item.doc_number}</td>
+                  <td className="">{format(new Date(item.doc_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
                       src={`../../images/document-icons/${item.status}.svg`}
@@ -70,12 +70,12 @@ export default function List({ listData, permissions }) {
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}
-                      href={`invoice-incoming/edit/${item.id}`}
+                      href={`opening-balance/edit/${item.id}`}
                     />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                      href={`invoice-incoming/delete/${item.id}`}
+                      href={`opening-balance/delete/${item.id}`}
                     />
                   </td>
                 </tr>

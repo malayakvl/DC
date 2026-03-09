@@ -401,11 +401,12 @@ class IncomingInvoiceController extends Controller
             $invoice->invoice_number = $request->invoice_number;
             $invoice->invoice_date = $request->invoice_date;
             $invoice->status = $request->status; // draft / done
-            $invoice->type_id = 1; // 1 = приход
+            $invoice->type = 'income';
+            $invoice->document_type = 'income';
             $invoice->tax_id = $request->tax_id;
             $invoice->currency_id = $request->currency_id;
             
-            $invoice->filial_id = 1; // изменить на реальний филиал
+            $invoice->filial_id = $request->session()->get('filial_id') ?? 1; // использовать филиал из сессии
             $invoice->total_amount = $request->total_amount ?? 0;
 
             $invoice->save();
@@ -442,40 +443,42 @@ class IncomingInvoiceController extends Controller
 
                 $totalAmount += $row['total'];
 
-                if ($request->status === 'posted') {
-                    // Создаем партию на складе
-                    $batch = new StoreBatches();
-                    $batch->store_id = $storeId;
-                    $batch->material_id = $row['product_id'];
-                    $batch->supplier_id = $request->supplier_id;
-                    $batch->invoice_id = $invoiceId;
-                    $batch->arrived_at = $request->invoice_date;
-                    $batch->qty = $qty;
-                    $batch->qty_left = $qty;
-                    $batch->fact_qty = $factQty;
-                    $batch->fact_qty_left = $factQty;
-                    $batch->price_per_unit = $pricePerUnit;
-                    $batch->save();
+                // if ($request->status === 'posted') {
+                //     // Создаем партию на складе
+                //     $batch = new StoreBatches();
+                //     $batch->store_id = $storeId;
+                //     $batch->material_id = $row['product_id'];
+                //     $batch->supplier_id = $request->supplier_id;
+                //     $batch->invoice_id = $invoiceId;
+                //     $batch->arrived_at = $request->invoice_date;
+                //     $batch->qty = $qty;
+                //     $batch->qty_left = $qty;
+                //     $batch->fact_qty = $factQty;
+                //     $batch->fact_qty_left = $factQty;
+                //     $batch->price_per_unit = $pricePerUnit;
+                //     $batch->save();
 
-                    // Создаем движение на склад (приход)
-                    $movement = new StoreMovements();
-                    $movement->store_id = $storeId;
-                    $movement->material_id = $row['product_id'];
-                    $movement->batch_id = $batch->id;
-                    $movement->direction = 1; // 1 = приход
-                    $movement->qty = $qty;
-                    $movement->fact_qty = $factQty;
-                    $movement->document_type = 'iinv';
-                    $movement->document_id = $invoiceId;
-                    $movement->save();
-                }
+                //     // Создаем движение на склад (приход)
+                //     $movement = new StoreMovements();
+                //     $movement->store_id = $storeId;
+                //     $movement->material_id = $row['product_id'];
+                //     $movement->batch_id = $batch->id;
+                //     $movement->direction = 1; // 1 = приход
+                //     $movement->qty = $qty;
+                //     $movement->fact_qty = $factQty;
+                //     $movement->document_type = 'iinv';
+                //     $movement->document_id = $invoiceId;
+                //     $movement->save();
+                // }
             }
 
             // Обновляем общую сумму накладной
             $invoice->total_amount = $totalAmount;
             $invoice->save();
-            if ($request->status === 'posted')
-                $this->updateStoreBalancesAndMaterials($request->store_id, $invoice->id);
+            if ($request->status === 'posted') {
+                $schema = "clinic_{$clinicId}";
+                DB::statement("SELECT core.post_invoice(?, ?)", [$schema, $invoiceId]);
+            }
 
             return redirect()->route('invoice.incoming.index');
         });

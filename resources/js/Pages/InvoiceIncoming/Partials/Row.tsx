@@ -11,6 +11,7 @@ import {
 import { invoiceTaxSelector } from '../../../Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '../../../Redux/Material/selectors';
 import InputSelect from '../../../Components/Form/InputSelect';
+import { ConnectedTvOutlined } from '@mui/icons-material';
 
 export default function AddDynamicInputFields({
   formRowData = null,
@@ -161,6 +162,7 @@ export default function AddDynamicInputFields({
                     : 0;
                   inputs[index].quantity = 1;
                   inputs[index].total = parseFloat(String(inputs[index].price));
+                  console.log('ConnectedTvOutlined', parseFloat(String(inputs[index].price)));
                 }}
               >
                 {_res.name}
@@ -258,7 +260,7 @@ export default function AddDynamicInputFields({
               className="input-text price input-invoice text-center"
               name="total"
               type="text"
-              value={item.tax_amount}
+              value={item.total}
             // onChange={(event) => handleChange(event, index)}
             />
           </td>
