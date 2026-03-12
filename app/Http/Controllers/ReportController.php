@@ -161,7 +161,7 @@ class ReportController extends Controller
             $sid = $storeId ?? 'NULL';
             $fid = $filialId ?? 'NULL';
 
-            $query = "SELECT * FROM core.get_store_movements_by_material('clinic_{$clinicId}', {$storeId}, '{$dateFrom} 00:00:00', '{$dateTo} 23:59:59') ORDER BY material_id, row_type DESC, created_at;";
+            $query = "SELECT * FROM core.get_store_movements_by_material('clinic_{$clinicId}', {$storeId}, '{$dateFrom} 00:00:00', '{$dateTo} 23:59:59');";
             $result = DB::select($query);
             return response()->json($result);
         });

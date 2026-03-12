@@ -76,6 +76,7 @@ export const TableHeaders = {
     { titleKey: 'datatable.number', className: '' },
     { titleKey: 'datatable.date', className: '' },
     { titleKey: 'datatable.status', className: '' },
+    { titleKey: 'datatable.paymentstatus', className: '' },
     { titleKey: 'datatable.store', className: '' },
     { titleKey: 'datatable.producer', className: '' },
     { titleKey: 'datatable.customercreate', className: '' },

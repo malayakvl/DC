@@ -896,16 +896,14 @@ class ClinicSchemaService
                 customer_id BIGINT,
                 currency_id BIGINT,
                 currency_rate NUMERIC(12,2) NOT NULL DEFAULT 1,
-                type VARCHAR(20) NOT NULL
-                    CHECK (type IN ('income', 'expense', 'transfer')),
+                type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense', 'transfer')),
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
-                status VARCHAR(20) NOT NULL DEFAULT 'draft'
-                    CHECK (status IN ('draft', 'posted', 'cancelled')),
-                document_type VARCHAR(20) NOT NULL
-                    CHECK (document_type IN ('income', 'expense', 'transfer', 'balance')),
+                status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'posted', 'cancelled')),
+                document_type VARCHAR(20) NOT NULL CHECK (document_type IN ('income', 'expense', 'transfer', 'balance')),
+                payment_status VARCHAR(20) NOT NULL DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'partial')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -961,6 +959,11 @@ class ClinicSchemaService
             )
         ");
 
+        // Supplier ledger (реестр расчетов с поставщиками)
+        
+
+
+        // Store batches (партии материалов)
         DB::statement("
             CREATE TABLE IF NOT EXISTS store_batches (
                 id BIGSERIAL PRIMARY KEY,
@@ -1005,6 +1008,41 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS supplier_movements (
+                id BIGSERIAL PRIMARY KEY,
+                supplier_id BIGINT NOT NULL,            -- Контрагент / поставщик
+                document_type VARCHAR(50) NOT NULL,    -- Тип документа: invoice, credit и т.д.
+                document_id BIGINT NOT NULL,           -- ID документа
+                total_sum NUMERIC(14,2) NOT NULL,      -- Сумма по документу
+                tax_type SMALLINT DEFAULT 1,            -- 1 = Без ПДВ, 2 = ПДВ 20%, и т.д.
+                currency_id BIGINT DEFAULT 1,          -- ссылка на валюту
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_supplier
+            ON supplier_movements(supplier_id);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_document
+            ON supplier_movements(document_type, document_id);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_created_at
+            ON supplier_movements(created_at);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_tax_currency
+            ON supplier_movements(tax_type, currency_id);
+        ");
+
 
         // Payments
         DB::statement("

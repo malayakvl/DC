@@ -157,77 +157,102 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
     const renderReportResult = () => {
         if (!reportResult || reportResult.length === 0) return null;
 
-        const formatDate = (date: string) => {
-            const d = new Date(date);
-            return d.toLocaleString();
-        };
+        // Group data by material
+        const groups: any[] = [];
+        let currentGroup: any = null;
+
+        reportResult.forEach(item => {
+            if (item.row_type === 'opening_balance') {
+                if (currentGroup) groups.push(currentGroup);
+                currentGroup = {
+                    material_id: item.material_id,
+                    material_name: item.material_name,
+                    opening: Number(item.running_balance || 0),
+                    items: [],
+                    totalIn: 0,
+                    totalOut: 0,
+                    closing: 0
+                };
+            } else if (item.row_type === 'movement') {
+                if (currentGroup) {
+                    currentGroup.items.push(item);
+                    const q = Number(item.qty || 0);
+                    if (q > 0) currentGroup.totalIn += q;
+                    else currentGroup.totalOut += Math.abs(q);
+                }
+            } else if (item.row_type === 'closing_balance') {
+                if (currentGroup) {
+                    currentGroup.closing = Number(item.running_balance || 0);
+                }
+            }
+        });
+        if (currentGroup) groups.push(currentGroup);
 
         return (
             <div style={{ marginTop: 16, marginLeft: 40, marginRight: 40 }}>
-                <table style={{
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: 14
-                }}>
+                <table style={{ ...tableStyle, borderRadius: 12 }}>
                     <thead>
-                        <tr style={{ background: '#f3f4f6' }}>
-                            <th style={th}>Дата</th>
-                            <th style={th}>Документ</th>
-                            <th style={{ ...th, textAlign: 'center' }}>Приход</th>
-                            <th style={{ ...th, textAlign: 'center' }}>Расход</th>
-                            <th style={{ ...th, textAlign: 'center' }}>Остаток</th>
+                        <tr style={{ background: '#1f2937' }}>
+                            <th style={{ ...thStyle, width: '22%' }}>Материал / Дата</th>
+                            <th style={{ ...thStyle, width: '22%' }}>Документ</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '13%' }}>Зал. на початок</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '10%' }}>Приход</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '10%' }}>Расход</th>
+                            <th style={{ ...thStyle, textAlign: 'right', width: '13%' }}>Зал. на кінець</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {reportResult.map((item, index) => {
-                            const qtyNum = Number(item.qty ?? 0);
-                            const balanceNum = Number(item.running_balance ?? 0);
-
-                            if (item.row_type === "opening_balance") {
-                                return (
-                                    <tr key={index} style={{ background: "#eef2ff", fontWeight: 600 }}>
-                                        <td colSpan={4} style={tdStyle}>
-                                            Залишок на початок періоду
-                                        </td>
-                                        <td style={{ ...tdRightStyle, textAlign: 'center' }}>{fmtNum(balanceNum)}</td>
-                                    </tr>
-                                );
-                            }
-
-                            if (item.row_type === "closing_balance") {
-                                return (
-                                    <tr key={index} style={{ background: "#ecfdf5", fontWeight: 600 }}>
-                                        <td colSpan={4} style={tdStyle}>
-                                            Залишок на кінець перідоду
-                                        </td>
-                                        <td style={{ ...tdRightStyle, textAlign: 'center', fontWeight: 600 }}>{fmtNum(balanceNum)}</td>
-                                    </tr>
-                                );
-                            }
-
-                            // movement
-                            return (
-                                <tr key={index} style={{ borderBottom: "1px solid #eee", color: '#e5e7eb' }}>
-                                    <td style={tdStyle}>{formatDateSafe(item.created_at ?? null)}</td>
-
-                                    <td onClick={() => console.log(item.document_id)} style={{ ...tdStyle, cursor: 'pointer', textDecoration: 'underline' }}>
-                                        {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}
-                                        {item.document_id ? " #" + item.document_id : ""}
+                        {groups.map((group, gIdx) => (
+                            <React.Fragment key={gIdx}>
+                                {/* Header Summary Row for Material */}
+                                <tr style={{ background: "#374151", fontWeight: 'bold', borderTop: '2px solid #4b5563' }}>
+                                    <td style={{ ...tdStyle, color: '#60a5fa', fontSize: 14 }}>
+                                        {group.material_name}
                                     </td>
-
-                                    <td style={{ ...tdRightStyle, textAlign: 'center' }}>
-                                        {qtyNum > 0 ? <span style={{ color: "#16a34a" }}>+{fmtNum(qtyNum)}</span> : ""}
+                                    <td style={{ ...tdStyle, textAlign: 'right', color: '#9ca3af', fontWeight: 400, fontSize: 12 }}>
+                                        Обороти за період:
                                     </td>
-
-                                    <td style={{ ...tdRightStyle, textAlign: 'center' }}>
-                                        {qtyNum < 0 ? <span style={{ color: "#dc2626" }}>{fmtNum(qtyNum)}</span> : ""}
+                                    <td style={{ ...tdStyle, textAlign: 'center', color: '#e5e7eb', background: '#2d3748' }}>
+                                        {fmtNum(group.opening)}
                                     </td>
-
-                                    <td style={{ ...tdRightStyle, textAlign: 'center' }}>{fmtNum(balanceNum)}</td>
+                                    <td style={{ ...tdStyle, textAlign: 'center', color: '#4ade80' }}>
+                                        {group.totalIn > 0 ? "+" + fmtNum(group.totalIn) : "0"}
+                                    </td>
+                                    <td style={{ ...tdStyle, textAlign: 'center', color: '#f87171' }}>
+                                        {group.totalOut > 0 ? "-" + fmtNum(group.totalOut) : "0"}
+                                    </td>
+                                    <td style={{ ...tdRightStyle, color: '#60a5fa', background: '#2d3748', fontSize: 15 }}>
+                                        {fmtNum(group.closing)}
+                                    </td>
                                 </tr>
-                            );
-                        })}
+
+                                {/* Movement Rows */}
+                                {group.items.map((item, mIdx) => {
+                                    const qtyNum = Number(item.qty ?? 0);
+                                    return (
+                                        <tr key={mIdx}>
+                                            <td style={{ ...tdStyle, paddingLeft: 16, color: '#9ca3af', fontSize: 12 }}>
+                                                {formatDateSafe(item.created_at)}
+                                            </td>
+                                            <td style={{ ...tdStyle, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => console.log(item.document_id)}>
+                                                {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}
+                                                {item.document_id ? " #" + item.document_id : ""}
+                                            </td>
+                                            <td style={{ ...tdStyle }}></td>
+                                            <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                                {qtyNum > 0 ? <span style={{ color: "#16a34a" }}>+{fmtNum(qtyNum)}</span> : ""}
+                                            </td>
+                                            <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                                {qtyNum < 0 ? <span style={{ color: "#dc2626" }}>{fmtNum(qtyNum)}</span> : ""}
+                                            </td>
+                                            <td style={{ ...tdRightStyle, color: '#9ca3af' }}>
+                                                {fmtNum(item.running_balance)}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </React.Fragment>
+                        ))}
                     </tbody>
                 </table>
             </div>

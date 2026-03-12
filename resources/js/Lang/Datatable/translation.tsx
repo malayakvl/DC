@@ -57,6 +57,7 @@ const lngHeaders = {
     total_amount: 'Загальна сума',
     amount: 'Сума',
     payment: 'Сплачено',
+    paymentstatus: 'Статус оплати',
   },
 };
 export default lngHeaders;
