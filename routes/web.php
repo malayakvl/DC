@@ -26,6 +26,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ActController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OpeningBalanceController;
+use App\Http\Controllers\PaymentMethodController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -149,6 +150,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/size/edit/{id}', [SizeController::class, 'edit'])->name('size.edit');
     Route::post('/size/update', [SizeController::class, 'update'])->name('size.update');
 
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment-method.index');
+    Route::get('/payment-method/create', [PaymentMethodController::class, 'create'])->name('payment-method.create');
+    Route::get('/payment-method/edit/{id}', [PaymentMethodController::class, 'edit'])->name('payment-method.edit');
+    Route::get('/payment-method/delete/{id}', [PaymentMethodController::class, 'delete'])->name('payment-method.delete');
+    Route::post('/payment-method/update', [PaymentMethodController::class, 'update'])->name('payment-method.update');
+
     Route::get('/cabinets', [CabinetController::class, 'index'])->name('cabinet.index');
     Route::get('/cabinet/create', [CabinetController::class, 'create'])->name('cabinet.create');
     Route::get('/cabinet/edit/{id}', [CabinetController::class, 'edit'])->name('cabinet.edit');
@@ -199,9 +206,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
     Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
 
+    // REPORTS ROUTES
     Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
-    Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
     Route::post('/report/generateBalanceReport', [ReportController::class, 'generateBalanceReport'])->name('report.generateBalanceReport');
+
+    Route::get('/report-invoices', [ReportController::class, 'invoices'])->name('report.invoices');
+    Route::post('/report/generateInvoicesReport', [ReportController::class, 'generateInvoicesReport'])->name('report.generateInvoicesReport');
+
+    Route::get('/report-patients/{value}', [ReportController::class, 'fetchPatient'])->name('report.fetchPatient');
 
     Route::get('/store-report', [ReportController::class, 'store'])->name('report.store');
     Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReport'])->name('report.store.data');

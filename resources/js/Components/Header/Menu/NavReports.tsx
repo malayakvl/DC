@@ -39,6 +39,13 @@ export default function NavReports(props) {
                     </Link>
                   </MenuItem>
                 )}
+                {permissions['producer-all'] && (
+                  <MenuItem>
+                    <Link className="submenu" href={'/report-invoices'}>
+                      {lng.get('menu.invoices.balance')}
+                    </Link>
+                  </MenuItem>
+                )}
                 {permissions['store-create'] && (
                   <MenuItem>
                     <Link className="submenu" href={'/store-report'}>

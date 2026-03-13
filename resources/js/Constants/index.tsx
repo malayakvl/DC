@@ -17,6 +17,7 @@ export enum PaginationType {
   STORES = 'stores',
   ACTS = 'acts',
   OPENINGBALANCE = 'openingbalance',
+  PAYMENTMETHODS = 'paymentmethods',
 }
 export const TableHeaders = {
   [PaginationType.FILIALS]: [
@@ -134,6 +135,10 @@ export const TableHeaders = {
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.UNITS]: [
+    { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
+  [PaginationType.PAYMENTMETHODS]: [
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],

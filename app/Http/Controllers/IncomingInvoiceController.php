@@ -413,7 +413,7 @@ class IncomingInvoiceController extends Controller
                 ->first();
             $invoice->currency_rate = $rate->rate_value ?? 1;
             
-            $invoice->payment_status = $request->payment_status ?? 'unpaid';
+            // $invoice->payment_status = $request->payment_status ?? 'unpaid';
             
             $invoice->filial_id = $request->session()->get('filial_id') ?? 1; // использовать филиал из сессии
             $invoice->total_amount = $request->total_amount ?? 0;
@@ -436,7 +436,7 @@ class IncomingInvoiceController extends Controller
             foreach ($request->rows as $row) {
                 $qty = $row['quantity'];      // количество в единицах материала
                 $factQty = $row['fact_qty'];  // фактический вес/объем
-                $pricePerUnit = $row['total'] / $factQty;
+                $pricePerUnit = $factQty ? $row['total'] / $factQty : 0;
 
                 // Создаем позицию накладной
                 $invoiceItem = new InvoiceItems();
@@ -452,38 +452,18 @@ class IncomingInvoiceController extends Controller
 
                 $totalAmount += $row['total'];
 
-                // if ($request->status === 'posted') {
-                //     // Создаем партию на складе
-                //     $batch = new StoreBatches();
-                //     $batch->store_id = $storeId;
-                //     $batch->material_id = $row['product_id'];
-                //     $batch->supplier_id = $request->supplier_id;
-                //     $batch->invoice_id = $invoiceId;
-                //     $batch->arrived_at = $request->invoice_date;
-                //     $batch->qty = $qty;
-                //     $batch->qty_left = $qty;
-                //     $batch->fact_qty = $factQty;
-                //     $batch->fact_qty_left = $factQty;
-                //     $batch->price_per_unit = $pricePerUnit;
-                //     $batch->save();
-
-                //     // Создаем движение на склад (приход)
-                //     $movement = new StoreMovements();
-                //     $movement->store_id = $storeId;
-                //     $movement->material_id = $row['product_id'];
-                //     $movement->batch_id = $batch->id;
-                //     $movement->direction = 1; // 1 = приход
-                //     $movement->qty = $qty;
-                //     $movement->fact_qty = $factQty;
-                //     $movement->document_type = 'iinv';
-                //     $movement->document_id = $invoiceId;
-                //     $movement->save();
-                // }
             }
 
             // Обновляем общую сумму накладной
-            $invoice->total_amount = $totalAmount;
+            // $invoice->total_amount = $totalAmount;
+            $vatRate = Tax::where('id', $request->tax_id)->value('rate') ?? 0;
+            $vatAmount = $totalAmount * $vatRate / 100;
+            $totalWithVat = $totalAmount + $vatAmount;
+            $invoice->net_amount = $totalAmount;
+            $invoice->total_tax = $vatAmount;
+            $invoice->total_amount = $totalWithVat;
             $invoice->save();
+
             if ($request->status === 'posted') {
                 $schema = "clinic_{$clinicId}";
                 DB::statement("SELECT core.post_invoice(?, ?)", [$schema, $invoiceId]);
@@ -497,7 +477,9 @@ class IncomingInvoiceController extends Controller
                     'supplier_id'    => $request->supplier_id,
                     'document_type'  => 'income',        // тип документа
                     'document_id'    => $invoiceId,      // ID накладной
-                    'total_sum'      => $totalAmount,    // сумма по накладной
+                    'total_sum'      => $totalWithVat,    // сумма по накладной
+                    'net_sum'       => $invoice->net_amount,    // без НДС
+                    'tax_sum'       => $invoice->total_tax,    // сумма НДС
                     'tax_type'       => $request->tax_id ?? 1,
                     'currency_id'    => $request->currency_id ?? 1,
                     'created_at'     => $invoice->invoice_date,

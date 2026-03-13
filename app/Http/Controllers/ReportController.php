@@ -96,7 +96,6 @@ class ReportController extends Controller
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filials = ClinicFilial::where('clinic_id', $clinicId)->get();
-            // dd($clinic, $filials);exit;
             $dateFrom = $request->input('date_from', now()->startOfWeek()->format('Y-m-d'));
             $dateTo = $request->input('date_to', now()->endOfWeek()->format('Y-m-d'));
             return Inertia::render('Report/Balance', [
@@ -107,6 +106,30 @@ class ReportController extends Controller
             ]);
         });
     }
+
+    public function invoices(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('producer-all')) {
+                return Inertia::render('Report/Invoices', ['error' => 'Insufficient permissions']);
+            }
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            $filials = ClinicFilial::where('clinic_id', $clinicId)->get();
+            $dateFrom = $request->input('date_from', now()->startOfWeek()->format('Y-m-d'));
+            $dateTo = $request->input('date_to', now()->endOfWeek()->format('Y-m-d'));
+            $suppliersData = DB::table('suppliers')
+                ->select('suppliers.*')
+                ->orderBy('name')->get();
+            
+            return Inertia::render('Report/Invoices', [
+                'clinicData' => $clinic,
+                'filials'   => $filials,
+                'dateFrom'  => $dateFrom,
+                'dateTo'    => $dateTo,
+                'suppliers' => $suppliersData
+            ]);
+        });
+    }
+
     
 
     public function fetchPatient(Request $request, $value) {
@@ -134,7 +157,6 @@ class ReportController extends Controller
             $fid = $filialId ?? 'NULL';
 
             $query = "SELECT * FROM core.balance_documents('clinic_{$clinicId}', {$pid}, {$fid});";
-// dd($query);exit;
             $result = DB::select($query);
 
             return response()->json($result);
@@ -150,19 +172,31 @@ class ReportController extends Controller
             $dateTo = $params['dateTo'];
             $storeId = $params['store_id'];
 
-//             SELECT *
-// FROM core.get_store_turnover_report(
-//     'clinic_1',
-//     2,
-//     '2026-02-17 00:00:00',
-//     '2026-02-28 23:59:59'
-// );
-
             $sid = $storeId ?? 'NULL';
             $fid = $filialId ?? 'NULL';
 
             $query = "SELECT * FROM core.get_store_movements_by_material('clinic_{$clinicId}', {$storeId}, '{$dateFrom} 00:00:00', '{$dateTo} 23:59:59');";
             $result = DB::select($query);
+            return response()->json($result);
+        });
+    }
+
+    public function generateInvoicesReport(Request $request)
+    {
+        return $this->withClinicSchema($request, function ($clinicId) use ($request) {
+            $params = $request->get('values');
+            $dateFrom = $params['dateFrom'] ?? null;
+            $dateTo = $params['dateTo'] ?? null;
+            $supplierId = $params['supplier_id'] ?? null;
+
+            $sid = ($supplierId && $supplierId !== '') ? (int)$supplierId : 'NULL';
+            $df = $dateFrom ? DB::getPdo()->quote($dateFrom) : 'NULL';
+            $dt = $dateTo ? DB::getPdo()->quote($dateTo) : 'NULL';
+            $s_ids = 'NULL'; // p_store_ids is BIGINT[]
+
+            $query = "SELECT * FROM core.get_supplier_ledger_by_clinic('clinic_{$clinicId}', {$sid}, {$s_ids}, {$df}, {$dt});";
+            $result = DB::select($query);
+
             return response()->json($result);
         });
     }

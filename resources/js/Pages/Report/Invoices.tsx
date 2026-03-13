@@ -8,23 +8,17 @@ import lngReport from '../../Lang/Report/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import InputSelect from '../../Components/Form/InputSelect';
 import {
-    generateBalanceReportAction,
-    emptyBalanceReportAction,
-} from '../../Redux/Report/actions';
-import {
     setDataLoadingAction,
 } from '../../Redux/Layout/actions';
-import { reportResultSelector } from '../../Redux/Report/selectors';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import InputCustomerSelect from '../../Components/Form/InputCustomerSelect';
 import axios from 'axios';
 
 interface BalanceProps {
     filials: any[];
     dateFrom: string;
     dateTo: string;
-    stores: any[];
+    suppliers: any[];
 }
 
 type ReportRow = {
@@ -82,7 +76,7 @@ const fmtNum = (v: string | number | null | undefined) => {
     return n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 4 });
 };
 
-export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProps) {
+export default function Invoices({ filials, dateFrom, dateTo, suppliers }: BalanceProps) {
     const dispatch = useDispatch();
     const appLang = useSelector(appLangSelector);
     const msg = new Lang({
@@ -93,8 +87,7 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
         filial_id: '',
         dateFrom: dateFrom,
         dateTo: dateTo,
-        patient_id: '',
-        store_id: ''
+        supplier_id: '',
     });
     const [storeError, setStoreError] = useState('');
     const [reportFromDate, setReportFromDate] = useState(dateFrom ? new Date(dateFrom) : new Date());
@@ -138,7 +131,7 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
         setStoreError('');
         console.log("Generating report with values:", currentValues);
 
-        axios.post(`/report/generateStoreReport`, { values: currentValues }, {})
+        axios.post(`/report/generateInvoicesReport`, { values: currentValues }, {})
             .then(res => {
                 setReportResult(res.data);
                 console.log("Report data received:", res.data);
@@ -165,8 +158,8 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
             if (item.row_type === 'opening_balance') {
                 if (currentGroup) groups.push(currentGroup);
                 currentGroup = {
-                    material_id: item.material_id,
-                    material_name: item.material_name,
+                    supplier_id: item.supplier_id,
+                    supplier_name: item.supplier_name,
                     opening: Number(item.running_balance || 0),
                     items: [],
                     totalIn: 0,
@@ -176,9 +169,8 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
             } else if (item.row_type === 'movement') {
                 if (currentGroup) {
                     currentGroup.items.push(item);
-                    const q = Number(item.qty || 0);
-                    if (q > 0) currentGroup.totalIn += q;
-                    else currentGroup.totalOut += Math.abs(q);
+                    currentGroup.totalIn += Number(item.debit || 0);
+                    currentGroup.totalOut += Number(item.credit || 0);
                 }
             } else if (item.row_type === 'closing_balance') {
                 if (currentGroup) {
@@ -193,12 +185,12 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
                 <table style={{ ...tableStyle, borderRadius: 12 }}>
                     <thead>
                         <tr style={{ background: '#1f2937' }}>
-                            <th style={{ ...thStyle, width: '22%' }}>Материал / Дата</th>
-                            <th style={{ ...thStyle, width: '22%' }}>Документ</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '13%' }}>Зал. на початок</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '10%' }}>Приход</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '10%' }}>Расход</th>
-                            <th style={{ ...thStyle, textAlign: 'right', width: '13%' }}>Зал. на кінець</th>
+                            <th style={{ ...thStyle, width: '20%' }}>Постачальник / Дата</th>
+                            <th style={{ ...thStyle, width: '20%' }}>Документ</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Зал. на початок</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Поставлено</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Оплачено</th>
+                            <th style={{ ...thStyle, textAlign: 'right', width: '15%' }}>Зал. на кінець</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -207,7 +199,7 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
                                 {/* Header Summary Row for Material */}
                                 <tr style={{ background: "#374151", fontWeight: 'bold', borderTop: '2px solid #4b5563' }}>
                                     <td style={{ ...tdStyle, color: '#60a5fa', fontSize: 14 }}>
-                                        {group.material_name}
+                                        {group.supplier_name}
                                     </td>
                                     <td style={{ ...tdStyle, textAlign: 'right', color: '#9ca3af', fontWeight: 400, fontSize: 12 }}>
                                         Обороти за період:
@@ -228,22 +220,23 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
 
                                 {/* Movement Rows */}
                                 {group.items.map((item, mIdx) => {
-                                    const qtyNum = Number(item.qty ?? 0);
                                     return (
                                         <tr key={mIdx}>
                                             <td style={{ ...tdStyle, paddingLeft: 16, color: '#9ca3af', fontSize: 12 }}>
                                                 {formatDateSafe(item.created_at)}
                                             </td>
-                                            <td style={{ ...tdStyle, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => console.log(item.document_id)}>
-                                                {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}
-                                                {item.document_id ? " #" + item.document_id : ""}
+                                            <td style={{ ...tdStyle }}>
+                                                <div style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => console.log(item.document_id)}>
+                                                    {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}
+                                                    {item.document_id ? " #" + item.document_id : ""}
+                                                </div>
                                             </td>
                                             <td style={{ ...tdStyle }}></td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                                {qtyNum > 0 ? <span style={{ color: "#16a34a" }}>+{fmtNum(qtyNum)}</span> : ""}
+                                                {Number(item.debit) > 0 ? <span style={{ color: "#4ade80" }}>+{fmtNum(item.debit)}</span> : ""}
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                                {qtyNum < 0 ? <span style={{ color: "#dc2626" }}>{fmtNum(qtyNum)}</span> : ""}
+                                                {Number(item.credit) > 0 ? <span style={{ color: "#f87171" }}>-{fmtNum(item.credit)}</span> : ""}
                                             </td>
                                             <td style={{ ...tdRightStyle, color: '#9ca3af' }}>
                                                 {fmtNum(item.running_balance)}
@@ -258,7 +251,6 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
             </div>
         );
     };
-
 
 
     const th: React.CSSProperties = {
@@ -277,16 +269,75 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
     };
 
 
+
+
+    const handleChangePatient = (e) => {
+        const value = e.target.value;
+        setValues(values => ({
+            ...values,
+            patient: value,
+        }));
+        // fetch patient
+        if (value.length >= 3) {
+            fetchPatient(value);
+        }
+    }
+
+    const calcPos = (index) => {
+        return 50;
+    }
+
+    const renderSearchPatientResult = index => {
+        if (serchResults.length > 0) {
+            return (
+                <div
+                    className="absolute autocomplete"
+                    style={{ top: calcPos(index) + 'px', width: '500px' }}
+                >
+                    <ul>
+                        {serchResults.map(_res => (
+                            <li
+                                className="cursor-pointer py-0.5"
+                                onClick={() => {
+                                    setSerchResults([]);
+                                    setValues(values => ({
+                                        ...values,
+                                        patient_id: _res.id,
+                                        patient: _res.name,
+                                    }));
+                                }}
+                            >
+                                {_res.name}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        } else {
+            return <></>;
+        }
+    };
+
+    const fetchPatient = (value) => {
+        axios.get(`/report-patients/${value}`)
+            .then(response => {
+                setSerchResults(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
     return (
         <AuthenticatedLayout header={<Head />}>
-            <Head title={'Balance Report'} />
+            <Head title={'Supplier Report'} />
             <div className="py-0">
                 <div>
                     <div className="p-4 sm:p-8 mb-8 content-data bg-content">
                         <section>
                             <header>
                                 <div className="flex inline-flex">
-                                    <h2 className="text-white" style={{ fontSize: '1rem', color: 'white' }}>{msg.get('report.title.store.report')}</h2>
+                                    <h2 className="text-white" style={{ fontSize: '1rem', color: 'white' }}>{msg.get('report.title.suppliers.report')}</h2>
                                     <div className="pl-5 mt-2">
                                         <div className="flex">
                                             <div className="mr-3">
@@ -331,15 +382,15 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
                                                 required
                                                 label={``}
                                             />
-                                            <div className="mx-2 font-bold pt-[5px] text-white">{msg.get('report.store')}</div>
+                                            <div className="mx-2 font-bold pt-[5px] text-white">{msg.get('report.supplier')}</div>
                                             <div className="relative">
                                                 <InputSelect
                                                     translatable={false}
-                                                    name={'store_id'}
+                                                    name={'supplier_id'}
                                                     className={'mb-1 input-report-store'}
                                                     values={values}
-                                                    value={values.store_id}
-                                                    options={stores}
+                                                    value={values.supplier_id}
+                                                    options={suppliers}
                                                     onChange={handleChangeSelect}
                                                     required
                                                     label={``}

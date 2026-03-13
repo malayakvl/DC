@@ -17,6 +17,7 @@ const lngHeader = {
     'customer.list': 'Customers List',
     'customer.create': 'Create',
     'customer.roles': 'Roles',
+    'payment.methods': 'Payment Methods',
     'no.filial': 'No Filial Selected',
     'no.clinic': 'No Clinic Selected',
     'material.categories': 'Product Categories',
@@ -71,10 +72,12 @@ const lngHeader = {
     login: 'Увійти',
     register: 'Зареєструватись',
     act: 'Акти виконаних робіт',
+    'payment.methods': 'Методи оплати',
     reports: 'Звіти',
     balance: 'Баланс по пацієнтам',
     storeBalance: 'Баланс по складу',
     'opening.balance': 'Ввод залишків',
+    'invoices.balance': 'Звіт по постачальникам',
   },
 };
 export default lngHeader;
