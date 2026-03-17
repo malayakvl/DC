@@ -1150,6 +1150,52 @@ class ClinicSchemaService
             )
         ");
 
+        DB::statement("
+            CREATE TABLE money_in (
+                id bigserial PRIMARY KEY,
+                document_number varchar(50),
+                document_date date NOT NULL,
+                account_id bigint NOT NULL,
+                amount numeric(14,2) NOT NULL,
+                currency_id bigint DEFAULT 1,
+                comment text,
+                customer_id bigint NOT NULL,
+                filial_id bigint NOT NULL,
+                status varchar(50),
+                created_at timestamp default now(),
+                updated_at timestamp default now()
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE money_out (
+                id bigserial PRIMARY KEY,
+                document_number varchar(50),
+                document_date date NOT NULL,
+                account_id bigint NOT NULL,
+                amount numeric(14,2) NOT NULL,
+                currency_id bigint DEFAULT 1,
+                comment text,
+                customer_id bigint NOT NULL,
+                filial_id bigint NOT NULL,
+                status varchar(50),
+                created_at timestamp default now(),
+                updated_at timestamp default now()
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE clinic_1.money_movements (
+                id bigserial PRIMARY KEY,
+                account_id bigint NOT NULL,
+                document_type varchar(50),
+                document_id bigint,
+                direction smallint, -- 1 приход / -1 расход
+                amount numeric(14,2),
+                created_at timestamp default now()
+            );
+        ");   
+
     }
 
     

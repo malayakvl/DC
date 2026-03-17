@@ -85,11 +85,6 @@ export default function ProfileMenu() {
                   {lng.get('menu.currencies')}
                 </Link>
               )}
-              {permissions['patient-edit'] && (
-                <Link className="dropdown-span" href={'/payment-methods'}>
-                  {lng.get('menu.payment.methods')}
-                </Link>
-              )}
               {(permissions['tax-all'] || permissions['tax-view']) && (
                 <Link className="dropdown-span" href={'/taxes'}>
                   {lng.get('menu.taxes')}

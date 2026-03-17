@@ -61,6 +61,17 @@ const lngReport = {
     supplier: 'Постачальник',
     'title.suppliers.report': 'Звіт по постачальникам',
     'title.store.report': 'Звіт по складу',
+    'title.invoices.report': 'Звіт по рахункам',
+    'title.date': 'Постачальник / Дата',
+    'title.document': 'Документ',
+    'title.amount': 'Сума',
+    'title.opening_balance': 'Зал. на початок',
+    'title.income': 'Поставлено',
+    'title.expense': 'Сплачено',
+    'title.closing_balance': 'Зал. на кінець',
+    'title.writeoff': 'Списання',
+    'title.transfer': 'Переміщення',
+    'title.closing.balance': 'Зал. на кінець',
 
   }
 };

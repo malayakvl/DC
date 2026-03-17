@@ -11,7 +11,7 @@ import NavScheduler from './Menu/NavScheduler';
 import NavInvoices from './Menu/NavInvoices';
 import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
-import React from 'react';
+import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
 
 export default function NavMenu(props) {
@@ -45,6 +45,8 @@ export default function NavMenu(props) {
             <NavServices />
 
             <NavInvoices />
+
+            <NavPayments />
 
             <NavReports />
 

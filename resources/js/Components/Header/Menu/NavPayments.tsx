@@ -4,23 +4,22 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
-import React from 'react';
 
-export default function NavReports(props) {
+export default function NavPayments(props) {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-
+  console.log(1)
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
         permissions['customer-all']) && (
           <Menu as="div" className="relative top-menu-nav">
             <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.reports')}
+              {lng.get('menu.finanses')}
             </MenuButton>
             <MenuItems
               transition
@@ -34,15 +33,22 @@ export default function NavReports(props) {
               <div>
                 {permissions['customer-all'] && (
                   <MenuItem>
+                    <Link className="submenu" href={'/payment-methods'}>
+                      {lng.get('menu.payment-methods')}
+                    </Link>
+                  </MenuItem>
+                )}
+                {permissions['customer-all'] && (
+                  <MenuItem>
                     <Link className="submenu" href={'/report-balance'}>
-                      {lng.get('menu.balance')}
+                      {lng.get('menu.money-in')}
                     </Link>
                   </MenuItem>
                 )}
                 {permissions['producer-all'] && (
                   <MenuItem>
                     <Link className="submenu" href={'/report-invoices'}>
-                      {lng.get('menu.invoices.balance')}
+                      {lng.get('menu.money-out')}
                     </Link>
                   </MenuItem>
                 )}
@@ -50,13 +56,6 @@ export default function NavReports(props) {
                   <MenuItem>
                     <Link className="submenu" href={'/store-report'}>
                       {lng.get('menu.material.report')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/finanses-report'}>
-                      {lng.get('menu.finanses.report')}
                     </Link>
                   </MenuItem>
                 )}

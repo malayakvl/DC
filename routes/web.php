@@ -27,6 +27,7 @@ use App\Http\Controllers\ActController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\MoneyInController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -176,6 +177,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/act/create', [ActController::class, 'create'])->name('act.create');
     Route::get('/act/edit/{id}', [ActController::class, 'edit'])->name('act.edit');
     Route::post('/act/update', [ActController::class, 'update'])->name('act.updated');
+
+    Route::get('/money-in', [MoneyInController::class, 'index'])->name('money-in.index');
+    Route::get('/money-in/create', [MoneyInController::class, 'create'])->name('money-in.create');
+    Route::get('/money-in/edit/{id}', [MoneyInController::class, 'edit'])->name('money-in.edit');
+    Route::post('/money-in/update', [MoneyInController::class, 'update'])->name('money-in.updated');
+
 
     Route::get('/invoice-incoming', [IncomingInvoiceController::class, 'index'])->name('invoice.incoming.index');
     Route::get('/invoice-incoming/create', [IncomingInvoiceController::class, 'create'])->name('invoice.incoming.create');

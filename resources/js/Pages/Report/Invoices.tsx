@@ -185,12 +185,12 @@ export default function Invoices({ filials, dateFrom, dateTo, suppliers }: Balan
                 <table style={{ ...tableStyle, borderRadius: 12 }}>
                     <thead>
                         <tr style={{ background: '#1f2937' }}>
-                            <th style={{ ...thStyle, width: '20%' }}>Постачальник / Дата</th>
-                            <th style={{ ...thStyle, width: '20%' }}>Документ</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Зал. на початок</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Поставлено</th>
-                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>Оплачено</th>
-                            <th style={{ ...thStyle, textAlign: 'right', width: '15%' }}>Зал. на кінець</th>
+                            <th style={{ ...thStyle, width: '20%' }}>{msg.get('report.title.date')}</th>
+                            <th style={{ ...thStyle, width: '20%' }}>{msg.get('report.title.document')}</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>{msg.get('report.title.opening_balance')}</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>{msg.get('report.title.income')}</th>
+                            <th style={{ ...thStyle, textAlign: 'center', width: '15%' }}>{msg.get('report.title.expense')}</th>
+                            <th style={{ ...thStyle, textAlign: 'right', width: '15%' }}>{msg.get('report.title.closing_balance')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -238,7 +238,7 @@ export default function Invoices({ filials, dateFrom, dateTo, suppliers }: Balan
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
                                                 {Number(item.credit) > 0 ? <span style={{ color: "#f87171" }}>-{fmtNum(item.credit)}</span> : ""}
                                             </td>
-                                            <td style={{ ...tdRightStyle, color: '#9ca3af' }}>
+                                            <td style={{ ...tdRightStyle, color: Number(item.running_balance) > 0 ? '#f87171' : '#9ca3af' }}>
                                                 {fmtNum(item.running_balance)}
                                             </td>
                                         </tr>
