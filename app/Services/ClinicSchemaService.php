@@ -64,6 +64,9 @@ class ClinicSchemaService
 
             // Create default patient statuses
             $this->createDefaultPatientStatuses($clinicId);
+
+            // Seed default payment methods
+            $this->seedDefaultPaymentMethods();
         } finally {
             // Restore original search path
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -342,7 +345,7 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS taxes (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
-                value DOUBLE PRECISION NOT NULL,
+                rate DOUBLE PRECISION NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -705,7 +708,7 @@ class ClinicSchemaService
                 'name' => 'Профілактичні проходження',
             ],
             [
-                'name' => 'Лікування карієрних хвороб/Реставрації',
+                'name' => 'Лікування карієсних хвороб/Реставрації',
             ],
             [
                 'name' => 'Ендодонія',
@@ -795,17 +798,17 @@ class ClinicSchemaService
     {
         $taxes = [
             // VAT taxes
-            ['name' => 'Без ПДВ', 'value' => 0],
-            ['name' => 'ПДВ 20%', 'value' => 20],
-            ['name' => 'ПДВ 7%', 'value' => 7],
+            ['name' => 'Без ПДВ', 'rate' => 0],
+            ['name' => 'ПДВ 20%', 'rate' => 20],
+            ['name' => 'ПДВ 7%', 'rate' => 7],
             
             // Single taxes
-            ['name' => 'Єдиний податок 5%', 'value' => 5],
-            ['name' => 'Єдиний податок 3%', 'value' => 3],
+            ['name' => 'Єдиний податок 5%', 'rate' => 5],
+            ['name' => 'Єдиний податок 3%', 'rate' => 3],
             
             // Other taxes
-            ['name' => 'Страховий збір 2%', 'value' => 2],
-            ['name' => 'Сервісний збір 1.5%', 'value' => 1.5],
+            ['name' => 'Страховий збір 2%', 'rate' => 2],
+            ['name' => 'Сервісний збір 1.5%', 'rate' => 1.5],
         ];
 
         // Check if we already have taxes to avoid duplicates
@@ -896,16 +899,19 @@ class ClinicSchemaService
                 customer_id BIGINT,
                 currency_id BIGINT,
                 currency_rate NUMERIC(12,2) NOT NULL DEFAULT 1,
-                type VARCHAR(20) NOT NULL
-                    CHECK (type IN ('income', 'expense', 'transfer')),
+                type VARCHAR(20) NOT NULL CHECK (type IN ('income', 'expense', 'transfer')),
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
                 total_amount NUMERIC(12,2) NOT NULL,
-                status VARCHAR(20) NOT NULL DEFAULT 'draft'
-                    CHECK (status IN ('draft', 'posted', 'cancelled')),
-                document_type VARCHAR(20) NOT NULL
-                    CHECK (document_type IN ('income', 'expense', 'transfer', 'balance')),
+                
+                total_net NUMERIC(14,2) NOT NULL DEFAULT 0,
+                total_tax NUMERIC(14,2) NOT NULL DEFAULT 0,
+                net_amount NUMERIC(14,2) NOT NULL DEFAULT 0,
+
+                status VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'posted', 'cancelled')),
+                document_type VARCHAR(20) NOT NULL CHECK (document_type IN ('income', 'expense', 'transfer', 'balance')),
+                payment_status VARCHAR(20) NOT NULL DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'partial')),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -925,6 +931,7 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
                 unit_id BIGINT,                      -- единица измерения материала
                 pack_unit_id BIGINT,                 -- единица упаковки
+
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -961,6 +968,11 @@ class ClinicSchemaService
             )
         ");
 
+        // Supplier ledger (реестр расчетов с поставщиками)
+        
+
+
+        // Store batches (партии материалов)
         DB::statement("
             CREATE TABLE IF NOT EXISTS store_batches (
                 id BIGSERIAL PRIMARY KEY,
@@ -1005,6 +1017,44 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS supplier_movements (
+                id BIGSERIAL PRIMARY KEY,
+                supplier_id BIGINT NOT NULL,            -- Контрагент / поставщик
+                document_type VARCHAR(50) NOT NULL,    -- Тип документа: invoice, credit и т.д.
+                document_id BIGINT NOT NULL,           -- ID документа
+                total_sum NUMERIC(14,2) NOT NULL,      -- Сумма по документу
+                tax_type SMALLINT DEFAULT 1,            -- 1 = Без ПДВ, 2 = ПДВ 20%, и т.д.
+                net_sum    numeric(14,2)  -- сумма без НДС
+                tax_sum    numeric(14,2)  -- сумма НДС  
+                currency_id BIGINT DEFAULT 1,          -- ссылка на валюту
+                
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_supplier
+            ON supplier_movements(supplier_id);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_document
+            ON supplier_movements(document_type, document_id);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_created_at
+            ON supplier_movements(created_at);
+        ");
+
+        DB::statement("
+            CREATE INDEX IF NOT EXISTS idx_supplier_movements_tax_currency
+            ON supplier_movements(tax_type, currency_id);
+        ");
+
 
         // Payments
         DB::statement("
@@ -1073,8 +1123,8 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 filial_id BIGINT NOT NULL,
                 store_id BIGINT NOT NULL,
-                ob_number VARCHAR(50),
-                ob_date TIMESTAMP NOT NULL,
+                doc_number VARCHAR(50),
+                doc_date TIMESTAMP NOT NULL,
                 comment TEXT,
                 status VARCHAR(50) DEFAULT 'draft',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -1099,6 +1149,52 @@ class ClinicSchemaService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
+
+        DB::statement("
+            CREATE TABLE money_in (
+                id bigserial PRIMARY KEY,
+                document_number varchar(50),
+                document_date date NOT NULL,
+                account_id bigint NOT NULL,
+                amount numeric(14,2) NOT NULL,
+                currency_id bigint DEFAULT 1,
+                comment text,
+                customer_id bigint NOT NULL,
+                filial_id bigint NOT NULL,
+                status varchar(50),
+                created_at timestamp default now(),
+                updated_at timestamp default now()
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE money_out (
+                id bigserial PRIMARY KEY,
+                document_number varchar(50),
+                document_date date NOT NULL,
+                account_id bigint NOT NULL,
+                amount numeric(14,2) NOT NULL,
+                currency_id bigint DEFAULT 1,
+                comment text,
+                customer_id bigint NOT NULL,
+                filial_id bigint NOT NULL,
+                status varchar(50),
+                created_at timestamp default now(),
+                updated_at timestamp default now()
+            );
+        ");
+
+        DB::statement("
+            CREATE TABLE clinic_1.money_movements (
+                id bigserial PRIMARY KEY,
+                account_id bigint NOT NULL,
+                document_type varchar(50),
+                document_id bigint,
+                direction smallint, -- 1 приход / -1 расход
+                amount numeric(14,2),
+                created_at timestamp default now()
+            );
+        ");   
 
     }
 
@@ -1254,6 +1350,30 @@ class ClinicSchemaService
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+        }
+    }
+
+    /**
+     * Seed default payment methods
+     *
+     * @return void
+     */
+    protected function seedDefaultPaymentMethods(): void
+    {
+        $methods = [
+            ['name' => 'Каса (Готівка)'],
+            ['name' => 'Банківська карта'],
+            ['name' => 'Безготівковий розрахунок'],
+            ['name' => 'Страхова'],
+        ];
+
+        $existing = DB::table('payment_methods')->count();
+        if ($existing > 0) return;
+
+        foreach ($methods as $method) {
+            $method['created_at'] = now();
+            $method['updated_at'] = now();
+            DB::table('payment_methods')->insert($method);
         }
     }
 }

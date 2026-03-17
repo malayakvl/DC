@@ -48,10 +48,10 @@ export default function Form({
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
   // const [showRowsError, setShowRowsError] = useState(false);
-
+  console.log(1)
   const [values, setValues] = useState({
-    invoice_number: formData.invoice_number ? formData.invoice_number : '',
-    invoice_date: formData.invoice_date,
+    doc_number: formData.doc_number ? formData.doc_number : '',
+    doc_date: formData.doc_date,
     clinic_id: clinicData.id,
     store_id: formData.store_id,
     customer_id: formData.customer_id,
@@ -79,7 +79,7 @@ export default function Form({
   };
 
   const handleChangeCalendar = data => {
-    const key = 'invoice_date';
+    const key = 'doc_date';
     const value = data;
     setValues(values => ({
       ...values,
@@ -98,8 +98,8 @@ export default function Form({
 
   const submit = e => {
     e.preventDefault();
-    if (!values['invoice_date']) {
-      values['invoice_date'] = new Date();
+    if (!values['doc_date']) {
+      values['doc_date'] = new Date();
     }
 
     values['rows'] = invoiceItems;
@@ -116,8 +116,8 @@ export default function Form({
       if (formData.id) {
         console.log(values);
         router.post(`/opening-balance/update?id=${formData.id}`, {
-          invoice_number: values.invoice_number,
-          invoice_date: values.invoice_date,
+          doc_number: values.doc_number,
+          doc_date: values.doc_date,
           clinic_id: values.clinic_id,
           store_id: values.store_id,
           customer_id: values.customer_id,
@@ -131,8 +131,8 @@ export default function Form({
         });
       } else {
         router.post('/opening-balance/update', {
-          invoice_number: values.invoice_number,
-          invoice_date: values.invoice_date,
+          doc_number: values.doc_number,
+          doc_date: values.doc_date,
           clinic_id: values.clinic_id,
           store_id: values.store_id,
           status: values.status,
@@ -171,10 +171,10 @@ export default function Form({
               <div className="mb-2 flex gap-2">
                 <div className="w-1/3">
                   <InputText
-                    name={'invoice_number'}
+                    name={'doc_number'}
                     values={values}
-                    dataValue={values.invoice_number}
-                    value={values.invoice_number}
+                    dataValue={values.doc_number}
+                    value={values.doc_number}
                     onChange={handleChange}
                     required
                     label={msg.get('opening_balance.number')}
@@ -182,10 +182,10 @@ export default function Form({
                 </div>
                 <div className="w-1/3">
                   <InputCalendar
-                    name={'invoice_date'}
+                    name={'doc_date'}
                     values={values}
-                    dataValue={values.invoice_date}
-                    value={values.invoice_date}
+                    dataValue={values.doc_date}
+                    value={values.doc_date}
                     onChange={handleChangeCalendar}
                     required
                     label={msg.get('opening_balance.date')}

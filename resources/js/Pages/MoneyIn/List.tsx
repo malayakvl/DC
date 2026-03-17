@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngInvoiceIncoming from '../../Lang/InvoiceIncoming/translation';
+import lngMoneyIn from '../../Lang/MoneyIn/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
@@ -15,11 +15,11 @@ import { format } from 'date-fns';
 import InputText from '../../Components/Form/InputText';
 import InputSelect from '../../Components/Form/InputSelect';
 
-export default function List({ listData, permissions, filters, suppliers }) {
+export default function List({ listData, filters, paymentsMethods }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: lngInvoiceIncoming,
+    messages: lngMoneyIn,
     locale: appLang,
   });
   const msgDropdown = new Lang({
@@ -30,7 +30,7 @@ export default function List({ listData, permissions, filters, suppliers }) {
   const [values, setValues] = useState({
     date_from: filters?.date_from || '',
     date_to: filters?.date_to || '',
-    supplier_id: filters?.supplier_id || '',
+    account_id: filters?.account_id || '',
   });
 
   const handleChange = (e) => {
@@ -39,7 +39,7 @@ export default function List({ listData, permissions, filters, suppliers }) {
   };
 
   const handleFilter = () => {
-    router.get('/invoice-incoming', values, {
+    router.get('/money-in', values, {
       preserveState: true,
       replace: true,
     });
@@ -51,7 +51,7 @@ export default function List({ listData, permissions, filters, suppliers }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Invoice Incoming'} />
+      <Head title={'Money In'} />
       <div className="">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
@@ -60,12 +60,12 @@ export default function List({ listData, permissions, filters, suppliers }) {
                 <div className="flex justify-between items-center mb-6">
                   <div className="flex items-center">
                     <h2 className="text-xl font-semibold leading-tight">
-                      {msg.get('invoice_incoming.title.list')}
+                      {msg.get('money_in.title.list')}
                     </h2>
                     <div className="ml-5">
                       <PrimaryButton>
-                        <NavLink href={'/invoice-incoming/create'}>
-                          {msg.get('invoice_incoming.title.create')}
+                        <NavLink href={'/money-in/create'}>
+                          {msg.get('money_in.title.create')}
                         </NavLink>
                       </PrimaryButton>
                     </div>
@@ -76,7 +76,7 @@ export default function List({ listData, permissions, filters, suppliers }) {
                   <InputText
                     type="date"
                     name="date_from"
-                    label={msg.get('invoice_incoming.date_from')}
+                    label={msg.get('money_in.date_from')}
                     values={values}
                     onChange={handleChange}
                     className="mt-1 block w-full"
@@ -84,61 +84,59 @@ export default function List({ listData, permissions, filters, suppliers }) {
                   <InputText
                     type="date"
                     name="date_to"
-                    label={msg.get('invoice_incoming.date_to')}
+                    label={msg.get('money_in.date_to')}
                     values={values}
                     onChange={handleChange}
                     className="mt-1 block w-full"
                   />
                   <InputSelect
-                    name="supplier_id"
-                    label={msg.get('invoice_incoming.producer')}
+                    name="account_id"
+                    label={msg.get('money_in.account_id')}
                     values={values}
                     onChange={handleChange}
-                    options={suppliers}
+                    options={paymentsMethods}
                     className="mt-1 block w-full min-w-[200px]"
                   />
-                  <div className="flex gap-2 mb-1">
+                  <div className="flex mb-1">
                     <PrimaryButton onClick={handleFilter}>
-                      {msg.get('invoice_incoming.filter')}
+                      {msg.get('money_in.filter')}
                     </PrimaryButton>
                     <button
                       onClick={() => {
-                        const reset = { date_from: '', date_to: '', supplier_id: '' };
+                        const reset = { date_from: '', date_to: '', account_id: '' };
                         setValues(reset);
-                        router.get('/invoice-incoming', reset);
+                        router.get('/money-in', reset);
                       }}
                       className="btn-submit !bg-none !bg-gray-200 !text-gray-700 hover:!bg-gray-300 transition-colors duration-200"
                     >
-                      {msg.get('invoice_incoming.reset')}
+                      {msg.get('money_in.reset')}
                     </button>
                   </div>
                 </div>
               </header>
             </section>
             <DataTable
-              paginationType={PaginationType.INCOMINGINVOICES}
+              paginationType={PaginationType.MONEYIN}
               sendRequest={sendRequest}
             >
               {listData?.map(item => (
                 <tr className="" key={item.id}>
-                  <td className="">{item.invoice_number}</td>
-                  <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
+                  <td className="">{item.document_number}</td>
+                  <td className="">{format(new Date(item.document_date), 'dd.MM.yyyy HH:mm')}</td>
                   <td className="">
                     <img
-                      src={`../../images/document-icons/${item.document_status}.svg`}
-                      title={msgDropdown.get(`dropdown.${item.document_status}`)}
-                      alt={msgDropdown.get(`dropdown.${item.document_status}`)}
+                      src={`../../images/document-icons/${item.status}.svg`}
+                      title={msgDropdown.get(`dropdown.${item.status}`)}
+                      alt={msgDropdown.get(`dropdown.${item.status}`)}
                       className="icon-doc"
                     />
                   </td>
-                  <td className="">
-                    <NavLink href={`/invoice-incoming/payment/${item.id}`} className="text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl">
-                      {Number(item.debt_amount) <= 0 ? msg.get('invoice_incoming.paid') : msg.get('invoice_incoming.unpaid')}
-                    </NavLink>
-                  </td>
-                  <td className="">{item.store_name}</td>
-                  <td className="">{item.supplier_name}</td>
-                  <td className="">{item.customer_name}</td>
+                  <td className="">{item.payment_method_name}</td>
+                  <td className="">{item.amount} {item.currency_name}</td>
+
+
+
+                  <td className="">{item.created_by}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"

@@ -17,7 +17,7 @@ export default function ProfileMenu() {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-  
+
   const source = user?.name;
   const array = source.split(' ');
   const fioResult =
@@ -51,8 +51,8 @@ export default function ProfileMenu() {
                             {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
                           </>
                         )
-                          : (user?.current_clinic?.name || lng.get('menu.no.clinic'))}
-                      </small>
+                        : (user?.current_clinic?.name || lng.get('menu.no.clinic'))}
+                    </small>
                   </div>
                   <span className="icon-arrow-down" />
                 </button>
@@ -69,7 +69,7 @@ export default function ProfileMenu() {
                     {lng.get('menu.clinic')}
                   </Link>
                 )}
-              
+
               {(permissions['filial-all'] || permissions['filial-view']) && (
                 <Link className="dropdown-span" href={'/filials'}>
                   {lng.get('menu.filials')}

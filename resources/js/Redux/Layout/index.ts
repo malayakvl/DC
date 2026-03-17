@@ -30,6 +30,8 @@ const initialState: State.Layouts = {
         [PaginationType.STORES]: { ...initPagination },
         [PaginationType.PATIENTSTATUSES]: { ...initPagination },
         [PaginationType.OPENINGBALANCE]: { ...initPagination },
+        [PaginationType.PAYMENTMETHODS]: { ...initPagination },
+        [PaginationType.MONEYIN]: { ...initPagination },
     },
     isSidebarOpen: false,
     isMobileDevice: false,

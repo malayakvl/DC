@@ -12,7 +12,7 @@ const lngOpeningBalance = {
   },
   'uk.opening_balance': {
     'title.create': 'Нова накладна',
-    'title.list': 'Накладні',
+    'title.list': 'Введення залишків',
     'outgoing.title.list': 'Накладні видаткові',
     'incoming.title.list': 'Ввод залишків',
     'change.title.list': 'Накладні переміщення',
