@@ -428,33 +428,7 @@ class MoneyInController extends Controller
         });
     }
 
-    protected function updateStoreBalancesAndMaterials(int $storeId, int $invoiceId)
-    {
-        // 1. Обновляем остатки партий (они уже правильные после прихода)
-        $batches = DB::table('store_batches')
-            ->select('material_id',
-                DB::raw('SUM(qty_left) as qty'),
-                DB::raw('SUM(fact_qty_left) as fact_qty')
-            )
-            ->where('store_id', $storeId)
-            ->groupBy('material_id')
-            ->get();
-
-        // 2. Обновляем store_balances (кеш остатков)
-        foreach ($batches as $batch) {
-            DB::table('store_balances')->updateOrInsert(
-                [
-                    'store_id' => $storeId,
-                    'material_id' => $batch->material_id
-                ],
-                [
-                    'qty' => $batch->qty,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]
-            );
-        }
-    }
+    
 
     /**
      * Remove the specified resource from storage.

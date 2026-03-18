@@ -15,9 +15,15 @@ import { format } from 'date-fns';
 import InputText from '../../Components/Form/InputText';
 import InputSelect from '../../Components/Form/InputSelect';
 
-export default function List({ listData, permissions, filters, suppliers }) {
+export default function List({ listData, permissions, filters, suppliers, paymentMethods }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentMethodId, setPaymentMethodId] = useState<number>(0);
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [paymentAmountError, setPaymentAmountError] = useState(false);
   const msg = new Lang({
     messages: lngInvoiceIncoming,
     locale: appLang,
@@ -48,6 +54,27 @@ export default function List({ listData, permissions, filters, suppliers }) {
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
+
+  const makePayment = (invoiceId: number, paymentMethodId: number, amount: number, currencyId: number, paymentMethod: any) => {
+    console.log(invoiceId, paymentMethodId, amount, currencyId, paymentMethod);
+    if (paymentMethod.balance <= 0) {
+      setPaymentAmountError(true);
+    } else {
+      setPaymentAmountError(false);
+      router.post('/invoice-incoming/payment', {
+        invoiceId,
+        paymentMethodId,
+        amount,
+        currencyId,
+        supplierId: selectedInvoice?.supplier_id,
+      });
+      setShowModal(false);
+      setPaymentAmount('');
+      setPaymentMethodId(0);
+      setSelectedMethod(null);
+      setPaymentAmountError(false);
+    }
+  };
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -131,10 +158,24 @@ export default function List({ listData, permissions, filters, suppliers }) {
                       className="icon-doc"
                     />
                   </td>
+                  <td className="" style={{ textAlign: 'right' }}>{item.total_amount} {item.currency_name}</td>
                   <td className="">
-                    <NavLink href={`/invoice-incoming/payment/${item.id}`} className="text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl">
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedInvoice(item);
+                        setPaymentAmount(item.debt_amount > 0 ? item.debt_amount : item.total_amount);
+                        setPaymentMethodId(0)
+                        setSelectedMethod(null)
+                        setPaymentAmountError(false)
+                        setShowModal(true);
+                      }}
+                      className="pay-btn text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl"
+                      data-id={item.id}
+                    >
                       {Number(item.debt_amount) <= 0 ? msg.get('invoice_incoming.paid') : msg.get('invoice_incoming.unpaid')}
-                    </NavLink>
+                    </a>
                   </td>
                   <td className="">{item.store_name}</td>
                   <td className="">{item.supplier_name}</td>
@@ -154,6 +195,68 @@ export default function List({ listData, permissions, filters, suppliers }) {
                 </tr>
               ))}
             </DataTable>
+            {showModal && (
+              <div id="paymentModal" className="fixed inset-0 bg-black/50 flex items-center justify-center">
+                <div className="bg-black p-6 rounded-lg w-[450px]">
+
+                  <h2 className="text-md font-semibold leading-tight">{msg.get('invoice_incoming.payment')} № {selectedInvoice?.invoice_number}</h2>
+
+                  <form id="paymentForm">
+
+                    <input type="hidden" id="invoiceId" />
+
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium text-white  ">{msg.get('invoice_incoming.amount')}</label>
+                      <input
+                        type="number"
+                        className="w-full border p-2 rounded text-black"
+                        value={paymentAmount}
+                        onChange={(e) => setPaymentAmount(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="block text-sm font-medium text-white  ">{msg.get('invoice_incoming.payment_method')}</label>
+                      <select
+                        className="w-full border p-2 rounded text-black"
+                        value={paymentMethodId || ''}
+                        onChange={(e) => {
+                          const id = parseInt(e.target.value)
+                          setPaymentMethodId(id)
+                          setSelectedMethod(paymentMethods.find(method => method.id === id))
+                        }}
+                      >
+                        <option value="" disabled>
+                          {msg.get('invoice_incoming.payment_method')}
+                        </option>
+
+                        {paymentMethods.map(method => (
+                          <option key={method.id} value={method.id}>
+                            {method.name} {method.balance} {method.currency_name}
+                          </option>
+                        ))}
+                      </select>
+                      {paymentAmountError && <span className="text-red-500">Недостатньо коштів на рахунку</span>}
+                    </div>
+                    <input type="hidden" name="invoice_id" id="invoice_id" value={selectedInvoice?.id} />
+
+                    <div className="flex gap-2">
+                      <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded w-full" onClick={() => setShowModal(false)}>Отмена</button>
+                      <button
+                        type="button"
+                        className="bg-purple-600 text-white px-4 py-2 rounded w-full"
+                        onClick={(e) => { e.preventDefault(); makePayment(selectedInvoice?.invoice_id, paymentMethodId, parseFloat(paymentAmount), selectedInvoice?.currency_id, selectedMethod); }}
+                      >
+                        Оплатить
+                      </button>
+                    </div>
+
+                  </form>
+
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

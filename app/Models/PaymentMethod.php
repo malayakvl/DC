@@ -10,5 +10,6 @@ class PaymentMethod extends Model
 
     protected $fillable = [
         'name',
+        'currency_id',
     ];
 }

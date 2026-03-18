@@ -195,6 +195,7 @@ class ReportController extends Controller
             $s_ids = 'NULL'; // p_store_ids is BIGINT[]
 
             $query = "SELECT * FROM core.get_supplier_ledger_by_clinic('clinic_{$clinicId}', {$sid}, {$s_ids}, {$df}, {$dt});";
+            // dd($query);exit;
             $result = DB::select($query);
 
             return response()->json($result);

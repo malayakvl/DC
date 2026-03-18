@@ -7,7 +7,7 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPaymentMethod from '../../Lang/PaymentMethod/translation';
 
-export default function Create({ clinicData, formData }) {
+export default function Create({ clinicData, formData, currencyData }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPaymentMethod,
@@ -23,6 +23,7 @@ export default function Create({ clinicData, formData }) {
             <Form
               clinicData={clinicData}
               formData={formData}
+              currencyData={currencyData}
               className="max-w-xl"
             />
           </div>

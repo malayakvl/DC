@@ -565,6 +565,7 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS payment_methods (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
+                currency_id BIGINT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

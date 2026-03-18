@@ -1,8 +1,6 @@
-import InputLabel from '../../../Components/Form/InputLabel';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '../../../Redux/Layout/selectors';

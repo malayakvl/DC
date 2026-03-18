@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PaymentMethodUpdateRequest;
 use App\Models\Clinic;
 use App\Models\PaymentMethod;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -53,7 +54,10 @@ class PaymentMethodController extends Controller
                 return Inertia::render('Dashboard', ['error' => 'Insufficient permissions']);
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
-            $listData = PaymentMethod::orderBy('name', 'asc')->get();
+            $listData = PaymentMethod::select('payment_methods.*', 'currencies.name as currency_name')
+                ->leftJoin('currencies', 'currencies.id', '=', 'payment_methods.currency_id')
+                ->orderBy('payment_methods.name', 'asc')
+                ->get();
 
             return Inertia::render('PaymentMethod/List', [
                 'clinicData' => $clinic,
@@ -72,9 +76,12 @@ class PaymentMethodController extends Controller
                 return Redirect::route('payment-method.index')->with('error', 'Insufficient permissions');
             }
             $formData = new PaymentMethod();
+            $currencyData = Currency::all();
+
             return Inertia::render('PaymentMethod/Create', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
+                'currencyData' => $currencyData,
             ]);
         });
     }
@@ -88,10 +95,13 @@ class PaymentMethodController extends Controller
             if (!$request->user()->canClinic('patient-edit')) {
                 return Redirect::route('payment-method.index')->with('error', 'Insufficient permissions');
             }
+            $currencyData = Currency::all();
             $formData = PaymentMethod::find($id);
+            
             return Inertia::render('PaymentMethod/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
+                'currencyData' => $currencyData,
             ]);
         });
     }
