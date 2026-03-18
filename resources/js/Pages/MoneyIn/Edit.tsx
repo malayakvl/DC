@@ -12,13 +12,11 @@ export default function Edit({
   formData,
   formRowData,
   currencyData,
-  unitsData,
   taxData,
 }) {
-  console.log(1111)
   return (
-    <AuthenticatedLayout header={<Head title="Opening Balance" />}>
-      <Head title="Opening Balance" />
+    <AuthenticatedLayout header={<Head title="Invoice" />}>
+      <Head title="Invoice" />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
@@ -33,7 +31,6 @@ export default function Edit({
               formRowData={formRowData}
               currencyData={currencyData}
               taxData={taxData}
-              unitsData={unitsData}
               className="w-full"
             />
           </div>

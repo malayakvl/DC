@@ -18,6 +18,8 @@ declare namespace Layouts {
             servcategories: Pagination;
             acts: Pagination;
             openingbalance: Pagination;
+            paymentmethods: Pagination;
+            moneyin: Pagination;
         };
         filialName: string;
         isSidebarOpen: boolean;

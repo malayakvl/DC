@@ -4,9 +4,8 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
-import React from 'react';
 
-export default function NavReports(props) {
+export default function NavPayments(props) {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -20,7 +19,7 @@ export default function NavReports(props) {
         permissions['customer-all']) && (
           <Menu as="div" className="relative top-menu-nav">
             <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.reports')}
+              {lng.get('menu.finanses')}
             </MenuButton>
             <MenuItems
               transition
@@ -34,22 +33,22 @@ export default function NavReports(props) {
               <div>
                 {permissions['customer-all'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/report-balance'}>
-                      {lng.get('menu.balance')}
+                    <Link className="submenu" href={'/payment-methods'}>
+                      {lng.get('menu.payment-methods')}
+                    </Link>
+                  </MenuItem>
+                )}
+                {permissions['customer-all'] && (
+                  <MenuItem>
+                    <Link className="submenu" href={'/money-in'}>
+                      {lng.get('menu.money-in')}
                     </Link>
                   </MenuItem>
                 )}
                 {permissions['producer-all'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/report-invoices'}>
-                      {lng.get('menu.invoices.balance')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/store-report'}>
-                      {lng.get('menu.material.report')}
+                    <Link className="submenu" href={'/money-out'}>
+                      {lng.get('menu.money-out')}
                     </Link>
                   </MenuItem>
                 )}

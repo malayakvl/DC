@@ -47,7 +47,32 @@ const lngReport = {
       date: 'Дата',
       document: 'Документ',
       amount: 'Сума'
-    }
+    },
+    document_type: {
+      'invoice': 'Рахунок',
+      'receipt': 'Квитанція',
+      'writeoff': 'Списання',
+      'transfer': 'Переміщення',
+      'opening_balance': 'Введення залишку',
+      'income': 'Прибуткова накладна',
+      'expense': 'Витратна накладна',
+      'closing_balance': 'Залишок',
+      'payment': 'Оплата',
+    },
+    supplier: 'Постачальник',
+    'title.suppliers.report': 'Звіт по постачальникам',
+    'title.store.report': 'Звіт по складу',
+    'title.invoices.report': 'Звіт по рахункам',
+    'title.date': 'Постачальник / Дата',
+    'title.document': 'Документ',
+    'title.amount': 'Сума',
+    'title.opening_balance': 'Зал. на початок',
+    'title.income': 'Поставлено',
+    'title.expense': 'Сплачено',
+    'title.closing_balance': 'Зал. на кінець',
+    'title.writeoff': 'Списання',
+    'title.transfer': 'Переміщення',
+    'title.closing.balance': 'Зал. на кінець',
 
   }
 };

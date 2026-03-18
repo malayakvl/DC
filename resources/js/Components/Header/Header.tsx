@@ -55,7 +55,7 @@ export default function Header({ auth }) {
           <LangMenu />
           {auth?.user ? (
             <Link href="/dashboard" className="text-white">
-              Dashboard1
+              Dashboard
             </Link>
           ) : (
             <>

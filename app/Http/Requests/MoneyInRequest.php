@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class OpeningBalanceRequest extends FormRequest
+class MoneyInRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,11 +16,12 @@ class OpeningBalanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'doc_number' => ['required', 'string', 'max:255'],
-            'doc_date' => ['required', 'date'],
+            'invoice_number' => ['required', 'string', 'max:255'],
+            'invoice_date' => ['required', 'date'],
+            'account_id' => ['required'],
             'customer_id' => ['required'],
-            'store_id' => ['required'],
             'status' => ['required'],
+            'currency_id' => ['required'],
         ];
     }
 }
