@@ -59,6 +59,7 @@ const lngHeaders = {
     payment: 'Сплачено',
     paymentstatus: 'Статус оплати',
     account: 'Рахунок',
+    currency: 'Валюта',
   },
 };
 export default lngHeaders;

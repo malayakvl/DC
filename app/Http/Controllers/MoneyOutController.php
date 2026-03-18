@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Constants\Invoices;
-use App\Http\Requests\InvoiceUpdateRequest;
+use App\Http\Requests\MoneyInRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Currency;
@@ -16,9 +16,9 @@ use App\Models\InvoiceType;
 use App\Models\Material;
 use App\Models\Producer;
 use App\Models\Store;
-use App\Models\Invoice;
+use App\Models\MoneyIn;
 use App\Models\StoreMaterials;
-use App\Models\Supplier;
+use App\Models\PaymentMethod;
 use App\Models\Tax;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -31,7 +31,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class IncomingInvoiceController extends Controller
+class MoneyOutController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -84,19 +84,12 @@ class IncomingInvoiceController extends Controller
             $offset = $request->offset ?? 0;
             $dateFrom = $request->date_from;
             $dateTo = $request->date_to;
-            $supplierId = $request->supplier_id;
+            $accountId = $request->account_id;
 
-            $storeIds = null;
-            if ($request->user()->roles[0]->name !== 'Admin') {
-                $storeIds = $arrStores;
-            }
-
-            $storeIdsParam = $storeIds ? '{' . implode(',', $storeIds) . '}' : null;
             $invoiceData = DB::select("
                 SELECT *
-                FROM core.get_income_invoices_by_clinic(
+                FROM core.get_money_in_by_clinic(
                     ?, 
-                    ?::bigint[],
                     ?,
                     ?,
                     ?,
@@ -105,36 +98,20 @@ class IncomingInvoiceController extends Controller
                 )
             ", [
                 $schema,
-                $storeIdsParam,
-                $supplierId,
+                $accountId,
                 $dateFrom,
                 $dateTo,
                 $limit,
                 $offset
             ]);
-            $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
-            
-            $paymentMethods = DB::select("
-                SELECT 
-                    pm.id,
-                    pm.name,
-                    c.name as currency_name,
-                    COALESCE(SUM(mm.direction * mm.amount), 0) as balance
-                FROM {$schema}.payment_methods pm
-                LEFT JOIN {$schema}.money_movements mm 
-                    ON mm.account_id = pm.id
-                LEFT JOIN {$schema}.currencies c 
-                    ON c.id = pm.currency_id
-                GROUP BY pm.id, pm.name, c.name
-                ORDER BY pm.name
-            ");
 
-            return Inertia::render('InvoiceIncoming/List', [
+            $paymentsMethods = PaymentMethod::all();
+
+            return Inertia::render('MoneyIn/List', [
                 'clinicData' => $clinic,
+                'paymentsMethods' => $paymentsMethods,
                 'listData' => $invoiceData,
-                'suppliers' => $suppliers,
-                'paymentMethods' => $paymentMethods,
-                'filters' => $request->only(['date_from', 'date_to', 'supplier_id'])
+                'filters' => $request->only(['date_from', 'date_to'])
             ]);
         });
     }
@@ -157,7 +134,7 @@ class IncomingInvoiceController extends Controller
                 $unitsData = Unit::all();
                 $taxData = Tax::all();
                 $typeData = array();
-                $formData = new Invoice();
+                $formData = new MoneyIn();
                 $lastInvoiceNum = DB::table('invoices')
                     // ->where('clinic_id', $clinicData->id)
                     ->max('invoice_number');
@@ -171,7 +148,7 @@ class IncomingInvoiceController extends Controller
                     ++$num;
                 }
                 $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
-                $producerData = Supplier::all();
+                $paymentsMethods = PaymentMethod::all();
                 
                 $customerData = DB::table('core.clinic_user')
                     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
@@ -186,13 +163,12 @@ class IncomingInvoiceController extends Controller
                     ->get();
 
 
-                return Inertia::render('InvoiceIncoming/Create', [
+                return Inertia::render('MoneyIn/Create', [
                     'clinicData' => $clinicData,
                     'filialData' => $storeData,
                     'formData' => $formData,
-                    'storeData' => $storeData,
                     'customerData' => $customerData,
-                    'producerData' => $producerData,
+                    'paymentsMethodsData' => $paymentsMethods,
                     'statusData' => Invoices::INVOICE_STATUSES,
                     'typeData' => $typeData,
                     'currencyData' => $currencyData,
@@ -406,7 +382,7 @@ class IncomingInvoiceController extends Controller
     }
 
 
-    public function update(InvoiceUpdateRequest $request)
+    public function update(MoneyInRequest $request)
     {
         return $this->withClinicSchema($request, function ($clinicId) use ($request) {
 
@@ -414,141 +390,41 @@ class IncomingInvoiceController extends Controller
                 abort(403, 'No permission');
             }
             // Создаем или обновляем накладную
-            $invoice = $request->id ? Invoice::find($request->id) : new Invoice();
+            $invoice = $request->id ? MoneyIn::find($request->id) : new MoneyIn();
             $invoice->fill($request->validated());
-            $invoice->invoice_number = $request->invoice_number;
-            $invoice->invoice_date = $request->invoice_date;
+            $invoice->document_number = $request->invoice_number;
+            $invoice->document_date = $request->invoice_date;
             $invoice->status = $request->status; // draft / done
-            $invoice->type = 'income';
-            $invoice->document_type = 'income';
-            $invoice->tax_id = $request->tax_id;
             $invoice->currency_id = $request->currency_id;
             $rate = CurrencyExchange::where('currency_id', $request->currency_id)
                 ->orderBy('rate_date', 'DESC')
                 ->first();
-            $invoice->currency_rate = $rate->rate_value ?? 1;
+            // $invoice->currency_rate = $rate->rate_value ?? 1;
             
             // $invoice->payment_status = $request->payment_status ?? 'unpaid';
             
             $invoice->filial_id = $request->session()->get('filial_id') ?? 1; // использовать филиал из сессии
-            $invoice->total_amount = $request->total_amount ?? 0;
+            $invoice->amount = $request->amount ?? 0;
 
             $invoice->save();
             $invoiceId = $invoice->id;
-
-            // Если обновляем, удаляем старые позиции и движения
-            if ($request->id) {
-                DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_batches')->where('invoice_id', $invoiceId)->delete();
-                DB::table('store_movements')->where('document_id', $invoiceId)->where('document_type', 'iinv')->delete();
-            }
-
-            // $producer = Producer::find($request->supplier_id);
-            $storeId = $request->store_id;
-
-            $totalAmount = 0;
-
-            foreach ($request->rows as $row) {
-                $qty = $row['quantity'];      // количество в единицах материала
-                $factQty = $row['fact_qty'];  // фактический вес/объем
-                $pricePerUnit = $factQty ? $row['total'] / $factQty : 0;
-
-                // Создаем позицию накладной
-                $invoiceItem = new InvoiceItems();
-                $invoiceItem->invoice_id = $invoiceId;
-                $invoiceItem->material_id = $row['product_id'];
-                $invoiceItem->qty = $qty;
-                $invoiceItem->fact_qty = $factQty;
-                $invoiceItem->price = $row['price'];
-                $invoiceItem->total = $row['total'];
-                $invoiceItem->price_per_unit = $pricePerUnit;
-                $invoiceItem->unit_id = $row['unit_id'];
-                $invoiceItem->save();
-
-                $totalAmount += $row['total'];
-
-            }
-
-            // Обновляем общую сумму накладной
-            // $invoice->total_amount = $totalAmount;
-            $vatRate = Tax::where('id', $request->tax_id)->value('rate') ?? 0;
-            $vatAmount = $totalAmount * $vatRate / 100;
-            $totalWithVat = $totalAmount + $vatAmount;
-            $invoice->net_amount = $totalAmount;
-            $invoice->total_tax = $vatAmount;
-            $invoice->total_amount = $totalWithVat;
             $invoice->save();
 
             if ($request->status === 'posted') {
                 $schema = "clinic_{$clinicId}";
-                DB::statement("SELECT core.post_invoice(?, ?)", [$schema, $invoiceId]);
-
-
-                // Получаем общую сумму накладной
-                $totalAmount = $invoice->total_amount;
-
-                // Создаём запись в supplier_movements для контрагента
-                DB::table("{$schema}.supplier_movements")->insert([
-                    'supplier_id'    => $request->supplier_id,
-                    'document_type'  => 'income',        // тип документа
-                    'document_id'    => $invoiceId,      // ID накладной
-                    'total_sum'      => $totalWithVat,    // сумма по накладной
-                    'net_sum'       => $invoice->net_amount,    // без НДС
-                    'tax_sum'       => $invoice->total_tax,    // сумма НДС
-                    'tax_type'       => $request->tax_id ?? 1,
-                    'currency_id'    => $request->currency_id ?? 1,
-                    'created_at'     => $invoice->invoice_date,
-                    'updated_at'     => now(),
+                DB::statement("SELECT core.add_money_movement(?, ?, ?, ?, ?, ?)", [
+                    $schema,
+                    $request->account_id,
+                    'money_in',
+                    $invoiceId,
+                    $request->amount ?? 0,
+                    1
                 ]);
+
+
             }
 
-            return redirect()->route('invoice.incoming.index');
-        });
-    }
-
-    public function payment(Request $request)
-    {
-        return $this->withClinicSchema($request, function ($clinicId) use ($request) {
-            $schema = "clinic_{$clinicId}";
-            $invoice = Invoice::find($request->invoiceId);
-
-            DB::table("{$schema}.supplier_movements")->insert([
-                'supplier_id'   => $invoice->supplier_id,
-                'document_type' => 'payment',
-                'document_id'   => $invoice->id,
-                'total_sum'     => $request->amount,
-                'net_sum'       => $request->amount,
-                'tax_sum'       => 0,
-                'currency_id'   => $invoice->currency_id,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
-
-            $moneyOutId = DB::table("{$schema}.money_out")->insertGetId([
-                'document_number' => $invoice->invoice_number,
-                'document_date'   => $invoice->invoice_date,
-                'status'          => 'posted',
-                'filial_id'       => $invoice->filial_id,
-                'account_id'      => $request->paymentMethodId,
-                'customer_id'     => $request->user()->id,
-                'currency_id'     => $invoice->currency_id,
-                'amount'          => $request->amount,
-                'payed_document'  => 'invoice',
-                'payed_document_id' => $invoice->id,
-            ]);
-
-            DB::statement("SELECT core.add_money_movement(?, ?, ?, ?, ?, ?)", [
-                    $schema,
-                    $request->paymentMethodId,
-                    'money_out',
-                    $moneyOutId,
-                    $request->amount ?? 0,
-                    -1
-                ]);
-            
-            return response()->json([
-                'success' => true,
-            ]);
+            return redirect()->route('money-in.index');
         });
     }
 

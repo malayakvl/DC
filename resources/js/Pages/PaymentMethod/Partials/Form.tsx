@@ -1,14 +1,15 @@
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import InputSelect from '../../../Components/Form/InputSelect';
+import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPaymentMethod from '../../../Lang/PaymentMethod/translation';
 import InputText from '../../../Components/Form/InputText';
 
-export default function Form({ clinicData, formData, className = '' }) {
+export default function Form({ clinicData, formData, currencyData, className = '' }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPaymentMethod,
@@ -17,6 +18,7 @@ export default function Form({ clinicData, formData, className = '' }) {
 
   const [values, setValues] = useState({
     name: formData.name || '',
+    currency_id: formData.currency_id || '',
   });
 
   const { processing, recentlySuccessful } = useForm();
@@ -28,6 +30,16 @@ export default function Form({ clinicData, formData, className = '' }) {
       ...values,
       [key]: value,
     }));
+  };
+
+  const handleChangeSelect = e => {
+    const key = e.target.id;
+    const value = e.target.value;
+    setValues(values => ({
+      ...values,
+      [key]: value,
+    }));
+
   };
 
   const submit = e => {
@@ -47,8 +59,8 @@ export default function Form({ clinicData, formData, className = '' }) {
             &nbsp;
           </Link>
           {formData?.id
-            ? msg.get('payment_method.edit')
-            : msg.get('payment_method.create')}
+            ? msg.get('payment_method.title.edit')
+            : msg.get('payment_method.title.create')}
         </h2>
       </header>
 
@@ -62,15 +74,26 @@ export default function Form({ clinicData, formData, className = '' }) {
           required
           label={msg.get('payment_method.name')}
         />
+        <div className="w-1/4">
+          <InputSelect
+            name={'currency_id'}
+            values={values}
+            value={values.currency_id}
+            options={currencyData}
+            onChange={handleChangeSelect}
+            required
+            label={msg.get('payment_method.currency')}
+          />
+        </div>
         <div className="flex items-center space-x-4">
           <Link
             className="btn-back"
             href={`/payment-methods`}
           >
-            &nbsp;
+            {msg.get('payment_method.back')}
           </Link>
           <PrimaryButton disabled={processing}>
-            OK
+            {msg.get('payment_method.save')}
           </PrimaryButton>
 
           <Transition

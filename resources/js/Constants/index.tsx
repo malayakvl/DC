@@ -87,6 +87,7 @@ export const TableHeaders = {
     { titleKey: 'datatable.number', className: '' },
     { titleKey: 'datatable.date', className: '' },
     { titleKey: 'datatable.status', className: '' },
+    { titleKey: 'datatable.amount', className: 'text-right' },
     { titleKey: 'datatable.paymentstatus', className: '' },
     { titleKey: 'datatable.store', className: '' },
     { titleKey: 'datatable.producer', className: '' },
@@ -150,6 +151,7 @@ export const TableHeaders = {
   ],
   [PaginationType.PAYMENTMETHODS]: [
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.currency', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
 };

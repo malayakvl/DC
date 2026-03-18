@@ -188,6 +188,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoice-incoming/create', [IncomingInvoiceController::class, 'create'])->name('invoice.incoming.create');
     Route::get('/invoice-incoming/edit/{id}', [IncomingInvoiceController::class, 'edit'])->name('invoice.incoming.edit');
     Route::post('/invoice-incoming/update', [IncomingInvoiceController::class, 'update'])->name('invoice.incoming.updated');
+    Route::post('/invoice-incoming/payment', [IncomingInvoiceController::class, 'payment'])->name('invoice.incoming.payment');
 
 
     Route::get('/opening-balance', [OpeningBalanceController::class, 'index'])->name('opening-balance.index');

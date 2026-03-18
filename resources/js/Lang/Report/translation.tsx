@@ -57,6 +57,7 @@ const lngReport = {
       'income': 'Прибуткова накладна',
       'expense': 'Витратна накладна',
       'closing_balance': 'Залишок',
+      'payment': 'Оплата',
     },
     supplier: 'Постачальник',
     'title.suppliers.report': 'Звіт по постачальникам',

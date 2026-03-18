@@ -228,15 +228,15 @@ export default function Invoices({ filials, dateFrom, dateTo, suppliers }: Balan
                                             <td style={{ ...tdStyle }}>
                                                 <div style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => console.log(item.document_id)}>
                                                     {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}
-                                                    {item.document_id ? " #" + item.document_id : ""}
+                                                    {item.document_id ? (item.document_type === 'payment' ? ' за накладною ' : '') + " #" + item.document_id + "" : ""}
                                                 </div>
                                             </td>
                                             <td style={{ ...tdStyle }}></td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                                {Number(item.debit) > 0 ? <span style={{ color: "#4ade80" }}>+{fmtNum(item.debit)}</span> : ""}
+                                                {Number(item.debit) > 0 ? <span style={{ color: "#4ade80" }}>{fmtNum(item.debit)}</span> : ""}
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                                {Number(item.credit) > 0 ? <span style={{ color: "#f87171" }}>-{fmtNum(item.credit)}</span> : ""}
+                                                {Number(item.credit) > 0 ? <span style={{ color: "#f87171" }}>{fmtNum(item.credit)}</span> : ""}
                                             </td>
                                             <td style={{ ...tdRightStyle, color: Number(item.running_balance) > 0 ? '#f87171' : '#9ca3af' }}>
                                                 {fmtNum(item.running_balance)}

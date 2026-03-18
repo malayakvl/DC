@@ -15,6 +15,7 @@ class PaymentMethodUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'currency_id' => ['required', 'integer'],
         ];
     }
 }

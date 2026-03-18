@@ -21,7 +21,6 @@ export default function List({ listData }) {
   const sendRequest = useCallback(() => {
     // 
   }, []);
-  console.log(listData);
 
   return (
     <AuthenticatedLayout header={<Head title={msg.get('payment_method.title.list')} />}>
@@ -50,6 +49,7 @@ export default function List({ listData }) {
               {listData?.map(item => (
                 <tr className="" key={item.id}>
                   <td className="">{item.name}</td>
+                  <td className="">{item.currency_name}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"

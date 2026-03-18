@@ -54,6 +54,9 @@ const lngInvoiceIncoming = {
     'rate': 'Курс',
     'paid': 'Сплачено',
     'unpaid': 'Сплатити',
+    'amount': 'Сума',
+    'payment_method': 'Спосіб оплати',
+    'payment': 'Оплата накладної',
   },
 };
 export default lngInvoiceIncoming;

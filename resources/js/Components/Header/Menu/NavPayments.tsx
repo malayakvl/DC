@@ -12,7 +12,7 @@ export default function NavPayments(props) {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-  console.log(1)
+
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
@@ -40,22 +40,22 @@ export default function NavPayments(props) {
                 )}
                 {permissions['customer-all'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/report-balance'}>
+                    <Link className="submenu" href={'/money-in'}>
                       {lng.get('menu.money-in')}
                     </Link>
                   </MenuItem>
                 )}
                 {permissions['producer-all'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/report-invoices'}>
+                    <Link className="submenu" href={'/money-out'}>
                       {lng.get('menu.money-out')}
                     </Link>
                   </MenuItem>
                 )}
                 {permissions['store-create'] && (
                   <MenuItem>
-                    <Link className="submenu" href={'/store-report'}>
-                      {lng.get('menu.material.report')}
+                    <Link className="submenu" href={'/finanses-report'}>
+                      {lng.get('menu.finanses.report')}
                     </Link>
                   </MenuItem>
                 )}
