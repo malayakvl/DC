@@ -36,10 +36,17 @@ class ClinicPermissionMiddleware
         $originalPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
 
-            // ❗ Используем core.users.id в clinic_x.model_has_roles
-            app(PermissionRegistrar::class)->forgetCachedPermissions();
+            // 1. Находим роль пользователя именно для ЭТОГО филиала
+            $roleData = DB::table('clinic_filial_user')
+                ->where('user_id', $request->user()->id)
+                ->where('filial_id', $filialId)
+                ->first();
+
+            if (!$roleData) {
+                abort(403, 'User role not found for this filial.');
+            }
 
             // Множество permissions из мультипараметров
             $allPerms = [];
@@ -47,10 +54,16 @@ class ClinicPermissionMiddleware
                 $allPerms = [...$allPerms, ...explode('|',$perm)];
             }
 
-            foreach ($allPerms as $perm) {
-                if (!$request->user()->hasPermissionTo($perm, 'web')) {
-                    abort(403, "No permission: {$perm}");
-                }
+            // 2. Проверяем наличие хотя бы одного из требуемых прав у этой роли через БД
+            // Это гарантирует, что права не утекают из других филиалов (например, если там роль CEO)
+            $hasPermission = DB::table('role_has_permissions')
+                ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->where('role_has_permissions.role_id', $roleData->role_id)
+                ->whereIn('permissions.name', $allPerms)
+                ->exists();
+
+            if (!$hasPermission) {
+                abort(403, "Access denied. Required permissions: " . implode(', ', $allPerms));
             }
 
             return $next($request);

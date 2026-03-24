@@ -46,7 +46,7 @@ class SchedulerController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -215,18 +215,22 @@ class SchedulerController extends Controller
 
     public function fetchPatients(Request $request) {
         $qData = $request->all();
-        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $patientsQueryResults = DB::select('
-            SELECT patients.id, patients.first_name, patients.last_name, patients.patronomic_name 
-            FROM patients
-            LEFT JOIN clinic_patient ON clinic_patient.patient_id = patients.id
-            WHERE clinic_patient.clinic_id = ? 
-            AND (patients.first_name LIKE ? OR patients.last_name LIKE ?)
-        ', [$clinicData->id, '%' .$qData['strFind']. '%', '%' .$qData['strFind']. '%']);
+        return $this->withClinicSchema($request, function($clinicId) use ($qData) {
+            $patientsQueryResults = DB::table('patients')
+                ->select('patients.id', 'core.users.first_name', 'core.users.last_name')
+                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
+                ->leftJoin('clinic_filial_user', 'clinic_filial_user.user_id', '=', 'core.users.id')
+                ->where('clinic_filial_user.clinic_id', $clinicId)
+                ->where(function($query) use ($qData) {
+                    $query->where('core.users.first_name', 'LIKE', '%' . $qData['strFind'] . '%')
+                          ->orWhere('core.users.last_name', 'LIKE', '%' . $qData['strFind'] . '%');
+                })
+                ->get();
 
-        return response()->json([
-            'items' => $patientsQueryResults
-        ]);
+            return response()->json([
+                'items' => $patientsQueryResults
+            ]);
+        });
     }
 
     public function updatePeriod(Request $request) {

@@ -111,13 +111,28 @@ class User extends Authenticatable
 
     public function canClinic(string $permission): bool
     {
-        if ($this->permissions instanceof \Illuminate\Support\Collection) {
-            // Берём только имена прав
-            $permissionsArray = $this->permissions->pluck('name')->toArray();
-        } else {
-            $permissionsArray = $this->permissions;
+        $clinicId = session('clinic_id');
+        $filialId = session('filial_id');
+
+        if (!$clinicId || !$filialId) {
+            return false;
         }
 
-        return in_array($permission, $permissionsArray, true);
+        // Берём роль именно для этого филиала
+        $roleData = DB::table('clinic_filial_user')
+            ->where('user_id', $this->id)
+            ->where('filial_id', $filialId)
+            ->first();
+
+        if (!$roleData) {
+            return false;
+        }
+
+        // Проверяем право именно для этой роли через БД
+        return DB::table('role_has_permissions')
+            ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+            ->where('role_has_permissions.role_id', $roleData->role_id)
+            ->where('permissions.name', $permission)
+            ->exists();
     }
 }
