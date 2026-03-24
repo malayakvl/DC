@@ -91,6 +91,7 @@ class RoleController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($id) {
             $role = Role::findOrFail($id);
             $permissions = Permission::orderBy('name')->get();
+            
             // Get permission IDs as integers to ensure consistent types
             $rolePermissions = $role->permissions()->pluck('id')->map(fn($id) => (int)$id)->toArray();
             return Inertia::render('Role/Edit', [

@@ -7,7 +7,6 @@ import Lang from 'lang.js';
 import lngRole from '../../Lang/Role/translation';
 import { Link } from '@inertiajs/react';
 import InputText from '../../Components/Form/InputText';
-import InputLabel from '../../Components/Form/InputLabel';
 import Checkbox from '../../Components/Form/Checkbox';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
@@ -24,7 +23,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
   // Convert all permission IDs to integers to ensure consistent types
   const normalizedRolePermissions = rolePermissions.map(id => parseInt(id));
-  
+
   const [values, setValues] = useState({
     name: roleData.name,
     permissions: normalizedRolePermissions,
@@ -43,7 +42,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   const handlePermission = el => {
     const tmpPermis = [...values.permissions]; // Create a copy to avoid mutation
     const permissionId = parseInt(el.id);
-    
+
     if (el.checked) {
       // Only add if not already present
       if (!tmpPermis.includes(permissionId)) {
@@ -107,18 +106,18 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
                   {/* Using a grid layout to evenly distribute permission categories */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {PERMISSION_CATEGORIES.map((colName, i) => {
-                      const filteredPermissions = permissionData && 
+                      const filteredPermissions = permissionData &&
                         permissionData.filter(item => item.name.includes(colName));
-                      
+
                       // Only render category if it has permissions
                       if (!filteredPermissions || filteredPermissions.length === 0) {
                         return null;
                       }
-                      
+
                       return (
                         <div key={colName} className="permission-block">
                           <h3 className="role-name-head ">
-                            {colName.replace('-', ' ')}
+                            {msg.get(`role.${colName}`)}
                           </h3>
                           <div className="space-y-2">
                             {filteredPermissions.map(_p => {

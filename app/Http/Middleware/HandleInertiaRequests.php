@@ -44,14 +44,40 @@ class HandleInertiaRequests extends Middleware
 
             try {
                 // 🔹 Переключаемся на схему текущей клиники
-                DB::statement("SET search_path TO clinic_{$clinicId}");
+                DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
 
-                // 🔹 Получаем роли и permissions через Spatie в схеме клиники
-                $roles = $user->getRoleNames();
-                $permissions = $user->getAllPermissions()
-                                    ->pluck('name')
-                                    ->mapWithKeys(fn($p) => [$p => true])
-                                    ->toArray();
+                // 🔹 Находим роль пользователя именно для ЭТОГО филиала
+                $roleData = DB::table('clinic_filial_user')
+                    ->join('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
+                    ->where('clinic_filial_user.user_id', $user->id)
+                    ->where('clinic_filial_user.filial_id', $filialId)
+                    ->select('roles.id', 'roles.name')
+                    ->first();
+
+                if ($roleData) {
+                    $roles = [$roleData->name];
+                    
+                    // 🔹 Устанавливаем "виртуальную" связь для фронтенда, чтобы auth.user.roles не был пустым
+                    $user->setRelation('roles', collect([
+                        (object)['name' => $roleData->name]
+                    ]));
+                    
+                    // 🔹 Выгружаем права ТОЛЬКО для этой конкретной роли напрямую из БД
+                    $permissions = DB::table('role_has_permissions')
+                        ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                        ->where('role_has_permissions.role_id', $roleData->id)
+                        ->pluck('permissions.name')
+                        ->mapWithKeys(fn($p) => [$p => true])
+                        ->toArray();
+                }
+
+                // 🔹 Логируем для отладки
+                Log::debug('Permissions loaded for filial:', [
+                    'filial_id' => $filialId,
+                    'role' => $roles,
+                    'permissions_count' => count($permissions),
+                ]);
+
             } finally {
                 // 🔹 Возвращаем исходный search_path
                 DB::statement("SET search_path TO {$originalSearchPath}");

@@ -160,22 +160,28 @@ export default function List({ listData, permissions, filters, suppliers, paymen
                   </td>
                   <td className="" style={{ textAlign: 'right' }}>{item.total_amount} {item.currency_name}</td>
                   <td className="">
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedInvoice(item);
-                        setPaymentAmount(item.debt_amount > 0 ? item.debt_amount : item.total_amount);
-                        setPaymentMethodId(0)
-                        setSelectedMethod(null)
-                        setPaymentAmountError(false)
-                        setShowModal(true);
-                      }}
-                      className="pay-btn text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl"
-                      data-id={item.id}
-                    >
-                      {Number(item.debt_amount) <= 0 ? msg.get('invoice_incoming.paid') : msg.get('invoice_incoming.unpaid')}
-                    </a>
+                    {Number(item.debt_amount) <= 0 ? (
+                      <span className="text-white bg-green-600 px-1.5 py-0.5 text-[12px] rounded-xl">
+                        {msg.get('invoice_incoming.paid')}
+                      </span>
+                    ) : (
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedInvoice(item);
+                          setPaymentAmount(item.debt_amount > 0 ? item.debt_amount : item.total_amount);
+                          setPaymentMethodId(0)
+                          setSelectedMethod(null)
+                          setPaymentAmountError(false)
+                          setShowModal(true);
+                        }}
+                        className="pay-btn text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl transition-colors duration-200 shadow-sm"
+                        data-id={item.id}
+                      >
+                        {msg.get('invoice_incoming.unpaid')}
+                      </a>
+                    )}
                   </td>
                   <td className="">{item.store_name}</td>
                   <td className="">{item.supplier_name}</td>

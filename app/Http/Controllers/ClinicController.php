@@ -39,7 +39,7 @@ class ClinicController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -235,28 +235,34 @@ class ClinicController extends Controller
                 ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
                 ->where('filial_id', $filialId)
                 ->where('user_id', $request->user()->id)->get();
+            
 
             if ($data->isEmpty()) {
                 return Redirect::back()->withErrors(['error' => 'User not found in this filial']);
             }
 
-            // assign role for current filial
-            foreach ($request->user()->roles as $role) {
-                $request->user()->removeRole($role->name);
-            }
-            $request->user()->assignRole($data[0]->roleName);
+            // Clean up Spatie cache and relations before switching
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            $request->user()->unsetRelation('roles');
+            $request->user()->unsetRelation('permissions');
+
+            // Assign role for current filial
+            $request->user()->syncRoles([$data[0]->roleName]);
+            
+            // Clean up again to be sure
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
             
             $request->session()->put('clinic_id', $data[0]->clinic_id);
             $request->session()->put('filial_id', $data[0]->filial_id);
             
             // Update user_clinic_roles table
-            DB::table('core.user_clinic_roles')
-                ->where('user_id', $request->user()->id)
-                ->where('clinic_id', $data[0]->clinic_id)
-                ->update([
-                    'role_name' => $data[0]->roleName,
-                    'updated_at' => now()
-                ]);
+            // DB::table('core.user_clinic_roles')
+            //     ->where('user_id', $request->user()->id)
+            //     ->where('clinic_id', $data[0]->clinic_id)
+            //     ->update([
+            //         'role_name' => $data[0]->roleName,
+            //         'updated_at' => now()
+            //     ]);
         } finally {
             // Restore original search_path
             DB::statement("SET search_path TO {$originalSearchPath}");
