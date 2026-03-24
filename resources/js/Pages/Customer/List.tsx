@@ -59,7 +59,7 @@ export default function List({ clinicData, customerData }) {
                       className="float-left rounded"
                       height="auto"
                       onError={(e) => {
-                        e.currentTarget.src = '/images/no-photo.png';
+                        e.currentTarget.src = '/images/no-image.png';
                       }}
                     />
                   </td>

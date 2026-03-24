@@ -13,6 +13,7 @@ class Permissions
         'invoice-incoming',
         'invoice-outgoing',
         'invoice-change',
+        'opening-balance',
         'material',
         'service',
         'producer',

@@ -274,6 +274,7 @@ class ImportController extends Controller
     {
         // 1. Получаем и чистим имя
         $rawName = trim($patientData['Пацієнт']);
+        dd(1);exit;
         preg_match('/\((-?\d+)%\)/u', $rawName, $m);
         $discount = isset($m[1]) ? (int)$m[1] : 0;
         $cleanName = trim(preg_replace('/\s*\(-?\d+%\)\s*/u', ' ', $rawName));
@@ -527,6 +528,7 @@ class ImportController extends Controller
                 $fileName = 'Clinic'.$clinicData->id.'.'.$request->file->extension();
                 $request->file->move(public_path('clinic-import/patients'), $fileName);
             }
+            
             if ($extension === 'xlsx' && $request->get('type') === 'customers') {
                 $filePath = public_path('clinic-import/patients/' . $fileName);
                 $batchSize = 1000; // Number of rows per chunk
@@ -607,7 +609,6 @@ class ImportController extends Controller
                             try {
                                 $this->importPatientWithActsAndPayments($row, $clinicData, $filialId);
                             } catch (\Exception $e) {
-                                dd($e->getMessage());exit;
                                 Log::error('Error importing patient row: ' . $e->getMessage(), [
                                     'row_data' => $row,
                                     'error' => $e->getMessage(),

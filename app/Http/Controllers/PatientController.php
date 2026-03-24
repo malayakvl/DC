@@ -50,7 +50,7 @@ class PatientController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -68,14 +68,15 @@ class PatientController extends Controller
 
             $query = DB::table('patients')
                 ->select('patients.*', 'core.users.*')
-                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id');
+                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
+                ->leftJoin('clinic_filial_user', 'clinic_filial_user.user_id', '=', 'patients.user_id');
             if ($request->filterName) {
-                $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
+                $query->whereRaw('LOWER(core.users.name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
             }
             if ($request->filterPhone) {
                 $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
             }
-            $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
+            $query->where('clinic_filial_user.filial_id', $request->session()->get('filial_id'))
                 ->orderBy('core.users.name');
             $listData = $query->paginate(50);
             $currency = $clinic->currency->symbol;
@@ -167,41 +168,45 @@ class PatientController extends Controller
      * Update the specified resource in storage.
      */
     public function update(PatientUpdateRequest $request) {
-        if ($request->user()->can('patient-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $isNew = false;
-            if ($request->id)
-                $patient = Patient::find($request->id);
-            else {
-                $patient = new Patient();
-                $isNew = true;
-            }
-            $patient->fill($request->validated());
-            $patient->save();
-
-            // connect patient with clinic
-            if ($isNew) {
-                DB::table('clinic_patient')->insert(
-                    [
-                        'patient_id' => $patient->id,
-                        'filial_id' => $request->session()->get('filial_id'),
-                        'clinic_id' => $clinicData->id
-                    ]
-                );
-            }
-
-            if ($request->file) {
-                $fileName = 'Patient'.$patient->id.'.'.$request->file->extension();  
-                $patient->avatar = $fileName;
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if ($request->user()->can('patient-edit')) {
+                $clinicData = Clinic::where('id', session('clinic_id'))->first();
+                $isNew = false;
+                if ($request->id)
+                    $patient = Patient::find($request->id);
+                else {
+                    $patient = new Patient();
+                    $isNew = true;
+                }
+                $patient->fill($request->validated());
                 $patient->save();
-                $request->file->move(public_path('uploads/patients'), $fileName);
+
+                // connect patient with filial
+                if ($isNew) {
+                    $patientRoleId = DB::table('roles')->where('name', 'patient')->value('id');
+                    DB::table('clinic_filial_user')->insert(
+                        [
+                            'user_id' => $patient->user_id,
+                            'filial_id' => $request->session()->get('filial_id'),
+                            'clinic_id' => $clinicId,
+                            'role_id' => $patientRoleId ?? 6 // Default to patient role id from seeder if not found
+                        ]
+                    );
+                }
+
+                if ($request->file) {
+                    $fileName = 'Patient'.$patient->id.'.'.$request->file->extension();  
+                    $patient->avatar = $fileName;
+                    $patient->save();
+                    $request->file->move(public_path('uploads/patients'), $fileName);
+                }
+                if ($isNew) {
+                    return Redirect::route('patient.cliniccard', ['id' => $patient->id]);
+                } else {
+                    return redirect()->route('patient.index');
+                }
             }
-            if ($isNew) {
-                return Redirect::route('patient.cliniccard', ['id' => $patient->id]);
-            } else {
-                return redirect()->route('patient.index');
-            }
-        }
+        });
     }
 
     public function createTreatment(Request $request) {

@@ -208,12 +208,12 @@ export default function Invoices({ filials, dateFrom, dateTo, suppliers }: Balan
                                         {fmtNum(group.opening)}
                                     </td>
                                     <td style={{ ...tdStyle, textAlign: 'center', color: '#4ade80' }}>
-                                        {group.totalIn > 0 ? "+" + fmtNum(group.totalIn) : "0"}
+                                        {group.totalIn > 0 ? fmtNum(group.totalIn) : "0"}
                                     </td>
-                                    <td style={{ ...tdStyle, textAlign: 'center', color: '#f87171' }}>
-                                        {group.totalOut > 0 ? "-" + fmtNum(group.totalOut) : "0"}
+                                    <td style={{ ...tdStyle, textAlign: 'center', color: '#f178d7ff' }}>
+                                        {group.totalOut > 0 ? fmtNum(group.totalOut) : "0"}
                                     </td>
-                                    <td style={{ ...tdRightStyle, color: '#60a5fa', background: '#2d3748', fontSize: 15 }}>
+                                    <td style={{ ...tdRightStyle, color: '#f178d7ff', background: '#2d3748', fontSize: 15 }}>
                                         {fmtNum(group.closing)}
                                     </td>
                                 </tr>
@@ -236,9 +236,9 @@ export default function Invoices({ filials, dateFrom, dateTo, suppliers }: Balan
                                                 {Number(item.debit) > 0 ? <span style={{ color: "#4ade80" }}>{fmtNum(item.debit)}</span> : ""}
                                             </td>
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
-                                                {Number(item.credit) > 0 ? <span style={{ color: "#f87171" }}>{fmtNum(item.credit)}</span> : ""}
+                                                {Number(item.credit) > 0 ? <span style={{ color: "#f178d7ff" }}>{fmtNum(item.credit)}</span> : ""}
                                             </td>
-                                            <td style={{ ...tdRightStyle, color: Number(item.running_balance) > 0 ? '#f87171' : '#9ca3af' }}>
+                                            <td style={{ ...tdRightStyle, color: Number(item.running_balance) > 0 ? '#f178d7ff' : '#9ca3af' }}>
                                                 {fmtNum(item.running_balance)}
                                             </td>
                                         </tr>

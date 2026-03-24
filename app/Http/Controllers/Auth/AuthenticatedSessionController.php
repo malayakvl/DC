@@ -70,6 +70,7 @@ class AuthenticatedSessionController extends Controller
         /**
          * 2) Если клиник > 1 → показываем выбор клиники
          */
+        
         if ($userClinics->count() > 1) {
             $clinics = DB::table('clinics')
                 ->whereIn('id', $userClinics->pluck('clinic_id'))
@@ -98,6 +99,13 @@ class AuthenticatedSessionController extends Controller
             DB::statement("SET search_path TO {$schemaName}, public, core");
 
             $filials = DB::table('clinic_filials')->get();
+            
+            // если филиалов больше одного, надо понимать какой филиал вибрать
+            // if (count($filials) > 1) {
+            //     return response()->json([
+            //         'dashboardSelect' => true,
+            //     ]);
+            // } 
 
             $assignedFilials = DB::table('clinic_filial_user')
                 ->where('user_id', $logUser->id)
@@ -126,6 +134,7 @@ class AuthenticatedSessionController extends Controller
          *
          *    → показываем выбор филиала
          */
+        // dd($assignedFilialsCnt);exit;
         if (
             $assignedFilialsCnt > 1
         ) {

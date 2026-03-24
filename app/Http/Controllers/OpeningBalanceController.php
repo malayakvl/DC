@@ -108,7 +108,7 @@ class OpeningBalanceController extends Controller
      */
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('invoice-incoming-create')) {
+            if ($request->user()->can('opening-balance-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $storeData = DB::table('stores')
                     ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
