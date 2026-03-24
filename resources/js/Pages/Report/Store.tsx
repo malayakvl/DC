@@ -29,7 +29,7 @@ interface BalanceProps {
 
 type ReportRow = {
     row_type: "opening_balance" | "movement" | "closing_balance" | string;
-    created_at?: string | null;
+    document_date?: string | null;
     material_id?: number;
     document_type?: string | null;
     document_id?: number | null;
@@ -232,7 +232,7 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
                                     return (
                                         <tr key={mIdx}>
                                             <td style={{ ...tdStyle, paddingLeft: 16, color: '#9ca3af', fontSize: 12 }}>
-                                                {formatDateSafe(item.created_at)}
+                                                {formatDateSafe(item.document_date)}
                                             </td>
                                             <td style={{ ...tdStyle, cursor: 'pointer', textDecoration: 'underline' }} onClick={() => console.log(item.document_id)}>
                                                 {item.document_type ? msg.get("report.document_type." + item.document_type) : ""}

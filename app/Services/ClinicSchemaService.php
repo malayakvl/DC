@@ -1186,7 +1186,7 @@ class ClinicSchemaService
         ");
 
         DB::statement("
-            CREATE TABLE clinic_1.money_movements (
+            CREATE TABLE money_movements (
                 id bigserial PRIMARY KEY,
                 account_id bigint NOT NULL,
                 document_type varchar(50),
@@ -1197,6 +1197,35 @@ class ClinicSchemaService
             );
         ");   
 
+        // 🔹 Создаем вью для отчета по движениям с датой документа
+        DB::statement("
+            CREATE OR REPLACE VIEW store_movements_report AS
+            SELECT 
+                sm.id AS movement_id,
+                sm.store_id,
+                sm.material_id,
+                sm.batch_id,
+                sb.qty AS batch_qty,
+                sb.qty_left AS batch_qty_left,
+                sb.fact_qty AS batch_fact_qty,
+                sb.fact_qty_left AS batch_fact_qty_left,
+                sm.direction,
+                sm.qty AS movement_qty,
+                sm.fact_qty AS movement_fact_qty,
+                sm.document_type,
+                sm.document_id,
+                sm.act_item_id,
+                sm.price_per_unit,
+                sm.created_at,
+                COALESCE(
+                    (SELECT invoice_date FROM invoices WHERE id = sm.document_id AND sm.document_type IN ('income', 'expense', 'transfer', 'invoice', 'balance')),
+                    (SELECT disp_date FROM displacements WHERE id = sm.document_id AND sm.document_type = 'displacement'),
+                    (SELECT doc_date FROM opening_balances WHERE id = sm.document_id AND sm.document_type = 'opening_balance'),
+                    sm.created_at
+                ) AS document_date
+            FROM store_movements sm
+            JOIN store_batches sb ON sb.id = sm.batch_id
+        ");
     }
 
     
