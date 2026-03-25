@@ -66,19 +66,54 @@ class PatientController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
 
-            $query = DB::table('patients')
-                ->select('patients.*', 'core.users.*')
+            $perPage = 50;
+            $page = $request->input('page', 1);
+            $offset = ($page - 1) * $perPage;
+
+            // Fetch filtered patients with balance using the core function
+            $results = DB::select("
+                SELECT *, patient_id as id 
+                FROM core.patients_with_balance(
+                    p_schema       => :schema,
+                    p_filial_id    => :filial_id,
+                    p_patient_name => :patient_name,
+                    p_phone        => :phone,
+                    p_limit        => :limit,
+                    p_offset       => :offset
+                )
+            ", [
+                'schema'       => "clinic_{$clinicId}",
+                'filial_id'    => $filialId,
+                'patient_name' => $request->filterName ?: null,
+                'phone'        => $request->filterPhone ?: null,
+                'limit'        => $perPage,
+                'offset'       => $offset
+            ]);
+
+            // Calculate total count for pagination links
+            $countQuery = DB::table('patients')
                 ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
-                ->leftJoin('clinic_filial_user', 'clinic_filial_user.user_id', '=', 'patients.user_id');
+                ->leftJoin('patient_filial_user', 'patient_filial_user.user_id', '=', 'core.users.id')
+                ->where('patient_filial_user.filial_id', $filialId);
+
             if ($request->filterName) {
-                $query->whereRaw('LOWER(core.users.name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
+                $countQuery->where('core.users.name', 'ILIKE', '%' . $request->filterName . '%');
             }
             if ($request->filterPhone) {
-                $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
+                $countQuery->whereIn('patients.id', function($q) use ($request) {
+                    $q->select('patient_id')->from('phones')->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
+                });
             }
-            $query->where('clinic_filial_user.filial_id', $request->session()->get('filial_id'))
-                ->orderBy('core.users.name');
-            $listData = $query->paginate(50);
+            $totalCount = $countQuery->count();
+
+            $listData = new \Illuminate\Pagination\LengthAwarePaginator(
+                $results,
+                $totalCount,
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+            
             $currency = $clinic->currency->symbol;
             
             return Inertia::render('Patient/List', [

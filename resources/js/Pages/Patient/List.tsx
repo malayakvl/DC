@@ -73,20 +73,20 @@ export default function List({ listData, clinicData, currency }) {
                           />
                         ) : (
                           <div className='p-photo flex items-center justify-center rounded-full p-abbr font-bold' style={{ width: '60px', height: '60px', fontSize: '24px' }}>
-                            {item.first_name?.charAt(0)}{item.last_name?.charAt(0)}
+                            {item.patient_name?.charAt(0)}{item.patient_name?.charAt(0)}
                           </div>
                         )}
                       </div>
                       <div>
                         <span className="ml-3 mt-3">
-                          {item.first_name} {item.last_name}
+                          {item.patient_name}
                         </span>
-                        <i className="phone-patient">{item.phone}</i>
+                        <i className="phone-patient">{item.primary_phone}</i>
                         {item.discount ? <i className="discount-patient">{item.discount}%</i> : null}
                         <span className="ml-3 mt-3 text-[13px]">
-                          <b>{msg.get('patient.worked.at')}:</b> <span className="text-kt">{item.kt_balance}{currency}&nbsp;</span>
-                          <b>{msg.get('patient.payed.at')}:</b> <span className="text-dt">{item.dt_balance}{currency}&nbsp;</span>
-                          {item.kt_balance > item.dt_balance && <span className='p-dept'><b>{msg.get('patient.dept.at')}:</b> <span className="text-debt">{item.kt_balance - item.dt_balance}{currency}</span></span>}
+                          <b>{msg.get('patient.worked.at')}:</b> <span className="text-kt">{item.sum_acts}{currency}&nbsp;</span>
+                          <b>{msg.get('patient.payed.at')}:</b> <span className="text-dt">{item.sum_payments}{currency}&nbsp;</span>
+                          {item.sum_acts > item.sum_payments && <span className='p-dept'><b>{msg.get('patient.dept.at')}:</b> <span className="text-debt">{item.sum_acts - item.sum_payments}{currency}</span></span>}
                         </span>
                       </div>
                     </div>

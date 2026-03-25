@@ -351,6 +351,16 @@ class ClinicSchemaService
             )
         ");
 
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_filial_user (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL REFERENCES core.users(id), -- пациент
+                filial_id BIGINT NOT NULL REFERENCES clinic_filials(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, filial_id)
+            )
+        ");
+
         // Create store_materials table
         DB::statement("
             CREATE TABLE IF NOT EXISTS store_materials (
@@ -386,6 +396,21 @@ class ClinicSchemaService
                 end_date DATE NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS phones (
+                id BIGSERIAL PRIMARY KEY,
+                patient_id BIGINT NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                is_primary BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_patient
+                    FOREIGN KEY(patient_id) 
+                    REFERENCES patients(id)
+                    ON DELETE CASCADE
             )
         ");
 
