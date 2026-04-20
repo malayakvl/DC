@@ -49,7 +49,7 @@ export default function Form({
       file: null,
       first_name: formData.first_name,
       last_name: formData.last_name,
-      phone: formData.phone,
+      primary_phone: formData.primary_phone,
       phone2: formData.phone2,
       discount: formData.discount,
       address: formData.address,
@@ -57,7 +57,7 @@ export default function Form({
       birthday: formData.birthday,
       gender: formData.gender,
       important_info: formData.important_info,
-      card_number: formData.card_number,
+      medical_card_no: formData.medical_card_no,
       curator_id: formData.curator_id,
       register_date: formData.register_date
         ? formData.register_date
@@ -69,7 +69,7 @@ export default function Form({
     });
   const { errors } = usePage().props;
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
-  const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-photo.jpg');
+  const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-image.png');
 
   const handleChange = e => {
     const key = e.target.id;
@@ -107,6 +107,7 @@ export default function Form({
     // I've kept this example simple by using the first image instead of multiple
     setSelectedFile(e.target.files[0]);
   };
+  console.log('Patient Data', data);
 
   return (
     <section className={className}>
@@ -131,7 +132,7 @@ export default function Form({
             <div className="flex flex-row relative">
               <div className="file-preview inline-block">
                 {(!selectedFile && !formData.avatar) && (
-                  <img src="/images/no-photo.png" width={197} height={244} />
+                  <img src="/images/nf.png" width={300} height={300} />
                 )}
                 {(!selectedFile && formData.avatar) && (
                   <div className={'patient-avatar'} style={{
@@ -226,19 +227,19 @@ export default function Form({
             <div className="md:flex md:items-center mb-6">
               <div className="md:w-1/3">
                 <label className="inline-label">
-                  {msg.get('patient.phone')}
+                  {msg.get('patient.primary.phone')}
                 </label>
               </div>
               <div className="md:w-2/3">
                 <InputText
-                  name={'phone'}
+                  name={'primary_phone'}
                   values={data}
-                  dataValue={data.phone}
-                  value={data.phone}
+                  dataValue={data.primary_phone}
+                  value={data.primary_phone}
                   className={'input-text-noborder f-24'}
                   onChange={handleChange}
                   showLabel={false}
-                  label={msg.get('patient.phone')}
+                  label={msg.get('patient.primary.phone')}
                 />
               </div>
             </div>
@@ -451,10 +452,10 @@ export default function Form({
               </div>
               <div className="md:w-4/5 relative">
                 <InputText
-                  name={'card_number'}
+                  name={'medical_card_no'}
                   values={data}
-                  dataValue={data.card_number}
-                  value={data.card_number}
+                  dataValue={data.medical_card_no}
+                  value={data.medical_card_no}
                   className={'input-text-noborder'}
                   onChange={handleChange}
                   showLabel={false}

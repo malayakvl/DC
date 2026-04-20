@@ -99,7 +99,6 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
     const [storeError, setStoreError] = useState('');
     const [reportFromDate, setReportFromDate] = useState(dateFrom ? new Date(dateFrom) : new Date());
     const [reportToDate, setReportToDate] = useState(dateTo ? new Date(dateTo) : new Date());
-    const [serchResults, setSerchResults] = useState([]);
     const [reportResult, setReportResult] = useState([]);
 
     const handleChangeSelect = e => {
@@ -114,6 +113,11 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
 
     const generateReport = () => {
         dispatch(setDataLoadingAction(true));
+        if (!values.store_id) {
+            setStoreError('Будь ласка, виберіть склад');
+            dispatch(setDataLoadingAction(false));
+            return;
+        }
 
         let currentValues = { ...values };
 

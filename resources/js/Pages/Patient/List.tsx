@@ -28,6 +28,7 @@ export default function List({ listData, clinicData, currency }) {
     locale: appLang,
   });
 
+  console.log('List data', listData.data.length);
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('patient.title.list')} />
@@ -92,9 +93,9 @@ export default function List({ listData, clinicData, currency }) {
                     </div>
                   </Link>
                   <div className="icon-block">
-                    <Link href="/patient/documents">
+                    {/* <Link href="/patient/documents">
                       <FontAwesomeIcon style={{ color: 'white' }} icon={faCopy} className="mr-5" title={msg.get('patient.list.documents')} />
-                    </Link>
+                    </Link> */}
                     <Link href="/patient/visits">
                       <FontAwesomeIcon
                         icon={faPersonWalking}
@@ -112,7 +113,7 @@ export default function List({ listData, clinicData, currency }) {
                     <Link href={`/patient/finances/${item.id}`}>
                       <FontAwesomeIcon icon={faEuro} style={{ color: 'white' }} className="mr-5" title={msg.get('patient.list.payment')} />
                     </Link>
-                    <Link href={`patient/edit/${item.id}`}>
+                    <Link href={`/patient/edit/${item.id}`}>
                       <FontAwesomeIcon icon={faEdit} style={{ color: 'white' }} className="mr-5" title={msg.get('patient.list.edit')} />
                     </Link>
                   </div>

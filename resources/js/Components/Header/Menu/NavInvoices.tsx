@@ -15,7 +15,7 @@ export default function NavInvoices(props) {
   });
   const permissions = usePage().props.auth.can;
   let showMenuInvoice = false;
-  console.log(permissions);
+
   if (
     permissions['invoice-incoming-all'] ||
     permissions['invoice-outgoing-all'] ||

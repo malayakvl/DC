@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PatientStatusUpdateRequest;
+use App\Http\Requests\VisitScheduleStatusUpdateRequest;
 use App\Models\Clinic;
 use App\Models\VisitScheduleStatus;
 use App\Models\Unit;
@@ -15,7 +15,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class PatientStatusController extends Controller
+class VisitScheduleStatusController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
@@ -53,9 +53,12 @@ class PatientStatusController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('scheduler-all')) {
+                return Inertia::render('VisitScheduleStatus/List', ['error' => 'Insufficient permissions']);
+            }
             $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = VisitScheduleStatus::orderBy('name')->get();
-            return Inertia::render('PatientStatus/List', [
+            return Inertia::render('VisitScheduleStatus/List', [
                 'clinicData' => $clinic,
                 'listData' => $listData
             ]);
@@ -66,7 +69,7 @@ class PatientStatusController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request): Response {
-        if ($request->user()->can('store-create')) {
+        if ($request->user()->can('schedule-create')) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $formData = new PatientStatus();
             return Inertia::render('PatientStatus/Create', [
@@ -80,34 +83,42 @@ class PatientStatusController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('store-edit')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if (!$request->user()->canClinic('scheduler-edit')) {
+                return Inertia::render('VisitScheduleStatus/List', ['error' => 'Insufficient permissions']);
+            }
+            
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $formData = PatientStatus::find($id);
-            return Inertia::render('PatientStatus/Edit', [
+            $formData = VisitScheduleStatus::find($id);
+            
+            return Inertia::render('VisitScheduleStatus/Edit', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
             ]);
-        } else {
-
-        }
+        });
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PatientStatusUpdateRequest $request) {
-        if ($request->user()->can('store-edit')) {
+    public function update(VisitScheduleStatusUpdateRequest $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('scheduler-edit')) {
+                return Inertia::render('VisitScheduleStatus/List', ['error' => 'Insufficient permissions']);
+            }
+            
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             if ($request->id)
-                $data = PatientStatus::find($request->id);
+                $data = VisitScheduleStatus::find($request->id);
             else {
-                $data = new PatientStatus();
+                $data = new VisitScheduleStatus();
             }
             $data->fill($request->validated());
-            $data->clinic_id = $clinicData->id;
             $data->save();
 
-            return Redirect::route('patient-status.index');
-        }
+            return Redirect::route('visit-schedule-status.index');
+        
+        });
+        
     }
 }

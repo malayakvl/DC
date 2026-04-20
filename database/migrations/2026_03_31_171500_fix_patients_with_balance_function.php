@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Сначала удаляем старую версию, если она есть (с любыми типами аргументов)
+        DB::statement("DROP FUNCTION IF EXISTS core.patients_with_balance(text,bigint,text,text,integer,integer)");
+        DB::statement("DROP FUNCTION IF EXISTS core.patients_with_balance(text,text,text,text,text,text)");
+
         $sql = "
         CREATE OR REPLACE FUNCTION core.patients_with_balance(
             p_schema text,

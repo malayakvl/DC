@@ -171,7 +171,7 @@ class ReportController extends Controller
             $filialId = $params['filial_id'];
             $dateFrom = $params['dateFrom'];
             $dateTo = $params['dateTo'];
-            $storeId = $params['store_id'];
+            $storeId = $params['store_id'] ?? NULL;
 
             $sid = $storeId ?? 'NULL';
             $fid = $filialId ?? 'NULL';

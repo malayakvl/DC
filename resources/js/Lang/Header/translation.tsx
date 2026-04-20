@@ -84,6 +84,7 @@ const lngHeader = {
     'invoices.balance': 'Звіт по постачальникам',
     'payment-methods': 'Каси і рахунки',
     'finanses.report': 'Звіт по фінансах',
+    'visit.schedule.statuses': 'Статуси візитів',
   },
 };
 export default lngHeader;

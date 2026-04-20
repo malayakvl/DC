@@ -70,6 +70,7 @@ class PatientController extends Controller
             $page = $request->input('page', 1);
             $offset = ($page - 1) * $perPage;
 
+
             // Fetch filtered patients with balance using the core function
             $results = DB::select("
                 SELECT *, patient_id as id 
@@ -89,6 +90,7 @@ class PatientController extends Controller
                 'limit'        => $perPage,
                 'offset'       => $offset
             ]);
+            
 
             // Calculate total count for pagination links
             $countQuery = DB::table('patients')
@@ -105,6 +107,7 @@ class PatientController extends Controller
                 });
             }
             $totalCount = $countQuery->count();
+            
 
             $listData = new \Illuminate\Pagination\LengthAwarePaginator(
                 $results,
@@ -113,7 +116,6 @@ class PatientController extends Controller
                 $page,
                 ['path' => $request->url(), 'query' => $request->query()]
             );
-            
             $currency = $clinic->currency->symbol;
             
             return Inertia::render('Patient/List', [
@@ -122,34 +124,6 @@ class PatientController extends Controller
                 'currency' => $currency
             ]);
         });
-        // if ($request->session()->get('filial_id')) {
-        //     $query = DB::table('patients')
-        //         ->select('patients.*')
-        //         ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
-        //         ->where('clinic_patient.clinic_id', $clinic->id);
-        //     if ($request->filterName) {
-        //         $query->whereRaw('LOWER(last_name) LIKE ?', ['%' . mb_strtolower($request->filterName) . '%']);
-        //         //                $query->where('last_name', 'LIKE', '%' . $request->filterName . '%');
-        //     }
-        //     if ($request->filterPhone) {
-        //         $query->where('phone', 'LIKE', '%' . $request->filterPhone . '%');
-        //     }
-        //     $query->where('clinic_patient.filial_id', $request->session()->get('filial_id'))
-        //         ->orderBy('first_name');
-        // } else {
-        //     $query = DB::table('patients')
-        //         ->select('patients.*')
-        //         ->leftJoin('clinic_patient', 'clinic_patient.patient_id', '=', 'patients.id')
-        //         ->where('clinic_patient.clinic_id', $clinic->id)
-        //         ->orderBy('first_name');
-        // }
-        // $listData = $query->paginate(50);
-
-        // return Inertia::render('Patient/List', [
-        //     'clinicData' => $clinic,
-        //     'listData' => $listData,
-        //     'currency' => $clinic->currency->symbol
-        // ]);
     }
 
     /**
@@ -178,25 +152,54 @@ class PatientController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
-        if ($request->user()->can('patient-edit')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $customerData = DB::table('users')
-                ->select('users.*')
-                ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            $statusesData = DB::table('patient_statuses')
-                ->select('patient_statuses.*')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            $contactData = DB::table('patients_contact')->get();
-            $formData = Patient::where('id', '=', $id)->first();
-            return Inertia::render('Patient/Edit', [
-                'formData' => $formData,
-                'customerData' => $customerData,
-                'contactData' => $contactData,
-                'statusesData' => $statusesData
-            ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('patient-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+                // $customerData = DB::table('users')
+                //     ->select('users.*')
+                //     ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
+                //     ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
+                $customerData = DB::table('core.clinic_user as cu')
+                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        ->where('cu.clinic_id', $clinicId)
+                        ->whereNull('pt.id') // 💥 вот ключевая строка
+                        ->select(
+                            'u.id',
+                            'u.first_name',
+                            'u.last_name',
+                            'u.email',
+                            'cu.avatar'
+                        )
+                        ->orderBy('u.last_name')
+                        ->get();
+                
+                $statusesData = DB::table('patient_statuses')
+                    ->select('patient_statuses.*')
+                    ->orderBy('name')->get();
+                
+                $contactData = DB::table('phones')->where('patient_id', '=', $id)->get();
+                $formData = DB::selectOne("
+                    SELECT * FROM core.patient_base_info(
+                        p_schema => :schema,
+                        p_patient_id => :patient_id
+                    )
+                ", [
+                    'schema' => "clinic_{$clinicId}",
+                    'patient_id' => $id
+                    ]);
+                // dd($formData);exit;
+                
+                return Inertia::render('Patient/Edit', [
+                    'formData' => $formData,
+                    'customerData' => $customerData,
+                    'contactData' => $contactData,
+                    'statusesData' => $statusesData
+                ]);
 
-        }
+            }
+        });
     }
 
     /**
@@ -245,12 +248,33 @@ class PatientController extends Controller
     }
 
     public function createTreatment(Request $request) {
-        if ($request->user()->can('patient-edit')) {
+        
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            // Проверка прав
+            if (!$request->user()->canClinic('patient-edit')) {
+                return Inertia::render('Customer/List', ['error' => 'Insufficient permissions']);
+            }
+            // dd($request->all());exit;
+
             $patientTreatment = new PatientTreatment();
-            $patientTreatment->fill($request->all());
+            $patientTreatment->user_id = $request->user_id;
+            $patientTreatment->stage_name = $request->stage_name;
+            $patientTreatment->type = $request->type;
+            $patientTreatment->treatment_date = $request->treatment_date ?: date('Y-m-d');
+            $patientTreatment->diagnosis = $request->diagnosis ?: '';
+            // $patientTreatment->doctor_id = $request->doctor_id;
+            // $patientTreatment->assistant_id = $request->assistant_id;
+            // $patientTreatment->anamnesis = $request->anamnesis;
+            // $patientTreatment->complaints = $request->complaints;
+            // $patientTreatment->objective_status = $request->objective_status;
+            // $patientTreatment->treatment_plan = $request->treatment_plan;
+            // $patientTreatment->treatment_result = $request->treatment_result;
+            // $patientTreatment->fill($request->all());
             $patientTreatment->save();
+            
             $patientData = Patient::where('id', '=', $request->user_id)->first();
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            
+            $clinicData = $request->user()->clinicByFilial($clinicId);
 
             if ($request->type === 'formula') {
                 return Redirect::route('patient.formula.edit', ['id' => $patientTreatment->id]);
@@ -261,7 +285,7 @@ class PatientController extends Controller
             } else if ($request->type === 'stage') {
                 $patientTreatment->type = 'stage';
             }
-        }
+        });
     }
 
     public function generateCategories($categories, &$arrCat, $level) {
@@ -269,9 +293,9 @@ class PatientController extends Controller
             $category->level = $level;
             $category->producerName = $category->producer();
             $arrCat[] = $category;
-            if (count($category->children) > 0) {
-                $this->generateCategories($category->children, $arrCat, ($level+1));
-            }
+            // if (count($category->children) > 0) {
+            //     $this->generateCategories($category->children, $arrCat, ($level+1));
+            // }
         }
 
         return $arrCat;
@@ -309,21 +333,23 @@ class PatientController extends Controller
      * view patient clinic card
      */
     public function view(Request $request, $id, $scheduleId = '') {
-        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        $patientData = Patient::where('id', '=', $id)->first();
-        $categories = PriceCategory::where('parent_id', null)
-            ->where('clinic_id', $clinicData->id)
-            ->get();
-        $arrServices = [];
-        foreach ($categories as $category) {
-            $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
-        }
-        $arrCat = array();
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $scheduleId) {
+        
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $patientData = Patient::where('id', '=', $id)->first();
+            
+            $categories = PriceCategory::get();
+            $arrServices = [];
+            foreach ($categories as $category) {
+                $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+            }
+            $arrCat = array();
         $tree = $this->generateCategories($categories, $arrCat, 0);
         $type = $request->get('type');
 
         //get acts
-        $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
+        // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
+        $actData = [];
 
 
         $quickActData = '';
@@ -333,7 +359,8 @@ class PatientController extends Controller
             return Inertia::render('Patient/View', [
                 'patientData' => $patientData,
                 'type' => $type,
-                'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                'treatmentData' => [],
                 'clinicData' => $clinicData,
                 'quickActData' => $quickActData[0],
                 'currency' => $clinicData->currency->symbol,
@@ -349,7 +376,8 @@ class PatientController extends Controller
             return Inertia::render('Patient/View', [
                 'patientData' => $patientData,
                 'type' => 'documents',
-                'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                'treatmentData' => [],
                 'clinicData' => $clinicData,
                 'quickActData' => [],
                 'currency' => $clinicData->currency->symbol,
@@ -362,7 +390,7 @@ class PatientController extends Controller
                 'actData' => $actData
             ]);
         }
-
+    });
     }
 
     /**
@@ -384,14 +412,16 @@ class PatientController extends Controller
      * @return Response
      */
     public function formulaEdit(Request $request, $id) {
-        $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
-        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        return Inertia::render('Patient/EditFormula', [
-            'patientData' => $patientData,
-            'clinicData' => $clinicData,
-            'treatmentData' => $patientTreatment,
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
+            $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            return Inertia::render('Patient/EditFormula', [
+                'patientData' => $patientData,
+                'clinicData' => $clinicData,
+                'treatmentData' => $patientTreatment,
+            ]);
+        });
     }
 
     /**
@@ -409,7 +439,8 @@ class PatientController extends Controller
         // copy row
         $patientTreatmentCopy = new PatientTreatment();
         $patientTreatmentCopy->user_id = $patientTreatment->user_id;
-        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->stage_name = ($patientTreatment->stage_name ?? '') . ' copy';
+        $patientTreatmentCopy->treatment_date = date('Y-m-d');
         $patientTreatmentCopy->type = $patientTreatment->type;
         $patientTreatmentCopy->perioValues = $patientTreatment->perioValues;
         $patientTreatmentCopy->formula = $patientTreatment->formula;
@@ -422,16 +453,19 @@ class PatientController extends Controller
     }
 
     public function updateFormula(Request $request) {
-        if ($request->user()->can('patient-edit')) {
-            $requestData = $request->all();
-            $formulaId = $requestData['id'];
-            $patientTreatment = PatientTreatment::where('id', '=', $formulaId)->first();
-            $patientTreatment->formula = json_encode($requestData['treatmentData']);
-            $patientTreatment->formula_type = $requestData['teethType'];
-            $patientTreatment->save();
+        
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if ($request->user()->canClinic('patient-edit')) {
+                $requestData = $request->all();
+                $formulaId = $requestData['id'];
+                $patientTreatment = PatientTreatment::where('id', '=', $formulaId)->first();
+                $patientTreatment->formula = json_encode($requestData['treatmentData']);
+                $patientTreatment->formula_type = $requestData['teethType'];
+                $patientTreatment->save();
 
-            return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
-        }
+                return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
+            }
+        });
     }
 
 
@@ -498,7 +532,8 @@ class PatientController extends Controller
         // copy row
         $patientTreatmentCopy = new PatientTreatment();
         $patientTreatmentCopy->user_id = $patientTreatment->user_id;
-        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->stage_name = ($patientTreatment->stage_name ?? '') . ' copy';
+        $patientTreatmentCopy->treatment_date = date('Y-m-d');
         $patientTreatmentCopy->type = $patientTreatment->type;
         $patientTreatmentCopy->perioValues = $patientTreatment->perioValues;
         $patientTreatmentCopy->formula = $patientTreatment->formula;
@@ -545,7 +580,8 @@ class PatientController extends Controller
         // copy row
         $patientTreatmentCopy = new PatientTreatment();
         $patientTreatmentCopy->user_id = $patientTreatment->user_id;
-        $patientTreatmentCopy->stage_name = $patientTreatment->name.' copy';
+        $patientTreatmentCopy->stage_name = ($patientTreatment->stage_name ?? '') . ' copy';
+        $patientTreatmentCopy->treatment_date = date('Y-m-d');
         $patientTreatmentCopy->type = $patientTreatment->type;
         $patientTreatmentCopy->psr = $patientTreatment->psr;
         $patientTreatmentCopy->save();

@@ -62,8 +62,11 @@ class ClinicSchemaService
             // Create default store
             $this->createDefaultStore($clinicId);
 
-            // Create default patient statuses
-            $this->createDefaultPatientStatuses($clinicId);
+            // Create default patient discount statuses
+            $this->createDefaultPatientDiscountStatuses($clinicId);
+
+            // Create default visit schedule statuses
+            $this->createDefaultVisitScheduleStatuses($clinicId);
 
             // Seed default payment methods
             $this->seedDefaultPaymentMethods();
@@ -309,10 +312,21 @@ class ClinicSchemaService
 
         // Create patient_statuses table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS patient_statuses (
+            CREATE TABLE IF NOT EXISTS patient_discount_statuses (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 discount DOUBLE PRECISION NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create visit_schedule_statuses table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS visit_schedule_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                color VARCHAR(255) NOT NULL DEFAULT '#000000',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -416,13 +430,15 @@ class ClinicSchemaService
 
         // Create patient_treatment table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS patient_treatment (
+            CREATE TABLE IF NOT EXISTS patient_treatments (
                 id BIGSERIAL PRIMARY KEY,
-                patient_id BIGINT NOT NULL,
-                clinic_id BIGINT NOT NULL,
+                user_id BIGINT NOT NULL,
+                stage_name VARCHAR(255) NOT NULL,
+                type VARCHAR(255) NOT NULL,
                 filial_id BIGINT,
                 treatment_date DATE NOT NULL,
                 diagnosis VARCHAR(255),
+                formula TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -1351,7 +1367,7 @@ class ClinicSchemaService
      * @param int $clinicId
      * @return void
      */
-    protected function createDefaultPatientStatuses(int $clinicId): void
+    protected function createDefaultVisitScheduleStatuses(int $clinicId): void
     {
         $statuses = [
             'planned',
@@ -1367,14 +1383,16 @@ class ClinicSchemaService
         ];
 
         foreach ($statuses as $status) {
-            DB::table('patient_statuses')->insert([
+            DB::table('visit_schedule_statuses')->insert([
                 'name' => $status,
-                'discount' => 0,
+                'color' => '#000000',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
         }
     }
+
+    
 
     /**
      * Create default patient statuses for the clinic

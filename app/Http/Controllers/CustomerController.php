@@ -70,18 +70,33 @@ class CustomerController extends Controller
             $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
 
             // 2️⃣ Получаем сотрудников через core.clinic_user
-            $customerData = DB::table('core.clinic_user')
-                ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                ->select(
-                    'users.id',
-                    'users.first_name',
-                    'users.last_name',
-                    'users.email',
-                    'clinic_user.avatar'
-                )
-                ->where('clinic_user.clinic_id', $clinicId)
-                ->orderBy('users.last_name')
-                ->get();
+            $customerData = DB::table('core.clinic_user as cu')
+                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        ->where('cu.clinic_id', $clinicId)
+                        ->whereNull('pt.id') // 💥 вот ключевая строка
+                        ->select(
+                            'u.id',
+                'u.first_name',
+                'u.last_name',
+                'u.email',
+                'cu.avatar'
+            )
+            ->orderBy('u.last_name')
+            ->get();
+            // $customerData = DB::table('core.clinic_user')
+            //     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+            //     ->select(
+            //         'users.id',
+            //         'users.first_name',
+            //         'users.last_name',
+            //         'users.email',
+            //         'clinic_user.avatar'
+            //     )
+            //     ->where('clinic_user.clinic_id', $clinicId)
+            //     ->orderBy('users.last_name')
+            //     ->get();
+
             return Inertia::render('Customer/List', [
                 'clinicData'   => $clinicData,
                 'filialData'   => $filialData,
