@@ -14,6 +14,7 @@ export enum PaginationType {
   UNITS = 'units',
   PATIENTS = 'patients',
   PATIENTSTATUSES = 'patientstatuses',
+  VISITSCHEDULESTATUSES = 'visitschedulestatuses',
   STORES = 'stores',
   ACTS = 'acts',
   OPENINGBALANCE = 'openingbalance',
@@ -143,6 +144,11 @@ export const TableHeaders = {
   [PaginationType.PATIENTSTATUSES]: [
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.discount', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
+  [PaginationType.VISITSCHEDULESTATUSES]: [
+    { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.color', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.UNITS]: [

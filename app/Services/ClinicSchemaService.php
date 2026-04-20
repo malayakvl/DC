@@ -62,8 +62,11 @@ class ClinicSchemaService
             // Create default store
             $this->createDefaultStore($clinicId);
 
-            // Create default patient statuses
-            $this->createDefaultPatientStatuses($clinicId);
+            // Create default patient discount statuses
+            $this->createDefaultPatientDiscountStatuses($clinicId);
+
+            // Create default visit schedule statuses
+            $this->createDefaultVisitScheduleStatuses($clinicId);
 
             // Seed default payment methods
             $this->seedDefaultPaymentMethods();
@@ -309,10 +312,21 @@ class ClinicSchemaService
 
         // Create patient_statuses table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS patient_statuses (
+            CREATE TABLE IF NOT EXISTS patient_discount_statuses (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 discount DOUBLE PRECISION NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        // Create visit_schedule_statuses table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS visit_schedule_statuses (
+                id BIGSERIAL PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                color VARCHAR(255) NOT NULL DEFAULT '#000000',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -348,6 +362,16 @@ class ClinicSchemaService
                 rate DOUBLE PRECISION NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_filial_user (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL REFERENCES core.users(id), -- пациент
+                filial_id BIGINT NOT NULL REFERENCES clinic_filials(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, filial_id)
             )
         ");
 
@@ -389,15 +413,32 @@ class ClinicSchemaService
             )
         ");
 
-        // Create patient_treatment table
         DB::statement("
-            CREATE TABLE IF NOT EXISTS patient_treatment (
+            CREATE TABLE IF NOT EXISTS phones (
                 id BIGSERIAL PRIMARY KEY,
                 patient_id BIGINT NOT NULL,
-                clinic_id BIGINT NOT NULL,
+                phone VARCHAR(20) NOT NULL,
+                is_primary BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_patient
+                    FOREIGN KEY(patient_id) 
+                    REFERENCES patients(id)
+                    ON DELETE CASCADE
+            )
+        ");
+
+        // Create patient_treatment table
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_treatments (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                stage_name VARCHAR(255) NOT NULL,
+                type VARCHAR(255) NOT NULL,
                 filial_id BIGINT,
                 treatment_date DATE NOT NULL,
                 diagnosis VARCHAR(255),
+                formula TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -1186,7 +1227,7 @@ class ClinicSchemaService
         ");
 
         DB::statement("
-            CREATE TABLE clinic_1.money_movements (
+            CREATE TABLE money_movements (
                 id bigserial PRIMARY KEY,
                 account_id bigint NOT NULL,
                 document_type varchar(50),
@@ -1197,6 +1238,35 @@ class ClinicSchemaService
             );
         ");   
 
+        // 🔹 Создаем вью для отчета по движениям с датой документа
+        DB::statement("
+            CREATE OR REPLACE VIEW store_movements_report AS
+            SELECT 
+                sm.id AS movement_id,
+                sm.store_id,
+                sm.material_id,
+                sm.batch_id,
+                sb.qty AS batch_qty,
+                sb.qty_left AS batch_qty_left,
+                sb.fact_qty AS batch_fact_qty,
+                sb.fact_qty_left AS batch_fact_qty_left,
+                sm.direction,
+                sm.qty AS movement_qty,
+                sm.fact_qty AS movement_fact_qty,
+                sm.document_type,
+                sm.document_id,
+                sm.act_item_id,
+                sm.price_per_unit,
+                sm.created_at,
+                COALESCE(
+                    (SELECT invoice_date FROM invoices WHERE id = sm.document_id AND sm.document_type IN ('income', 'expense', 'transfer', 'invoice', 'balance')),
+                    (SELECT disp_date FROM displacements WHERE id = sm.document_id AND sm.document_type = 'displacement'),
+                    (SELECT doc_date FROM opening_balances WHERE id = sm.document_id AND sm.document_type = 'opening_balance'),
+                    sm.created_at
+                ) AS document_date
+            FROM store_movements sm
+            JOIN store_batches sb ON sb.id = sm.batch_id
+        ");
     }
 
     
@@ -1297,7 +1367,7 @@ class ClinicSchemaService
      * @param int $clinicId
      * @return void
      */
-    protected function createDefaultPatientStatuses(int $clinicId): void
+    protected function createDefaultVisitScheduleStatuses(int $clinicId): void
     {
         $statuses = [
             'planned',
@@ -1313,14 +1383,16 @@ class ClinicSchemaService
         ];
 
         foreach ($statuses as $status) {
-            DB::table('patient_statuses')->insert([
+            DB::table('visit_schedule_statuses')->insert([
                 'name' => $status,
-                'discount' => 0,
+                'color' => '#000000',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
         }
     }
+
+    
 
     /**
      * Create default patient statuses for the clinic

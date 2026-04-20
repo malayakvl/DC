@@ -91,6 +91,8 @@ export default function index({ patientData, treatmentData, clinicData }) {
     formula_type: teethType,
   });
 
+  console.log('treatmentData', treatmentData);
+
   useEffect(() => {
     dispatch(setTeethType(treatmentData.formula_type));
     if (treatmentData.formula !== null) {

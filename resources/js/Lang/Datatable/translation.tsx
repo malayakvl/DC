@@ -60,6 +60,7 @@ const lngHeaders = {
     paymentstatus: 'Статус оплати',
     account: 'Рахунок',
     currency: 'Валюта',
+    color: 'Колір',
   },
 };
 export default lngHeaders;

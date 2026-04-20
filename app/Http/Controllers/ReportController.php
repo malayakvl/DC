@@ -51,7 +51,8 @@ class ReportController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -170,7 +171,7 @@ class ReportController extends Controller
             $filialId = $params['filial_id'];
             $dateFrom = $params['dateFrom'];
             $dateTo = $params['dateTo'];
-            $storeId = $params['store_id'];
+            $storeId = $params['store_id'] ?? NULL;
 
             $sid = $storeId ?? 'NULL';
             $fid = $filialId ?? 'NULL';
@@ -195,7 +196,6 @@ class ReportController extends Controller
             $s_ids = 'NULL'; // p_store_ids is BIGINT[]
 
             $query = "SELECT * FROM core.get_supplier_ledger_by_clinic('clinic_{$clinicId}', {$sid}, {$s_ids}, {$df}, {$dt});";
-            // dd($query);exit;
             $result = DB::select($query);
 
             return response()->json($result);
