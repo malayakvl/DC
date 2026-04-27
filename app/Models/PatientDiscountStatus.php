@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Cabinet extends Model
+class PatientDiscountStatus extends Model
 {
+    //
     protected $fillable = [
         'name',
-        'place_count',
-        'filial_id',
+        'discount',
+        'services_ids',
     ];
+
 }

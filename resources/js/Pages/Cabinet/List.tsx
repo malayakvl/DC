@@ -51,6 +51,7 @@ export default function List({ listData, permissions }) {
                 <tr className="" key={item.id}>
                   <td className="">{item.name}</td>
                   <td className="">{item.filial_name}</td>
+                  <td className="">{item.place_count}</td>
                   <td className="text-right">
                     <Link
                       className="btn-edit"

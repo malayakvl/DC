@@ -66,6 +66,7 @@ export default function Form({
       payment: formData.payment,
       status_id: formData.status_id,
       notice: formData.notice,
+      patient_id: formData.patient_id,
     });
   const { errors } = usePage().props;
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
@@ -394,7 +395,7 @@ export default function Form({
                     className="radio-gender-icon"
                   />
                 </div>
-                <div className="ml-4 inline-block">
+                {/* <div className="ml-4 inline-block">
                   <input
                     type="radio"
                     name="gender"
@@ -404,7 +405,7 @@ export default function Form({
                     onChange={handleChange}
                   />
                   <span className="ml-2">{msg.get('patient.undefind')}</span>
-                </div>
+                </div> */}
               </div>
             </div>
             {/* Important info */}
@@ -474,6 +475,7 @@ export default function Form({
               </div>
               <div className="md:w-4/5 relative">
                 <InputMask
+                  component="input"
                   mask="__-__-____"
                   defaultValue={
                     data.birthday
@@ -518,6 +520,7 @@ export default function Form({
               </div>
               <div className="md:w-4/5 relative">
                 <InputMask
+                  component="input"
                   defaultValue={
                     data.register_date
                       ? moment(data.register_date).format('DD-MM-YYYY')

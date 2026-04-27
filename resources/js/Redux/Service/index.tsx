@@ -1,12 +1,12 @@
 import { handleActions } from 'redux-actions';
-import { 
-  setPriceItems, 
-  setTotalPrice, 
-  setShowTableError, 
+import {
+  setPriceItems,
+  setTotalPrice,
+  setShowTableError,
   findServiceAction,
   emptyServicesAutocompleteAction,
   emptyServicesQtyAutocompleteAction,
-  fincServiceItemsAction,
+  findServiceItemsAction,
   updateServiceItemQtyAction
 } from './actions';
 
@@ -23,31 +23,31 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [setPriceItems]: {
+  [setPriceItems.toString()]: {
     next: (state, action) => ({
       ...state,
       priceItems: action.payload,
     }),
   },
-  [setTotalPrice]: {
+  [setTotalPrice.toString()]: {
     next: (state, action) => ({
       ...state,
       totalPrice: action.payload,
     }),
   },
-  [setShowTableError]: {
+  [setShowTableError.toString()]: {
     next: (state, action) => ({
       ...state,
       showTableError: action.payload,
     }),
   },
-  [findServiceAction]: {
+  [findServiceAction.toString()]: {
     next: (state, action) => ({
       ...state,
       searchResultServices: action.payload,
     }),
   },
-  [fincServiceItemsAction]: {
+  [findServiceItemsAction.toString()]: {
     next: (state, action) => ({
       ...state,
       searchResultElementsServices: {
@@ -56,50 +56,28 @@ const ACTION_HANDLERS = {
       },
     }),
   },
-  [emptyServicesAutocompleteAction]: {
+  [emptyServicesAutocompleteAction.toString()]: {
     next: (state, action) => ({
       ...state,
       searchResultServices: [],
     }),
   },
-  [emptyServicesQtyAutocompleteAction]: {
+  [emptyServicesQtyAutocompleteAction.toString()]: {
     next: (state, action) => ({
       ...state,
       searchResultServices: [],
     }),
   },
-  
-  [updateServiceItemQtyAction]: {
+
+  [updateServiceItemQtyAction.toString()]: {
     next: (state, action) => {
-      const { rowIndex, itemIndex, quantity } = action.payload;
+      const { rowIndex, itemIndex, qty } = action.payload;
 
       const currentServiceItems = state.searchResultElementsServices[rowIndex] || [];
 
       const updatedElements = currentServiceItems.map((item, idx) =>
         idx === itemIndex
-          ? { ...item, quantity }   // 👈 новый объект
-          : item
-      );
-
-      return {
-        ...state,
-        searchResultElementsServices: {
-          ...state.searchResultElementsServices,
-          [rowIndex]: updatedElements,
-        },
-      };
-    },
-  },
-  [updateServiceItemQtyAction]: { 
-    next: (state, action) => {
-      const { rowIndex, itemIndex, quantity } = action.payload;
-
-      const currentServiceItems = state.searchResultElementsServices[rowIndex] || [];
-      const currentServiceItem = state.searchResultElementsServices[rowIndex] || [];
-console.log(currentServiceItem)
-      const updatedElements = currentServiceItems.map((item, idx) =>
-        idx === itemIndex
-          ? { ...item, quantity }   // 👈 новый объект
+          ? { ...item, quantity: qty }   // Store as quantity in state if that's what the UI expects
           : item
       );
 
@@ -114,13 +92,13 @@ console.log(currentServiceItem)
   },
 };
 
-export { 
-  setPriceItems, 
-  setTotalPrice, 
-  setShowTableError, 
+export {
+  setPriceItems,
+  setTotalPrice,
+  setShowTableError,
   findServiceAction,
   emptyServicesAutocompleteAction,
-  fincServiceItemsAction,
+  findServiceItemsAction,
   updateServiceItemQtyAction
 };
 

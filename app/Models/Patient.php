@@ -21,11 +21,21 @@ class Patient extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
+        'patient_id',
         'medical_card_no',
         'patient_status_id',
         'curator_user_id',
         'registered_at',
+        'phone',
+        'address',
+        'notice',
+        'payment',
+        'contact',
+        'last_visit',
+        'visits_count',
+        'user_id',
+        'birthday',
+        
     ];
 
     /**

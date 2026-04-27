@@ -12,6 +12,7 @@ use App\Models\PriceCategory;
 use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\Size;
+use App\Models\User;
 use App\Models\Store;
 use App\Models\PatientTreatment;
 use Illuminate\Http\Request;
@@ -152,53 +153,57 @@ class PatientController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Request $request, $id) {
+        
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
-            if ($request->user()->can('patient-edit')) {
-                $clinicData = $request->user()->clinicByFilial($clinicId);
-                // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-                // $customerData = DB::table('users')
-                //     ->select('users.*')
-                //     ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                //     ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-                $customerData = DB::table('core.clinic_user as cu')
-                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id') // 💥 вот ключевая строка
-                        ->select(
-                            'u.id',
-                            'u.first_name',
-                            'u.last_name',
-                            'u.email',
-                            'cu.avatar'
-                        )
-                        ->orderBy('u.last_name')
-                        ->get();
-                
-                $statusesData = DB::table('patient_statuses')
-                    ->select('patient_statuses.*')
-                    ->orderBy('name')->get();
-                
-                $contactData = DB::table('phones')->where('patient_id', '=', $id)->get();
-                $formData = DB::selectOne("
-                    SELECT * FROM core.patient_base_info(
-                        p_schema => :schema,
-                        p_patient_id => :patient_id
-                    )
-                ", [
-                    'schema' => "clinic_{$clinicId}",
-                    'patient_id' => $id
-                    ]);
-                // dd($formData);exit;
-                
-                return Inertia::render('Patient/Edit', [
-                    'formData' => $formData,
-                    'customerData' => $customerData,
-                    'contactData' => $contactData,
-                    'statusesData' => $statusesData
-                ]);
-
+            if (!$request->user()->canClinic('patient-edit')) {
+                return Inertia::render('PatientStatus/List', ['error' => 'Insufficient permissions']);
             }
+
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+                
+            $customerData = DB::table('core.clinic_user as cu')
+                    ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                    ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                    ->where('cu.clinic_id', $clinicId)
+                    ->where('pt.id', '=', $id)
+                    ->select(
+                        'u.*',
+                        'cu.avatar',
+                        'pt.id as patient_id',
+                        'pt.medical_card_no',
+                        'pt.registered_at',
+                        'pt.patient_status_id',
+                        'pt.discount',
+                        'pt.balance',
+                        'pt.visits_count',
+                        'pt.last_visit'
+                    )
+                    ->orderBy('u.last_name')
+                    ->groupBy('u.id', 'u.first_name', 'u.last_name', 'u.email', 'cu.avatar', 'pt.id', 'pt.medical_card_no', 'pt.registered_at', 'pt.patient_status_id', 'pt.discount', 'pt.balance', 'pt.visits_count', 'pt.last_visit')
+                    ->get();
+            
+            $statusesData = DB::table('patient_discount_statuses')
+                ->select('patient_discount_statuses.*')
+                ->orderBy('name')->get();
+            
+            $contactData = DB::table('phones')->where('patient_id', '=', $id)->get();
+            $formData = DB::selectOne("
+                SELECT * FROM core.patient_base_info(
+                    p_schema => :schema,
+                    p_patient_id => :patient_id
+                )
+            ", [
+                'schema' => "clinic_{$clinicId}",
+                'patient_id' => $id
+                ]);
+            // dd($formData);exit;
+            return Inertia::render('Patient/Edit', [
+                'formData' => $formData,
+                'customerData' => $customerData[0],
+                'contactData' => $contactData,
+                'statusesData' => $statusesData
+            ]);
+
         });
     }
 
@@ -207,42 +212,50 @@ class PatientController extends Controller
      */
     public function update(PatientUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('patient-edit')) {
-                $clinicData = Clinic::where('id', session('clinic_id'))->first();
-                $isNew = false;
-                if ($request->id)
-                    $patient = Patient::find($request->id);
-                else {
-                    $patient = new Patient();
-                    $isNew = true;
-                }
-                $patient->fill($request->validated());
+            if (!$request->user()->canClinic('patient-edit')) {
+                return Inertia::render('PatientStatus/List', ['error' => 'Insufficient permissions']);
+            }
+            $clinicData = Clinic::where('id', session('clinic_id'))->first();
+            $isNew = false;
+            $patientId = $request->patient_id;
+            
+            if ($patientId)
+                $patient = Patient::find($patientId);
+            else {
+                $patient = new Patient();
+                $isNew = true;
+            }
+            $patient->fill($request->validated());
+            $patient->save();
+            
+            $user = User::find($patient->user_id);
+            if($request->has('first_name')) $user->first_name = $request->first_name;
+            if($request->has('last_name')) $user->last_name = $request->last_name;
+            $user->save();
+            
+            // connect patient with filial
+            if ($isNew) {
+                $patientRoleId = DB::table('roles')->where('name', 'patient')->value('id');
+                DB::table('clinic_filial_user')->insert(
+                    [
+                        'user_id' => $patient->user_id,
+                        'filial_id' => $request->session()->get('filial_id'),
+                        'clinic_id' => $clinicId,
+                        'role_id' => $patientRoleId ?? 6 // Default to patient role id from seeder if not found
+                    ]
+                );
+            }
+
+            if ($request->file) {
+                $fileName = 'Patient'.$patient->id.'.'.$request->file->extension();  
+                $patient->avatar = $fileName;
                 $patient->save();
-
-                // connect patient with filial
-                if ($isNew) {
-                    $patientRoleId = DB::table('roles')->where('name', 'patient')->value('id');
-                    DB::table('clinic_filial_user')->insert(
-                        [
-                            'user_id' => $patient->user_id,
-                            'filial_id' => $request->session()->get('filial_id'),
-                            'clinic_id' => $clinicId,
-                            'role_id' => $patientRoleId ?? 6 // Default to patient role id from seeder if not found
-                        ]
-                    );
-                }
-
-                if ($request->file) {
-                    $fileName = 'Patient'.$patient->id.'.'.$request->file->extension();  
-                    $patient->avatar = $fileName;
-                    $patient->save();
-                    $request->file->move(public_path('uploads/patients'), $fileName);
-                }
-                if ($isNew) {
-                    return Redirect::route('patient.cliniccard', ['id' => $patient->id]);
-                } else {
-                    return redirect()->route('patient.index');
-                }
+                $request->file->move(public_path('uploads/patients'), $fileName);
+            }
+            if ($isNew) {
+                return Redirect::route('patient.cliniccard', ['id' => $patient->id]);
+            } else {
+                return redirect()->route('patient.index');
             }
         });
     }

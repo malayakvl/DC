@@ -83,7 +83,14 @@ const lngPatient = {
     total: 'Разом',
     applyGlobal: 'Використати',
     globalDiscount: 'Загальна знижка',
-    createevent: 'Записати на прийом'
+    createevent: 'Записати на прийом',
+    'visits.count': 'Кількість візитів',
+    'last.visit': 'Останній візит',
+    'discount.status': 'Статус знижки',
+    'medical.card.no': 'Номер медичної картки',
+    'balance': 'Баланс',
+    'primary.phone': 'Основний телефон',
+    'registered.at': 'Зареєстровано',
   },
 };
 export default lngPatient;

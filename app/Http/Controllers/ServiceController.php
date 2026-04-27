@@ -162,9 +162,12 @@ class ServiceController extends Controller
         });
     }
 
+    
+
     public function findService(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $name = $request->searchName;
+            dd($name);exit;
             
             $resData = DB::table('pricings')->select('*')
                 ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')

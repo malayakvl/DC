@@ -61,6 +61,7 @@ export const TableHeaders = {
   [PaginationType.CABINETS]: [
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.filial', className: '' },
+    { titleKey: 'datatable.placecount', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.MATERIALS]: [
