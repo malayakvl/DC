@@ -39,16 +39,24 @@ export default function AddDynamicInputFields({
         product: '',
         quantity: '',
         maxQty: '',
+        mark_up: '',
+        price: '',
+        total: '',
+        basePrice: ''
       },
     ]);
   };
 
   const handleChange = (event, index, type = '') => {
+    console.log(
+      'select material'
+    );
     dispatch(setShowTableError(false));
     let { name, value } = event.target;
     let onChangeValue = [...inputs];
     onChangeValue[index][name] = value;
     setNumRow(index);
+    console.log(name, value);
     if (name === 'product') {
       if (value.length > 3) {
         dispatch(findServiceAction(value));
@@ -56,10 +64,25 @@ export default function AddDynamicInputFields({
         dispatch(emptyServicesAutocompleteAction());
         setHideFields(false);
       }
+    } else if (name === 'mark_up') {
+      const markupValue = parseFloat(event.target.value) || 0;
+
+      // сохраняем исходную цену один раз
+      if (!inputs[index].basePrice) {
+        inputs[index].basePrice = parseFloat(inputs[index].price) || 0;
+      }
+
+      const basePrice = inputs[index].basePrice;
+
+      const newPrice = basePrice + (basePrice * markupValue / 100);
+
+      inputs[index].price = parseFloat(newPrice.toFixed(2));
+
+      inputs[index].total = parseFloat((inputs[index].price * inputs[index].quantity).toFixed(2));
     } else {
       inputs[index].quantity = event.target.value;
       inputs[index].total = event.target.value
-        ? parseFloat(event.target.value) * inputs[index].price
+        ? parseFloat((parseFloat(event.target.value) * inputs[index].price).toFixed(2))
         : 0;
     }
     setInputs(onChangeValue);
@@ -93,20 +116,22 @@ export default function AddDynamicInputFields({
               <li
                 className="cursor-pointer py-1"
                 onClick={() => {
+                  console.log(
+                    'select material', _res
+                  );
                   setHideFields(true);
                   setWeightIntutId(_res.id);
                   const tmpWeight = [];
-                  tmpWeight.push(_res.unit_id);
+                  tmpWeight.push(_res.weightunit_id);
                   tmpWeight.push(_res.weightunit_id);
                   setAvailableWeights(tmpWeight);
                   dispatch(emptyServicesAutocompleteAction());
                   inputs[index].product = _res.name;
                   inputs[index].product_id = _res.id;
                   inputs[index].quantity = 1;
-                  inputs[index].price =
-                    _res.price_per_unit > 0
-                      ? _res.price_per_unit
-                      : _res.retail_price;
+                  inputs[index].unit_id = _res.unit_id;
+                  inputs[index].mark_up = 0;
+                  inputs[index].price = _res.price_per_unit;
                   inputs[index].total = (
                     1 *
                     (_res.price_per_unit > 0
@@ -129,7 +154,7 @@ export default function AddDynamicInputFields({
     <>
       {inputs.map((item, index) => (
         <tr key={index}>
-          <td className="w-product px-2 pb-2">
+          <td className="w-product-service px-2 pb-2">
             <div className="relative">
               <input
                 name="product"
@@ -140,7 +165,7 @@ export default function AddDynamicInputFields({
               />
             </div>
           </td>
-          <td className="w-qty pb-2 px-2 mx-auto pl-[10px] min-w-[120px]" data-id={`el-${item.product_id}`}>
+          <td className="w-qty pb-2 px-2 mx-auto " data-id={`el-${item.product_id}`}>
             <InputSelect
               elId={item.product_id}
               translatable={false}
@@ -155,10 +180,10 @@ export default function AddDynamicInputFields({
               label={null}
             />
           </td>
-          <td className="w-qty pb-2 px-2 mx-auto">
-            <div className="row flex ml-[10px]">
+          <td className="w-qty pb-2 px-2 mx-auto border-r-1">
+            <div className="row flex justify-center ">
               <input
-                className="input-text w-[100px] text-center"
+                className="input-text text-center service-qty"
                 name="qty"
                 type="text"
                 value={item.quantity}
@@ -166,7 +191,40 @@ export default function AddDynamicInputFields({
               />
             </div>
           </td>
-          
+          <td className="w-qty pb-2 px-2 mx-auto">
+            <div className="row flex justify-center">
+              <input
+                className="input-text text-center service-price"
+                name="price"
+                type="text"
+                value={item.price}
+                onChange={event => handleChange(event, index)}
+              />
+            </div>
+          </td>
+          <td className="w-qty pb-2 px-2 mx-auto">
+            <div className="row flex justify-center">
+              <input
+                className="input-text text-center service-mark-up"
+                name="mark_up"
+                type="text"
+                value={item.mark_up}
+                onChange={event => handleChange(event, index)}
+              />
+            </div>
+          </td>
+
+          <td className="w-qty pb-2 px-2 mx-auto border-r-1">
+            <div className="row flex ml-[10px]">
+              <input
+                className="input-text w-full text-center"
+                name="total"
+                type="text"
+                value={item.total}
+                onChange={event => handleChange(event, index)}
+              />
+            </div>
+          </td>
 
           <td className="w-btn pb-2 px-2">
             {inputs.length > 1 && (

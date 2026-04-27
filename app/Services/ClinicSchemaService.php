@@ -267,6 +267,7 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 price DECIMAL(10, 2),
+                total_price DECIMAL(10, 2),
                 category_id BIGINT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -280,6 +281,10 @@ class ClinicSchemaService
                 material_id BIGINT,
                 quantity DECIMAL(10, 2),
                 unit_id BIGINT,
+                price DECIMAL(10, 2),
+                total DECIMAL(10, 2),
+                mark_up DOUBLE PRECISION DEFAULT 0,
+                base_price DECIMAL(10, 2),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

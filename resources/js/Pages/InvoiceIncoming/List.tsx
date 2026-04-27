@@ -190,12 +190,12 @@ export default function List({ listData, permissions, filters, suppliers, paymen
                     <Link
                       className="btn-edit"
                       title={msg.get('filial.filial.edit')}
-                      href={`invoice-incoming/edit/${item.id}`}
+                      href={`invoice-incoming/edit/${item.invoice_id}`}
                     />
                     <NavLink
                       className="btn-delete"
                       title={msg.get('filial.filial.delete')}
-                      href={`invoice-incoming/delete/${item.id}`}
+                      href={`invoice-incoming/delete/${item.invoice_id}`}
                     />
                   </td>
                 </tr>

@@ -71,7 +71,7 @@ export default function Form({
       });
     }
   };
-console.log('here')
+  console.log('here')
   return (
     <section className={className}>
       <header>
@@ -119,16 +119,17 @@ console.log('here')
           label={msg.get('service.price')}
         />
         <div className="relative">
-          <table className="w-full1">
+          <table className="w-full overflow-x-auto" cellPadding="5">
             <thead>
               <tr>
-                <th className="pb-3 w-[65%]">
+                <th className="pb-3 text-white w-[47%] min-w-[400px]">
                   {msg.get('service.product')}
                 </th>
-                <th className="pb-3 w-unit">{msg.get('service.unit')}</th>
-                <th className="pb-3 w-qty">{msg.get('service.qty')}</th>
-                <th className="pb-3 w-btn">{msg.get('service.price')}</th>
-                <th className="pb-3 w-btn">{msg.get('service.total')}</th>
+                <th className="pb-3 w-unit text-white border-l-1 w-[8%]">{msg.get('service.unit')}</th>
+                <th className="pb-3 w-qty text-white w-[8%]">{msg.get('service.qty')}</th>
+                <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.price')}</th>
+                <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.mark_up')}</th>
+                <th className="pb-3 w-btn text-white w-[14%]">{msg.get('service.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
@@ -156,11 +157,12 @@ console.log('here')
               )}
             </tbody>
           </table>
-          <div className="w-full border-t-2 text-right mt-4 font-bold">
-            {msg.get('service.total')}:{' '}
-            {(
-              Number(values['price'] ? values['price'] : 0) + totalItemPrice
-            ).toFixed(2)}{' '}
+          <div className="w-full devider-table-custom text-right mt-4 font-bold ">
+            <span className="pt-2 block">{msg.get('service.total')}:{' '}
+              {(
+                Number(values['price'] ? values['price'] : 0) + totalItemPrice
+              ).toFixed(2)}{' '}
+            </span>
           </div>
         </div>
 

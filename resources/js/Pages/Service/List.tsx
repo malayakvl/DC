@@ -65,7 +65,7 @@ export default function List({ clinicData, tree, services, currency }) {
                 </div>
                 <div className="price-value">
                   <span className="px-[5px] py-[4px] ">
-                    {_item.price} {currency}
+                    {_item.total_price} {currency}
                   </span>
                 </div>
               </div>
