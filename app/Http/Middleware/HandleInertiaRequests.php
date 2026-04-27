@@ -57,10 +57,11 @@ class HandleInertiaRequests extends Middleware
                 if ($roleData) {
                     $roles = [$roleData->name];
                     
-                    // 🔹 Устанавливаем "виртуальную" связь для фронтенда, чтобы auth.user.roles не был пустым
-                    $user->setRelation('roles', collect([
-                        (object)['name' => $roleData->name]
-                    ]));
+                    // 🔹 Загружаем реальную модель Role, чтобы у нее были методы getKey() и другие
+                    $roleModel = \Spatie\Permission\Models\Role::find($roleData->id);
+                    if ($roleModel) {
+                        $user->setRelation('roles', collect([$roleModel]));
+                    }
                     
                     // 🔹 Выгружаем права ТОЛЬКО для этой конкретной роли напрямую из БД
                     $permissions = DB::table('role_has_permissions')

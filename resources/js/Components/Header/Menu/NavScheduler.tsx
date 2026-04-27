@@ -42,6 +42,13 @@ export default function NavInvoices(props) {
                     </Link>
                   </MenuItem>
                 )}
+                {permissions['patient-edit'] && (
+                  <MenuItem>
+                    <Link href={'/visit-schedule-statuses'} className="submenu">
+                      {lng.get('menu.visit.schedule.statuses')}
+                    </Link>
+                  </MenuItem>
+                )}
                 {permissions['scheduler-all'] && (
                   <MenuItem>
                     <Link className="submenu" href={'/scheduler'}>

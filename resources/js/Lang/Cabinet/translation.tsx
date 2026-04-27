@@ -33,6 +33,7 @@ const lngCabinet = {
     filial: 'Філіал',
     edit: 'Редагувати',
     delete: 'Видалити',
+    placecount: 'Кількість місць',
   },
 };
 export default lngCabinet;

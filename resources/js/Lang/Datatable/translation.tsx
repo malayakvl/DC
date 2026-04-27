@@ -60,6 +60,8 @@ const lngHeaders = {
     paymentstatus: 'Статус оплати',
     account: 'Рахунок',
     currency: 'Валюта',
+    color: 'Колір',
+    placecount: 'Кількість місць',
   },
 };
 export default lngHeaders;

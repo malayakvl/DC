@@ -4,6 +4,7 @@ import Form from './Partials/Form';
 import React from 'react';
 
 export default function Create({ clinicData, formData }) {
+  console.log(1)
   return (
     <AuthenticatedLayout header={<Head title="Unit" />}>
       <Head title={'Unit'} />

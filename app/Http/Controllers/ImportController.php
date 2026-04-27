@@ -40,7 +40,8 @@ class ImportController extends Controller
         }
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -274,7 +275,6 @@ class ImportController extends Controller
     {
         // 1. Получаем и чистим имя
         $rawName = trim($patientData['Пацієнт']);
-        dd(1);exit;
         preg_match('/\((-?\d+)%\)/u', $rawName, $m);
         $discount = isset($m[1]) ? (int)$m[1] : 0;
         $cleanName = trim(preg_replace('/\s*\(-?\d+%\)\s*/u', ' ', $rawName));
@@ -296,7 +296,6 @@ class ImportController extends Controller
                 'password' => Hash::make('patient123')
             ]
         );
-
         // 5. Создаём связь с клиникой в core.clinic_users
         // ClinicUser::firstOrCreate([
         //     'clinic_id' => $clinicData->id,
@@ -340,11 +339,14 @@ class ImportController extends Controller
         // 1️⃣ Пользователь в core.users
         // ---------------------------
         $rawName = trim($patientData['Пацієнт']);
+        
+        
         preg_match('/\((-?\d+)%\)/u', $rawName, $m);
         $discount = isset($m[1]) ? (int)$m[1] : 0;
         $cleanName = trim(preg_replace('/\s*\(-?\d+%\)\s*/u', ' ', $rawName));
         [$last, $first, $middle] = array_pad(explode(' ', $cleanName, 3), 3, null);
         $phone = trim($patientData['Телефон']);
+        
         
         $user = User::firstOrCreate(
             ['first_name' => $first, 'last_name' => $last],
@@ -355,20 +357,36 @@ class ImportController extends Controller
             ]
         );
 
-        // ---------------------------
-        // 2️⃣ Связь с клиникой в core.clinic_users
-        // ---------------------------
-        // ClinicUser::firstOrCreate([
-        //     'clinic_id' => $clinicData->id,
-        //     'user_id' => $user->id
-        // ]);
+        // 🔹 Привязываем пациента к филиалу (используем таблицу clinic_filial_user)
+        $patientRoleId = DB::table("clinic_{$clinicData->id}.roles")->where('name', 'patient')->value('id') ?? 6;
+
+        DB::table("core.clinic_user")->updateOrInsert([
+            'user_id' => $user->id,
+            'clinic_id' => $clinicData->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+
+        DB::table("clinic_{$clinicData->id}.patient_filial_user")->updateOrInsert(
+            [
+                'user_id'   => $user->id,
+                'filial_id' => $filialId,
+            ],
+            [
+                'created_at' => now(),
+            ]
+        );
+
+        
+
         // ---------------------------
         // 3️⃣ Локальный пациент в clinic_{id}.patients
         // ---------------------------
         $statusName = trim($patientData['Статус пацієнта']);
         $statusId = $this->resolvePatientStatus($statusName, $clinicData->id);
 
-        $patient = DB::table("clinic_{$clinicData->id}.patients")->updateOrInsert(
+        DB::table("clinic_{$clinicData->id}.patients")->updateOrInsert(
             ['user_id' => $user->id],
             [
                 'medical_card_no' => $patientData['Номер картки'] ?? null,
@@ -382,106 +400,127 @@ class ImportController extends Controller
             ]
         );
 
-        // Получаем id пациента
         $patientRecord = DB::table("clinic_{$clinicData->id}.patients")
             ->where('user_id', $user->id)
             ->first();
 
+        
         $patientId = $patientRecord->id;
+        $actId = null;
+        $num = 1;
 
-        // ---------------------------
-        // 4️⃣ Импорт актов
-        // ---------------------------
-        $actIds = [];
+        DB::table("clinic_{$clinicData->id}.phones")->updateOrInsert(
+            [
+                'patient_id' => $patientId,
+                'phone'      => $phone,
+            ],
+            [
+                'is_primary' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        // dd($patientId, $phone);exit;
+
+
         $workAmount = $patientData['Виконано на суму'] ?? 0;
         $paymentAmount = $patientData['Оплачено'] ?? 0;
-        if ($workAmount > 0) {
-            $serviceName = 'Переніс даних (введення залишків)';
-            $categoryName = 'Переніс даних';
 
-            $price = DB::table("clinic_{$clinicData->id}.pricings")
-                ->where('name', $serviceName)
-                ->first();
-
-            if (!$price) {
-                // Find or create category
-                $category = DB::table("clinic_{$clinicData->id}.price_categories")
-                    ->where('name', $categoryName)
-                    ->first();
-
-                if (!$category) {
-                    $categoryId = DB::table("clinic_{$clinicData->id}.price_categories")->insertGetId([
-                        'name' => $categoryName,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                } else {
-                    $categoryId = $category->id;
-                }
-
-                // Create service
-                $priceId = DB::table("clinic_{$clinicData->id}.pricings")->insertGetId([
-                    'name' => $serviceName,
-                    'price' => 0,
-                    'category_id' => $categoryId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-
-                $price = DB::table("clinic_{$clinicData->id}.pricings")
-                    ->where('id', $priceId)
-                    ->first();
-            }
-            $lastInvoiceNum = DB::table("clinic_{$clinicData->id}.acts")
-                    ->max('act_number');
-            if (!$lastInvoiceNum) {
-                $num = 1;
-            } else {
-                $maxNum = (explode('-', $lastInvoiceNum));
-                $num = isset($maxNum[1]) && intval($maxNum[1]) ? intval($maxNum[1]) + 1 : 1;
-            }
-            $invoice_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
-            $actId = DB::table("clinic_{$clinicData->id}.acts")->insertGetId([
-                'patient_id' => $patientId,
-                'doctor_id' => 55,
-                'filial_id' => $filialId,
-                'act_number' => $invoice_number,
-                'act_date' => date('Y-m-d H:i:s'),
-                'total_amount' => $workAmount,
-                'status' => 'posted',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            DB::table("clinic_{$clinicData->id}.act_items")->insert([
-                'act_id' => $actId,
-                'service_id' => $price->id,
-                'qty' => 1,
-                'price' => $workAmount,
-                'total' => $workAmount,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+        // Поиск последнего номера документа для формирования нового
+        $lastActNum = DB::table("clinic_{$clinicData->id}.acts")->max('act_number');
+        if ($lastActNum) {
+            $parts = explode('-', $lastActNum);
+            $num = (isset($parts[1]) && is_numeric($parts[1])) ? intval($parts[1]) + 1 : 1;
         }
-        
 
+        // if ($workAmount > 0) {
+        //     $serviceName = 'Переніс даних (введення залишків)';
+        //     $categoryName = 'Переніс даних';
+
+        //     $price = DB::table("clinic_{$clinicData->id}.pricings")
+        //         ->where('name', $serviceName)
+        //         ->first();
+
+        //     if (!$price) {
+        //         // Find or create category
+        //         $category = DB::table("clinic_{$clinicData->id}.price_categories")
+        //             ->where('name', $categoryName)
+        //             ->first();
+
+        //         if (!$category) {
+        //             $categoryId = DB::table("clinic_{$clinicData->id}.price_categories")->insertGetId([
+        //                 'name' => $categoryName,
+        //                 'created_at' => now(),
+        //                 'updated_at' => now(),
+        //             ]);
+        //         } else {
+        //             $categoryId = $category->id;
+        //         }
+
+        //         // Create service
+        //         $priceId = DB::table("clinic_{$clinicData->id}.pricings")->insertGetId([
+        //             'name' => $serviceName,
+        //             'price' => 0,
+        //             'category_id' => $categoryId,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+
+        //         $price = DB::table("clinic_{$clinicData->id}.pricings")
+        //             ->where('id', $priceId)
+        //             ->first();
+        //     }
+
+        //     $invoice_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
+        //     $actId = DB::table("clinic_{$clinicData->id}.acts")->insertGetId([
+        //         'patient_id' => $patientId,
+        //         'doctor_id' => 55, // TODO: вынести в константу или параметр
+        //         'filial_id' => $filialId,
+        //         'act_number' => $invoice_number,
+        //         'act_date' => date('Y-m-d H:i:s'),
+        //         'total_amount' => $workAmount,
+        //         'status' => 'posted',
+        //         'created_at' => now(),
+        //         'updated_at' => now()
+        //     ]);
+        //     DB::table("clinic_{$clinicData->id}.act_items")->insert([
+        //         'act_id' => $actId,
+        //         'service_id' => $price->id,
+        //         'qty' => 1,
+        //         'price' => $workAmount,
+        //         'total' => $workAmount,
+        //         'created_at' => now(),
+        //         'updated_at' => now()
+        //     ]);
+        // }
+        
         // ---------------------------
         // 5️⃣ Импорт платежей
         // ---------------------------
-        $payment_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
-        if ($paymentAmount > 0) {
-            DB::table("clinic_{$clinicData->id}.payments")->insert([
-                'patient_id' => $patientId,
-                'filial_id' => $filialId,
-                'act_id' => $actId,
-                'payment_date' => date('Y-m-d H:i:s'),
-                'payment_number' => $payment_number,
-                'amount' => $paymentAmount,
-                'method' => 'cash',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-        
+
+        // if ($paymentAmount > 0) {
+        //     // Если акта не было, подбираем номер заново (на случай, если макс номер изменился)
+        //     if (!$actId) {
+        //         $lastPaymentNum = DB::table("clinic_{$clinicData->id}.payments")->max('payment_number');
+        //         if ($lastPaymentNum) {
+        //             $parts = explode('-', $lastPaymentNum);
+        //             $num = max($num, (isset($parts[1]) && is_numeric($parts[1])) ? intval($parts[1]) + 1 : 1);
+        //         }
+        //     }
+
+        //     $payment_number = date("dmy") . '-' . str_pad($num, 7, '0', STR_PAD_LEFT);
+        //     DB::table("clinic_{$clinicData->id}.payments")->insert([
+        //         'patient_id' => $patientId,
+        //         'filial_id' => $filialId,
+        //         'act_id' => $actId, // может быть null
+        //         'payment_date' => date('Y-m-d H:i:s'),
+        //         'payment_number' => $payment_number,
+        //         'amount' => $paymentAmount,
+        //         'method' => 'cash',
+        //         'created_at' => now(),
+        //         'updated_at' => now()
+        //     ]);
+        // }
 
         return $patientRecord;
     }
@@ -521,149 +560,103 @@ class ImportController extends Controller
 
     public function update(Request $request) {
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        if ($request->user()->can('import') || $request->user()->canClinic('clinic-create')) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $clinicData) {   
             $filialId = $request->session()->get('filial_id');
+            $employeeCount = 0;
+            $fileName = '';
+            $extension = '';
+
             if ($request->file) {
                 $extension = $request->file->extension();
                 $fileName = 'Clinic'.$clinicData->id.'.'.$request->file->extension();
                 $request->file->move(public_path('clinic-import/patients'), $fileName);
             }
-            
-            if ($extension === 'xlsx' && $request->get('type') === 'customers') {
-                $filePath = public_path('clinic-import/patients/' . $fileName);
-                $batchSize = 1000; // Number of rows per chunk
-                $resultCollection = collect(); // Final collection
-                $emailCounter = 0;
-                try {
-                    // Увеличение времени выполнения и лимита памяти
-                    ini_set('max_execution_time', 300);
-                    ini_set('memory_limit', '512M');
 
-                    // Импорт файла в LazyCollection
-                    $lazyCollection = LazyCollection::make(function () use ($filePath) {
-                        $data = (new FastExcel)->import($filePath);
-                        foreach ($data as $row) {
-                            yield $row;
-                        }
-                    });
+            if ($request->user()->can('import') || $request->user()->canClinic('clinic-create')) {
+                if ($extension === 'xlsx' && $request->get('type') === 'customers') {
+                    $filePath = public_path('clinic-import/patients/' . $fileName);
+                    $batchSize = 1000;
+                    try {
+                        ini_set('max_execution_time', 300);
+                        ini_set('memory_limit', '512M');
 
-                    // Обработка в транзакции для целостности
-                    $allEmployees = [];
-                    DB::transaction(function () use ($lazyCollection, $batchSize, &$clinicData, &$allEmployees) {
-                        $lazyCollection->chunk($batchSize)->each(function ($chunk) use (&$clinicData, &$allEmployees) {
-                            $employees = $chunk->map(function ($row) use (&$clinicData) {
-                                return $row['Куратор'];
-                            })->toArray();
-
-                            // Собираем всех сотрудников для последующей обработки
-                            $allEmployees = array_merge($allEmployees, $employees);
-
-                            gc_collect_cycles(); // Очистка памяти
-                        });
-                    });
-
-                    // Обрабатываем сотрудников после завершения транзакции пациентов
-                    $employeeCount = 0;
-                    if (!empty($allEmployees)) {
-                        $this->processEmployees($allEmployees, $clinicData, $request);
-                        $employeeCount = count(array_unique(array_filter($allEmployees)));
-                    }
-
-                    // Добавляем одну запись в лог через AuditLogService
-                    $this->auditLogService->log(
-                        $request->user(),
-                        'employee_import',
-                        null,
-                        null,
-                        ['employee_count' => $employeeCount, 'file_name' => $fileName]
-                    );
-
-                } catch (\Exception $e) {
-                    Log::error("Ошибка при загрузке в базу: " . $e->getMessage());
-                    return Inertia::render('Import/Index', [
-                        'error' => $e->getMessage()
-                    ]);
-                }
-            }
-            if ($extension === 'xlsx' && $request->get('type') === 'patients') {
-                $filePath = public_path('clinic-import/patients/' . $fileName);
-                $batchSize = 1000; // Number of rows per chunk
-                $resultCollection = collect(); // Final collection
-                $emailCounter = 0;
-                try {
-                    // Увеличение времени выполнения и лимита памяти
-                    ini_set('max_execution_time', 300);
-                    ini_set('memory_limit', '512M');
-
-                    // Импорт файла в LazyCollection
-                    $lazyCollection = LazyCollection::make(function () use ($filePath) {
-                        $data = (new FastExcel)->import($filePath);
-                        foreach ($data as $row) {
-                            yield $row;
-                        }
-                    });
-                    $filialId = $request->session()->get('filial_id');
-                    $lazyCollection->each(function ($row) use ($clinicData, $filialId) {
-                        @set_time_limit(60);
-                        DB::transaction(function () use ($row, $clinicData, $filialId) {
-                            try {
-                                $this->importPatientWithActsAndPayments($row, $clinicData, $filialId);
-                            } catch (\Exception $e) {
-                                Log::error('Error importing patient row: ' . $e->getMessage(), [
-                                    'row_data' => $row,
-                                    'error' => $e->getMessage(),
-                                    'trace' => $e->getTraceAsString()
-                                ]);
-                                // Re-throw the exception to rollback the transaction for this row
-                                throw $e;
+                        $lazyCollection = LazyCollection::make(function () use ($filePath) {
+                            $data = (new FastExcel)->import($filePath);
+                            foreach ($data as $row) {
+                                yield $row;
                             }
                         });
-                    });
-                    
 
-                    // Добавляем одну запись в лог через AuditLogService
-                    $this->auditLogService->log(
-                        $request->user(),
-                        'patient_import',
-                        null,
-                        null,
-                        ['file_name' => $fileName]
-                    );
+                        $allEmployees = [];
+                        DB::transaction(function () use ($lazyCollection, $batchSize, &$clinicData, &$allEmployees) {
+                            $lazyCollection->chunk($batchSize)->each(function ($chunk) use (&$clinicData, &$allEmployees) {
+                                $employees = $chunk->map(function ($row) {
+                                    return $row['Куратор'];
+                                })->toArray();
+                                $allEmployees = array_merge($allEmployees, $employees);
+                                gc_collect_cycles();
+                            });
+                        });
 
-                } catch (\Exception $e) {
-                    Log::error("Ошибка при загрузке в базу: " . $e->getMessage());
-                    return Inertia::render('Import/Index', [
-                        'error' => $e->getMessage()
-                    ]);
+                        if (!empty($allEmployees)) {
+                            $this->processEmployees($allEmployees, $clinicData, $request);
+                            $employeeCount = count(array_unique(array_filter($allEmployees)));
+                        }
+
+                        $this->auditLogService->log($request->user(), 'employee_import', null, null, ['employee_count' => $employeeCount, 'file_name' => $fileName]);
+                    } catch (\Exception $e) {
+                        Log::error("Ошибка при импорте сотрудников: " . $e->getMessage());
+                        return Inertia::render('Import/Index', ['error' => $e->getMessage()]);
+                    }
                 }
-            }
-            if ($extension === 'json') {
-                $contents = File::get((public_path('clinic-import/patients/'.$fileName)));
-                $jsonData = json_decode(json: $contents, associative: true);
-                
-                // Обрабатываем только сотрудников из JSON
-                $employeeCount = 0;
-                if (!empty($jsonData)) {
-                    $this->processEmployees($jsonData, $clinicData, $request);
-                    $employeeCount = count($jsonData);
+
+                if ($extension === 'xlsx' && $request->get('type') === 'patients') {
+                    $filePath = public_path('clinic-import/patients/' . $fileName);
+                    try {
+                        ini_set('max_execution_time', 300);
+                        ini_set('memory_limit', '512M');
+
+                        $lazyCollection = LazyCollection::make(function () use ($filePath) {
+                            $data = (new FastExcel)->import($filePath);
+                            foreach ($data as $row) {
+                                yield $row;
+                            }
+                        });
+
+                        $lazyCollection->each(function ($row) use ($clinicData, $filialId) {
+                            @set_time_limit(60);
+                            DB::transaction(function () use ($row, $clinicData, $filialId) {
+                                $this->importPatientWithActsAndPayments($row, $clinicData, $filialId);
+                            });
+                        });
+
+                        $this->auditLogService->log($request->user(), 'patient_import', null, null, ['file_name' => $fileName]);
+                    } catch (\Exception $e) {
+                        Log::error("Ошибка при импорте пациентов: " . $e->getMessage());
+                        return Inertia::render('Import/Index', ['error' => $e->getMessage()]);
+                    }
                 }
-                
-                // Добавляем одну запись в лог через AuditLogService
-                $this->auditLogService->log(
-                    $request->user(),
-                    'employee_import',
-                    null,
-                    null,
-                    ['employee_count' => $employeeCount, 'file_name' => $fileName, 'format' => 'json']
-                );
+
+                if ($extension === 'json') {
+                    $contents = File::get((public_path('clinic-import/patients/'.$fileName)));
+                    $jsonData = json_decode($contents, true);
+                    if (!empty($jsonData)) {
+                        $this->processEmployees($jsonData, $clinicData, $request);
+                        $employeeCount = count($jsonData);
+                    }
+                    $this->auditLogService->log($request->user(), 'employee_import', null, null, ['employee_count' => $employeeCount, 'file_name' => $fileName, 'format' => 'json']);
+                }
+
+                return redirect()->back()->with([
+                    'message' => 'Данные успешно загружены',
+                    'success' => true,
+                    'employee_count' => $employeeCount,
+                    'file_name' => $fileName,
+                    'format' => $extension,
+                ]);
             }
-            return redirect()->back()->with([
-                'message' => 'Данные успешно загружены',
-                'success' => true,
-                'employee_count' => @intval($employeeCount) ?: 0,
-                'file_name' => $fileName,
-                'format' => $extension,
-            ]);
-        }
+
+            return redirect()->back()->with(['error' => 'Insufficient permissions', 'success' => false]);
+        });
     }
 }

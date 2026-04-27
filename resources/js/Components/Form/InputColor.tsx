@@ -5,7 +5,7 @@ import { paletterDataSelector } from '../../Redux/Staff/selectors';
 import { setPaletteAction } from '../../Redux/Staff/';
 
 interface Props {
-  defaultColor: string;
+  defaultColor?: string;
   style?: string;
   icon?: string;
   name: string;
@@ -13,6 +13,11 @@ interface Props {
   placeholder?: string;
   tips?: string;
   disabled?: boolean;
+  onChange?: (e: any) => void;
+  value?: string;
+  values?: any;
+  dataValue?: string;
+  required?: boolean;
 }
 
 const InputColor: React.FC<Props> = ({
@@ -24,9 +29,14 @@ const InputColor: React.FC<Props> = ({
   placeholder,
   tips,
   disabled,
+  onChange,
+  value,
+  dataValue,
+  values,
+  required,
 }) => {
   const [showPicker, setShowPicker] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(defaultColor);
+  const [selectedColor, setSelectedColor] = useState(value || defaultColor);
   const [_, setOpen] = useState(false);
   const node = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
@@ -42,6 +52,15 @@ const InputColor: React.FC<Props> = ({
   const handleChangeComplete = (color: any) => {
     setSelectedColor(color.hex);
     dispatch(setPaletteAction({ color: color.hex, field: name }));
+    if (onChange) {
+      onChange({
+        target: {
+          id: name,
+          name: name,
+          value: color.hex,
+        },
+      });
+    }
   };
 
   const handleClick = (e: any) => {
@@ -67,9 +86,8 @@ const InputColor: React.FC<Props> = ({
   }, [colorSettings, name]);
 
   useEffect(() => {
-    console.log(defaultColor);
-    setSelectedColor(defaultColor);
-  }, [defaultColor]);
+    setSelectedColor(value || defaultColor);
+  }, [value, defaultColor]);
 
   return (
     <div className={style || ''} ref={node}>
@@ -137,3 +155,4 @@ const InputColor: React.FC<Props> = ({
 };
 
 export { InputColor };
+export default InputColor;

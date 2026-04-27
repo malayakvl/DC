@@ -27,6 +27,7 @@ use App\Http\Controllers\ActController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OpeningBalanceController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\VisitScheduleStatusController;
 use App\Http\Controllers\MoneyInController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -104,10 +105,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/finances', [PatientController::class, 'view'])->name('patient.');
     Route::post('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.viewFinances');
 
+    Route::get('/scheduler-visit-statuses', [SchedulerVisitStatusController::class, 'index'])->name('scheduler-visit-status.index');
+    Route::get('/scheduler-visit-status/create', [SchedulerVisitStatusController::class, 'create'])->name('scheduler-visit-status.create');
+    Route::get('/scheduler-visit-status/edit/{id}', [SchedulerVisitStatusController::class, 'edit'])->name('scheduler-visit-status.edit');
+    Route::post('/scheduler-visit-status/update', [SchedulerVisitStatusController::class, 'update'])->name('scheduler-visit-status.update');
+
     Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
     Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
     Route::get('/patient-status/edit/{id}', [PatientStatusController::class, 'edit'])->name('patient-status.edit');
     Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient-status.update');
+
+    Route::get('/visit-schedule-statuses', [VisitScheduleStatusController::class, 'index'])->name('visit-schedule-status.index');
+    Route::get('/visit-schedule-status/create', [VisitScheduleStatusController::class, 'create'])->name('visit-schedule-status.create');
+    Route::get('/visit-schedule-status/edit/{id}', [VisitScheduleStatusController::class, 'edit'])->name('visit-schedule-status.edit');
+    Route::post('/visit-schedule-status/update', [VisitScheduleStatusController::class, 'update'])->name('visit-schedule-status.update');
 
     Route::get('/formula/edit/{id}', [PatientController::class, 'formulaEdit'])->name('patient.formula.edit');
     Route::get('/formula/copy/{id}', [PatientController::class, 'formulaCopy'])->name('patient.formula.copy');

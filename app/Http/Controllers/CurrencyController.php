@@ -37,7 +37,8 @@ class CurrencyController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
-            DB::statement("SET search_path TO clinic_{$clinicId}");
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
             return $callback($clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
@@ -50,10 +51,10 @@ class CurrencyController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('currency-view')) {
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
-            $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = Currency::with('rate')->get();
 
             return Inertia::render('Currency/List', [

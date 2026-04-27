@@ -1,17 +1,15 @@
-import InputError from '../../../Components/Form/InputError';
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import TextInput from '../../../Components/Form/TextInput';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { Link, router, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lgnPatientStatus from '../../../Lang/PatientStatus/translation';
 import InputText from '../../../Components/Form/InputText';
+import { InputColor } from '../../../Components/Form/InputColor';
 
-export default function Form({ clinicData, formData, className = '' }) {
+export default function Form({ formData, className = '' }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lgnPatientStatus,
@@ -20,20 +18,11 @@ export default function Form({ clinicData, formData, className = '' }) {
 
   const [values, setValues] = useState({
     name: formData.name,
-    discount: formData.discount,
-    clinic_id: clinicData.id,
+    color: formData.color,
   });
 
   const { processing, recentlySuccessful, errors } = useForm();
 
-  // const handleChangeSelect = e => {
-  //   const key = e.target.id;
-  //   const value = e.target.value;
-  //   setValues(values => ({
-  //     ...values,
-  //     [key]: value,
-  //   }));
-  // };
 
   const handleChange = e => {
     const key = e.target.id;
@@ -47,9 +36,9 @@ export default function Form({ clinicData, formData, className = '' }) {
   const submit = e => {
     e.preventDefault();
     if (formData.id) {
-      router.post(`/patient-status/update?id=${formData.id}`, values);
+      router.post(`/visit-schedule-status/update?id=${formData.id}`, values);
     } else {
-      router.post('/patient-status/update', values);
+      router.post('/visit-schedule-status/update', values);
     }
   };
 
@@ -57,7 +46,7 @@ export default function Form({ clinicData, formData, className = '' }) {
     <section className={className}>
       <header>
         <h2>
-          <Link className="icon-back" href={'/patient-statuses'}>
+          <Link className="icon-back" href={'/visit-schedule-statuses'}>
             &nbsp;
           </Link>
           {formData?.id
@@ -76,14 +65,14 @@ export default function Form({ clinicData, formData, className = '' }) {
           required
           label={msg.get('status.name')}
         />
-        <InputText
-          name={'discount'}
+        <InputColor
+          name={'color'}
           values={values}
-          dataValue={values.discount}
-          value={values.discount}
+          dataValue={values.color}
+          value={values.color}
           onChange={handleChange}
           required
-          label={msg.get('status.discount')}
+          label={msg.get('status.color')}
         />
         <div className="flex items-center">
           <Link
