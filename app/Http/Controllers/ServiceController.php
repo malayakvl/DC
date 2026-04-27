@@ -206,6 +206,7 @@ class ServiceController extends Controller
                 else {
                     $pricing = new Pricing();
                 }
+                // dd($request->rows);exit;
                 $pricing->fill($request->validated());
                 $pricing->category_id = $request->category_id;
                 $pricing->price = $request->price;
@@ -220,10 +221,16 @@ class ServiceController extends Controller
                         $pricingItem->unit_id = $row["unit_id"];
                         $pricingItem->material_id = $row["product_id"];
                         $pricingItem->quantity = $row["quantity"];
+                        $pricingItem->price = $row["price"];
+                        $pricingItem->total = $row["total"];
+                        $pricingItem->mark_up = $row["mark_up"];
+                        $pricingItem->base_price = $row["basePrice"];
+                        $total += $row["total"];
                         $pricingItem->save();
                     }
 
                 }
+                $pricing->total_price = $total + $request->price;
                 $pricing->save();
             }
 

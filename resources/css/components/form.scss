@@ -143,6 +143,19 @@
     text-align: center;
 }
 
+table th,
+table td {
+    // border: solid 1px red;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    // background-color: #01bff8;
+}
+
+.w-product-service {
+    min-width: 420px !important;
+    width: 420px !important;
+}
+
 .w-unit {
     width: 100px !important;
 }
@@ -484,4 +497,28 @@ label.float-label {
     background-position: center !important;
     border: solid 3px #ab7ac1;
     background-repeat: no-repeat;
+}
+
+.service-qty {
+    width: 100px !important;
+    text-align: right !important;
+}
+
+.service-price {
+    width: 115px !important;
+    text-align: right !important;
+}
+
+.service-mark-up {
+    width: 115px !important;
+    text-align: right !important;
+}
+
+.devider-table-custom {
+    border-width: 1px;
+    border-color: #192f36;
+    height: 1px;
+    color: white;
+
+
 }
