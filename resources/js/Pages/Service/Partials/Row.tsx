@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { emptyProducersAutocompleteAction } from '../../../Redux/Clinic';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../hooks';
 import { searchResultServicesSelector, searchResultServicesElementsSelector } from '../../../Redux/Service/selectors';
 import {
   emptyServicesAutocompleteAction,
-  findServiceAction,
-  fincServiceMaterialsAction
+  findServiceAction
 } from '../../../Redux/Service';
 import {
   setPriceItems,
@@ -22,7 +22,7 @@ export default function AddDynamicInputFields({
   unitData,
 }) {
   const [inputs, setInputs] = useState(formRowData);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [hideFields, setHideFields] = useState(false);
   const serchResults = useSelector(searchResultServicesSelector);
   const serviceItemsResult = useSelector(searchResultServicesElementsSelector);

@@ -35,6 +35,17 @@ const lngVisitScheduleStatus = {
     save: 'Зберегти',
     saved: 'Збережено.',
     back: 'Повернутись',
+    'planned': 'Заплановано',
+    'confirm': 'Підтверджено',
+    'decline': 'Скасовано',
+    'in_progress': 'В процесі',
+    'done': 'Завершено',
+    'incabinet': 'В кабінеті',
+    'inclinic': 'В клініці',
+    'late': 'Запізнився',
+    'missed': 'Не з\'явився',
+    'noanswer': 'Не відповів',
+    'postponed': 'Перенесено',
   },
 };
 export default lngVisitScheduleStatus;

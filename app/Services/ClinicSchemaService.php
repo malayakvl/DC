@@ -596,6 +596,7 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 filial_id BIGINT,
+                place_count BIGINT DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -623,6 +624,11 @@ class ClinicSchemaService
                 balance NUMERIC(12,2) DEFAULT 0,
                 visits_count INT DEFAULT 0,
                 last_visit DATE,
+                address VARCHAR(255),
+                birthday DATE,
+                notice TEXT,    
+                phone VARCHAR(50),
+                payment VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
@@ -1377,7 +1383,7 @@ class ClinicSchemaService
             'postponed',
             'noanswer',
             'late',
-            'inclicnic',
+            'inclinic',
             'incabinet',
             'decline',
         ];
@@ -1410,7 +1416,7 @@ class ClinicSchemaService
             'postponed',
             'noanswer',
             'late',
-            'inclicnic',
+            'inclinic',
             'incabinet',
             'decline',
         ];

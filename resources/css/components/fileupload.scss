@@ -108,10 +108,13 @@
   margin-bottom: 10px;
 
   img {
-    width: 197px;
+    width: 195px;
     height: 244px;
-    border: solid 1px;
+    border: solid 0px;
     border-color: rgb(201, 199, 199);
+    max-width: 195px;
+    max-height: 244px;
+    object-fit: scale-down;
   }
 }
 

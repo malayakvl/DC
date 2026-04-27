@@ -1,6 +1,5 @@
 import { createAction } from 'redux-actions';
-// import axios from 'axios';
-// import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios';
 
 export const setPriceItems = createAction('service/SET_PRICING_ITEMS');
 export const setTotalPrice = createAction('service/SET_TOTAL_PRICE');
@@ -9,19 +8,19 @@ export const setShowTableError = createAction('service/SET_TABLE_ERRORS');
 export const findServiceAction: any = createAction(
   'clinic/FIND_SERVICE_EXIST',
   async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
       const state = getState();
       return axios
-        .post(`/service/findService`, { searchName: data }, {})
+        .post(`/material/findMaterial`, { searchName: data }, {})
         .then(async res => {
           return res.data.items;
         });
     }
 );
-export const fincServiceItemsAction: any = createAction(
+export const findServiceItemsAction: any = createAction(
   'clinic/FIND_SERVICE_COMPONENTS',
   async (data: any, rowIndex: number) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
       const state = getState();
       return axios
         .post(`/service/findServiceItems`, { serviceId: data }, {})

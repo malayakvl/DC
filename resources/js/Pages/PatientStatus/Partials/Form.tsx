@@ -25,15 +25,15 @@ export default function Form({ clinicData, formData, className = '' }) {
   });
 
   const { processing, recentlySuccessful, errors } = useForm();
-  console.log('formData', formData);
-  const handleChangeSelect = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
-  };
+
+  // const handleChangeSelect = e => {
+  //   const key = e.target.id;
+  //   const value = e.target.value;
+  //   setValues(values => ({
+  //     ...values,
+  //     [key]: value,
+  //   }));
+  // };
 
   const handleChange = e => {
     const key = e.target.id;

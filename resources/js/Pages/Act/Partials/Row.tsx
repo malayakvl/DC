@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   emptyServicesAutocompleteAction,
   findServiceAction,
-  fincServiceItemsAction
+  findServiceItemsAction
 } from '../../../Redux/Service';
 import { updateServiceItemQtyAction } from '../../../Redux/Act';
 import {
@@ -182,7 +182,7 @@ export default function AddDynamicInputFields({
                   inputs[index].quantity = 1;
                   inputs[index].total = parseFloat(String(inputs[index].price));
                   // находим составляющие услуги
-                  dispatch(fincServiceItemsAction(_res.id, index));
+                  dispatch(findServiceItemsAction(_res.id, index));
                 }}
               >
                 {_res.name}
@@ -234,7 +234,7 @@ export default function AddDynamicInputFields({
                 });
 
                 // Fetch service components and update the Redux state
-                dispatch(fincServiceItemsAction(_res.id, numRow));
+                dispatch(findServiceItemsAction(_res.id, numRow));
               }}
             >
               {_res.name}
