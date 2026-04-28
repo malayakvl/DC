@@ -76,10 +76,10 @@ class SchedulerController extends Controller
             )
             ->orderBy('u.last_name')
             ->get();
-            // dd($customerData);exit;
+            dd($customerSelectData);exit;
             
             // $customerSelectData = DB::select('
-            //     SELECT core.users.id, core.users.file, (core.users.first_name || \' \' || core.users.last_name) AS name,
+            //     SELECT core.users.id,  (core.users.first_name || \' \' || core.users.last_name) AS name,
             //         roles.name AS role_name
             //     FROM core.users
             //     LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = core.users.id
@@ -101,37 +101,37 @@ class SchedulerController extends Controller
             //         AND clinic_filial_user.filial_id =?
             //     ORDER BY name
             // ', [$clinicData->id, $filialId]);
-            $assistantSelectData = DB::table('core.clinic_user as cu')
-                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id') // 💥 вот ключевая строка
-                        ->select(
-                            'u.id',
-                'u.first_name',
-                'u.last_name',
-                'u.email',
-                'cu.avatar'
-            )
-            ->orderBy('u.last_name')
-            ->get();
-
-
-            // $customerData = DB::table('users')
-            //     ->select([
-            //         'users.id',
-            //         'users.file',
-            //         'users.color',
-            //         'users.first_name',
-            //     'users.last_name',
-            //     'roles.name AS role_name'
-            // ])
-            // ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            // ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
-            // ->where('clinic_user.clinic_id', $clinicData->id)
-            // ->where('clinic_user.role_id', '!=', 20)
-            // ->orderBy('last_name')
+            // $assistantSelectData = DB::table('core.clinic_user as cu')
+            //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+            //             ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+            //             ->where('cu.clinic_id', $clinicId)
+            //             ->whereNull('pt.id') // 💥 вот ключевая строка
+            //             ->select(
+            //                 'u.id',
+            //     'u.first_name',
+            //     'u.last_name',
+            //     'u.email',
+            //     'cu.avatar'
+            // )
+            // ->orderBy('u.last_name')
             // ->get();
+
+
+            $customerData = DB::table('users')
+                ->select([
+                    'users.id',
+                    'users.file',
+                    'users.color',
+                    'users.first_name',
+                'users.last_name',
+                'roles.name AS role_name'
+            ])
+            ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
+            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+            ->where('clinic_user.clinic_id', $clinicData->id)
+            ->where('clinic_user.role_id', '!=', 20)
+            ->orderBy('last_name')
+            ->get();
             $customerData = [];
 
             $categories = PriceCategory::get();
@@ -234,9 +234,9 @@ class SchedulerController extends Controller
             $category->level = $level;
             $category->producerName = $category->producer();
             $arrCat[] = $category;
-            if (count($category->children) > 0) {
-                $this->generateCategories($category->children, $arrCat, ($level+1));
-            }
+            // if (count($category->children) > 0) {
+            //     $this->generateCategories($category->children, $arrCat, ($level+1));
+            // }
         }
 
         return $arrCat;

@@ -27,6 +27,7 @@ export default function ProfileMenu() {
     '. ' +
     (array[2] ? array[2][0] : '') +
     '.';
+  console.log(user);
 
 
   return (
@@ -48,7 +49,7 @@ export default function ProfileMenu() {
                       {usePage().props.auth.role.length > 0
                         ? (
                           <>
-                            {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
+                            {user?.current_clinic?.name} <span className="flex gap-[12px]">{<small className="header-filial-name">{user?.current_filial}</small>} <span className="clinic-role">[{usePage().props.auth.role}]</span></span>
                           </>
                         )
                         : (user?.current_clinic?.name || lng.get('menu.no.clinic'))}

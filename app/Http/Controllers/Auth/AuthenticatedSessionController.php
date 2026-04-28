@@ -149,12 +149,26 @@ class AuthenticatedSessionController extends Controller
         $filialId = $assignedFilials->first();
         $request->session()->put('filial_id', $filialId);
 
+        // 🔹 Добавляем это в ответ:
+        $filialName = DB::table('clinic_filials')
+            ->where('id', $filialId)
+            ->value('name');
+
         return response()->json([
             'select_clinic' => false,
             'select_filial' => false,
-            'clinic_id' => $clinicId,
-            'filial_id' => $filialId
+            'clinic_id'     => $clinicId,
+            'filial_id'     => $filialId,
+            'filial_name'   => $filialName,
         ]);
+
+
+        // return response()->json([
+        //     'select_clinic' => false,
+        //     'select_filial' => false,
+        //     'clinic_id' => $clinicId,
+        //     'filial_id' => $filialId
+        // ]);
     }
 
     public function storeOld(LoginRequest $request)
