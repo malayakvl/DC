@@ -10,6 +10,8 @@ import InputRoleSelect from '../../Components/Form/InputRoleSelect';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 
+import { InputColor } from '../../Components/Form/InputColor';
+
 export default function AssignFilialEdit({
   clinicData,
   filialData,
@@ -82,25 +84,49 @@ export default function AssignFilialEdit({
                         options={rolesData}
                         onChange={e => {
                           let tmpPerm = values['permissions'];
-                          const filialId = e.target.id.replace('role_id_', '');
-                          const _tmpPerm = tmpPerm.filter(function (obj) {
-                            return obj.filial_id !== parseInt(filialId);
-                          });
-                          if (parseInt(e.target.value) > 0) {
-                            _tmpPerm.push({
+                          const filialId = parseInt(e.target.id.replace('role_id_', ''));
+                          const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
+                          
+                          if (existingIdx !== -1) {
+                            if (parseInt(e.target.value) > 0) {
+                              tmpPerm[existingIdx].role_id = e.target.value;
+                            } else {
+                              tmpPerm.splice(existingIdx, 1);
+                            }
+                          } else if (parseInt(e.target.value) > 0) {
+                            tmpPerm.push({
                               filial_id: item.id,
                               role_id: e.target.value,
+                              color: customer.color || '#000000'
                             });
                           }
-                          tmpPerm = _tmpPerm;
                           setValues(values => ({
                             ...values,
-                            ['permissions']: tmpPerm,
+                            permissions: [...tmpPerm],
                           }));
                         }}
                         required
                         label={msg.get('customer.role')}
                       />
+                      <div className="relative mt-2">
+                        <InputColor
+                          defaultColor={assignedData.find(_data => _data.filial_id === item.id)?.color || customer.color || '#000000'}
+                          name={`color_${item.id}`}
+                          onChange={e => {
+                            let tmpPerm = values['permissions'];
+                            const filialId = parseInt(e.target.id.replace('color_', ''));
+                            const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
+                            if (existingIdx !== -1) {
+                              tmpPerm[existingIdx].color = e.target.value;
+                              setValues(values => ({
+                                ...values,
+                                permissions: [...tmpPerm],
+                              }));
+                            }
+                          }}
+                          label={msg.get('customer.color')}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

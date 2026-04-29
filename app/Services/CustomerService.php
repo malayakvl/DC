@@ -50,10 +50,32 @@ class CustomerService
         int $filialId,
         array $data
     ): void {
-        ClinicFilialUser::where([
+        $table = \Illuminate\Support\Facades\DB::table("clinic_{$clinicId}.clinic_filial_user");
+        
+        $exists = clone $table;
+        $recordExists = $exists->where([
             'user_id' => $userId,
             'clinic_id' => $clinicId,
             'filial_id' => $filialId,
-        ])->update($data);
+        ])->exists();
+
+        if ($recordExists) {
+            $table->where([
+                'user_id' => $userId,
+                'clinic_id' => $clinicId,
+                'filial_id' => $filialId,
+            ])->update($data);
+        } else {
+            $roleId = \Illuminate\Support\Facades\DB::table("clinic_{$clinicId}.roles")
+                        ->where('name', 'patient')
+                        ->value('id') ?? 6;
+
+            $table->insert(array_merge([
+                'user_id' => $userId,
+                'clinic_id' => $clinicId,
+                'filial_id' => $filialId,
+                'role_id' => $roleId,
+            ], $data));
+        }
     }
 }

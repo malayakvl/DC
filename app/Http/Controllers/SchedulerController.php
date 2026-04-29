@@ -65,6 +65,7 @@ class SchedulerController extends Controller
             $customerSelectData = DB::table('core.clinic_user as cu')
                         ->join('core.users as u', 'cu.user_id', '=', 'u.id')
                         ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
                         ->where('cu.clinic_id', $clinicId)
                         ->whereNull('pt.id') // 💥 вот ключевая строка
                         ->select(
@@ -72,7 +73,9 @@ class SchedulerController extends Controller
                 'u.first_name',
                 'u.last_name',
                 'u.email',
-                'cu.avatar'
+                'cu.avatar',
+                'pfu.color',
+                'pfu.avatar'
             )
             ->orderBy('u.last_name')
             ->get();
@@ -101,6 +104,21 @@ class SchedulerController extends Controller
             //         AND clinic_filial_user.filial_id =?
             //     ORDER BY name
             // ', [$clinicData->id, $filialId]);
+            $assistantSelectData = DB::table('core.clinic_user as cu')
+                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        ->where('cu.clinic_id', $clinicId)
+                        ->whereNull('pt.id') // 💥 вот ключевая строка
+                        ->select(
+                            'u.id',
+                'u.first_name',
+                'u.last_name',
+                'u.email',
+                'cu.avatar'
+            )
+            ->orderBy('u.last_name')
+            ->get();
+            // dd($assistantSelectData);exit;
             // $assistantSelectData = DB::table('core.clinic_user as cu')
             //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
             //             ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
@@ -120,7 +138,6 @@ class SchedulerController extends Controller
             $customerData = DB::table('users')
                 ->select([
                     'users.id',
-                    'users.file',
                     'users.color',
                     'users.first_name',
                 'users.last_name',
@@ -132,7 +149,22 @@ class SchedulerController extends Controller
             ->where('clinic_user.role_id', '!=', 20)
             ->orderBy('last_name')
             ->get();
-            $customerData = [];
+            // $customerData = DB::table('core.clinic_user as cu')
+            //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+            //             ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+            //             ->where('cu.clinic_id', $clinicId)
+            //             ->whereNull('pt.id') // 💥 вот ключевая строка
+            //             ->select(
+            //                 'u.id',
+            //     'u.first_name',
+            //     'u.last_name',
+            //     'u.email',
+            //     'cu.avatar'
+            // )
+            // ->orderBy('u.last_name')
+            // ->get();
+            
+            // dd($customerData);exit;
 
             $categories = PriceCategory::get();
             $arrServices = [];
@@ -144,6 +176,7 @@ class SchedulerController extends Controller
 
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
+            dd($customerData);exit;
             $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
                 return [
                     'label' => __('roles.'.$roleName),

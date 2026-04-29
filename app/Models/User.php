@@ -145,7 +145,7 @@ class User extends Authenticatable
         }
 
         // Берём роль именно для этого филиала
-        $roleData = DB::table('clinic_filial_user')
+        $roleData = DB::table('clinic_'. $clinicId .'.clinic_filial_user')
             ->where('user_id', $this->id)
             ->where('filial_id', $filialId)
             ->first();

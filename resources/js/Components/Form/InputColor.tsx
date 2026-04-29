@@ -82,11 +82,15 @@ const InputColor: React.FC<Props> = ({
   }, [name]);
 
   useEffect(() => {
-    setSelectedColor(colorSettings[name]);
+    if (colorSettings[name] !== undefined) {
+      setSelectedColor(colorSettings[name]);
+    }
   }, [colorSettings, name]);
 
   useEffect(() => {
-    setSelectedColor(value || defaultColor);
+    if (value || defaultColor) {
+      setSelectedColor(value || defaultColor);
+    }
   }, [value, defaultColor]);
 
   return (

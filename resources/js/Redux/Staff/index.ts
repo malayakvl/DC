@@ -29,7 +29,7 @@ const initialState: {
     roles: [],
     suggestionsResult: [],
     itemsResRoles: {},
-    staffColor: "#000000"
+    staffColor: {},
 };
 
 const ACTION_HANDLERS: any = {
@@ -49,10 +49,13 @@ const ACTION_HANDLERS: any = {
             isFetched: false
         })
     },
-    [setPaletteAction]: {
-        next: (state: State.Staffs, action: Action<string>): State.Staffs => ({
+    [(setPaletteAction as any)]: {
+        next: (state: State.Staffs, action: Action<any>): State.Staffs => ({
             ...state,
-            staffColor: action.payload
+            staffColor: {
+                ...(typeof state.staffColor === 'object' ? state.staffColor : {}),
+                [action.payload.field]: action.payload.color
+            }
         })
     },
     [setActiveTabAction]: {
