@@ -15,7 +15,6 @@ export default function Edit({
   unitsData,
   taxData,
 }) {
-  console.log(1111)
   return (
     <AuthenticatedLayout header={<Head title="Opening Balance" />}>
       <Head title="Opening Balance" />

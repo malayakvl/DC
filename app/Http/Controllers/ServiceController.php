@@ -83,11 +83,7 @@ class ServiceController extends Controller
     public function generateCategories($categories, &$arrCat, $level) {
         foreach ($categories as $category) {
             $category->level = $level;
-            // $category->producerName = $category->producer();
             $arrCat[] = $category;
-            // if (count($category->children) > 0) {
-            //     $this->generateCategories($category->children, $arrCat, ($level+1));
-            // }
         }
 
         return $arrCat;
@@ -134,6 +130,7 @@ class ServiceController extends Controller
                     ->select('pricing_items.*', 'materials.name AS product', "materials.id AS product_id")
                     ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
                     ->where('pricing_id', $request->id)->get();
+//                dd($formRow);exit;
                 return Inertia::render('Service/Edit', [
                     'clinicData' => $clinicData,
                     'categoryData' => $tree,

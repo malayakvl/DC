@@ -189,7 +189,16 @@ class OpeningBalanceController extends Controller
                 $formData = OpeningBalance::find($id);
                 $currencyData = Currency::all();
                 // $taxData = Tax::all();
-                $rowData = OpeningBalanceItems::select('opening_balance_items.*', 'materials.name as product')
+                $rowData = OpeningBalanceItems::select(
+                        'opening_balance_items.id',
+                        'opening_balance_items.material_id as product_id',
+                        'opening_balance_items.qty as quantity',
+                        'opening_balance_items.fact_qty',
+                        'opening_balance_items.price',
+                        'opening_balance_items.total',
+                        'opening_balance_items.unit_id',
+                        'materials.name as product'
+                    )
                     ->leftJoin('materials', 'materials.id', '=', 'opening_balance_items.material_id')
                     ->where('opening_balance_id', $id)->get();
                 // $producerData = Producer::all();
@@ -255,6 +264,11 @@ class OpeningBalanceController extends Controller
 
             // Создаем или обновляем накладную
             $invoice = $request->id ? OpeningBalance::find($request->id) : new OpeningBalance();
+
+            if ($invoice->exists && $invoice->status === 'posted') {
+                abort(403, 'Cannot edit a posted document.');
+            }
+
             $invoice->fill($request->validated());
             $invoice->doc_number = $request->doc_number;
             $invoice->doc_date = $request->doc_date;

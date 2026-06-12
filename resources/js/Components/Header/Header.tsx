@@ -25,12 +25,24 @@ export default function Header({ auth }) {
             <img src="../../images/new-diz/logo-e.png" className="h-[50px]" />
           </Link>
           <div className="flex lg:hidden">
-            <button type="button"
-              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+            <button
+              type="button"
+              className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            >
               <span className="sr-only">Open main menu</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
-                aria-hidden="true" className="size-6">
-                <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" strokeLinecap="round" strokeLinejoin="round" />
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden="true"
+                className="size-6"
+              >
+                <path
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>
@@ -42,12 +54,17 @@ export default function Header({ auth }) {
           </div>
         </div>
 
-
         <nav className="hidden md:flex items-center gap-8 text-sm text-white md:min-w-[300px]">
           {/* <a className="hover:text-white" href="#">Features</a> */}
-          <a className="hover:text-white" href="#">Прайс</a>
-          <a className="hover:text-white" href="#">Інтеграція</a>
-          <a className="hover:text-white" href="#">Піддтримка</a>
+          <a className="hover:text-white" href="#">
+            Прайс
+          </a>
+          <a className="hover:text-white" href="#">
+            Інтеграція
+          </a>
+          <a className="hover:text-white" href="#">
+            Піддтримка
+          </a>
           {/* <a className="hover:text-white" href="#">Blog</a> */}
         </nav>
 
@@ -65,10 +82,7 @@ export default function Header({ auth }) {
               >
                 {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
               </Link>
-              <Link
-                href="/register"
-                className="reg-btn"
-              >
+              <Link href="/register" className="reg-btn">
                 {lng.get('menu.register')}
               </Link>
               {/* <div className="mt-1">

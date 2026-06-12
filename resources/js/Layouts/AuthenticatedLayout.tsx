@@ -4,7 +4,12 @@ import { useState } from 'react';
 import Lang from 'lang.js';
 import lngHeader from '../Lang/Header/translation';
 import { useSelector } from 'react-redux';
-import { appFilialSelector, appLangSelector, isShowOverlaySelector, isDataLoadingSelector } from '../Redux/Layout/selectors';
+import {
+  appFilialSelector,
+  appLangSelector,
+  isShowOverlaySelector,
+  isDataLoadingSelector,
+} from '@/Redux/Layout/selectors';
 import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
@@ -13,34 +18,31 @@ import { ToastContainer } from 'react-toastify';
 export default function AuthenticatedLayout({ header, children }) {
   const appLang = useSelector(appLangSelector);
   const isLoading = useSelector(isDataLoadingSelector);
-  const lng = new Lang({
+  new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  const filialName = useSelector(appFilialSelector);
+  useSelector(appFilialSelector);
   const showOverlay = useSelector(isShowOverlaySelector);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
-  const user = usePage().props.auth.user;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  usePage().props.auth.user;
   const handleNavCollapse = () => {
     setIsNavCollapsed(!isNavCollapsed);
   };
 
   return (
-    <div className="min-h-screen" style={{overflowY: showOverlay ? 'hidden' : 'auto'}}>
+    <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'auto' }}>
       {header && (
-        <header className="bg-white shadow">
-          <div className="flex shadow-md py-2 px-4 sm:px-10 top-header font-sans min-h-[50px] tracking-wide relative z-50 header-fixed">
+        <header className="">
+          <div className="flex py-2 px-4 sm:px-10 top-header font-sans min-h-[50px] tracking-wide relative z-50 header-fixed">
             <div className="relative flex w-full">
               <div>
                 <Link href="/">
                   <ApplicationLogo className="block w-auto fill-current text-gray-800" />
                 </Link>
               </div>
-              <button
-                className="navbar-toggler"
-                type="button"
-                onClick={handleNavCollapse}
-              >
+              <button className="navbar-toggler" type="button" onClick={handleNavCollapse}>
                 <svg
                   className="w-7 h-7"
                   fill="#000"
@@ -76,14 +78,14 @@ export default function AuthenticatedLayout({ header, children }) {
       )}
 
       <main className="pt-[60px]">
-        <div className="mx-auto w-full px-4">
+        <div className="mx-auto w-full px-1">
           <div>{children}</div>
         </div>
       </main>
       <ToastContainer />
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#846de1] p-6 rounded-lg shadow-xl flex flex-col items-center">
+          <div className="p-6 rounded-lg shadow-xl flex flex-col items-center">
             <div className="w-12 h-12 border-4 border-gray-200 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-white text-[14px] font-semibold">Loading...</p>
           </div>

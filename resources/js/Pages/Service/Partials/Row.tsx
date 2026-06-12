@@ -1,34 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { emptyProducersAutocompleteAction } from '../../../Redux/Clinic';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../hooks';
-import { searchResultServicesSelector, searchResultServicesElementsSelector } from '../../../Redux/Service/selectors';
+import { useAppDispatch } from '@/hooks';
 import {
-  emptyServicesAutocompleteAction,
-  findServiceAction
-} from '../../../Redux/Service';
-import {
-  setPriceItems,
-  setShowTableError,
-  setTotalPrice,
-} from '../../../Redux/Service';
-import Lang from 'lang.js';
-import { emptyServicesQtyAutocompleteAction } from '../../../Redux/Service/actions';
+  searchResultServicesSelector,
+  searchResultServicesElementsSelector,
+} from '@/Redux/Service/selectors';
+import { emptyServicesAutocompleteAction, findServiceAction } from '@/Redux/Service';
+import { setPriceItems, setShowTableError, setTotalPrice } from '@/Redux/Service';
 import InputSelect from '../../../Components/Form/InputSelect';
 
-export default function AddDynamicInputFields({
-  formRowData = null,
-  lastRow = null,
-  unitData,
-}) {
+export default function AddDynamicInputFields({ formRowData = null, lastRow = null, unitData }) {
   const [inputs, setInputs] = useState(formRowData);
   const dispatch = useAppDispatch();
-  const [hideFields, setHideFields] = useState(false);
+  const [, setHideFields] = useState(false);
   const serchResults = useSelector(searchResultServicesSelector);
-  const serviceItemsResult = useSelector(searchResultServicesElementsSelector);
+  useSelector(searchResultServicesElementsSelector);
   const [numRow, setNumRow] = useState(0);
-  const [weightIntutId, setWeightIntutId] = useState(null);
-  const [availableWeights, setAvailableWeights] = useState(null);
+  const [, setWeightIntutId] = useState(null);
+  const [, setAvailableWeights] = useState(null);
 
   const handleAddInput = () => {
     setInputs([
@@ -42,21 +31,18 @@ export default function AddDynamicInputFields({
         mark_up: '',
         price: '',
         total: '',
-        basePrice: ''
+        basePrice: '',
       },
     ]);
   };
 
-  const handleChange = (event, index, type = '') => {
-    console.log(
-      'select material'
-    );
+  const handleChange = (event, index) => {
     dispatch(setShowTableError(false));
-    let { name, value } = event.target;
-    let onChangeValue = [...inputs];
+    const { name, value } = event.target;
+    const onChangeValue = [...inputs];
     onChangeValue[index][name] = value;
     setNumRow(index);
-    console.log(name, value);
+
     if (name === 'product') {
       if (value.length > 3) {
         dispatch(findServiceAction(value));
@@ -74,13 +60,13 @@ export default function AddDynamicInputFields({
 
       const basePrice = inputs[index].basePrice;
 
-      const newPrice = basePrice + (basePrice * markupValue / 100);
+      const newPrice = basePrice + (basePrice * markupValue) / 100;
 
       inputs[index].price = parseFloat(newPrice.toFixed(2));
 
       inputs[index].total = parseFloat((inputs[index].price * inputs[index].quantity).toFixed(2));
     } else {
-      inputs[index].quantity = event.target.value;
+      // inputs[index].quantity = event.target.value;
       inputs[index].total = event.target.value
         ? parseFloat((parseFloat(event.target.value) * inputs[index].price).toFixed(2))
         : 0;
@@ -88,7 +74,7 @@ export default function AddDynamicInputFields({
     setInputs(onChangeValue);
   };
 
-  const handleDeleteInput = index => {
+  const handleDeleteInput = (index) => {
     const newArray = [...inputs];
     newArray.splice(index, 1);
     setInputs(newArray);
@@ -98,13 +84,13 @@ export default function AddDynamicInputFields({
   useEffect(() => {
     dispatch(setPriceItems(inputs));
     let totalItemPrice = 0;
-    inputs.map(_input => {
+    inputs.map((_input) => {
       totalItemPrice += Number(_input.total ? _input.total : 0);
     });
     dispatch(setTotalPrice(totalItemPrice));
   }, [inputs]);
 
-  const renderSearchProducerResult = index => {
+  const renderSearchProducerResult = (index) => {
     if (serchResults.length > 0) {
       return (
         <div
@@ -112,13 +98,12 @@ export default function AddDynamicInputFields({
           style={{ top: index * 50 + 75 + 'px', width: '500px' }}
         >
           <ul>
-            {serchResults.map(_res => (
+            {serchResults.map((_res) => (
               <li
+                key={index}
                 className="cursor-pointer py-1"
                 onClick={() => {
-                  console.log(
-                    'select material', _res
-                  );
+                  console.log('select material', _res);
                   setHideFields(true);
                   setWeightIntutId(_res.id);
                   const tmpWeight = [];
@@ -133,10 +118,7 @@ export default function AddDynamicInputFields({
                   inputs[index].mark_up = 0;
                   inputs[index].price = _res.price_per_unit;
                   inputs[index].total = (
-                    1 *
-                    (_res.price_per_unit > 0
-                      ? _res.price_per_unit
-                      : _res.retail_price)
+                    1 * (_res.price_per_unit > 0 ? _res.price_per_unit : _res.retail_price)
                   ).toFixed(2);
                 }}
               >
@@ -161,7 +143,7 @@ export default function AddDynamicInputFields({
                 className="input-text"
                 type="text"
                 value={item.product}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
@@ -175,7 +157,7 @@ export default function AddDynamicInputFields({
               value={item.unit_id}
               defaultValue={item.unit_id}
               options={unitData}
-              onChange={event => handleChange(event, index)}
+              onChange={(event) => handleChange(event, index)}
               required
               label={null}
             />
@@ -184,10 +166,10 @@ export default function AddDynamicInputFields({
             <div className="row flex justify-center ">
               <input
                 className="input-text text-center service-qty"
-                name="qty"
+                name="quantity"
                 type="text"
                 value={item.quantity}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
@@ -198,7 +180,7 @@ export default function AddDynamicInputFields({
                 name="price"
                 type="text"
                 value={item.price}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
@@ -209,7 +191,7 @@ export default function AddDynamicInputFields({
                 name="mark_up"
                 type="text"
                 value={item.mark_up}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
@@ -221,17 +203,14 @@ export default function AddDynamicInputFields({
                 name="total"
                 type="text"
                 value={item.total}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
 
           <td className="w-btn pb-2 px-2">
             {inputs.length > 1 && (
-              <button
-                onClick={() => handleDeleteInput(index)}
-                className="btn-delete"
-              />
+              <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
             )}
           </td>
           <td className="w-btn pb-2">

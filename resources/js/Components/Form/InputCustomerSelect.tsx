@@ -39,7 +39,11 @@ export default function InputCustomerSelect({
           onChange={onChange}
         >
           <option value="">{msg.get('dropdown.select')}</option>
-          {props.options.map((option: any) => (
+          {props.options
+            .filter((option: any, index: number, self: any[]) =>
+              self.findIndex((o: any) => o.id === option.id) === index
+            )
+            .map((option: any) => (
             <option key={option.id} value={option.id} selected={option.id === defaultValue}>
               {option.first_name} {option.last_name}
             </option>

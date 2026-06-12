@@ -2,28 +2,29 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prepare": "husky",
-    "build": "vite build",
-    "test": "vite",
     "dev": "vite",
-    "lint": "eslint --fix .",
-    "format": "prettier 'resources/{js,tsx}/**/*.{js,tsx}' --write",
-    "pre-commit": "npm run format && lint-staged && pretty-quick --staged"
+    "build": "vite build",
+    "lint": "eslint resources --ext .js,.ts,.jsx,.tsx",
+    "format": "prettier --write resources"
   },
   "devDependencies": {
     "@headlessui/react": "^2.2.0",
     "@inertiajs/react": "^1.0.0",
     "@tailwindcss/forms": "^0.5.3",
     "@types/react-big-calendar": "^1.16.2",
+    "@types/react-input-mask": "^3.0.6",
     "@types/ziggy-js": "^1.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.59.1",
+    "@typescript-eslint/parser": "^8.59.1",
     "@vitejs/plugin-react": "^4.2.0",
     "autoprefixer": "^10.4.12",
     "axios": "^1.7.4",
     "concurrently": "^9.0.1",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^9.1.7",
@@ -48,9 +49,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^1.0.6",
-    "@mui/icons-material": "^6.4.1",
-    "@mui/lab": "^7.0.0-beta.12",
-    "@mui/material": "^6.4.12",
+    "@mui/icons-material": "^7.3.10",
+    "@mui/material": "^7.3.10",
     "@mui/styled-engine": "^6.1.10",
     "@mui/x-date-pickers": "^8.5.3",
     "@nextui-org/autocomplete": "^2.3.7",
@@ -73,7 +73,7 @@
     "dayjs-plugin-utc": "^0.1.2",
     "dhtmlx-scheduler": "^7.1.3",
     "dropzone": "^6.0.0-beta.2",
-    "faker": "^6.6.6",
+    "faker": "^5.5.3",
     "history": "^5.3.0",
     "i18next": "^23.16.8",
     "lang.js": "^1.1.14",
@@ -105,6 +105,9 @@
     "typescript": "^5.6.3"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix"
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }

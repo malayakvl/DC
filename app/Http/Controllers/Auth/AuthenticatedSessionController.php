@@ -42,7 +42,6 @@ class AuthenticatedSessionController extends Controller
 
     public function storeClinicLogin(LoginClinicRequest $request): RedirectResponse
     {
-        dd($request->all());exit;
         $request->authenticateToClinic();
         $request->session()->regenerate();
 
@@ -59,7 +58,6 @@ class AuthenticatedSessionController extends Controller
 
         /** @var \App\Models\User $logUser */
         $logUser = Auth::user();
-
         /**
          * 1) Получаем клиники из core.clinic_user
          */

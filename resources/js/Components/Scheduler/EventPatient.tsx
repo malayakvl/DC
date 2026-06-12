@@ -36,7 +36,7 @@ export default function EventPatient(values) {
     }));
     // find clinic patients
     if (e.target.value.length > 3) {
-      dispatch(findPatientsAction(e.target.value))
+      dispatch(findPatientsAction(e.target.value) as any)
     }
   };
 
@@ -51,12 +51,12 @@ export default function EventPatient(values) {
           {patientsData.map((_p, _idx) => (
             <li key={_idx} onClick={() => {
               setShowPatientsList(false);
-              patientData.patient = `${_p.last_name} ${_p.first_name} ${_p.patronomic_name}`;
+              patientData.patient = `${_p.last_name} ${_p.first_name}`;
               patientData.patientExistId = _p.id;
-              dispatch(setSchedulePatientIdAction(_p.id))
+              dispatch(setSchedulePatientIdAction(_p.id) as any)
 
             }}>
-              {_p.last_name} {_p.first_name} {_p.patronomic_name}
+              {_p.last_name} {_p.first_name}
             </li>
           ))}
         </ul>
@@ -88,7 +88,7 @@ export default function EventPatient(values) {
                 setAddPatient(!addPatient);
               }}
               className="ml-2 mt-1 text-gray-500 cursor-pointer add-patient"
-              style={{ width: '32px', height: '32px' }}
+              style={{ width: '32px', height: '20px' }}
             ></span>
           )}
         </div>

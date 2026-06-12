@@ -65,21 +65,26 @@ class SchedulerController extends Controller
             $customerSelectData = DB::table('core.clinic_user as cu')
                         ->join('core.users as u', 'cu.user_id', '=', 'u.id')
                         ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
+                        // ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                            $join->on('pfu.user_id', '=', 'u.id')
+                                ->where('pfu.filial_id', $filialId);
+                        })
                         ->where('cu.clinic_id', $clinicId)
                         ->whereNull('pt.id') // 💥 вот ключевая строка
                         ->select(
                             'u.id',
-                'u.first_name',
-                'u.last_name',
-                'u.email',
-                'cu.avatar',
-                'pfu.color',
-                'pfu.avatar'
+                            DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
+                            'u.first_name',
+                            'u.last_name',
+                            'u.email',
+                            'cu.avatar',
+                            'pfu.color',
+                            'pfu.avatar'
             )
             ->orderBy('u.last_name')
             ->get();
-            dd($customerSelectData);exit;
+            // dd($customerSelectData);exit;
             
             // $customerSelectData = DB::select('
             //     SELECT core.users.id,  (core.users.first_name || \' \' || core.users.last_name) AS name,
@@ -111,6 +116,7 @@ class SchedulerController extends Controller
                         ->whereNull('pt.id') // 💥 вот ключевая строка
                         ->select(
                             'u.id',
+                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
                 'u.first_name',
                 'u.last_name',
                 'u.email',
@@ -135,19 +141,41 @@ class SchedulerController extends Controller
             // ->get();
 
 
-            $customerData = DB::table('users')
-                ->select([
-                    'users.id',
-                    'users.color',
-                    'users.first_name',
-                'users.last_name',
-                'roles.name AS role_name'
-            ])
-            ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
-            ->where('clinic_user.clinic_id', $clinicData->id)
-            ->where('clinic_user.role_id', '!=', 20)
-            ->orderBy('last_name')
+            // $customerData = DB::table('users')
+            //     ->select([
+            //         'users.id',
+            //         'users.color',
+            //         'users.first_name',
+            //     'users.last_name',
+            //     'roles.name AS role_name'
+            // ])
+            // ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
+            // ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
+            // ->where('clinic_user.clinic_id', $clinicData->id)
+            // ->where('clinic_user.role_id', '!=', 20)
+            // ->orderBy('last_name')
+            // ->get();
+            $customerData = DB::table('core.clinic_user as cu')
+                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        // ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                            $join->on('pfu.user_id', '=', 'u.id')
+                                ->where('pfu.filial_id', $filialId);
+                        })
+                        ->where('cu.clinic_id', $clinicId)
+                        ->whereNull('pt.id') // 💥 вот ключевая строка
+                        ->select(
+                            'u.id',
+                            DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
+                'u.first_name',
+                'u.last_name',
+                'u.email',
+                'cu.avatar',
+                'pfu.color',
+                'pfu.avatar'
+            )
+            ->orderBy('u.last_name')
             ->get();
             // $customerData = DB::table('core.clinic_user as cu')
             //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
@@ -176,7 +204,7 @@ class SchedulerController extends Controller
 
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
-            dd($customerData);exit;
+            
             $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
                 return [
                     'label' => __('roles.'.$roleName),
@@ -190,12 +218,18 @@ class SchedulerController extends Controller
                 ];
             })->values()->toArray();
         if ($request->session()->get('filial_id')) {
+            // dd(1);exit;
             $listCabinets = DB::table('cabinets')
-                ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
-                ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
-                ->where('cabinets.clinic_id', $clinicData->id)
-                ->where('cabinets.filial_id', $request->session()->get('filial_id'))
-                ->orderBy('name')->get();
+                    ->select('cabinets.*', "clinic_filials.name AS filial_name")
+                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
+                    ->where('cabinets.filial_id', $request->session()->get('filial_id'))
+                    ->orderBy('name')->get();
+            // $listCabinets = DB::table('cabinets')
+            //     ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
+            //     ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
+            //     ->where('cabinets.clinic_id', $clinicData->id)
+            //     ->where('cabinets.filial_id', $request->session()->get('filial_id'))
+            //     ->orderBy('name')->get();
         } else {
             $listCabinets = DB::table('cabinets')
                 ->select('cabinets.*', "clinic_filials.name AS filial_name")
@@ -217,32 +251,33 @@ class SchedulerController extends Controller
         
         $weekStart = date("Y-m-d");
         $weekEnd = date("Y-m-d", strtotime('+3 days'));
-        $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
-                'schedulers.patient_id', 'schedulers.status_name AS event_status',
-                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
-                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name', 'patients.avatar',
-                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
-                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
-                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
-                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
-                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
-                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
-                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
-                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
-                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
-            )
-            ->leftJoin('core.users', 'core.users.id', '=', 'schedulers.doctor_id')
-            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
-            ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
-            ->where('schedulers.clinic_id', $clinicData->id)
-            ->whereBetween('event_date', [$weekStart, $weekEnd])
-            ->get();
+        // $eventsData = DB::table('schedulers')
+        //     ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+        //         'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+        //         'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
+        //         'schedulers.patient_id', 'schedulers.status_name AS event_status',
+        //         'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
+        //         'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+        //         'patient_statuses.discount', 'patient_statuses.name AS patient_status_name', 'patients.avatar',
+        //         DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+        //         DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+        //         DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+        //         DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+        //         DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+        //         DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+        //         DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+        //         DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+        //         DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+        //         'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
+        //     )
+        //     ->leftJoin('core.users', 'core.users.id', '=', 'schedulers.doctor_id')
+        //     ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+        //     ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+        //     ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
+        //     ->where('schedulers.clinic_id', $clinicData->id)
+        //     ->whereBetween('event_date', [$weekStart, $weekEnd])
+        //     ->get();
+            $eventsData = [];   
             
             $formData = new Scheduler();
             return Inertia::render('Scheduler/Index', [
@@ -281,14 +316,11 @@ class SchedulerController extends Controller
             $patientsQueryResults = DB::table('patients')
                 ->select('patients.id', 'core.users.first_name', 'core.users.last_name')
                 ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
-                ->leftJoin('clinic_filial_user', 'clinic_filial_user.user_id', '=', 'core.users.id')
-                ->where('clinic_filial_user.clinic_id', $clinicId)
                 ->where(function($query) use ($qData) {
                     $query->where('core.users.first_name', 'LIKE', '%' . $qData['strFind'] . '%')
                           ->orWhere('core.users.last_name', 'LIKE', '%' . $qData['strFind'] . '%');
                 })
                 ->get();
-
             return response()->json([
                 'items' => $patientsQueryResults
             ]);

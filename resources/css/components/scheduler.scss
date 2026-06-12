@@ -1,9 +1,11 @@
 .css-ynh6fk .rs__cell.rs__time {
     z-index: 10 !important;
 }
+
 .css-1cpvlp1 {
     z-index: 10 !important;
 }
+
 .add-patient {
     display: inline-block;
     background-image: url("../../images/scheduler/add-patient.svg");
@@ -15,6 +17,7 @@
     top: 35px;
     z-index: 44;
 }
+
 .scheduler-status {
     z-index: 99 !important;
 }
@@ -29,6 +32,7 @@
     top: 5px;
     //background-color: palevioletred;
 }
+
 .css-1mrufi {
     z-index: 30 !important;
 }
@@ -47,7 +51,7 @@
     img {
         height: 95px;
         width: auto;
-        padding-left:5px;
+        padding-left: 5px;
     }
 
     .icon-block {
@@ -61,6 +65,7 @@
             margin-right: 20px;
         }
     }
+
     .tabs-block {
         position: absolute;
         right: 10px;
@@ -75,16 +80,19 @@
             padding-bottom: 11px;
             cursor: pointer;
         }
+
         li.active {
             border-bottom: solid 4px;
             border-color: #29425e;
         }
     }
 }
+
 .me-2 {
     white-space: nowrap;
     padding-bottom: 10px;
 }
+
 .sh-p-tabs {
     max-width: 1000px;
     min-width: 100%;
@@ -95,6 +103,7 @@
     scrollbar-color: #d5c2f1 #e8e5e0;
     scrollbar-width: thin;
 }
+
 .sh-p-tabs a {
     color: #0a3622;
     display: inline-block;
@@ -103,10 +112,12 @@
     border-radius: 4px 4px 0 0;
     font-size: 12px;
 }
+
 .rbc-btn-group {
     font-size: 12px;
     font-weight: bold;
 }
+
 .date-picker {
     font-size: 12px;
     background: #fff;
@@ -114,46 +125,55 @@
     padding: 4px;
     border-radius: 4px;
 }
+
 .rbc-timeslot-group {
     min-width: 78px;
 }
+
 .rbc-time-slot {
     text-align: center !important;
     font-weight: bold !important;
     font-size: 13px;
 }
+
 .disabled-content {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
-    left:0;
+    left: 0;
     background: palevioletred;
     z-index: 80;
 }
+
 .form-scheduler {
     position: fixed;
     top: 15%;
-    left:29%;
+    left: 29%;
     border-radius: 5px;
     //background: palevioletred;
     z-index: 20;
     min-width: 610px;
     min-height: 560px;
 }
+
 .rbc-event {
     font-size: 12px;
     padding: 0 !important;
 }
-.rbc-toolbar-label, .rbc-button-link {
+
+.rbc-toolbar-label,
+.rbc-button-link {
     font-family: "Manrope", sans-serif;
     font-weight: bold;
     color: #5b28e3;
 }
+
 .manipulation {
     color: #424d71;
     cursor: pointer;
 }
+
 .add-services {
     color: #424d71;
 }
@@ -162,19 +182,23 @@
     height: 300px;
     max-height: 300px;
 }
+
 .price-container {
     margin-bottom: 30px;
 }
+
 .add-minpulation-row {
     cursor: pointer;
 }
-.add-minpulation-row.selected .price-row{
+
+.add-minpulation-row.selected .price-row {
     background: #032f62;
     color: #fff;
 }
+
 .d-patient-list {
     font-size: 13px;
-    background: #fff;
+    background: #000;
     position: absolute;
     width: 100%;
     z-index: 999;
@@ -186,25 +210,31 @@
         padding-bottom: 4px;
         padding-left: 10px;
         cursor: pointer;
+        color: #fff;
     }
 }
+
 .hover-event-popup {
     background: #fff;
     font-size: 12px;
     text-align: left;
 }
+
 .hover-event-title {
     text-align: left;
     font-size: 13px;
     font-weight: bold;
     color: #6149d7;
 }
+
 .sh-doctor {
     color: #6149d7;
 }
+
 .sh-patient {
     color: palevioletred;
 }
+
 .rbc-event-data {
     padding: 0px;
     width: 100%;
@@ -214,6 +244,7 @@
     height: 100%;
     min-height: 1em;
 }
+
 .sch-time {
     padding-left: 5px;
     padding-top: 4px;
@@ -221,18 +252,21 @@
     color: #9b0660;
     font-weight: bold;
 }
+
 .rbc-event-label {
     display: none !important;
 }
+
 .event-big-content {
     font-size: 12px;
     padding: 10px;
     border: solid 1px purple;
     border-radius: 5px;
-    box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
-    -webkit-box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
-    -moz-box-shadow: 2px -3px 31px 0px rgba(60,21,204,0.46);
+    box-shadow: 2px -3px 31px 0px rgba(60, 21, 204, 0.46);
+    -webkit-box-shadow: 2px -3px 31px 0px rgba(60, 21, 204, 0.46);
+    -moz-box-shadow: 2px -3px 31px 0px rgba(60, 21, 204, 0.46);
 }
+
 .sh-event-status {
     position: absolute;
     top: 3px;
@@ -241,10 +275,12 @@
     width: 13px;
     height: 13px;
 }
+
 .sch-title {
     background: #e8e8de;
     padding: 2px 0;
 }
+
 .rbc-active {
     background-image: none;
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
@@ -252,6 +288,7 @@
     border-color: #6149d7 !important;
     color: #fff !important;
 }
+
 .sch_tooltip {
     background-color: white;
     position: absolute;
@@ -267,10 +304,12 @@
     left: 300px;
     display: none;
 }
+
 .sch_tooltip .sch_arrow.left {
     left: 11px;
     top: 15px;
 }
+
 .sch_tooltip .sch_arrow {
     position: absolute;
     display: none;
@@ -295,9 +334,11 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    width: 380px; /* Фиксированная ширина поповера */
+    width: 380px;
+    /* Фиксированная ширина поповера */
     min-height: 200px;
-    z-index: 1000; /* Поверх других элементов */
+    z-index: 1000;
+    /* Поверх других элементов */
 }
 
 .sch-content {
@@ -308,7 +349,8 @@
 
 /* Для стрелки, если поповер сверху (указывает вниз) */
 .sch_arrow.down {
-    transform: rotate(225deg); /* Поворот для указания вниз */
+    transform: rotate(225deg);
+    /* Поворот для указания вниз */
 }
 
 .arrow-left {
@@ -321,6 +363,7 @@
     left: 10%;
     //box-shadow: 1px 1px 20px 0px rgba(0, 0, 0, 0.6);
 }
+
 .arrow-right {
     position: absolute;
     width: 20px;
@@ -331,17 +374,21 @@
     right: 10%;
     //box-shadow: 1px 1px 20px 0px rgba(0, 0, 0, 0.6);
 }
+
 .p-cabinet {
     font-weight: bold;
     color: #5a20da;
 }
+
 .p-doctor {
     font-weight: bold;
     color: #9b180d;
 }
+
 .p-balance.red {
     color: red;
 }
+
 .sch-services {
     min-height: 50px;
     height: 100px;
@@ -352,8 +399,10 @@
     border-radius: 4px;
     margin-bottom: 10px;
 }
+
 .sch-tabs {
     width: 100%;
+
     ul {
         width: 100%;
 
@@ -375,11 +424,13 @@
     right: 15px;
     cursor: pointer;
 }
+
 .sh-discount {
     font-weight: bold;
     color: #b90808;
     font-style: normal;
 }
+
 .service-item em {
     font-style: normal;
     font-size: 11px;
@@ -389,13 +440,15 @@
     width: 100px;
     white-space: nowrap;
 }
+
 .sh-p-view {
-    border: solid 1px ;
+    border: solid 1px;
     border-color: rgb(209, 213, 219);
     border-radius: 4px;
     padding: 8px 10px 8px 10px;
     font-size: 14px;
 }
+
 .text-discount {
     color: #f76ab0;
     font-weight: bold;
@@ -404,11 +457,13 @@
     right: 8px;
     top: 29px;
 }
+
 .sh-discount {
     color: #f76ab0;
     font-size: 11px;
     font-weight: bolder;
 }
+
 .shc-form-date {
     min-width: 120px;
     width: 160px;
@@ -419,6 +474,7 @@
     background-color: transparent;
     color: #fff;
 }
+
 .f-calendar {
     background: url(../../images/action-icons/calendar.svg);
     background-repeat: no-repeat;
@@ -430,6 +486,7 @@
     top: 34px;
     right: 41px;
 }
+
 .f-clock {
     background: url(../../images/action-icons/clock.svg);
     background-repeat: no-repeat;
@@ -445,11 +502,13 @@
 .rbc-today {
     background-color: #444c72 !important;
 }
+
 .rbc-timeslot-group {
     // background-color: transparent !important;
     min-height: 64px !important;
 
 }
+
 // .rbc-time-slot {
 //     background-color: #000 !important;
 //     color: #fff;
@@ -461,26 +520,33 @@
 .rbc-day-slot .rbc-time-slot {
     border-top: 1px solid #989393 !important;
 }
+
 .rbc-current-time-indicator {
     background-color: #eb49bb !important;
     height: 2px;
 }
+
 .rbc-timeslot-group {
     border-bottom: none !important;
 }
+
 .sh-d-select {
     background-color: transparent !important;
 }
+
 .rbc-time-header-gutter {
     background-color: transparent !important;
 }
+
 .rbc-time-gutter .rbc-timeslot-group {
     background-color: #2d3b5c;
     color: #fff;
 }
+
 .rbc-time-gutter .rbc-time-slot {
     border-bottom: solid 1px #444c72;
 }
+
 .scheduler-popup {
     @apply px-5 max-h-[75vh] form-scheduler bg-[#020e13] overflow-y-auto;
     -webkit-box-shadow: -1px -1px 26px 0px rgba(243 68 184 / 0.75);
@@ -490,19 +556,30 @@
     @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
     color: #fff;
 }
+
 .rbc-toolbar button {
     color: #fff !important;
 }
+
 .sh-d-select {
     background-color: #032f62 !important;
     z-index: 9999;
 }
+
 .css-cwtq7d-control {
     background-color: #000 !important;
     color: #fff;
 }
+
 .rbc-toolbar-label {
     color: #fff !important;
+}
+
+.rbc-time-header-content {
+    color: #fff !important;
+}
+.scheduler-popup #comment {
+    color: #fff;
 }
 // .css-hlgwow div {
 //     background-color: #000 !important;
