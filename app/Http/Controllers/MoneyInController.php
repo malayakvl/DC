@@ -123,22 +123,12 @@ class MoneyInController extends Controller
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if ($request->user()->can('invoice-incoming-create')) {
-                // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
                 $currencyData = Currency::all();
-                $unitsData = Unit::all();
-                $taxData = Tax::all();
                 $typeData = array();
                 $formData = new MoneyIn();
-                $lastInvoiceNum = DB::table('invoices')
-                    // ->where('clinic_id', $clinicData->id)
-                    ->max('invoice_number');
+                $lastInvoiceNum = DB::table('money_in')
+                    ->max('document_number');
                 if (!$lastInvoiceNum) {
                     $num = 1;
                 } else {
@@ -151,22 +141,11 @@ class MoneyInController extends Controller
                 $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
                 $paymentsMethods = PaymentMethod::all();
                 
-                // $customerData = DB::table('core.clinic_user')
-                //     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                //     ->select(
-                //         'users.id',
-                //         'users.first_name',
-                //         'users.last_name',
-                //         'users.email'
-                //     )
-                //     ->where('clinic_user.clinic_id', $clinicId)
-                //     ->orderBy('users.last_name')
-                //     ->get();
                 $customerData = DB::table('core.clinic_user as cu')
                         ->join('core.users as u', 'cu.user_id', '=', 'u.id')
                         ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
                         ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id') // 💥 вот ключевая строка
+                        ->whereNull('pt.id')
                         ->select(
                             'u.id',
                             'u.first_name',
@@ -180,15 +159,12 @@ class MoneyInController extends Controller
 
                 return Inertia::render('MoneyIn/Create', [
                     'clinicData' => $clinicData,
-                    'filialData' => $storeData,
                     'formData' => $formData,
                     'customerData' => $customerData,
                     'paymentsMethodsData' => $paymentsMethods,
                     'statusData' => Invoices::INVOICE_STATUSES,
                     'typeData' => $typeData,
                     'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
                 ]);
             } else {
                 return Inertia::render('Layouts/NoPermission', [
@@ -206,47 +182,34 @@ class MoneyInController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if ($request->user()->can('invoice-incoming-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
                 $typeData = array();
-                $unitsData = Unit::all();
-                $formData = Invoice::find($id);
+                $formData = MoneyIn::find($id);
                 $currencyData = Currency::all();
-                $taxData = Tax::all();
-                $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
-                    ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
-                    ->where('invoice_id', $id)->get();
-                $producerData = Producer::all();
-                
-                $customerData = DB::table('core.clinic_user')
-                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                    ->select(
-                        'users.id',
-                        'users.first_name',
-                        'users.last_name',
-                        'users.email'
-                    )
-                    ->where('clinic_user.clinic_id', $clinicId)
-                    ->orderBy('users.last_name')
-                    ->get();
+                $paymentsMethods = PaymentMethod::all();
 
-                return Inertia::render('InvoiceIncoming/Edit', [
+                $customerData = DB::table('core.clinic_user as cu')
+                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                        ->where('cu.clinic_id', $clinicId)
+                        ->whereNull('pt.id')
+                        ->select(
+                            'u.id',
+                            'u.first_name',
+                            'u.last_name',
+                            'u.email',
+                            'cu.avatar'
+                        )
+                        ->orderBy('u.last_name')
+                        ->get();
+
+                return Inertia::render('MoneyIn/Edit', [
                     'clinicData' => $clinicData,
-                    'filialData' => $storeData,
                     'formData' => $formData,
-                    'formRowData' => $rowData,
-                    'storeData' => $storeData,
                     'customerData' => $customerData,
-                    'producerData' => $producerData,
+                    'paymentsMethodsData' => $paymentsMethods,
                     'statusData' => Invoices::INVOICE_STATUSES,
                     'typeData' => $typeData,
                     'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
                 ]);
 
             } else {
