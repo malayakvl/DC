@@ -72,34 +72,57 @@ class OpeningBalanceController extends Controller
                 }
             }
 
+            $dateFrom = $request->input('date_from', '');
+            $dateTo = $request->input('date_to', '');
+            $dateToEnd = $dateTo ? $dateTo . ' 23:59:59' : '';
+
             if ($request->user()->roles[0]->name == 'Admin') {
-                $invoiceData = DB::table('opening_balances')
+                $query = DB::table('opening_balances')
                     ->select('opening_balances.*',
                         'stores.name AS storeName',
-                        // 'invoice_statuses.name as statusName',
-                        // 'invoice_types.name as typeName',
                         'users.name AS customerName',
                         'suppliers.name AS supplierName'
                     )
                     ->leftJoin('stores', 'stores.id', '=', 'opening_balances.store_id')
-                    ->leftJoin('core.users', 'core.users.id', '=', 'opening_balances.customer_id')
-                    ->orderBy('opening_balances.doc_number', 'DESC')->get();
+                    ->leftJoin('core.users', 'core.users.id', '=', 'opening_balances.customer_id');
+
+                if ($dateFrom) {
+                    $query->where('opening_balances.doc_date', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->where('opening_balances.doc_date', '<=', $dateToEnd);
+                }
+
+                $invoiceData = $query->orderBy('opening_balances.doc_number', 'DESC')->get();
             } else {
-                // dd($arrStores);exit;
-                $invoiceData = DB::table('opening_balances')
+                $query = DB::table('opening_balances')
                     ->select('opening_balances.*',
                         'stores.name AS storeName',     
                         'users.name AS customerName'
                     )
                     ->leftJoin('stores', 'stores.id', '=', 'opening_balances.store_id')
                     ->leftJoin('core.users', 'core.users.id', '=', 'opening_balances.customer_id')
-                    ->whereIn('opening_balances.store_id', $arrStores)
-                    ->orderBy('opening_balances.doc_number', 'DESC')->get();
+                    ->whereIn('opening_balances.store_id', $arrStores);
+
+                if ($dateFrom) {
+                    $query->where('opening_balances.doc_date', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->where('opening_balances.doc_date', '<=', $dateToEnd);
+                }
+
+                $invoiceData = $query->orderBy('opening_balances.doc_number', 'DESC')->get();
             }
-            // dd($invoiceData);exit;
+
+            $filters = [
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ];
+
             return Inertia::render('OpeningBalance/List', [
                 'clinicData' => $clinic,
-                'listData' => $invoiceData
+                'listData' => $invoiceData,
+                'filters' => $filters,
             ]);
         });
     }

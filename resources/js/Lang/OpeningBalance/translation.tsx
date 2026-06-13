@@ -45,6 +45,10 @@ const lngOpeningBalance = {
     unit: 'Од. вим.',
     rate: 'Курс',
     'row.error': 'Заповніть табличну частину',
+    date_from: 'Дата з',
+    date_to: 'Дата по',
+    filter: 'Фільтрувати',
+    reset: 'Скинути',
   },
 };
 export default lngOpeningBalance;

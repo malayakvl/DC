@@ -28,11 +28,10 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
     messages: lngInvoiceIncoming,
     locale: appLang,
   });
-  const msgDropdown = new Lang({
+  new Lang({
     messages: lngDropdown,
     locale: appLang,
   });
-
   const [values, setValues] = useState({
     date_from: filters?.date_from || '',
     date_to: filters?.date_to || '',
@@ -62,7 +61,6 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
     currencyId: number,
     paymentMethod: any
   ) => {
-    console.log(invoiceId, paymentMethodId, amount, currencyId, paymentMethod);
     if (paymentMethod.balance <= 0) {
       setPaymentAmountError(true);
     } else {
