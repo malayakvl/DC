@@ -43,7 +43,12 @@ const lngOpeningBalance = {
     cancelissue: 'Відмінити проведення',
     factqty: 'Фактична кіл-ть',
     unit: 'Од. вим.',
-    rate: 'Курс'
+    rate: 'Курс',
+    'row.error': 'Заповніть табличну частину',
+    date_from: 'Дата з',
+    date_to: 'Дата по',
+    filter: 'Фільтрувати',
+    reset: 'Скинути',
   },
 };
 export default lngOpeningBalance;

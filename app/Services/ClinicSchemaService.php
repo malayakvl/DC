@@ -214,6 +214,7 @@ class ClinicSchemaService
                 user_id BIGINT NOT NULL,
                 color VARCHAR(7) DEFAULT NULL,
                 phone VARCHAR(20) DEFAULT NULL,
+                inn VARCHAR(20) DEFAULT NULL,
                 avatar VARCHAR(255) DEFAULT NULL,
                 invite_token VARCHAR(255) DEFAULT NULL,
                 role_id BIGINT NOT NULL,

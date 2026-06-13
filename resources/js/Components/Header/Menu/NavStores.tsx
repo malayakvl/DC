@@ -17,63 +17,59 @@ export default function NavStores() {
 
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['store-all']) && (
-          <Menu as="div" className="relative top-menu-nav">
-            <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.materials')}
-            </MenuButton>
-            <MenuItems
-              transition
-              className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['store-all']) && (
+        <Menu as="div" className="relative top-menu-nav">
+          <MenuButton className="top-nav">{lng.get('menu.materials')}</MenuButton>
+          <MenuItems
+            transition
+            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform
                                         data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
-            >
-              <div>
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/units'}>
-                      {lng.get('menu.units')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/producers'}>
-                      {lng.get('menu.material.brands')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/suppliers'}>
-                      {lng.get('menu.material.suppliers')}
-                    </Link>
-                  </MenuItem>
-                )}
+          >
+            <div>
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/units'}>
+                    {lng.get('menu.units')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/producers'}>
+                    {lng.get('menu.material.brands')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/suppliers'}>
+                    {lng.get('menu.material.suppliers')}
+                  </Link>
+                </MenuItem>
+              )}
 
-
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/material-categories'}>
-                      {lng.get('menu.material.categories')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/materials'}>
-                      {lng.get('menu.materials')}
-                    </Link>
-                  </MenuItem>
-                )}
-              </div>
-            </MenuItems>
-          </Menu>
-        )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/material-categories'}>
+                    {lng.get('menu.material.categories')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/materials'}>
+                    {lng.get('menu.materials')}
+                  </Link>
+                </MenuItem>
+              )}
+            </div>
+          </MenuItems>
+        </Menu>
+      )}
     </>
   );
 }

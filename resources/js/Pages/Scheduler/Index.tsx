@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react';
-import PropTypes from 'prop-types'
-import Select from "react-select";
+import PropTypes from 'prop-types';
+import Select from 'react-select';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Calendar, dateFnsLocalizer, Navigate } from 'react-big-calendar';
 import TimeGrid from 'react-big-calendar/lib/TimeGrid';
-import * as dates from 'date-arithmetic'
+import * as dates from 'date-arithmetic';
 import moment from 'moment';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -14,7 +14,7 @@ import { Head } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { uk } from 'date-fns/locale';
 import { Link } from '@inertiajs/react';
@@ -26,17 +26,18 @@ import {
   showScheduleEditPopupAction,
   showSchedulePopupAction,
   updateSchedulerPeriodAction,
-  setExistServicesAction, setPopupCabinetAction,
-} from '../../Redux/Scheduler';
+  setExistServicesAction,
+  setPopupCabinetAction,
+} from '@/Redux/Scheduler';
 import SchedulerFormCreate from './Form/FormPopupCreate';
-import { showOverlayAction } from '../../Redux/Layout';
+import { showOverlayAction } from '@/Redux/Layout';
 import Pricing from './Pricing';
 import {
   eventsDataSelector,
   pricePopupSelector,
   showEditPopupSelector,
   showSchedulePopupSelector,
-} from '../../Redux/Scheduler/selectors';
+} from '@/Redux/Scheduler/selectors';
 import dayjs from 'dayjs';
 import SecondaryButton from '../../Components/Form/SecondaryButton';
 import { faClose, faList, faUser, faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -44,11 +45,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'react-tooltip/dist/react-tooltip.css';
 import SchedulerFormEdit from './Form/FormPopupEdit';
 import { ToastContainer, toast } from 'react-toastify';
-import { updateEventsAction } from '../../Redux/Scheduler/actions';
-import { setPatientTab } from '../../Redux/Patient';
+import { updateEventsAction } from '@/Redux/Scheduler/actions';
+import { setPatientTab } from '@/Redux/Patient';
 
 const locales = {
-  'uk': uk,
+  uk: uk,
 };
 const localizerFn = dateFnsLocalizer({
   format,
@@ -63,7 +64,7 @@ const maxTime = new Date();
 maxTime.setHours(20, 0, 0, 0); // 20:00
 
 const DnDCalendar = withDragAndDrop(Calendar);
-
+console.log('TUT');
 const customStyles = {
   group: (provided) => ({
     ...provided,
@@ -116,12 +117,19 @@ function MyWeek({
   scrollToTime = localizer.startOf(new Date(), 'day'),
   ...props
 }) {
-  const currRange = useMemo(
-    () => MyWeek.range(date, { localizer }),
-    [date, localizer]
-  )
+  const currRange = useMemo(() => MyWeek.range(date, { localizer }), [date, localizer]);
 
   return (
+    // <TimeGrid
+    //   date={date}
+    //   eventOffset={30}
+    //   localizer={localizer}
+    //   max={max}
+    //   min={min}
+    //   range={currRange}
+    //   scrollToTime={scrollToTime}
+    //   {...props}
+    // />
     <TimeGrid
       date={date}
       eventOffset={30}
@@ -130,9 +138,12 @@ function MyWeek({
       min={min}
       range={currRange}
       scrollToTime={scrollToTime}
+      resources={props.resources}
+      resourceIdAccessor={props.resourceIdAccessor}
+      resourceTitleAccessor={props.resourceTitleAccessor}
       {...props}
     />
-  )
+  );
 }
 MyWeek.propTypes = {
   date: PropTypes.instanceOf(Date).isRequired,
@@ -140,33 +151,33 @@ MyWeek.propTypes = {
   max: PropTypes.instanceOf(Date),
   min: PropTypes.instanceOf(Date),
   scrollToTime: PropTypes.instanceOf(Date),
-}
+};
 MyWeek.range = (date, { localizer }) => {
   const start = date;
-  const end = dates.add(start, 2, 'day')
+  const end = dates.add(start, 2, 'day');
 
-  let current = start
-  const range = []
+  let current = start;
+  const range = [];
 
   while (localizer.lte(current, end, 'day')) {
-    range.push(current)
-    current = localizer.add(current, 1, 'day')
+    range.push(current);
+    current = localizer.add(current, 1, 'day');
   }
 
-  return range
-}
+  return range;
+};
 MyWeek.navigate = (date, action, { localizer }) => {
   switch (action) {
     case Navigate.PREVIOUS:
-      return localizer.add(date, -3, 'day')
+      return localizer.add(date, -3, 'day');
 
     case Navigate.NEXT:
-      return localizer.add(date, 3, 'day')
+      return localizer.add(date, 3, 'day');
 
     default:
-      return date
+      return date;
   }
-}
+};
 MyWeek.title = (date) => {
   const endDate = new Date(date);
   endDate.setDate(date.getDate() + 3);
@@ -180,7 +191,7 @@ const getCurrentWeekRange = () => {
 
   // Начало недели (понедельник)
   const start = new Date(now);
-  const nowDay = new Date(now);
+  // const nowDay = new Date(now);
   start.setDate(now.getDate() - diffToMonday);
   start.setHours(0, 0, 0, 0); // Устанавливаем время на 00:00:00
 
@@ -203,7 +214,7 @@ export default function Index({
   currency,
   categoriesData,
   tree,
-  services
+  services,
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -220,20 +231,20 @@ export default function Index({
     week: msg.get('scheduler.3days'),
     day: msg.get('scheduler.day'),
     agenda: msg.get('scheduler.agenda'),
-  }
+  };
   const now = new Date();
   const shEvents = useSelector(eventsDataSelector);
   const [events, setEvents] = useState(eventsData);
   const [filteredEvents, setFilteredEvents] = useState<any>([]);
-  const [activePerson, setActivePerson] = useState('all');
+  // const [activePerson, setActivePerson] = useState('all');
   const [selectedCabinet, setSelectedCabinet] = useState('all');
   const [showAlert, setShowAlert] = useState(false);
   const showPrice = useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
 
-  const [dateRange, setDateRange] = useState(getCurrentWeekRange());
-  const [draggedTask, setDraggedTask] = useState(null);
+  // const [dateRange, setDateRange] = useState(getCurrentWeekRange());
+  // const [draggedTask, setDraggedTask] = useState(null);
   const popoverRef = useRef(null);
   const [eventView, setEventView] = useState(null);
   const { views } = useMemo(
@@ -244,9 +255,8 @@ export default function Index({
       },
     }),
     []
-  )
-  const notify = () => toast("Wow so easy!");
-
+  );
+  const notify = () => toast('Wow so easy!');
 
   useEffect(() => {
     /**
@@ -255,80 +265,95 @@ export default function Index({
      * teardown your interface prior to the timed method being called.
      */
     return () => {
-      window.clearTimeout(clickRef?.current)
-    }
-  }, [])
+      window.clearTimeout(clickRef?.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (shEvents.length) {
-      const _perfEvents = [];
-      shEvents.forEach(_event => {
+      // const _perfEvents = [];
+      shEvents.forEach((_event) => {
         _event.start = new Date(
           parseInt(_event.year),
           parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
+          parseInt(_event.day),
+          parseInt(_event.hour_from),
+          parseInt(_event.minute_from),
+          0
+        );
         _event.end = new Date(
           parseInt(_event.year),
           parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
+          parseInt(_event.day),
+          parseInt(_event.hour_to),
+          parseInt(_event.minute_to),
+          0
+        );
       });
     }
-    setFilteredEvents(shEvents)
-  }, [shEvents])
+    setFilteredEvents(shEvents);
+  }, [shEvents]);
 
   useEffect(() => {
     if (eventsData.length) {
-      const _perfEvents = [];
-      eventsData.forEach(_event => {
+      // const _perfEvents = [];
+      eventsData.forEach((_event) => {
         _event.start = new Date(
           parseInt(_event.year),
           parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_from), parseInt(_event.minute_from), 0);
+          parseInt(_event.day),
+          parseInt(_event.hour_from),
+          parseInt(_event.minute_from),
+          0
+        );
         _event.end = new Date(
           parseInt(_event.year),
           parseInt(_event.month) - 1,
-          parseInt(_event.day), parseInt(_event.hour_to), parseInt(_event.minute_to), 0);
-        _event.desc = 'Some description'
+          parseInt(_event.day),
+          parseInt(_event.hour_to),
+          parseInt(_event.minute_to),
+          0
+        );
+        _event.desc = 'Some description';
       });
     }
-    setFilteredEvents(eventsData)
+    setFilteredEvents(eventsData);
   }, [eventsData]);
-
 
   const filterByCabinets = (cabinetId) => {
     let filteredEvents;
     if (selectedCabinet !== cabinetId && cabinetId !== 'all') {
       filteredEvents = {
-        all: events.all.filter(event => event.cabinet_id === cabinetId)
+        all: events.all.filter((event) => event.cabinet_id === cabinetId),
       };
     } else {
       filteredEvents = {
-        all: events.all
-      }
+        all: events.all,
+      };
     }
     setSelectedCabinet(cabinetId);
-    setFilteredEvents(filteredEvents)
+    setFilteredEvents(filteredEvents);
   };
   const filterByPerson = (cabinetId) => {
     let filteredEvents;
     if (selectedCabinet !== cabinetId && cabinetId !== 'all') {
       filteredEvents = {
-        all: events.all.filter(event => event.cabinet_id === cabinetId)
+        all: events.all.filter((event) => event.cabinet_id === cabinetId),
       };
     } else {
       filteredEvents = {
-        all: events.all
-      }
+        all: events.all,
+      };
     }
     setSelectedCabinet(cabinetId);
-    setFilteredEvents(filteredEvents)
+    setFilteredEvents(filteredEvents);
   };
   const shortenName = (fullName) => {
-    if (!fullName || typeof fullName !== "string") {
-      return "Неправильний формат імені";
+    if (!fullName || typeof fullName !== 'string') {
+      return 'Неправильний формат імені';
     }
 
-    const parts = fullName.trim().split(" ");
+    const parts = fullName.trim().split(' ');
     if (parts.length < 2) {
       return "Потрібно щонайменше прізвище та ім'я";
     }
@@ -340,29 +365,22 @@ export default function Index({
     }
 
     return result;
-  }
+  };
 
   /**************************/
   /****** EVENTS ACTIONS */
   /**************************/
-  const moveEvent = ({
-   event,
-   start,
-   end,
-   resourceId,
-   isAllDay:
-   droppedOnAllDaySlot = false
-  }) => {
+  const moveEvent = ({ event, start, end, resourceId }) => {
     const eventId = event.event_id;
     // find place count in cabinet
-    const cabinetCntPlace = cabinetData.find(_cabinet => _cabinet.id === resourceId).place_count;
+    const cabinetCntPlace = cabinetData.find((_cabinet) => _cabinet.id === resourceId).place_count;
 
     const startThreshold = start;
-    const filteredData = events.filter(_event => {
+    const filteredData = events.filter((_event) => {
       const threshold = new Date(startThreshold);
       const eventStart = new Date(_event.start);
       const eventEnd = new Date(_event.end);
-      return ((threshold >= eventStart && threshold <= eventEnd) && _event.event_id !== event.event_id);
+      return threshold >= eventStart && threshold <= eventEnd && _event.event_id !== event.event_id;
     });
     if (filteredData.length >= cabinetCntPlace) {
       toast.error(msg.get('scheduler.cabinet.full'), {
@@ -374,84 +392,94 @@ export default function Index({
         draggable: true,
       });
     } else {
-      dispatch(updateEventsAction({
-        date: moment(start).format('YYYY-MM-DD'),
-        start: moment(start).format('HH:mm'),
-        end: moment(end).format('HH:mm'),
-        resource_id: resourceId,
-        event_id: event.event_id}));
+      dispatch(
+        updateEventsAction({
+          date: moment(start).format('YYYY-MM-DD'),
+          start: moment(start).format('HH:mm'),
+          end: moment(end).format('HH:mm'),
+          resource_id: resourceId,
+          event_id: event.event_id,
+        })
+      );
       setFilteredEvents((prev) =>
         prev.map((ev) =>
           ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: resourceId } : ev
         )
       );
-
     }
   };
   const onEventResize = ({ event, start, end }) => {
     const eventId = event.event_id;
     console.log('Resize event', filteredEvents);
-    dispatch(updateEventsAction({
-      date: moment(start).format('YYYY-MM-DD'),
-      start: moment(start).format('HH:mm'),
-      end: moment(end).format('HH:mm'),
-      resource_id: event.cabinet_id,
-      event_id: event.event_id}));
+    dispatch(
+      updateEventsAction({
+        date: moment(start).format('YYYY-MM-DD'),
+        start: moment(start).format('HH:mm'),
+        end: moment(end).format('HH:mm'),
+        resource_id: event.cabinet_id,
+        event_id: event.event_id,
+      })
+    );
 
-    console.log(filteredEvents.find(ev => ev.event_id === eventId));
+    console.log(filteredEvents.find((ev) => ev.event_id === eventId));
 
     setFilteredEvents((prev) =>
       prev.map((ev) =>
-        ev.event_id === eventId ? { ...ev, start: start, end: end, resourceId: event.cabinet_id } : ev
+        ev.event_id === eventId
+          ? { ...ev, start: start, end: end, resourceId: event.cabinet_id }
+          : ev
       )
     );
   };
 
   const handleNavigate = useCallback((newDate, view, action) => {
-    dispatch(updateSchedulerPeriodAction({action: action, newDate: moment(newDate).format('YYYY-MM-DD'), view: view}));
+    dispatch(
+      updateSchedulerPeriodAction({
+        action: action,
+        newDate: moment(newDate).format('YYYY-MM-DD'),
+        view: view,
+      })
+    );
   }, []);
 
   const onDoubleClickEvent = useCallback((calEvent) => {
     /**
      * Notice our use of the same ref as above.
      */
-    window.clearTimeout(clickRef?.current)
+    window.clearTimeout(clickRef?.current);
     clickRef.current = window.setTimeout(() => {
-      const now = moment(calEvent.event_date);
+      // const now = moment(calEvent.event_date);
       // Сравнение start с текущим временем
       dispatch(setEditEventAction(calEvent));
       dispatch(showOverlayAction(true));
       if (calEvent.services) {
-          dispatch(setExistServicesAction(JSON.parse(calEvent.services)));
-        }
-      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
+        dispatch(setExistServicesAction(JSON.parse(calEvent.services)));
+      }
+      document.getElementsByTagName('body')[0].style.overflow = 'hidden';
 
-      dispatch(showScheduleEditPopupAction(true))
-    }, 250)
-  }, [])
+      dispatch(showScheduleEditPopupAction(true));
+    }, 250);
+  }, []);
 
   /***** Click on cell and show popup *****/
-  const handleSelectSlot = useCallback(
-    ({ start, end, resourceId }) => {
-      // Текущее время
-      const now = moment();
-      dispatch(setExistServicesAction([]));
-      // Сравнение start с текущим временем
-      if (moment(start).isBefore(now)) {
-        dispatch(showOverlayAction(true));
-        setShowAlert(true); // Показать алерт
-        return;
-      }
-      dispatch(showSchedulePopupAction(true));
-      dispatch(setPopupCabinetAction(resourceId));
+  const handleSelectSlot = useCallback(({ start, end, resourceId }) => {
+    // Текущее время
+    const now = moment();
+    dispatch(setExistServicesAction([]));
+    // Сравнение start с текущим временем
+    if (moment(start).isBefore(now)) {
       dispatch(showOverlayAction(true));
-      dispatch(setScheduleDateAction(dayjs(start).format('DD.MM.YYYY')));
-      dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
-      dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
-      document.getElementsByTagName('body')[0].style.overflow = 'hidden'
-    },
-    []
-  )
+      setShowAlert(true); // Показать алерт
+      return;
+    }
+    dispatch(showSchedulePopupAction(true));
+    dispatch(setPopupCabinetAction(resourceId));
+    dispatch(showOverlayAction(true));
+    dispatch(setScheduleDateAction(dayjs(start).format('DD.MM.YYYY')));
+    dispatch(setScheduleTimeAction(moment(start).toISOString())); // Сохраняем как ISO
+    dispatch(setScheduleTimeAction(dayjs(start).format('HH:mm')));
+    document.getElementsByTagName('body')[0].style.overflow = 'hidden';
+  }, []);
   const closeAlert = () => {
     setShowAlert(false);
     dispatch(showOverlayAction(false));
@@ -462,34 +490,55 @@ export default function Index({
     const translations = {
       uk: {
         months: [
-          'Січня', 'Лютого', 'Березня', 'Квітня', 'Травня', 'Червня',
-          'Липня', 'Серпня', 'Вересня', 'Жовтня', 'Листопада', 'Грудня'
+          'Січня',
+          'Лютого',
+          'Березня',
+          'Квітня',
+          'Травня',
+          'Червня',
+          'Липня',
+          'Серпня',
+          'Вересня',
+          'Жовтня',
+          'Листопада',
+          'Грудня',
         ],
-        days: [
-          'Неділя', 'Понеділок', 'Вівторок', 'Середа',
-          'Четвер', 'П`ятниця', 'Субота'
-        ]
+        days: ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П`ятниця', 'Субота'],
       },
       en: {
         months: [
-          'January', 'February', 'March', 'April', 'May', 'June',
-          'July', 'August', 'September', 'October', 'November', 'December'
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December',
         ],
-        days: [
-          'Sunday', 'Monday', 'Tuesday', 'Wednesday',
-          'Thursday', 'Friday', 'Saturday'
-        ]
+        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       },
       ru: {
         months: [
-          'Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня',
-          'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'
+          'Января',
+          'Февраля',
+          'Марта',
+          'Апреля',
+          'Мая',
+          'Июня',
+          'Июля',
+          'Августа',
+          'Сентября',
+          'Октября',
+          'Ноября',
+          'Декабря',
         ],
-        days: [
-          'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
-          'Четверг', 'Пятница', 'Суббота'
-        ]
-      }
+        days: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+      },
     };
 
     // Перевірка наявності потрібних полів
@@ -518,7 +567,7 @@ export default function Index({
 
     // Формуємо результат
     return `${day} ${translations[locale].months[monthIndex]}, ${translations[locale].days[dayIndex]} ${timeFrom} - ${timeTo}`;
-  }
+  };
 
   const calculateAge = (birthDate) => {
     const today = new Date();
@@ -533,8 +582,7 @@ export default function Index({
     }
 
     return age;
-  }
-
+  };
 
   const onSelectEvent = useCallback((event, e) => {
     /**
@@ -544,16 +592,16 @@ export default function Index({
      * this, the 'click' handler is overridden by the 'doubleClick'
      * action.
      */
-    window.clearTimeout(clickRef?.current)
+    window.clearTimeout(clickRef?.current);
     clickRef.current = window.setTimeout(() => {
       const eventElement = document.getElementById(`event-${event.event_id}`).closest('.rbc-event');
       const styles = eventElement.style;
-      const extractedStyles = {
-        top: styles.top || '0%',
-        height: styles.height || '0%',
-        width: styles.width || '0%',
-        left: styles.left || '0%'
-      };
+      // const extractedStyles = {
+      //   top: styles.top || '0%',
+      //   height: styles.height || '0%',
+      //   width: styles.width || '0%',
+      //   left: styles.left || '0%',
+      // };
       if (eventElement) {
         setEventView(event);
         const rect = eventElement.getBoundingClientRect();
@@ -574,43 +622,63 @@ export default function Index({
         popoverEl.style.top = `${styles.top}`;
         popoverEl.style.display = 'block';
       }
-    }, 250)
-  }, [])
+    }, 250);
+  }, []);
 
   const renderViewEventBlock = () => {
-    let parsedData = JSON.parse(eventView.services) || [];
+    const parsedData = JSON.parse(eventView.services) || [];
 
     return (
       <>
         <div className="grid grid-cols-[1fr_auto] items-baseline-last">
           <div className={'pt-2'}>
-            <span className="block mb-1">{msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name} {eventView.patronomic_name}</span>
-            <span className="block mb-1 font-bold">{moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)} {msg.get('scheduler.age')}</span>
-            <span className="block mb-1">{eventView.status_name ? `${eventView.status_name}` : ''} <em className={'sh-discount'}>{eventView.status_name ? `(-${eventView.status_discount}%)` : ''}</em></span>
-            <span className="block text-gray-500  mb-1">
-              {formatEventDateTime(eventView)}
+            <span className="block mb-1">
+              {msg.get('scheduler.patient')}:{eventView.pl_name} {eventView.p_name}{' '}
+              {eventView.patronomic_name}
             </span>
+            <span className="block mb-1 font-bold">
+              {moment(eventView.birthday).format('DD.MM.YYYY')}, {calculateAge(eventView.birthday)}{' '}
+              {msg.get('scheduler.age')}
+            </span>
+            <span className="block mb-1">
+              {eventView.status_name ? `${eventView.status_name}` : ''}{' '}
+              <em className={'sh-discount'}>
+                {eventView.status_name ? `(-${eventView.status_discount}%)` : ''}
+              </em>
+            </span>
+            <span className="block text-gray-500  mb-1">{formatEventDateTime(eventView)}</span>
           </div>
           <div className={'pt-2'}>
-            <span className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}>{msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance} {clinicData.currency.symbol}</span>
-            <span className="block mb-1 p-doctor">{shortenName(`${eventView.last_name } ${eventView.first_name}`)}</span>
+            <span
+              className={`p-balance block mb-1 ${eventView.dt_balance - eventView.kt_balance < 0 ? 'red' : ''}`}
+            >
+              {msg.get('scheduler.balance')} {eventView.dt_balance - eventView.kt_balance}{' '}
+              {clinicData.currency.symbol}
+            </span>
+            <span className="block mb-1 p-doctor">
+              {shortenName(`${eventView.last_name} ${eventView.first_name}`)}
+            </span>
             <span className="p-cabinet  mb-1 block">{eventView.cabinet_name}</span>
           </div>
         </div>
         <div>
           <div className={'sch-services'}>
-            {parsedData.map((_s, index) => (
+            {parsedData.map((_s) => (
               <div className="flex justify-between">
                 <span>{_s.name}</span>
-                <span>{_s.total} {clinicData.currency.symbol}</span>
+                <span>
+                  {_s.total} {clinicData.currency.symbol}
+                </span>
               </div>
             ))}
           </div>
           <div className={'sh-btns-block'}>
-            <Link onClick={() => {
-              dispatch(setPatientTab('finances'));
-            }}
-              href={`/patient/view/${eventView.patient_id}/${eventView.event_id}`}>
+            <Link
+              onClick={() => {
+                dispatch(setPatientTab('finances'));
+              }}
+              href={`/patient/view/${eventView.patient_id}/${eventView.event_id}`}
+            >
               <span className={'btn-sch-act cursor-pointer'}>{msg.get('scheduler.sch.act')}</span>
             </Link>
             <span className={'btn-sch-payment ml-2'}>{msg.get('scheduler.sch.payment')}</span>
@@ -634,9 +702,9 @@ export default function Index({
           </div>
         </div>
       </>
-    )
-  }
-
+    );
+  };
+  console.log(customerData);
   const closePopover = () => {
     document.getElementById('bigActionEventView').style.display = 'none';
   };
@@ -647,18 +715,18 @@ export default function Index({
     try {
       const parsedData = JSON.parse(event.services);
       if (Array.isArray(parsedData)) {
-        parsedData.map((_s, index) => (
-          servicesData += `<span class="block service-item"><em>${_s.name}</em></span>`
-        ))
+        parsedData.map(
+          (_s, index) =>
+            (servicesData += `<span class="block service-item"><em>${_s.name}</em></span>`)
+        );
       }
     } catch (error) {
-      console.error("Ошибка парсинга JSON:", error);
+      console.error('Ошибка парсинга JSON:', error);
     }
     let color = '#000';
     if (event.kt_balance > event.dt_balance) {
       color = '#de1818';
-    } else if (event.kt_balance < event.dt_balance)
-      color = '#0c9407';
+    } else if (event.kt_balance < event.dt_balance) color = '#0c9407';
 
     return view === 'month' ? (
       <strong>{event.title} </strong>
@@ -669,44 +737,48 @@ export default function Index({
             <div className="flex flex-row">
               {event.avatar ? (
                 <img
-                  className='sch-p-photo'
+                  className="sch-p-photo"
                   src={`/uploads/patients/${event.avatar}`}
                   width="auto"
                   height="15"
                 />
               ) : (
-                <img
-                  className='sch-p-photo'
-                  src={`/images/hause.png`}
-                  width="auto"
-                  height="15"
-                />
+                <img className="sch-p-photo" src={`/images/hause.png`} width="auto" height="15" />
               )}
               <div className="pt-[3px]">
-                <strong style={{color: color, marginLeft: '5px', marginTop: '2px'}}>
-                  {shortenName(`${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`)} <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
+                <strong style={{ color: color, marginLeft: '5px', marginTop: '2px' }}>
+                  {shortenName(
+                    `${event.pl_name} ${event.p_name} ${event.patronomic_name ? event.patronomic_name : ''}`
+                  )}{' '}
+                  <em className="sh-discount">{event.discount ? `-${event.discount}%` : ''}</em>
                 </strong>
-                <span className="sch-time">{event.hour_from}:{event.minute_from} - {event.hour_to}:{event.minute_to}</span>
+                <span className="sch-time">
+                  {event.hour_from}:{event.minute_from} - {event.hour_to}:{event.minute_to}
+                </span>
               </div>
             </div>
-            <div className={'sh-event-status'} style={{background: event.status_color}}></div>
+            <div className={'sh-event-status'} style={{ background: event.status_color }}></div>
           </span>
           <div className="ml-[4px] mr-[4px]">
-            <span className={'block mb-1'}>{msg.get('scheduler.form.doctor')}: {shortenName(`${event.last_name} ${event.first_name}`)}</span>
+            <span className={'block mb-1'}>
+              {msg.get('scheduler.form.doctor')}:{' '}
+              {shortenName(`${event.last_name} ${event.first_name}`)}
+            </span>
             <span className={'block mb-1 font-bold sch-title'}>{event.title}</span>
-            <div className={'block mb-1'}><strong>{event.description}</strong></div>
-            <div dangerouslySetInnerHTML={{__html: servicesData || ''}} />
+            <div className={'block mb-1'}>
+              <strong>{event.description}</strong>
+            </div>
+            <div dangerouslySetInnerHTML={{ __html: servicesData || '' }} />
           </div>
         </div>
       </div>
     );
   };
 
-
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Scheduler'} />
-      <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
+      <div style={{ minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
         {/* Кастомный алерт */}
         <div>
           <ToastContainer />
@@ -714,9 +786,7 @@ export default function Index({
         {showAlert && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
-              <p className="text-gray-700 mb-6">
-                {msg.get('scheduler.time_schedule_error')}
-              </p>
+              <p className="text-gray-700 mb-6">{msg.get('scheduler.time_schedule_error')}</p>
               <button
                 onClick={closeAlert}
                 className="w-full bg-violet-500 text-white py-2 px-4 rounded hover:bg-violet-600 transition"
@@ -729,13 +799,21 @@ export default function Index({
         {showPrice && (
           <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
-              <div className={'absolute right-[20px] top-[10px] cursor-pointer z-50'} onClick={() => {
-                dispatch(showPricePopupAction(false))
-              }}>
+              <div
+                className={'absolute right-[20px] top-[10px] cursor-pointer z-50'}
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+              >
                 <FontAwesomeIcon icon={faClose} className="ml-5" />
               </div>
-              <div style={{maxHeight: '400px', overflow: 'scroll'}}>
-                <Pricing clinicData={clinicData} currency={currency} services={services} tree={tree} />
+              <div style={{ maxHeight: '400px', overflow: 'scroll' }}>
+                <Pricing
+                  clinicData={clinicData}
+                  currency={currency}
+                  services={services}
+                  tree={tree}
+                />
               </div>
               <SecondaryButton
                 className="btn-back float-right mt-4 mr-[30px]"
@@ -749,120 +827,126 @@ export default function Index({
             </div>
           </div>
         )}
-          <div className={'w-full flex relative justify-center'} style={{ zIndex: 9999 }}>
-            <div className={'w-full md:w-1/2 mb-5'}>
-              <Select
-                placeholder="Лікарі..."
-                value={null}
-                styles={customStyles}
-                className={'sh-d-select'}
-                onChange={() => console.log(1)}
-                options={customerGroupped}
-              />
+        <div
+          className={'w-full  relative block border-1 border-[#ccc]'}
+          style={{ zIndex: 9999, padding: '5px' }}
+        >
+          <div className={'w-full mb-5'}>
+            <Select
+              placeholder="Лікарі..."
+              value={null}
+              styles={customStyles}
+              className={'sh-d-select'}
+              onChange={() => console.log(1)}
+              options={customerGroupped}
+            />
+          </div>
+        </div>
+        <div className="clearfix" style={{ clear: 'both' }}></div>
+        <div className={'relative'} style={{ zIndex: 1 }}>
+          <DnDCalendar
+            culture="uk"
+            localizer={localizerFn}
+            events={filteredEvents}
+            resources={cabinetData}
+            // resourceAccessor="id"
+            // resourceAccessor="name"
+            resourceAccessor={(resource) => resource.title}
+            startAccessor={(event) => event.start}
+            endAccessor={(event) => event.end}
+            step={15}
+            views={views}
+            defaultView="week"
+            defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)}
+            min={minTime}
+            max={maxTime}
+            messages={shBtnsTitles}
+            onEventResize={onEventResize}
+            onEventDrop={moveEvent}
+            onNavigate={handleNavigate}
+            onSelectSlot={handleSelectSlot}
+            tooltipAccessor={(event) =>
+              `${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
+            }
+            onSelectEvent={onSelectEvent}
+            onDoubleClickEvent={onDoubleClickEvent}
+            eventPropGetter={(event) => ({
+              style: {
+                borderRadius: '5px',
+                color: 'black',
+                border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
+                padding: '5px',
+                zIndex: 5,
+                backgroundColor: '#fff',
+              },
+            })}
+            components={{
+              event: CustomEvent,
+            }}
+            resizable
+            selectable
+          />
+          <div
+            className={'event-big-content'}
+            id={'bigViewEvent'}
+            style={{
+              background: 'white',
+              position: 'absolute',
+              width: '200px',
+              minHeight: '130px',
+              zIndex: 50,
+              display: 'none',
+            }}
+          />
+
+          <div
+            className="sch_tooltip"
+            id="bigActionEventView"
+            ref={popoverRef}
+            style={{
+              position: 'absolute',
+              width: '380px',
+              background: 'white',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              zIndex: 500,
+            }}
+            onClick={closePopover}
+          >
+            <div className={'event-close'} onClick={() => closePopover()}></div>
+            <div
+              className="sch-content"
+              style={{
+                padding: '10px',
+                background: 'white', // Фон для контента
+                borderRadius: '4px', // Скругление углов контента
+              }}
+            >
+              <div>{eventView && renderViewEventBlock()}</div>
             </div>
           </div>
+        </div>
 
-          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
-          <div className={'relative'} style={{ zIndex: 1 }}>
-            <DnDCalendar
-              culture="uk"
-              localizer={localizerFn as any}
-              events={filteredEvents}
-              resources={cabinetData}
-              resourceIdAccessor="resourceId"
-              resourceTitleAccessor="resourceTitle"
-              startAccessor="start"
-              step={15 as any}
-              views={views as any}
-              defaultView={'week' as any}
-              defaultDate={new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)  as any}
-              min={minTime as any} // Начало с 8:00
-              max={maxTime as any}
-              messages={shBtnsTitles as any}
-              onEventResize={onEventResize as any}
-              onEventDrop={moveEvent as any}
-              onNavigate={handleNavigate as any}
-              onSelectSlot={handleSelectSlot as any}
-              tooltipAccessor={(event: any): any =>
-                `${event.title}\nКабинет: ${event.cabinet_name}\nПациент: ${shortenName(`${event.pl_name} ${event.p_name}`)}\nВрач: ${shortenName(`${event.last_name} ${event.first_name}`)}`
-              }
-              onSelectEvent={onSelectEvent as any}
-              onDoubleClickEvent={onDoubleClickEvent as any}
-              eventPropGetter={(event) => ({
-                style: {
-                  borderRadius: '5px',
-                  color: 'black',
-                  border: `solid 2px ${event.priority ? '#be21ea' : event.status_color}`,
-                  // background: `rgba(235, 157, 23, 0.1)`,
-                  padding: '5px',
-                  zIndex: 5,
-                  backgroundColor: `#fff`
-                },
-              }) as any}
-              //
-              components={{
-                event: CustomEvent, // Override default event rendering
-              } as any}
-              resizable
-              selectable
-            />
-            <div
-              className={'event-big-content'} id={'bigViewEvent'}
-              style={{
-                background: 'white',
-                position: 'absolute',
-                width: '200px',
-                minHeight: '130px',
-                zIndex: 50,
-                display: 'none'
-              }} />
-
-              <div
-                className="sch_tooltip"
-                id="bigActionEventView"
-                ref={popoverRef}
-                style={{
-                  position: 'absolute',
-                  width: '380px',
-                  background: 'white',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  zIndex: 500,
-                }}
-                onClick={closePopover}
-              >
-                <div className={'event-close'} onClick={() => closePopover()}></div>
-                <div
-                  className="sch-content"
-                  style={{
-                    padding: '10px',
-                    background: 'white', // Фон для контента
-                    borderRadius: '4px', // Скругление углов контента
-                  }}
-                >
-                  <div>{eventView && renderViewEventBlock()}</div>
-                </div>
-              </div>
-          </div>
-
-          {showEventPopup && <SchedulerFormCreate
+        {showEventPopup && (
+          <SchedulerFormCreate
             formData={formData}
             clinicData={clinicData}
             cabinetData={cabinetData}
             assistantData={assistantData}
             customerData={customerData}
             currency={currency}
-          />}
-          {editEventPopup && <SchedulerFormEdit
+          />
+        )}
+        {editEventPopup && (
+          <SchedulerFormEdit
             clinicData={clinicData}
             cabinetData={cabinetData}
             assistantData={assistantData}
             customerData={customerData}
             currency={currency}
-          />}
-        </div>
+          />
+        )}
       </div>
-    </div>
     </AuthenticatedLayout>
   );
 }

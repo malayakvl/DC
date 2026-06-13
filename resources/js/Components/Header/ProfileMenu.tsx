@@ -8,8 +8,6 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
 export default function ProfileMenu() {
-  const [showingNavigationDropdown, setShowingNavigationDropdown] =
-    useState(false);
   const user = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -21,13 +19,7 @@ export default function ProfileMenu() {
   const source = user?.name;
   const array = source.split(' ');
   const fioResult =
-    array[0] +
-    ' ' +
-    (array[1] ? array[1][0] : '') +
-    '. ' +
-    (array[2] ? array[2][0] : '') +
-    '.';
-
+    array[0] + ' ' + (array[1] ? array[1][0] : '') + '. ' + (array[2] ? array[2][0] : '') + '.';
 
   return (
     <div>
@@ -37,21 +29,22 @@ export default function ProfileMenu() {
           <Dropdown>
             <Dropdown.Trigger>
               <div className="relative">
-                <button
-                  type="button"
-                  className="profile-top-btn"
-                >
+                <button type="button" className="profile-top-btn">
                   <div className="mt-0 relative text-white">
                     <div className="icon-user"></div>
-                    <span className="truncate text-white">{fioResult}</span>
+                    <span className="fio-user">{fioResult}</span>
                     <small className="user-profile-role">
-                      {usePage().props.auth.role.length > 0
-                        ? (
-                          <>
-                            {user?.current_clinic?.name} <span className="clinic-role">[{usePage().props.auth.role}]</span>
-                          </>
-                        )
-                        : (user?.current_clinic?.name || lng.get('menu.no.clinic'))}
+                      {usePage().props.auth.role.length > 0 ? (
+                        <>
+                          {user?.current_clinic?.name}{' '}
+                          <span className="flex gap-[12px]">
+                            {<small className="header-filial-name">{user?.current_filial}</small>}{' '}
+                            <span className="clinic-role">[{usePage().props.auth.role}]</span>
+                          </span>
+                        </>
+                      ) : (
+                        user?.current_clinic?.name || lng.get('menu.no.clinic')
+                      )}
                     </small>
                   </div>
                   <span className="icon-arrow-down" />
@@ -63,12 +56,13 @@ export default function ProfileMenu() {
               <Link className="dropdown-span" href={'/profile'}>
                 {lng.get('menu.profile')}
               </Link>
-              {(usePage().props?.auth?.user?.roles?.length > 0 && usePage().props?.auth?.user?.roles[0]?.name === 'Admin') ||
-                permissions['clinic-create'] && (
+              {(usePage().props?.auth?.user?.roles?.length > 0 &&
+                usePage().props?.auth?.user?.roles[0]?.name === 'Admin') ||
+                (permissions['clinic-create'] && (
                   <Link className="dropdown-span" href={'/clinic/create'}>
                     {lng.get('menu.clinic')}
                   </Link>
-                )}
+                ))}
 
               {(permissions['filial-all'] || permissions['filial-view']) && (
                 <Link className="dropdown-span" href={'/filials'}>

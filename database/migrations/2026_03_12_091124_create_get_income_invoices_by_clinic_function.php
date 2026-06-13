@@ -110,7 +110,7 @@ return new class extends Migration
                         sup.name,
                         u.name
 
-                    ORDER BY i.invoice_number DESC
+                    ORDER BY i.invoice_date DESC
                     LIMIT \$5
                     OFFSET \$6
 

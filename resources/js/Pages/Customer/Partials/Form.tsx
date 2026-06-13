@@ -42,6 +42,7 @@ export default function CustomerForm({
   });
   const { errors } = usePage().props;
   const [values, setValues] = useState({
+    id: formData.id,
     name: formData.name,
     first_name: formData.first_name,
     last_name: formData.last_name,
@@ -50,14 +51,14 @@ export default function CustomerForm({
     phone: formData.phone,
     clinic_id: clinicData.id,
     photo: null,
-    color: formData.color,
+    file: null as File | null,
   });
   const [hideFields, setHideFields] = useState(false);
   const [_, setCustomerColor] = useState('#000000');
   const colorSettings = useAppSelector(paletterDataSelector);
   const serchResults = useAppSelector(userSearchResultsSelector);
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
-  const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-photo.png');
+  const [preview, setPreview] = useState(photoPath ? photoPath : '/images/nf.png');
   const { data, setData, processing, post, recentlySuccessful, progress } =
     useForm({
       id: formData.id,
@@ -67,15 +68,24 @@ export default function CustomerForm({
       last_name: formData.last_name,
       phone: formData.phone,
       email: formData.email,
-      color: formData.color,
       inn: formData.inn
     });
-  console.log('photo', photoPath)
-  console.log('preview', preview)
 
-  const handleChangeComplete = color => {
-    setCustomerColor(color.hex);
-  };
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(photoPath ? photoPath : '/images/no-image.png');
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+    console.log(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile, photoPath]);
+
+
 
   const renderSearchResult = () => {
     if (serchResults.length > 0) {
@@ -128,7 +138,7 @@ export default function CustomerForm({
       [key]: value,
     }));
   };
-
+  console.log(selectedFile);
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -153,13 +163,11 @@ export default function CustomerForm({
 
   const submit = e => {
     e.preventDefault();
-    values['color'] = colorSettings.color;
 
     if (formData.id) {
-      post(route('customer.update'));
-      // router.post(`/customer/update?id=${formData.id}`, values);
+      router.post(route('customer.update'), values, { preserveScroll: true });
     } else {
-      router.post('/customer/update', values);
+      router.post(route('customer.update'), values);
     }
   };
 
@@ -186,7 +194,7 @@ export default function CustomerForm({
             <div className="flex flex-row relative">
               <div className="file-preview inline-block">
                 {(!selectedFile && !photoPath) && (
-                  <img src="/images/no-photo.png" width={197} height={250} />
+                  <img src="/images/nf.png" width={197} height={250} />
                 )}
                 {(!selectedFile && photoPath) && (
                   <div className={'patient-avatar'} style={{
@@ -207,14 +215,18 @@ export default function CustomerForm({
                   id="file"
                   name="file"
                   onChange={e => {
-                    setData('file', e.target.files[0]);
-                    if (!e.target.files || e.target.files.length === 0) {
+                    const file = e.target.files?.[0];
+                    setValues(values => ({
+                      ...values,
+                      file: file,
+                    }));
+                    if (!file) {
                       setSelectedFile(undefined);
                       return;
                     }
 
                     // I've kept this example simple by using the first image instead of multiple
-                    setSelectedFile(e.target.files[0]);
+                    setSelectedFile(file);
                   }}
                 />
                 <label htmlFor="file" className="btn-2" />
@@ -243,13 +255,6 @@ export default function CustomerForm({
                 label={msg.get('customer.email')}
               />
               <>{renderSearchResult()}</>
-            </div>
-            <div className="relative">
-              <InputColor
-                defaultColor={formData.color || '#000000'}
-                name={'color'}
-                label={msg.get('customer.color')}
-              />
             </div>
             <div className={`${hideFields ? 'hidden' : ''}`}>
               <InputText

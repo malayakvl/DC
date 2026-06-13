@@ -184,7 +184,7 @@ class MaterialController extends Controller
             else {
                 $material = new Material();
             }
-            
+//            dd($request->all());exit;
             // find producer
             $producer = Producer::whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($request->producer). '%')->get();
             if (count($producer) > 0) {
@@ -205,7 +205,9 @@ class MaterialController extends Controller
             // $material->size_id = $request->weightunit_id;
             $material->weight = $request->weight;
             $material->weightunit_id = $request->weightunit_id ? $request->weightunit_id : null;
-            $material->price_per_unit = $request->price_per_unit | null;
+            $material->price_per_unit = $request->price_per_unit;
+            $material->articul = $request->articul;
+            $material->percent = $request->percent;
             $material->save();
 
             if ($request->file('file')) {

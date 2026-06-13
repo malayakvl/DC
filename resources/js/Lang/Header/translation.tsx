@@ -1,5 +1,3 @@
-import { Balance } from "@mui/icons-material";
-
 const lngHeader = {
   'en.menu': {
     dashboard: 'Dashboard',
@@ -36,7 +34,7 @@ const lngHeader = {
     reports: 'Reports',
     payments: 'Payments',
     'patient.statuses': 'Patient Statuses',
-    'units': 'Units',
+    units: 'Units',
     'material.brands': 'Brands',
     'material.suppliers': 'Suppliers',
     'payment-methods': 'Payment Methods',
@@ -48,12 +46,12 @@ const lngHeader = {
     'invoice-change': 'Invoices Change',
     'finanses.report': 'Finances Report',
     'visit.schedule.statuses': 'Visit Schedule Statuses',
-    'balance': 'Balance',
+    balance: 'Balance',
     'material.report': 'Material Report',
-    'cabinets': 'Cabinets',
+    cabinets: 'Cabinets',
   },
   'uk.menu': {
-    dashboard: 'Панель керування',
+    dashboard: 'Огляд',
     clinics: 'Клініки',
     profile: 'Профіль',
     stores: 'Склади',
@@ -71,7 +69,7 @@ const lngHeader = {
     'no.filial': 'Філіал не обрано',
     'no.clinic': 'Клініка не обрана',
     'material.categories': 'Категорі матеріалів',
-    materials: 'Витратні матеріали',
+    materials: 'Mатеріали',
     invoice: 'Накладні',
     'material.brands': 'Виробники',
     'material.suppliers': 'Постачальники',

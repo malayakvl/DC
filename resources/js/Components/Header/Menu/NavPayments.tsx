@@ -15,54 +15,51 @@ export default function NavPayments(props) {
 
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['customer-all']) && (
-          <Menu as="div" className="relative top-menu-nav">
-            <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.finanses')}
-            </MenuButton>
-            <MenuItems
-              transition
-              className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
+        <Menu as="div" className="relative top-menu-nav">
+          <MenuButton className="top-nav">{lng.get('menu.finanses')}</MenuButton>
+          <MenuItems
+            transition
+            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform
                                         data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
-            >
-              <div>
-                {permissions['customer-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/payment-methods'}>
-                      {lng.get('menu.payment-methods')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['customer-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/money-in'}>
-                      {lng.get('menu.money-in')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['producer-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/money-out'}>
-                      {lng.get('menu.money-out')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/finanses-report'}>
-                      {lng.get('menu.finanses.report')}
-                    </Link>
-                  </MenuItem>
-                )}
-              </div>
-            </MenuItems>
-          </Menu>
-        )}
+          >
+            <div>
+              {permissions['customer-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/payment-methods'}>
+                    {lng.get('menu.payment-methods')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['customer-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/money-in'}>
+                    {lng.get('menu.money-in')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['producer-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/money-out'}>
+                    {lng.get('menu.money-out')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/finanses-report'}>
+                    {lng.get('menu.finanses.report')}
+                  </Link>
+                </MenuItem>
+              )}
+            </div>
+          </MenuItems>
+        </Menu>
+      )}
     </>
   );
 }

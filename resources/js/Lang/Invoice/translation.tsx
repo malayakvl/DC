@@ -43,7 +43,8 @@ const lngInvoice = {
     cancelissue: 'Відмінити проведення',
     factqty: 'Фактична кіл-ть',
     unit: 'Од. вим.',
-    rate: 'Курс'
+    rate: 'Курс',
+    'row.error': 'Заповніть табличну частину',
   },
 };
 export default lngInvoice;

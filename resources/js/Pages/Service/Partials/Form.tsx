@@ -1,18 +1,15 @@
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import { Link, router, useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngServiceCategories from '../../../Lang/Services/translation';
 import AddDynamicInputFields from '../Partials/Row';
-import {
-  pricingItemsSelector,
-  totalPriceItemsSelector,
-} from '../../../Redux/Service/selectors';
+import { pricingItemsSelector, totalPriceItemsSelector } from '@/Redux/Service/selectors';
 
 export default function Form({
   categoryData = null,
@@ -35,27 +32,27 @@ export default function Form({
     category_id: formData.category_id,
     price: formData.price,
   });
-  const { processing, recentlySuccessful, errors } = useForm();
-
-  const handleChangeSelect = e => {
+  const { processing, recentlySuccessful } = useForm();
+  console.log('form row data', formRowData);
+  const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     values['rows'] = invoiceItems;
 
@@ -71,7 +68,7 @@ export default function Form({
       });
     }
   };
-  console.log('here')
+
   return (
     <section className={className}>
       <header>
@@ -79,9 +76,7 @@ export default function Form({
           <Link className="icon-back" href={'/services'}>
             &nbsp;
           </Link>
-          {formData?.id
-            ? msg.get('service.pricing.edit')
-            : msg.get('service.service.create')}
+          {formData?.id ? msg.get('service.pricing.edit') : msg.get('service.service.create')}
         </h2>
       </header>
 
@@ -125,7 +120,9 @@ export default function Form({
                 <th className="pb-3 text-white w-[47%] min-w-[400px]">
                   {msg.get('service.product')}
                 </th>
-                <th className="pb-3 w-unit text-white border-l-1 w-[8%]">{msg.get('service.unit')}</th>
+                <th className="pb-3 w-unit text-white border-l-1 w-[8%]">
+                  {msg.get('service.unit')}
+                </th>
                 <th className="pb-3 w-qty text-white w-[8%]">{msg.get('service.qty')}</th>
                 <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.price')}</th>
                 <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.mark_up')}</th>
@@ -136,10 +133,7 @@ export default function Form({
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields
-                  formRowData={formRowData}
-                  unitData={unitData}
-                />
+                <AddDynamicInputFields formRowData={formRowData} unitData={unitData} />
               ) : (
                 <AddDynamicInputFields
                   formRowData={[
@@ -158,25 +152,18 @@ export default function Form({
             </tbody>
           </table>
           <div className="w-full devider-table-custom text-right mt-4 font-bold ">
-            <span className="pt-2 block">{msg.get('service.total')}:{' '}
-              {(
-                Number(values['price'] ? values['price'] : 0) + totalItemPrice
-              ).toFixed(2)}{' '}
+            <span className="pt-2 block">
+              {msg.get('service.total')}:{' '}
+              {(Number(values['price'] ? values['price'] : 0) + totalItemPrice).toFixed(2)}{' '}
             </span>
           </div>
         </div>
 
         <div className="flex items-center">
-          <Link
-            className="btn-back"
-            title={msg.get('service.back')}
-            href={`/services`}
-          >
+          <Link className="btn-back" title={msg.get('service.back')} href={`/services`}>
             {msg.get('service.back')}
           </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('service.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('service.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}
@@ -185,9 +172,7 @@ export default function Form({
             leave="transition ease-in-out"
             leaveTo="opacity-0"
           >
-            <p className="text-sm text-gray-600">
-              {msg.get('service.saved')}
-            </p>
+            <p className="text-sm text-gray-600">{msg.get('service.saved')}</p>
           </Transition>
         </div>
       </form>

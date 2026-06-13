@@ -34,7 +34,7 @@ export default function Dashboard({ clinicsData }) {
                     <tbody>
                         {clinic.filials.length === 0 && (
                             <tr>
-                                <td colSpan="2" className="text-center text-gray-400 py-3">
+                                <td colSpan={2} className="text-center text-gray-400 py-3">
                                     {msg.get('dashboard.no_filials')}
                                 </td>
                             </tr>

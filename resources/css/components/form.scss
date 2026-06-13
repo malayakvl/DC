@@ -1,10 +1,15 @@
 .input-text {
     min-height: 40px;
-    @apply rounded-sm shadow-sm w-full py-2 px-3 text-[14px];
+    @apply  w-full py-2 px-3 text-[14px];
     background: transparent;
-    color: #fff;
-    border: solid 1px #35466d;
+    color: #0F172A;
+    border: 1px solid #D8DEE8;
     margin-bottom: 0.5rem;
+    border-radius: 10px !important;
+}
+.input-text:focus {
+    border-color: #17A2A6;
+    box-shadow: 0 0 0 4px rgba(23,162,166,.12);
 }
 
 .input-invoice {
@@ -29,7 +34,7 @@
     border-left: 0;
     border-right: 0;
     border-bottom: solid 1px;
-    border-color: #6248A1FF;
+    border-color: #0F172A;
     padding-left: 0 !important;
 }
 
@@ -38,7 +43,6 @@
 .input-text-noborder:focus {
     outline: 0;
     outline-offset: 0;
-    border-radius: 0;
     border-top: 0;
     border-left: 0;
     border-right: 0;
@@ -104,10 +108,18 @@
 
 .btn-qty-minus,
 .btn-qty-plus {
-    @apply py-1 px-4 text-center text-sm text-white bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+    @apply py-1 px-4 text-center text-sm text-white bg-[#0EA5A4] hover:bg-[#0F8C8B];
+
     min-width: 40px;
     max-width: 40px;
 }
+.btn-qty-minus {
+    margin-right: 5px;
+}
+.btn-qty-plus {
+    margin-left: 5px;
+}
+
 
 // .btn-qty-plus {
 //     @apply rounded-md rounded-l-none bg-slate-800 py-1 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700
@@ -115,21 +127,19 @@
 //     background-image: linear-gradient(to left top, #484f52, #0f6d8f) !important;
 // }
 .qty {
-    border-radius: 0;
     width: 80px;
-    background-color: transparent;
     color: #fff;
     height: 40px;
     padding: 0 10px;
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     background: transparent;
-    color: #fff;
-    border: solid 1px #35466d;
+    border: solid 1px #94A3B8;
+    border-radius: 5px;
 }
 
 .price {
     width: 100px !important;
-    text-align: center;
+    text-align: right;
     border-radius: 5px;
 }
 
@@ -139,7 +149,7 @@
 }
 
 .w-product {
-    width: 500px !important;
+    width: 600px !important;
     text-align: center;
 }
 
@@ -162,9 +172,8 @@ table td {
 
 .factqty {
     width: 120px !important;
-    border: solid 1px #35466d;
-    ;
-    border-radius: 0.125rem;
+    border: 1px solid #94A3B8;
+    border-radius: 0.5rem !important;
     height: 40px;
     padding: 0 10px;
 }
@@ -427,7 +436,7 @@ label.float-label {
 }
 
 .dark-form .btn-submit {
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+    @apply bg-gradient-to-r bg-[#0EA5A4] hover:bg-[#0F8C8B];
 }
 
 .w-unit {
@@ -435,9 +444,10 @@ label.float-label {
 }
 
 .input-label {
-    @apply block text-sm font-medium text-white;
+    @apply block text-sm font-medium;
     margin-bottom: 8px;
     font-size: 14px;
+    color:#0F172A;
 }
 
 .role-label {
@@ -519,6 +529,63 @@ label.float-label {
     border-color: #192f36;
     height: 1px;
     color: white;
+}
 
+.input-inv-group {
+    display: flex;
+    align-items: center;
+    width: fit-content;
 
+    border: 1px solid #D8DEE8;
+    border-radius: 12px;
+    overflow: hidden;
+
+    background: #fff;
+}
+
+.btn-qty-minus,
+.btn-qty-plus {
+    width: 42px;
+    height: 42px;
+
+    border: 0;
+    background: transparent;
+
+    color: #17A2A6;
+    font-size: 20px;
+    font-weight: 500;
+
+    transition: .2s;
+}
+
+.btn-qty-minus:hover,
+.btn-qty-plus:hover {
+    background: rgba(23,162,166,.08);
+}
+
+.qty {
+    width: 70px;
+    height: 42px;
+
+    border: 0;
+    border-left: 1px solid #EDF1F5;
+    border-right: 1px solid #EDF1F5;
+    color: #0F172A !important;
+    background: transparent;
+
+    font-size: 16px;
+    font-weight: 500;
+}
+.doc-header {
+    padding: 14px 16px !important;
+}
+.invoice-table thead::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #0EA5A4;
+    border-radius: 16px 16px 0 0;
 }

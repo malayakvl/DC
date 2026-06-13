@@ -141,7 +141,7 @@ export default function SchedulerFormEdit({
     return (
       <div className="flex items-center justify-between px-2 py-1 bg-gray-100 mb-1 text-[12px] w-[405px]">
         <div className="flex-1 text-left font-medium text-gray-800">
-          { item.name }
+          {item.name}
         </div>
 
         <div className="w-[80px] text-center text-gray-600">
@@ -152,11 +152,11 @@ export default function SchedulerFormEdit({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
             </svg>
           </span>
-          <span className="mr-2 font-bold bg-white px-2 text-[10px]">{ item.qty ?  item.qty : 1}</span>
+          <span className="mr-2 font-bold bg-white px-2 text-[10px]">{item.qty ? item.qty : 1}</span>
           <span onClick={() => dispatch(plusServiceAction(item))}>
             <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            </svg>
           </span>
         </div>
 
@@ -166,17 +166,18 @@ export default function SchedulerFormEdit({
 
         <div className="w-[25px] text-right">
           <FontAwesomeIcon icon={faTrash} color={'#e13333'} className="mr-1" onClick={() => {
-              dispatch(setServicesAction(item));
+            dispatch(setServicesAction(item));
           }} />
         </div>
       </div>
     )
   }
+  console.log(customerData, 'customerData');
   return (
     <section className={`px-5 max-h-[75vh] form-scheduler form-edit-schedulter bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2 className={'pt-7 pb-7'}>
-          {msg.get('scheduler.title.edit.visit')}
+          {msg.get('scheduler.title.edit.visit')}!
         </h2>
       </header>
 
@@ -189,7 +190,7 @@ export default function SchedulerFormEdit({
 
         <div className={`relative`}>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 ">
-            {msg.get('scheduler.patient')}
+            {msg.get('scheduler.patient')}!
             <span className="text-discount float-right">
               &nbsp;{editEventData.status_name && `${editEventData.patient_status_name} (-${editEventData.discount}%)`}
             </span>
@@ -271,30 +272,30 @@ export default function SchedulerFormEdit({
             <div className={'w-1/3 relative'}>
               <span className={'block text-[14px]'}>{msg.get('scheduler.time.from')}</span>
               <InputMask mask="99:99"
-                         name={'event_time_from'}
-                         defaultValue={values.event_time_from ? values.event_time_from : timeStart}
-                         className={'shc-form-date'}
-                         onChange={(e) => {
-                           setValues(values => ({
-                             ...values,
-                             ['event_time_from']: e.target.value,
-                           }));
-                         }}
+                name={'event_time_from'}
+                defaultValue={values.event_time_from ? values.event_time_from : timeStart}
+                className={'shc-form-date'}
+                onChange={(e) => {
+                  setValues(values => ({
+                    ...values,
+                    ['event_time_from']: e.target.value,
+                  }));
+                }}
               />
               <i className={'f-clock'} />
             </div>
             <div className={'w-1/3 relative'}>
               <span className={'block text-[14px]'}>{msg.get('scheduler.time.to')}</span>
               <InputMask mask="99:99"
-                         name={'event_time_to'}
-                         defaultValue={values.event_time_to ? values.event_time_to : timeEnd}
-                         className={'shc-form-date'}
-                         onChange={(e) => {
-                           setValues(values => ({
-                             ...values,
-                             ['event_time_to']: e.target.value,
-                           }));
-                         }}
+                name={'event_time_to'}
+                defaultValue={values.event_time_to ? values.event_time_to : timeEnd}
+                className={'shc-form-date'}
+                onChange={(e) => {
+                  setValues(values => ({
+                    ...values,
+                    ['event_time_to']: e.target.value,
+                  }));
+                }}
               />
               <i className={'f-clock'} />
             </div>

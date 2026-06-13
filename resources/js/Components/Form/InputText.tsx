@@ -1,5 +1,5 @@
 import InputLabel from './InputLabel';
-import React, { useState } from 'react';
+import React from 'react';
 import { usePage } from '@inertiajs/react';
 
 export default function InputText({
@@ -24,11 +24,13 @@ export default function InputText({
 
       <input
         id={name}
+        name={name}
         onChange={onChange}
         type={type ? type : 'text'}
         value={values[name]}
         placeholder={placeholder}
         className={'input-text ' + className}
+        {...props}
       />
       {displayError && <div className="form-error">{displayError}</div>}
     </div>

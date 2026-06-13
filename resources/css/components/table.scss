@@ -10,15 +10,21 @@
         last:pr-[var(--gutter,theme(spacing.2))]
         dark:border-b-white/10 sm:first:pl-1 sm:last:pr-1;
     font-size: 14px;
-    background-color: #4a588e;
+    background-color: #f9fafb;
+    color: #5c687a;
+    font-weight: bold;
+    font-family: "Manrope", sans-serif;
 }
 
 .data-table td {
     @apply relative px-4 first:pl-[var(--gutter,theme(spacing.2))]
         last:pr-[var(--gutter,theme(spacing.2))] border-b border-zinc-950/5
         dark:border-white/5 py-4 sm:first:pl-1 sm:last:pr-1;
-    color: #fff;
+    color: #475569;
     border-color: #4a588e;
+}
+.data-table tbody tr:hover {
+    background: #F8FAFC;
 }
 
 //.text-orange-700 {
@@ -132,7 +138,7 @@
 }
 .invoice-table th {
     font-size: 14px;
-    color: white;
+    color: #0F172A;
 }
 .invoice-table .w-qty {
     max-width: 160px;
@@ -142,4 +148,23 @@
 }
 .act-table {
     width: auto !important;
+}
+.table-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 10px;
+    position:relative;
+}
+
+.table-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+    background: #0EA5A4;
+
+    border-radius: 16px 16px 0 0;
 }

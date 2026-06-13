@@ -1,7 +1,7 @@
 import Checkbox from '../../Components/Form/Checkbox';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import GuestLayout from '../../Layouts/GuestLayout';
-import { Head, Link, useForm, router } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import InputText from '../../Components/Form/InputText';
 import { useSelector } from 'react-redux';
@@ -23,30 +23,27 @@ export default function Login({ status, canResetPassword }) {
     locale: appLang,
   });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
-    // post(route('password.confirm'), {
-    //     onFinish: () => reset('password'),
-    // });
     axios
       .post('/login', values)
-      .then(response => {
+      .then((response) => {
         if (response.data.dashboardSelect) {
           location.href = '/dashboard-select';
         } else {
           location.href = '/dashboard';
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('ERROR:: ', error.response.data);
       });
     // router.post(`/login`, values);
@@ -56,9 +53,7 @@ export default function Login({ status, canResetPassword }) {
     <GuestLayout>
       <Head title={msg.get('auth.login')} />
 
-      {status && (
-        <div className="mb-4 text-sm font-medium text-green-600">{status}</div>
-      )}
+      {status && <div className="mb-4 text-sm font-medium text-green-600">{status}</div>}
 
       <form onSubmit={submit} className="dark-form">
         <div>
@@ -70,7 +65,6 @@ export default function Login({ status, canResetPassword }) {
             label={msg.get('auth.email')}
             required
           />
-          
         </div>
         <div className="mt-2">
           <InputText
@@ -89,13 +83,11 @@ export default function Login({ status, canResetPassword }) {
               name="remember"
               checked={values.remember}
               onChange={
-                e => handleChange(e)
+                (e) => handleChange(e)
                 // setData('remember', e.target.checked)
               }
             />
-            <span className="ms-2 text-sm text-[#01bffb]">
-              {msg.get('auth.remember')}
-            </span>
+            <span className="ms-2 text-sm text-[#01bffb]">{msg.get('auth.remember')}</span>
           </label>
         </div>
 

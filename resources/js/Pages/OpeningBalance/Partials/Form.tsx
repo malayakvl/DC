@@ -1,41 +1,31 @@
-import InputLabel from '../../../Components/Form/InputLabel';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../hooks';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { useAppDispatch } from '@/hooks';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngOpeningBalance from '../../../Lang/OpeningBalance/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
-import AddDynamicInputFields from './Row';
+import AddDynamicInputFields, { AddDynamicInputFieldsRef } from './Row';
 import InputCalendar from '../../../Components/Form/InputCalendar';
 import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import {
   invoiceItemsSelector,
   invoiceTaxSelector,
   tableErrorSelector,
-} from '../../../Redux/Incominginvoice/selectors';
-import {
-  setInvoiceTax,
-  setShowTableError,
-} from '../../../Redux/Incominginvoice';
-import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
+} from '@/Redux/Incominginvoice/selectors';
+import { setInvoiceTax, setShowTableError } from '@/Redux/Incominginvoice';
 
 export default function Form({
   clinicData,
   storeData,
   statusData,
-  typeData,
-  producerData,
   customerData,
   formData,
   formRowData = null,
-  currencyData,
   unitsData,
-  taxData,
   className = '',
 }) {
   const appLang = useSelector(appLangSelector);
@@ -44,11 +34,10 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useAppDispatch();
+  const rowRef = useRef<AddDynamicInputFieldsRef | null>(null);
   const invoiceItems = useSelector(invoiceItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
-  // const [showRowsError, setShowRowsError] = useState(false);
-  console.log(1)
   const [values, setValues] = useState({
     doc_number: formData.doc_number ? formData.doc_number : '',
     doc_date: formData.doc_date,
@@ -65,11 +54,12 @@ export default function Form({
     rate: formData.rate,
   });
   const { processing, recentlySuccessful } = useForm();
+  const isPosted = formData.status === 'posted';
 
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
@@ -78,41 +68,40 @@ export default function Form({
     }
   };
 
-  const handleChangeCalendar = data => {
+  const handleChangeCalendar = (data) => {
     const key = 'doc_date';
-    const value = data;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: data,
     }));
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     if (!values['doc_date']) {
       values['doc_date'] = new Date();
     }
-
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;
-    invoiceItems.forEach(_row => {
+    invoiceItems.forEach((_row) => {
       if (!_row.product_id) {
         haveErrorInRow = true;
       }
     });
+
     if (haveErrorInRow) {
       dispatch(setShowTableError(true));
     } else {
-      const taxData = documentTax.split('_');
+      documentTax.split('_');
       if (formData.id) {
         console.log(values);
         router.post(`/opening-balance/update?id=${formData.id}`, {
@@ -160,139 +149,155 @@ export default function Form({
             : msg.get('opening_balance.title.create')}
         </h2>
       </header>
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
-        <div className="flex flex-col md:flex-row w-full">
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
+        <div className="relative">
+          {isPosted && (
+            <div className="absolute inset-0 z-10 bg-white/50 cursor-not-allowed" />
+          )}
           <div className="flex flex-col md:flex-row w-full">
-            <div className="w-full md:w-1/2">
-              <div className="mb-2 flex gap-2">
-                <div className="w-1/3">
-                  <InputText
-                    name={'doc_number'}
-                    values={values}
-                    dataValue={values.doc_number}
-                    value={values.doc_number}
-                    onChange={handleChange}
-                    required
-                    label={msg.get('opening_balance.number')}
-                  />
-                </div>
-                <div className="w-1/3">
-                  <InputCalendar
-                    name={'doc_date'}
-                    values={values}
-                    dataValue={values.doc_date}
-                    value={values.doc_date}
-                    onChange={handleChangeCalendar}
-                    required
-                    label={msg.get('opening_balance.date')}
-                  />
-                </div>
-                <div className={`w-1/3`}>
-                  <InputSelect
-                    translatable={true}
-                    name={'status'}
-                    className={'mb-1'}
-                    values={values}
-                    value={values.status}
-                    options={statusData}
-                    onChange={handleChangeSelect}
-                    required
-                    label={msg.get('opening_balance.status')}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-full md:w-1/2 px-2">
-              <div className="mb-2">
-                <div className="flex gap-2">
-                  <div className="w-1/4">
-                    <InputSelect
-                      name={'store_id'}
+            <div className="flex flex-col md:flex-row w-full bg-white p-2">
+              <div className="w-full md:w-1/2">
+                <div className="mb-2 flex gap-2">
+                  <div className="w-1/3">
+                    <InputText
+                      name={'doc_number'}
                       values={values}
-                      value={values.store_id}
-                      options={storeData}
-                      onChange={handleChangeSelect}
+                      dataValue={values.doc_number}
+                      value={values.doc_number}
+                      onChange={handleChange}
                       required
-                      label={msg.get('opening_balance.store')}
+                      label={msg.get('opening_balance.number')}
                     />
                   </div>
-                  <div className="w-1/4">
-                    <InputCustomerSelect
-                      name={'customer_id'}
+                  <div className="w-1/3">
+                    <InputCalendar
+                      name={'doc_date'}
                       values={values}
-                      value={values.customer_id}
-                      options={customerData}
+                      dataValue={values.doc_date}
+                      value={values.doc_date}
+                      onChange={handleChangeCalendar}
+                      required
+                      label={msg.get('opening_balance.date')}
+                    />
+                  </div>
+                  <div className={`w-1/3`}>
+                    <InputSelect
+                      translatable={true}
+                      name={'status'}
+                      className={'mb-1'}
+                      values={values}
+                      value={values.status}
+                      options={statusData}
                       onChange={handleChangeSelect}
                       required
-                      label={msg.get('opening_balance.person')}
+                      label={msg.get('opening_balance.status')}
                     />
+                  </div>
+                </div>
+              </div>
+              <div className="w-full md:w-1/2 px-2">
+                <div className="mb-2">
+                  <div className="flex gap-2">
+                    <div className="w-1/4">
+                      <InputSelect
+                        name={'store_id'}
+                        values={values}
+                        value={values.store_id}
+                        options={storeData}
+                        onChange={handleChangeSelect}
+                        required
+                        label={msg.get('opening_balance.store')}
+                      />
+                    </div>
+                    <div className="w-1/4">
+                      <InputCustomerSelect
+                        name={'customer_id'}
+                        values={values}
+                        value={values.customer_id}
+                        options={customerData}
+                        onChange={handleChangeSelect}
+                        required
+                        label={msg.get('opening_balance.person')}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="relative">
-          <table className="w-full invoice-table">
-            <thead>
-              <tr>
-                <th className="pb-3">{msg.get('opening_balance.product')}</th>
-                <th className="pb-3 w-qty">{msg.get('opening_balance.qty')}</th>
-                <th className="pb-3">{msg.get('opening_balance.unit')}</th>
-                <th className="pb-3">{msg.get('opening_balance.factqty')}</th>
-                <th className="pb-3 w-price">{msg.get('opening_balance.price')}</th>
-                <th className="pb-3 w-price">{msg.get('opening_balance.total')}</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} unitsData={unitsData} />
-              ) : (
-                <AddDynamicInputFields
-                  unitsData={unitsData}
-                  formRowData={[
-                    {
-                      product_id: '',
-                      product: '',
-                      unit_id: '',
-                      quantity: '',
-                      price: '',
-                      total: '',
-                    },
-                  ]}
-                />
+          <div className="relative bg-white">
+            <table className="w-full invoice-table">
+              <thead style={{ background: '#F6F8FA', height: '52px' }}>
+                <tr>
+                  <th className="doc-header">{msg.get('opening_balance.product')}</th>
+                  <th className="doc-header w-qty">{msg.get('opening_balance.qty')}</th>
+                  <th className="doc-header">{msg.get('opening_balance.unit')}</th>
+                  <th className="doc-header">{msg.get('opening_balance.factqty')}</th>
+                  <th className="doc-header w-price">{msg.get('opening_balance.price')}</th>
+                  <th className="doc-header w-price">{msg.get('opening_balance.total')}</th>
+                  <th className="doc-header w-btn">&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formRowData?.length > 0 ? (
+                  <AddDynamicInputFields
+                    ref={rowRef}
+                    formRowData={formRowData}
+                    unitsData={unitsData}
+                  />
+                ) : (
+                  <AddDynamicInputFields
+                    ref={rowRef}
+                    unitsData={unitsData}
+                    formRowData={[
+                      {
+                        product_id: '',
+                        product: '',
+                        unit_id: '',
+                        quantity: '',
+                        price: '',
+                        total: '',
+                      },
+                    ]}
+                  />
+                )}
+              </tbody>
+              {!isPosted && (
+                <tfoot>
+                  <tr>
+                    <td colSpan="7">
+                      <button
+                        type="button"
+                        className="btn-add-row pl-[10px] font-bold"
+                        onClick={() => rowRef.current?.addRow()}
+                      >
+                        + Додати матеріал
+                      </button>
+                    </td>
+                  </tr>
+                </tfoot>
               )}
-            </tbody>
-          </table>
+            </table>
+          </div>
         </div>
         <div className="bg-blue-100 align-items-end">
           <div style={{ clear: 'both' }}></div>
-          <div
-            className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}
-          >
-            {msg.get('invoice.rows.error')}
+          <div className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}>
+            {msg.get('opening_balance.rows.error')}
           </div>
           <hr />
           <div className="float-right pt-3">
-            <Link
-              className="btn-back"
-              title={msg.get('invoice.back')}
-              href={`/opening-balance`}
-            >
+            <Link className="btn-back" title={msg.get('invoice.back')} href={`/opening-balance`}>
               {msg.get('opening_balance.back')}
             </Link>
-            {formData.status_id != 2 && (
+            {!isPosted && formData.status_id != 2 && (
               <Link
                 disabled={processing}
                 className="btn-submit"
-                onClick={e => submit(e)} href={''}              >
+                onClick={(e) => submit(e)}
+                href={''}
+              >
                 {msg.get('opening_balance.save')}
               </Link>
             )}
@@ -304,9 +309,7 @@ export default function Form({
               leave="transition ease-in-out"
               leaveTo="opacity-0"
             >
-              <p className="text-sm text-gray-600">
-                {msg.get('opening_balance.saved')}
-              </p>
+              <p className="text-sm text-gray-600">{msg.get('opening_balance.saved')}</p>
             </Transition>
           </div>
         </div>

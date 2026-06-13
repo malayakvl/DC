@@ -6,7 +6,7 @@ import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 
-export default function NavInvoices(props) {
+export default function NavInvoices() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -19,47 +19,44 @@ export default function NavInvoices(props) {
   }
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        showMenuScheduler) && (
-          <Menu as="div" className="relative top-menu-nav">
-            <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.scheduler')}
-            </MenuButton>
-            <MenuItems
-              transition
-              className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuScheduler) && (
+        <Menu as="div" className="relative top-menu-nav">
+          <MenuButton className="top-nav">{lng.get('menu.scheduler')}</MenuButton>
+          <MenuItems
+            transition
+            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform
                                         data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
-            >
-              <div>
-                {permissions['scheduler-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/cabinets'}>
-                      {lng.get('menu.cabinets')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['patient-edit'] && (
-                  <MenuItem>
-                    <Link href={'/visit-schedule-statuses'} className="submenu">
-                      {lng.get('menu.visit.schedule.statuses')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['scheduler-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/scheduler'}>
-                      {lng.get('menu.scheduler')}
-                    </Link>
-                  </MenuItem>
-                )}
-              </div>
-            </MenuItems>
-          </Menu>
-        )}
+          >
+            <div>
+              {permissions['scheduler-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/cabinets'}>
+                    {lng.get('menu.cabinets')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['patient-edit'] && (
+                <MenuItem>
+                  <Link href={'/visit-schedule-statuses'} className="submenu">
+                    {lng.get('menu.visit.schedule.statuses')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['scheduler-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/scheduler'}>
+                    {lng.get('menu.scheduler')}
+                  </Link>
+                </MenuItem>
+              )}
+            </div>
+          </MenuItems>
+        </Menu>
+      )}
     </>
   );
 }

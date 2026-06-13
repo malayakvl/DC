@@ -2,7 +2,7 @@ import { ThunkAction, Action } from '@reduxjs/toolkit';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import reduxPromise from 'redux-promise';
 import reduxThunkFsa from 'redux-thunk-fsa';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers, Dispatch } from 'redux';
 import logger from 'redux-logger';
 
 import layoutReducer from '../Redux/Layout';
@@ -47,7 +47,7 @@ const store = initStore();
 
 export type AppState = ReturnType<typeof store.getState>;
 
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = Dispatch<any> | ThunkAction<void, AppState, unknown, Action<string>>;
 
 export type AppThunk<ReturnType = void> = ThunkAction<
     ReturnType,

@@ -32,7 +32,7 @@ class User extends Authenticatable
     ];
 
     // 🔹 Добавляем атрибуты для сериализации
-    protected $appends = ['clinic_id', 'filial_id', 'current_clinic'];
+    protected $appends = ['clinic_id', 'filial_id', 'current_clinic', 'current_filial'];
 
     // 🔹 Возвращаем clinic_id из сессии
     public function getClinicIdAttribute()
@@ -89,6 +89,32 @@ class User extends Authenticatable
         }
     }
 
+    public function getCurrentFilialAttribute()
+    {
+        $filialId = session('filial_id');
+        $clinicId = session('clinic_id');
+
+        if (!$filialId || !$clinicId) {
+            return null;
+        }
+        $filialName = DB::table('clinic_'.$clinicId.'.clinic_filials')
+            ->where('id', $filialId)
+            ->select('name')
+            ->first();
+
+        return $filialName->name;
+
+        // // Клиники всегда лежат в схеме core — так что просто ищем там
+        // $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        // try {
+        //     DB::statement("SET search_path TO core");
+        //     return Filial::find($filialId);
+        // } finally {
+        //     DB::statement("SET search_path TO {$originalSearchPath}");
+        // }
+    }
+
     public function clinicByFilial($clinicId)
     {
         if (!$clinicId) {
@@ -119,7 +145,7 @@ class User extends Authenticatable
         }
 
         // Берём роль именно для этого филиала
-        $roleData = DB::table('clinic_filial_user')
+        $roleData = DB::table('clinic_'. $clinicId .'.clinic_filial_user')
             ->where('user_id', $this->id)
             ->where('filial_id', $filialId)
             ->first();

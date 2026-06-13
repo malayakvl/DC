@@ -1,10 +1,10 @@
 import NavLink from '../../Components/Links/NavLink';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { Menu, MenuButton } from '@headlessui/react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../Lang/Header/translation';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import NavStores from './Menu/NavStores';
 import NavCustomers from './Menu/NavCustomers';
 import NavScheduler from './Menu/NavScheduler';
@@ -14,25 +14,25 @@ import NavServices from './Menu/NavServices';
 import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
 
-export default function NavMenu(props) {
+export default function NavMenu() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  const user = usePage().props.auth.user;
-  const permissions = usePage().props.auth.can;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  usePage().props.auth.user;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  usePage().props.auth.can;
 
   return (
     <>
-      <div className="md:space-x-4 md:flex md:pr-[30px]">
+      <div className="md:space-x-4 md:flex pt-[2px]">
         {usePage().props.auth.role.length > 0 && (
           <div className="md:mt-[3px]">
             <Menu as="div" className="relative top-menu-nav">
-              <MenuButton className="inline-flex items-center text-sm">
-                <NavLink href={'/dashboard'}>
-                  {lng.get('menu.dashboard')}
-                </NavLink>
+              <MenuButton className="top-nav">
+                <NavLink href={'/dashboard'}>{lng.get('menu.dashboard')}</NavLink>
               </MenuButton>
             </Menu>
 

@@ -42,7 +42,6 @@ class AuthenticatedSessionController extends Controller
 
     public function storeClinicLogin(LoginClinicRequest $request): RedirectResponse
     {
-        dd($request->all());exit;
         $request->authenticateToClinic();
         $request->session()->regenerate();
 
@@ -59,7 +58,6 @@ class AuthenticatedSessionController extends Controller
 
         /** @var \App\Models\User $logUser */
         $logUser = Auth::user();
-
         /**
          * 1) Получаем клиники из core.clinic_user
          */
@@ -149,12 +147,26 @@ class AuthenticatedSessionController extends Controller
         $filialId = $assignedFilials->first();
         $request->session()->put('filial_id', $filialId);
 
+        // 🔹 Добавляем это в ответ:
+        $filialName = DB::table('clinic_filials')
+            ->where('id', $filialId)
+            ->value('name');
+
         return response()->json([
             'select_clinic' => false,
             'select_filial' => false,
-            'clinic_id' => $clinicId,
-            'filial_id' => $filialId
+            'clinic_id'     => $clinicId,
+            'filial_id'     => $filialId,
+            'filial_name'   => $filialName,
         ]);
+
+
+        // return response()->json([
+        //     'select_clinic' => false,
+        //     'select_filial' => false,
+        //     'clinic_id' => $clinicId,
+        //     'filial_id' => $filialId
+        // ]);
     }
 
     public function storeOld(LoginRequest $request)

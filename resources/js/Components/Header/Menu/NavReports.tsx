@@ -6,7 +6,7 @@ import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 
-export default function NavReports(props) {
+export default function NavReports() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -16,54 +16,51 @@ export default function NavReports(props) {
 
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['customer-all']) && (
-          <Menu as="div" className="relative top-menu-nav">
-            <MenuButton className="inline-flex items-center menu-main-btn text-sm">
-              {lng.get('menu.reports')}
-            </MenuButton>
-            <MenuItems
-              transition
-              className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
+        <Menu as="div" className="relative top-menu-nav">
+          <MenuButton className="top-nav">{lng.get('menu.reports')}</MenuButton>
+          <MenuItems
+            transition
+            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform
                                         data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75
                                         data-[enter]:ease-out data-[leave]:ease-in mt-[10px]"
-            >
-              <div>
-                {permissions['customer-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/report-balance'}>
-                      {lng.get('menu.balance')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['producer-all'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/report-invoices'}>
-                      {lng.get('menu.invoices.balance')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/store-report'}>
-                      {lng.get('menu.material.report')}
-                    </Link>
-                  </MenuItem>
-                )}
-                {permissions['store-create'] && (
-                  <MenuItem>
-                    <Link className="submenu" href={'/finanses-report'}>
-                      {lng.get('menu.finanses.report')}
-                    </Link>
-                  </MenuItem>
-                )}
-              </div>
-            </MenuItems>
-          </Menu>
-        )}
+          >
+            <div>
+              {permissions['customer-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/report-balance'}>
+                    {lng.get('menu.balance')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['producer-all'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/report-invoices'}>
+                    {lng.get('menu.invoices.balance')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/store-report'}>
+                    {lng.get('menu.material.report')}
+                  </Link>
+                </MenuItem>
+              )}
+              {permissions['store-create'] && (
+                <MenuItem>
+                  <Link className="submenu" href={'/finanses-report'}>
+                    {lng.get('menu.finanses.report')}
+                  </Link>
+                </MenuItem>
+              )}
+            </div>
+          </MenuItems>
+        </Menu>
+      )}
     </>
   );
 }

@@ -12,23 +12,35 @@
 .btn-edit {
     background-image: url('../../images/action-icons/edit.svg');
     background-repeat: no-repeat;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
+    //background-size: contain;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
+    border: solid 1px #d8f3f4;
+    background-color: #fefeff;
+    padding: 5px;
+    background-size: 50%;
+    background-position: center;
 }
 
 .btn-delete {
     background-image: url('../../images/action-icons/trash.svg');
     background-repeat: no-repeat;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
+    //background-size: contain;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
+    border: solid 1px #fce4ea;
+    padding: 5px;
+    background-color: #fdf5f6;
+    background-size: 50%;
+    background-position: center;
 }
 
 .btn-store {
@@ -61,7 +73,7 @@
     text-transform: uppercase;
     cursor: pointer;
     font-weight: bold;
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
+    //@apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
     margin: 5px;
 }
 
@@ -106,7 +118,7 @@
     //margin-left: 10px;
     font-weight: bold;
     font-size: 12px !important;
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
+    @apply bg-gradient-to-r bg-[#0EA5A4] hover:bg-[#0F8C8B] text-white;
 }
 
 .main-submit {

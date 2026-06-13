@@ -75,7 +75,7 @@ class RoleController extends Controller
             $role = new Role();
             $role->name = $request->name;
             $role->guard_name = 'web';
-            $role->clinic_id = $clinicId;
+            // $role->clinic_id = $clinicId;
             $role->save();
 
             $permissionsID = array_map(fn($v) => (int)preg_replace('/[^0-9]/', '', $v), $request->permissions);

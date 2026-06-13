@@ -61,7 +61,6 @@ export default function Form({
     articul: formData.articul || '',
     file: null as File | null,
   });
-  console.log(photoPath);
   const [_, setHideFields] = useState(false);
   const serchResults = useSelector(userSearchResultsSelector);
   const serchUnitResults = useSelector(unitSearchResultsSelector);

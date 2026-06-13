@@ -28,12 +28,15 @@ use App\Services\AuditLogService;
 class CustomerController extends Controller
 {
     protected AuditLogService $auditLogService;
+
+    protected CustomerService $customerService;
     /**
      * Helper для работы с текущей схемой клиники
      */
-    public function __construct(AuditLogService $auditLogService)
+    public function __construct(AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
     
     private function withClinicSchema(Request $request, \Closure $callback)
@@ -175,9 +178,22 @@ class CustomerController extends Controller
 
             $clinicData = $request->user()->clinicByFilial($clinicId);
             
+            $filialId = $request->session()->get('filial_id');
+
             $formData = DB::table('core.users')
                 ->join('core.clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->select('users.*', 'clinic_user.avatar')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
+                    $join->on('users.id', '=', 'cfu.user_id')
+                         ->where('cfu.clinic_id', $clinicId)
+                         ->where('cfu.filial_id', $filialId);
+                })
+                ->select(
+                    'users.*',
+                    'clinic_user.avatar',
+                    'cfu.color',
+                    'cfu.phone',
+                    'cfu.inn'
+                )
                 ->where('users.id', $id)
                 ->where('clinic_user.clinic_id', $clinicId)
                 ->first();
@@ -185,9 +201,9 @@ class CustomerController extends Controller
             if (!$formData) {
                 abort(404);
             }
-
             $photoPath = '';
             if ($formData->avatar) {
+                dd(1);exit;
                 $serverFilePath = public_path('storage/users/' . $formData->avatar);
                 if (file_exists($serverFilePath)) {
                     $photoPath = asset('storage/users/' . $formData->avatar);
@@ -215,30 +231,39 @@ class CustomerController extends Controller
     public function update(CustomerUpdateRequest $request, CustomerService $service) {
         $filialId = $request->session()->get('filial_id');
         $clinicId = $request->session()->get('clinic_id');
+        $user = User::find($request->id);
+        
 
-        if (!$request->user()->canClinic('customer-edit', $clinicId)) {
-            abort(403);
-        }
-
-        DB::transaction(function () use ($request, $service, &$user, $clinicId) {
-            $user = $service->createOrUpdateUser(
-                $request->validated(),
-                $request->id
-            );
-
-            if ($request->file('file')) {
-                $service->updateAvatar($user, $request->file('file'), $clinicId);
-            }
-        });
-
+        // if (!$request->user()->canClinic('customer-edit', $clinicId)) {
+        //     abort(403);
+        // }
         return $this->withClinicSchema($request, function () use (
             $service, $request, $user, $clinicId, $filialId
         ) {
+            if (!$request->user()->canClinic('customer-edit')) {
+                return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
+            }
+            DB::transaction(function () use ($request, $service, &$user, $clinicId) {
+            
+                $user = $service->createOrUpdateUser(
+                    $request->validated(),
+                    $request->id
+                );
+                if ($request->file('file')) {
+                    $service->updateAvatar($user, $request->file('file'), $clinicId);
+                }
+            }); 
+
+            
             $service->updateFilialData(
                 $user->id,
                 $clinicId,
                 $filialId,
-                ['color' => $request->color]
+                [
+                    'color' => $request->color,
+                    'phone' => $request->phone,
+                    'inn' => $request->inn,
+                ]
             );
 
             $this->auditLogService->log(
@@ -368,6 +393,7 @@ class CustomerController extends Controller
                             'user_id'   => $userId,
                             'filial_id' => $item['filial_id'],
                             'role_id'   => $item['role_id'],
+                            'color'     => $item['color'] ?? null,
                             'clinic_id' => $clinicId
                         ]);
                     }
