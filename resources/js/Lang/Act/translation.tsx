@@ -44,9 +44,13 @@ const lngAct = {
     cancelissue: 'Відмінити проведення',
     factqty: 'Фактична кіл-ть',
     unit: 'Од. вим.',
-    doctor: 'Лікар' ,
+    doctor: 'Лікар',
     patient: 'Пацієнт',
     visits: 'Візит',
+    date_from: 'Дата з',
+    date_to: 'Дата по',
+    filter: 'Пошук',
+    reset: 'Скинути',
   },
 };
 export default lngAct;
