@@ -1,52 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import {
-  emptyMaterialsAutocompleteAction,
-  findMaterialAction,
-} from '../../../Redux/Material';
-import {
-  setInvoiceItems,
-  setShowTableError,
-} from '../../../Redux/Incominginvoice';
-import { invoiceTaxSelector } from '../../../Redux/Incominginvoice/selectors';
-import { searchResultMaterialsSelector } from '../../../Redux/Material/selectors';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import { emptyMaterialsAutocompleteAction, findMaterialAction } from '@/Redux/Material';
+import { setInvoiceItems, setShowTableError } from '@/Redux/Incominginvoice';
+import { invoiceTaxSelector } from '@/Redux/Incominginvoice/selectors';
+import { searchResultMaterialsSelector } from '@/Redux/Material/selectors';
 import InputSelect from '../../../Components/Form/InputSelect';
-import { ConnectedTvOutlined } from '@mui/icons-material';
 
-export default function AddDynamicInputFields({
-  formRowData = null,
-  lastRow = null,
-  unitsData
-}) {
-  const [inputs, setInputs] = useState(formRowData);
-  const dispatch = useAppDispatch();
-  const [hideFields, setHideFields] = useState(false);
-  const serchResults = useAppSelector(searchResultMaterialsSelector);
-  const [numRow, setNumRow] = useState(0);
-  const documentTax = useAppSelector(invoiceTaxSelector);
-  const [taxPercent, setTaxPercent] = useState(0);
+export interface AddDynamicInputFieldsRef {
+  addRow: () => void;
+}
 
-  const handleAddInput = () => {
-    setInputs([
-      ...inputs,
-      {
-        product_id: '',
-        product: '',
-        unit_id: '',
-        quantity: 0,
-        pack_qty: 0,
-        fact_qty: 0,
-        price: 0,
-        tax_amount: 0,
-        total: 0,
-      },
-    ]);
-  };
+// eslint-disable-next-line react/display-name
+const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ({ formRowData = null, lastRow = null, unitsData }, ref) => {
+    const [inputs, setInputs] = useState(formRowData);
+    const dispatch = useAppDispatch();
+    const [, setHideFields] = useState(false);
+    const serchResults = useAppSelector(searchResultMaterialsSelector);
+    const [numRow, setNumRow] = useState(0);
+    const documentTax = useAppSelector(invoiceTaxSelector);
+    const [taxPercent, setTaxPercent] = useState(0);
+
+    const handleAddInput = () => {
+      dispatch(setShowTableError(false));
+      setInputs([
+        ...inputs,
+        {
+          product_id: '',
+          product: '',
+          unit_id: '',
+          quantity: 0,
+          pack_qty: 0,
+          fact_qty: 0,
+          price: 0,
+          tax_amount: 0,
+          total: 0,
+        },
+      ]);
+    };
+
+    useImperativeHandle(ref, () => ({
+      addRow: handleAddInput,
+    }));
 
   const handleChange = (event, index, type = '') => {
     dispatch(setShowTableError(false));
-    let { name, value } = event.target;
-    let onChangeValue = [...inputs];
+    const { name, value } = event.target;
+    const onChangeValue = [...inputs];
     onChangeValue[index][name] = value;
     setNumRow(index);
     if (name === 'product') {
@@ -60,51 +61,42 @@ export default function AddDynamicInputFields({
     } else if (name === 'plusBtn') {
       inputs[index].quantity = inputs[index].quantity + 1;
       inputs[index].total = (
-        parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(inputs[index].price))
+        parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
       ).toFixed(2);
       inputs[index].fact_qty = (
-        parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(inputs[index].pack_qty))
+        parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].pack_qty))
       ).toFixed(2);
     } else if (name === 'minusBtn') {
       const _factPerUnit = inputs[index].fact_qty / inputs[index].quantity;
-      inputs[index].quantity =
-        inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
+      inputs[index].quantity = inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
       inputs[index].total = (
-        parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(inputs[index].price))
+        parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
       ).toFixed(2);
       inputs[index].fact_qty = (
-        parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(_factPerUnit))
+        parseFloat(String(inputs[index].quantity)) * parseFloat(String(_factPerUnit))
       ).toFixed(2);
     } else if (name === 'price') {
       inputs[index].price = event.target.value;
       inputs[index].total = (
-        parseFloat(String(inputs[index].quantity)) *
-        parseFloat(String(inputs[index].price))
+        parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
       ).toFixed(2);
-      inputs[index].tax_amount = inputs[index].total * 20 / 100;
+      inputs[index].tax_amount = (inputs[index].total * 20) / 100;
     }
-    inputs[index].tax = (
-      parseFloat(String(inputs[index].total)) *
-      20 / 100
-    ).toFixed(2);
+    inputs[index].tax = ((parseFloat(String(inputs[index].total)) * 20) / 100).toFixed(2);
     setInputs(onChangeValue);
   };
 
   useEffect(() => {
     const taxData = documentTax.split('_');
-    inputs.map(_input => {
+    inputs.map((_input) => {
       _input.tax_amount = taxData[1] ? (_input.price * taxData[1]) / 100 : 0;
     });
     setTaxPercent(parseInt(taxData[1]));
   }, [documentTax]);
 
-  useEffect(() => { }, [taxPercent]);
+  useEffect(() => {}, [taxPercent]);
 
-  const handleDeleteInput = index => {
+  const handleDeleteInput = (index) => {
     const newArray = [...inputs];
     newArray.splice(index, 1);
     setInputs(newArray);
@@ -113,15 +105,15 @@ export default function AddDynamicInputFields({
 
   const handleChangeFactQty = (event, index) => {
     dispatch(setShowTableError(false));
-    let { name, value } = event.target;
-    let onChangeValue = [...inputs];
+    const { name, value } = event.target;
+    const onChangeValue = [...inputs];
     onChangeValue[index][name] = value;
     // recalculate total
-    let total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
+    const total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
     inputs[index].total = total.toFixed(2);
-    inputs[index].tax_amount = total * 20 / 100;
+    inputs[index].tax_amount = (total * 20) / 100;
     setInputs(onChangeValue);
-  }
+  };
 
   useEffect(() => {
     dispatch(setInvoiceItems(inputs));
@@ -129,14 +121,13 @@ export default function AddDynamicInputFields({
 
   const calcPos = (index) => {
     if (index >= 1) {
-      return (70 + index * 10) + 33 * index;
+      return 70 + index * 10 + 33 * index;
     } else {
       return (index + 1) * 70;
     }
+  };
 
-  }
-
-  const renderSearchProducerResult = index => {
+  const renderSearchProducerResult = (index) => {
     if (serchResults.length > 0) {
       return (
         <div
@@ -144,7 +135,7 @@ export default function AddDynamicInputFields({
           style={{ top: calcPos(index) + 'px', width: '500px' }}
         >
           <ul>
-            {serchResults.map(_res => (
+            {serchResults.map((_res) => (
               <li
                 className="cursor-pointer py-0.5"
                 onClick={() => {
@@ -162,7 +153,7 @@ export default function AddDynamicInputFields({
                     : 0;
                   inputs[index].quantity = 1;
                   inputs[index].total = parseFloat(String(inputs[index].price));
-                  console.log('ConnectedTvOutlined', parseFloat(String(inputs[index].price)));
+                  // console.log('ConnectedTvOutlined', parseFloat(String(inputs[index].price)));
                 }}
               >
                 {_res.name}
@@ -176,7 +167,6 @@ export default function AddDynamicInputFields({
     }
   };
 
-
   return (
     <>
       {inputs.map((item, index) => (
@@ -188,15 +178,15 @@ export default function AddDynamicInputFields({
                 className="input-text input-invoice material-input"
                 type="text"
                 value={item.product}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
             </div>
           </td>
-          <td className="w-qty pb-2 mx-auto">
-            <div className="row flex ml-[40px] pl-[10px] input-inv-group">
+          <td className="w-qty pb-2 mx-auto pl-[40px]">
+            <div className="row flex input-inv-group">
               <button
                 name="minusBtn"
-                onClick={event => {
+                onClick={(event) => {
                   handleChange(event, index, 'minus');
                 }}
                 className="btn-qty-minus"
@@ -209,11 +199,11 @@ export default function AddDynamicInputFields({
                 name="qty"
                 type="text"
                 value={item.quantity}
-                onChange={event => handleChange(event, index)}
+                onChange={(event) => handleChange(event, index)}
               />
               <button
                 name="plusBtn"
-                onClick={event => {
+                onClick={(event) => {
                   handleChange(event, index, 'plus');
                 }}
                 className="btn-qty-plus"
@@ -234,7 +224,9 @@ export default function AddDynamicInputFields({
                 defaultValue={item.unit_id}
                 options={unitsData}
                 required
-                label={null} onChange={undefined} />
+                label={null}
+                onChange={undefined}
+              />
             </div>
           </td>
           <td className="w-price text-center pb-2">
@@ -243,7 +235,7 @@ export default function AddDynamicInputFields({
               name="fact_qty"
               type="fact_qty"
               value={item.fact_qty}
-              onChange={event => handleChangeFactQty(event, index)}
+              onChange={(event) => handleChangeFactQty(event, index)}
             />
           </td>
           <td className="w-price text-center pb-2">
@@ -252,7 +244,7 @@ export default function AddDynamicInputFields({
               name="price"
               type="text"
               value={item.price}
-              onChange={event => handleChange(event, index)}
+              onChange={(event) => handleChange(event, index)}
             />
           </td>
           <td className="w-price text-center pb-2">
@@ -261,22 +253,19 @@ export default function AddDynamicInputFields({
               name="total"
               type="text"
               value={item.total}
-            // onChange={(event) => handleChange(event, index)}
+              // onChange={(event) => handleChange(event, index)}
             />
           </td>
           <td className="w-btn pb-2">
             {inputs.length > 1 && (
-              <button
-                onClick={() => handleDeleteInput(index)}
-                className="btn-delete"
-              />
+              <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
             )}
           </td>
-          <td className="w-btn pb-2">
-            {index === inputs.length - 1 && !lastRow && (
-              <button onClick={() => handleAddInput()} className="btn-plus" />
-            )}
-          </td>
+          {/*<td className="w-btn pb-2">*/}
+          {/*  {index === inputs.length - 1 && !lastRow && (*/}
+          {/*    <button onClick={() => handleAddInput()} className="btn-plus" />*/}
+          {/*  )}*/}
+          {/*</td>*/}
         </tr>
       ))}
       <tr>
@@ -286,5 +275,8 @@ export default function AddDynamicInputFields({
         </td>
       </tr>
     </>
-  );
-}
+    );
+  }
+);
+
+export default AddDynamicInputFields;

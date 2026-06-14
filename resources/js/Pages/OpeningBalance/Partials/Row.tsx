@@ -210,7 +210,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 </button>
               </div>
             </td>
-            <td className="w-unit text-center pb-2 min-w-[120px]">
+            <td className="w-unit text-right pb-2 min-w-[120px]">
               <InputSelect
                 translatable={false}
                 name={'unit_id'}

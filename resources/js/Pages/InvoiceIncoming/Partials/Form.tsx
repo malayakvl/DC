@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
@@ -8,7 +8,7 @@ import Lang from 'lang.js';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
-import AddDynamicInputFields from './Row';
+import AddDynamicInputFields, { AddDynamicInputFieldsRef } from './Row';
 import InputCalendar from '../../../Components/Form/InputCalendar';
 import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import {
@@ -23,7 +23,6 @@ export default function Form({
   clinicData,
   storeData,
   statusData,
-  typeData,
   producerData,
   customerData,
   formData,
@@ -39,6 +38,7 @@ export default function Form({
     locale: appLang,
   });
   const dispatch = useAppDispatch();
+  const rowRef = useRef<AddDynamicInputFieldsRef | null>(null);
   const invoiceItems = useSelector(invoiceItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
@@ -60,6 +60,7 @@ export default function Form({
     rate: formData.rate,
   });
   const { processing, recentlySuccessful } = useForm();
+  const isPosted = formData.status === 'posted';
 
   const handleChangeSelect = (e) => {
     const key = e.target.id;
@@ -272,14 +273,19 @@ export default function Form({
                 <th className="pb-3 w-price">{msg.get('invoice_incoming.price')}</th>
                 <th className="pb-3 w-price">{msg.get('invoice_incoming.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
+                {/*<th className="pb-3 w-btn">&nbsp;</th>*/}
               </tr>
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} unitsData={unitsData} />
+                <AddDynamicInputFields
+                  ref={rowRef}
+                  formRowData={formRowData}
+                  unitsData={unitsData}
+                />
               ) : (
                 <AddDynamicInputFields
+                  ref={rowRef}
                   unitsData={unitsData}
                   formRowData={[
                     {
@@ -294,6 +300,21 @@ export default function Form({
                 />
               )}
             </tbody>
+            {!isPosted && (
+              <tfoot>
+                <tr>
+                  <td colSpan="7">
+                    <button
+                      type="button"
+                      className="btn-add-row pl-[10px] font-bold"
+                      onClick={() => rowRef.current?.addRow()}
+                    >
+                      + Додати рядок
+                    </button>
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
         <div className="bg-blue-100 align-items-end">
@@ -310,7 +331,7 @@ export default function Form({
             >
               {msg.get('invoice_incoming.back')}
             </Link>
-            {formData.status_id != 2 && (
+            {!isPosted && formData.status_id != 2 && (
               <Link
                 disabled={processing}
                 className="btn-submit"

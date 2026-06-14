@@ -219,12 +219,9 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
               </DataTable>
             </section>
             {showModal && (
-              <div
-                id="paymentModal"
-                className="fixed inset-0 bg-black/50 flex items-center justify-center"
-              >
-                <div className="bg-black p-6 rounded-lg w-[450px]">
-                  <h2 className="text-md font-semibold leading-tight">
+              <div id="paymentModal" className="fixed inset-0  flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg w-[450px]">
+                  <h2 className="text-[20px] font-semibold leading-tight">
                     {msg.get('invoice_incoming.payment')} № {selectedInvoice?.invoice_number}
                   </h2>
 
@@ -237,7 +234,7 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                       </label>
                       <input
                         type="number"
-                        className="w-full border p-2 rounded text-black"
+                        className="input-text"
                         value={paymentAmount}
                         onChange={(e) => setPaymentAmount(e.target.value)}
                       />
@@ -248,7 +245,7 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                         {msg.get('invoice_incoming.payment_method')}
                       </label>
                       <select
-                        className="w-full border p-2 rounded text-black"
+                        className="w-full input-text"
                         value={paymentMethodId || ''}
                         onChange={(e) => {
                           const id = parseInt(e.target.value);

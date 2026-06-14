@@ -151,9 +151,7 @@ export default function Form({
       </header>
       <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <div className="relative">
-          {isPosted && (
-            <div className="absolute inset-0 z-10 bg-white/50 cursor-not-allowed" />
-          )}
+          {isPosted && <div className="absolute inset-0 z-10 bg-white/50 cursor-not-allowed" />}
           <div className="flex flex-col md:flex-row w-full">
             <div className="flex flex-col md:flex-row w-full bg-white p-2">
               <div className="w-full md:w-1/2">
@@ -272,7 +270,7 @@ export default function Form({
                         className="btn-add-row pl-[10px] font-bold"
                         onClick={() => rowRef.current?.addRow()}
                       >
-                        + Додати матеріал
+                        + Додати рядок
                       </button>
                     </td>
                   </tr>
