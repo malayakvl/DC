@@ -18,13 +18,16 @@
 
 .data-table td {
     @apply relative px-4 first:pl-[var(--gutter,theme(spacing.2))]
-        last:pr-[var(--gutter,theme(spacing.2))] border-b border-zinc-950/5
-        dark:border-white/5 py-4 sm:first:pl-1 sm:last:pr-1;
+        last:pr-[var(--gutter,theme(spacing.2))] border-b
+        dark:border-white/5 py-2 sm:first:pl-1 sm:last:pr-1;
     color: #475569;
-    border-color: #4a588e;
+    border-color: #e3e3e4;
 }
 .data-table tbody tr:hover {
     background: #F8FAFC;
+}
+.data-table td:last-child {
+    border-bottom: none;
 }
 
 //.text-orange-700 {

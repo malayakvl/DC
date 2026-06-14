@@ -2,8 +2,8 @@ import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../hooks';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { useAppDispatch } from '@/hooks';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
@@ -15,11 +15,8 @@ import {
   invoiceItemsSelector,
   invoiceTaxSelector,
   tableErrorSelector,
-} from '../../../Redux/Incominginvoice/selectors';
-import {
-  setInvoiceTax,
-  setShowTableError,
-} from '../../../Redux/Incominginvoice';
+} from '@/Redux/Incominginvoice/selectors';
+import { setInvoiceTax, setShowTableError } from '@/Redux/Incominginvoice';
 import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
 
 export default function Form({
@@ -64,10 +61,10 @@ export default function Form({
   });
   const { processing, recentlySuccessful } = useForm();
 
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
@@ -76,25 +73,24 @@ export default function Form({
     }
   };
 
-  const handleChangeCalendar = data => {
+  const handleChangeCalendar = (data) => {
     const key = 'invoice_date';
-    const value = data;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: data,
     }));
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     if (!values['invoice_date']) {
       values['invoice_date'] = new Date();
@@ -102,7 +98,7 @@ export default function Form({
 
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;
-    invoiceItems.forEach(_row => {
+    invoiceItems.forEach((_row) => {
       if (!_row.product_id) {
         haveErrorInRow = true;
       }
@@ -110,7 +106,7 @@ export default function Form({
     if (haveErrorInRow) {
       dispatch(setShowTableError(true));
     } else {
-      const taxData = documentTax.split('_');
+      documentTax.split('_');
       if (formData.id) {
         router.post(`/invoice-incoming/update?id=${formData.id}`, {
           invoice_number: values.invoice_number,
@@ -157,11 +153,7 @@ export default function Form({
             : msg.get('invoice_incoming.title.create')}
         </h2>
       </header>
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <div className="flex flex-col md:flex-row w-full">
           <div className="flex flex-col md:flex-row w-full">
             <div className="w-full md:w-1/2">
@@ -306,9 +298,7 @@ export default function Form({
         </div>
         <div className="bg-blue-100 align-items-end">
           <div style={{ clear: 'both' }}></div>
-          <div
-            className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}
-          >
+          <div className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}>
             {msg.get('invoice.rows.error')}
           </div>
           <hr />
@@ -324,7 +314,9 @@ export default function Form({
               <Link
                 disabled={processing}
                 className="btn-submit"
-                onClick={e => submit(e)} href={''}              >
+                onClick={(e) => submit(e)}
+                href={''}
+              >
                 {msg.get('invoice_incoming.save')}
               </Link>
             )}
@@ -336,9 +328,7 @@ export default function Form({
               leave="transition ease-in-out"
               leaveTo="opacity-0"
             >
-              <p className="text-sm text-gray-600">
-                {msg.get('invoice.saved')}
-              </p>
+              <p className="text-sm text-gray-600">{msg.get('invoice.saved')}</p>
             </Transition>
           </div>
         </div>
