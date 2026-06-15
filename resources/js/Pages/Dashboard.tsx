@@ -1,9 +1,9 @@
 import AuthenticatedLayout from '../Layouts/AuthenticatedLayout';
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngDashboard from '../Lang/Dashboard/translation';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import React from 'react';
 
 export default function Dashboard(clinicName) {
@@ -150,9 +150,7 @@ export default function Dashboard(clinicName) {
                             />
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              John Michael
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">John Michael</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               john@creative-tim.com
                             </p>
@@ -160,12 +158,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Manager
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Organization
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Manager</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Organization</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -178,12 +172,7 @@ export default function Dashboard(clinicName) {
                         </span>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <a
-                          className="text-xs font-semibold leading-tight text-slate-400"
-                        >
-                          {' '}
-                          Edit{' '}
-                        </a>
+                        <a className="text-xs font-semibold leading-tight text-slate-400"> Edit </a>
                       </td>
                     </tr>
                     <tr>
@@ -197,9 +186,7 @@ export default function Dashboard(clinicName) {
                             />
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              Alexa Liras
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">Alexa Liras</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               alexa@creative-tim.com
                             </p>
@@ -207,12 +194,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Programator
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Developer
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Programator</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Developer</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -247,9 +230,7 @@ export default function Dashboard(clinicName) {
                             </div>
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              Laurent Perrier
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">Laurent Perrier</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               laurent@creative-tim.com
                             </p>
@@ -257,12 +238,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Executive
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Projects
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Executive</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Projects</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -297,9 +274,7 @@ export default function Dashboard(clinicName) {
                             </div>
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              Michael Levi
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">Michael Levi</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               michael@creative-tim.com
                             </p>
@@ -307,12 +282,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Programator
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Developer
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Programator</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Developer</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-green-600 to-lime-400 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -345,9 +316,7 @@ export default function Dashboard(clinicName) {
                             />
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              Richard Gran
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">Richard Gran</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               richard@creative-tim.com
                             </p>
@@ -355,12 +324,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Manager
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Executive
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Manager</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Executive</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -393,9 +358,7 @@ export default function Dashboard(clinicName) {
                             />
                           </div>
                           <div className="flex flex-col justify-center">
-                            <h6 className="mb-0 text-sm leading-normal">
-                              Miriam Eric
-                            </h6>
+                            <h6 className="mb-0 text-sm leading-normal">Miriam Eric</h6>
                             <p className="mb-0 text-xs leading-tight text-slate-400">
                               miriam@creative-tim.com
                             </p>
@@ -403,12 +366,8 @@ export default function Dashboard(clinicName) {
                         </div>
                       </td>
                       <td className="p-2 align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
-                        <p className="mb-0 text-xs font-semibold leading-tight">
-                          Programtor
-                        </p>
-                        <p className="mb-0 text-xs leading-tight text-slate-400">
-                          Developer
-                        </p>
+                        <p className="mb-0 text-xs font-semibold leading-tight">Programtor</p>
+                        <p className="mb-0 text-xs leading-tight text-slate-400">Developer</p>
                       </td>
                       <td className="p-2 text-sm leading-normal text-center align-middle bg-transparent border-b-0 whitespace-nowrap shadow-transparent">
                         <span className="bg-gradient-to-tl from-slate-600 to-slate-300 px-2.5 text-xs rounded-1.8 py-1.4 inline-block whitespace-nowrap text-center align-baseline font-bold uppercase leading-none text-white">
@@ -439,11 +398,7 @@ export default function Dashboard(clinicName) {
                          lg:flex-none"
             >
               <div className="border-black/12.5 shadow-soft-xl relative flex min-w-0 flex-col break-words rounded-2xl border-0 border-solid bg-white bg-clip-border p-3">
-                <img
-                  src="../../images/dashboard/diagrams.png"
-                  className=""
-                  alt="user2"
-                />
+                <img src="../../images/dashboard/diagrams.png" className="" alt="user2" />
               </div>
             </div>
           </div>

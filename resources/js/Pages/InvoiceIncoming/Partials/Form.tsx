@@ -309,7 +309,7 @@ export default function Form({
                       className="btn-add-row pl-[10px] font-bold"
                       onClick={() => rowRef.current?.addRow()}
                     >
-                      + Додати рядок
+                      + Додати матеріал
                     </button>
                   </td>
                 </tr>

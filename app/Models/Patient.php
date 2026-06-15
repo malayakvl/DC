@@ -65,7 +65,7 @@ class Patient extends Authenticatable
 
     public function discountStatus(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasOne(PatientStatus::class,'id','status_id');
+        return $this->hasOne(PatientDiscountStatus::class,'id','status_id');
     }
 
     public static function createInCore($attributes, $additionalData = [])

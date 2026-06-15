@@ -347,9 +347,18 @@ class PatientController extends Controller
      */
     public function view(Request $request, $id, $scheduleId = '') {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $scheduleId) {
-        
             $clinicData = $request->user()->clinicByFilial($clinicId);
-            $patientData = Patient::where('id', '=', $id)->first();
+            $patientData = Patient::where('patients.id', '=', $id)
+                ->leftJoin('core.users', 'users.id', '=', 'patients.user_id')
+                ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
+                ->select('patients.*', 'core.users.first_name', 'core.users.last_name', 'core.users.email', 'patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
+                ->leftJoin('phones', function ($join) {
+                    $join->on('phones.patient_id', '=', 'patients.id')
+                         ->where('phones.is_primary', '=', true);
+                })
+                ->select('patients.*', 'core.users.first_name', 'core.users.last_name', 'core.users.email', 'phones.phone as primary_phone')
+                ->first();
+//            dd($patientData);exit;
             
             $categories = PriceCategory::get();
             $arrServices = [];
@@ -357,8 +366,8 @@ class PatientController extends Controller
                 $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
             }
             $arrCat = array();
-        $tree = $this->generateCategories($categories, $arrCat, 0);
-        $type = $request->get('type');
+            $tree = $this->generateCategories($categories, $arrCat, 0);
+            $type = $request->get('type');
 
         //get acts
         // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();

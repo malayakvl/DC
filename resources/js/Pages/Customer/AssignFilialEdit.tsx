@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
@@ -10,7 +10,8 @@ import InputRoleSelect from '../../Components/Form/InputRoleSelect';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 
-import { InputColor } from '../../Components/Form/InputColor';
+import { InputColor } from '@/Components/Form/InputColor';
+import NavLink from '@/Components/Links/NavLink';
 
 export default function AssignFilialEdit({
   clinicData,
@@ -19,8 +20,9 @@ export default function AssignFilialEdit({
   customer,
   assignedData,
 }) {
-  const dispatch = useDispatch();
-  const user = usePage().props.auth.user;
+  useDispatch();
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
@@ -30,17 +32,7 @@ export default function AssignFilialEdit({
   const [values, setValues] = useState({
     permissions: assignedData,
   });
-
-  const handleChange = (pId, pValue) => {
-    const tmpPermis = values['permissions'];
-    tmpPermis.push({ filial_id: pId, role_id: pValue });
-    setValues(values => ({
-      ...values,
-      ['permissions']: tmpPermis,
-    }));
-  };
-
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     router.post(`/customer/assign-submit`, {
       customerId: customer.id,
@@ -56,8 +48,8 @@ export default function AssignFilialEdit({
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
-                <div className="flex inline-flex">
-                  <h2>
+                <div className="flex inline-flex w-full mb-4">
+                  <h2 className="text-xl font-semibold leading-tight">
                     <Link className="icon-back" href={'/customers'}>
                       &nbsp;
                     </Link>
@@ -67,26 +59,22 @@ export default function AssignFilialEdit({
               </header>
             </section>
             <div>
-              <form
-                onSubmit={submit}
-                className="mt-0 space-y-4"
-                encType="multipart/form-data"
-              >
+              <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
                 <div className="grid grid-cols-4 gap-4">
-                  {filialData?.map(item => (
+                  {filialData?.map((item) => (
                     <div key={item.id}>
-                      <h5 className="text-lg font-bold text-white">{item.name}</h5>
+                      <h5 className="text-lg font-bold text-[#0ea5a4]">{item.name}</h5>
                       <InputRoleSelect
                         name={`role_id_${item.id}`}
-                        values={assignedData.find(
-                          _data => _data.filial_id === item.id
-                        )}
+                        values={assignedData.find((_data) => _data.filial_id === item.id)}
                         options={rolesData}
-                        onChange={e => {
-                          let tmpPerm = values['permissions'];
+                        onChange={(e) => {
+                          const tmpPerm = values['permissions'];
                           const filialId = parseInt(e.target.id.replace('role_id_', ''));
-                          const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
-                          
+                          const existingIdx = tmpPerm.findIndex(
+                            (obj) => obj.filial_id === filialId
+                          );
+
                           if (existingIdx !== -1) {
                             if (parseInt(e.target.value) > 0) {
                               tmpPerm[existingIdx].role_id = e.target.value;
@@ -97,10 +85,10 @@ export default function AssignFilialEdit({
                             tmpPerm.push({
                               filial_id: item.id,
                               role_id: e.target.value,
-                              color: customer.color || '#000000'
+                              color: customer.color || '#000000',
                             });
                           }
-                          setValues(values => ({
+                          setValues((values) => ({
                             ...values,
                             permissions: [...tmpPerm],
                           }));
@@ -110,15 +98,21 @@ export default function AssignFilialEdit({
                       />
                       <div className="relative mt-2">
                         <InputColor
-                          defaultColor={assignedData.find(_data => _data.filial_id === item.id)?.color || customer.color || '#000000'}
+                          defaultColor={
+                            assignedData.find((_data) => _data.filial_id === item.id)?.color ||
+                            customer.color ||
+                            '#000000'
+                          }
                           name={`color_${item.id}`}
-                          onChange={e => {
-                            let tmpPerm = values['permissions'];
+                          onChange={(e) => {
+                            const tmpPerm = values['permissions'];
                             const filialId = parseInt(e.target.id.replace('color_', ''));
-                            const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
+                            const existingIdx = tmpPerm.findIndex(
+                              (obj) => obj.filial_id === filialId
+                            );
                             if (existingIdx !== -1) {
                               tmpPerm[existingIdx].color = e.target.value;
-                              setValues(values => ({
+                              setValues((values) => ({
                                 ...values,
                                 permissions: [...tmpPerm],
                               }));
@@ -131,16 +125,10 @@ export default function AssignFilialEdit({
                   ))}
                 </div>
                 <div className="flex items-center mt-5">
-                  <Link
-                    className="btn-back"
-                    title={msg.get('customer.back')}
-                    href={`/customers`}
-                  >
+                  <Link className="btn-back" title={msg.get('customer.back')} href={`/customers`}>
                     {msg.get('customer.back')}
                   </Link>
-                  <PrimaryButton disabled={processing}>
-                    {msg.get('customer.save')}
-                  </PrimaryButton>
+                  <PrimaryButton disabled={processing}>{msg.get('customer.save')}</PrimaryButton>
 
                   <Transition
                     show={recentlySuccessful}
@@ -149,9 +137,7 @@ export default function AssignFilialEdit({
                     leave="transition ease-in-out"
                     leaveTo="opacity-0"
                   >
-                    <p className="text-sm text-gray-600">
-                      {msg.get('customer.saved')}
-                    </p>
+                    <p className="text-sm text-gray-600">{msg.get('customer.saved')}</p>
                   </Transition>
                 </div>
               </form>

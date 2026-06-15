@@ -2,7 +2,7 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngRole from '../../Lang/Role/translation';
 import { Link } from '@inertiajs/react';
@@ -10,11 +10,12 @@ import InputText from '../../Components/Form/InputText';
 import Checkbox from '../../Components/Form/Checkbox';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { PERMISSION_CATEGORIES } from '../../Constants/Permissions';
+import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
 
 export default function Edit({ roleData, permissionData, rolePermissions }) {
-  const dispatch = useDispatch();
-  const user = usePage().props.auth.user;
+  useDispatch();
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngRole,
@@ -22,7 +23,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   });
 
   // Convert all permission IDs to integers to ensure consistent types
-  const normalizedRolePermissions = rolePermissions.map(id => parseInt(id));
+  const normalizedRolePermissions = rolePermissions.map((id) => parseInt(id));
 
   const [values, setValues] = useState({
     name: roleData.name,
@@ -30,16 +31,16 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   });
   const { processing, recentlySuccessful } = useForm();
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handlePermission = el => {
+  const handlePermission = (el) => {
     const tmpPermis = [...values.permissions]; // Create a copy to avoid mutation
     const permissionId = parseInt(el.id);
 
@@ -55,13 +56,13 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
         tmpPermis.splice(index, 1); // 2nd parameter means remove one item only
       }
     }
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       ['permissions']: tmpPermis,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     router.post(`/role/update/${roleData.id}`, values);
   };
@@ -70,11 +71,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
     <AuthenticatedLayout header={<Head title="Roles" />}>
       <Head title="Roles" />
       <div className="py-0">
-        <form
-          onSubmit={submit}
-          className="mt-0 space-y-4"
-          encType="multipart/form-data"
-        >
+        <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
           <div className="py-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
@@ -90,9 +87,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
             </section>
             <div>
               <div className="p-0 mb-8 content-data bg-content">
-                <div
-                  className={`w-full mb-5 ${!roleData.clinic_id ? '' : ''}`}
-                >
+                <div className={`w-full mb-5 ${!roleData.clinic_id ? '' : ''}`}>
                   <InputText
                     name={'name'}
                     values={values}
@@ -105,9 +100,10 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
                 <div>
                   {/* Using a grid layout to evenly distribute permission categories */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {PERMISSION_CATEGORIES.map((colName, i) => {
-                      const filteredPermissions = permissionData &&
-                        permissionData.filter(item => item.name.includes(colName));
+                    {PERMISSION_CATEGORIES.map((colName) => {
+                      const filteredPermissions =
+                        permissionData &&
+                        permissionData.filter((item) => item.name.includes(colName));
 
                       // Only render category if it has permissions
                       if (!filteredPermissions || filteredPermissions.length === 0) {
@@ -116,11 +112,9 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
                       return (
                         <div key={colName} className="permission-block">
-                          <h3 className="role-name-head ">
-                            {msg.get(`role.${colName}`)}
-                          </h3>
+                          <h3 className="role-name-head ">{msg.get(`role.${colName}`)}</h3>
                           <div className="space-y-2">
-                            {filteredPermissions.map(_p => {
+                            {filteredPermissions.map((_p) => {
                               const permissionId = parseInt(_p.id);
                               const isChecked = values['permissions'].includes(permissionId);
                               return (
@@ -130,7 +124,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
                                     name={`remember[${_p.id}]`}
                                     className="permission-checkbox"
                                     checked={isChecked}
-                                    onChange={e => {
+                                    onChange={(e) => {
                                       handlePermission(e.target);
                                     }}
                                   />
@@ -148,16 +142,10 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
                 </div>
                 <div className="clearfix"></div>
                 <div className="flex items-center mt-5">
-                  <Link
-                    className="btn-back"
-                    title={msg.get('role.back')}
-                    href={`/roles`}
-                  >
+                  <Link className="btn-back" title={msg.get('role.back')} href={`/roles`}>
                     {msg.get('role.back')}
                   </Link>
-                  <PrimaryButton disabled={processing}>
-                    {msg.get('role.save')}
-                  </PrimaryButton>
+                  <PrimaryButton disabled={processing}>{msg.get('role.save')}</PrimaryButton>
 
                   <Transition
                     show={recentlySuccessful}
@@ -166,9 +154,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
                     leave="transition ease-in-out"
                     leaveTo="opacity-0"
                   >
-                    <p className="text-sm text-gray-600">
-                      {msg.get('role.saved')}
-                    </p>
+                    <p className="text-sm text-gray-600">{msg.get('role.saved')}</p>
                   </Transition>
                 </div>
               </div>

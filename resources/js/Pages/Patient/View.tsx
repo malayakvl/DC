@@ -4,19 +4,15 @@ import React, { useEffect } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUserPlus,
-  faPencil,
-} from '@fortawesome/free-solid-svg-icons';
+import { faUserPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import History from './Tabs/History'
-import Finances from './Tabs/Finances'
-import { patientTabSelector } from '../../Redux/Patient/selectors';
-import { setPatientTab, setExistServicesAction, setPatientSubTab } from '../../Redux/Patient';
-
+import History from './Tabs/History';
+import Finances from './Tabs/Finances';
+import { patientTabSelector } from '@/Redux/Patient/selectors';
+import { setPatientTab, setExistServicesAction, setPatientSubTab } from '@/Redux/Patient';
 
 export default function index({
   clinicData,
@@ -29,20 +25,23 @@ export default function index({
   services,
   tree,
   scheduleId,
-  actData
+  actData,
 }) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const tab = useSelector(patientTabSelector);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const dispatch = useDispatch();
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
     locale: appLang,
   });
-  const [globalDiscount, setGlobalDiscount] = useState(discountValue || '');
-  const [globalDiscountType, setGlobalDiscountType] = useState('percent');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [globalDiscountType] = useState('percent');
 
-  if (quickActData.length > 0 ) {
+  if (quickActData.length > 0) {
     dispatch(setPatientTab('finances'));
   }
   if (scheduleId) {
@@ -51,10 +50,10 @@ export default function index({
     dispatch(setPatientSubTab('actpayment'));
   }
 
-console.log('quickActData', quickActData)
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (quickActData.services) {
-      const initialServices = JSON.parse(quickActData.services).map(service => ({
+      const initialServices = JSON.parse(quickActData.services).map((service) => ({
         ...service,
         discountValue: discountValue || 0,
         discountType: globalDiscountType,
@@ -63,18 +62,22 @@ console.log('quickActData', quickActData)
     } else {
       dispatch(setExistServicesAction([]));
     }
-  }, [quickActData])
+  }, [quickActData]);
 
-  const handleTabClick = tabName => {
-    console.log(tabName)
+  const handleTabClick = (tabName) => {
+    console.log(tabName);
     dispatch(setPatientTab(tabName));
   };
 
-console.log('TAB', tab);
+  console.log('TAB', patientData);
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={msg.get('patient.title.view')+ ' '+patientData.first_name+' '+patientData.last_name } />
+      <Head
+        title={
+          msg.get('patient.title.view') + ' ' + patientData.first_name + ' ' + patientData.last_name
+        }
+      />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
@@ -94,20 +97,28 @@ console.log('TAB', tab);
                   <b>
                     {patientData.first_name} {patientData.last_name}
                   </b>
-                  <span className="p-phone">{patientData.phone}!!</span>
-                  <span className="block text-[13px] p-discount">{patientData.discount ? `${discountStatus} -${discountValue}%` : '2'}</span>
+                  <span className="p-phone">{patientData.primary_phone}</span>
+                  <span className="block text-[13px] p-discount">
+                    {patientData.discount
+                      ? `${discountStatus || msg.get('patient.discount')} -${discountValue || patientData.discount}%`
+                      : ''}
+                  </span>
                 </div>
               </div>
               <div className="icon-block">
                 <ul>
                   <li>
                     <Link href="/">
-                      <FontAwesomeIcon style={{color: 'white'}} icon={faUserPlus} className="mr-3" />
+                      <FontAwesomeIcon
+                        style={{ color: 'white' }}
+                        icon={faUserPlus}
+                        className="mr-3"
+                      />
                     </Link>
                   </li>
                   <li>
                     <Link href={`/patient/edit/${patientData.id}`}>
-                      <FontAwesomeIcon style={{color: 'white'}} icon={faPencil} />
+                      <FontAwesomeIcon style={{ color: 'white' }} icon={faPencil} />
                     </Link>
                   </li>
                 </ul>
@@ -172,10 +183,9 @@ console.log('TAB', tab);
                 <History patientData={patientData} type={type} treatmentData={treatmentData} />
               </>
             )}
-
           </div>
         </div>
       </div>
     </AuthenticatedLayout>
-  )
+  );
 }
