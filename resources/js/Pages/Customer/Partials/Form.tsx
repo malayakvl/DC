@@ -1,23 +1,15 @@
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { useAppDispatch, useAppSelector } from '@/hooks';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCustomer from '../../../Lang/Customer/translation';
 import InputText from '../../../Components/Form/InputText';
-import { InputColor } from '../../../Components/Form/InputColor';
 import React, { useState, useEffect } from 'react';
-import InputLabel from '../../../Components/Form/InputLabel';
-import InputError from '../../../Components/Form/InputError';
-import {
-  findUserByEmailAction,
-  emptyUserAutocompleteAction,
-} from '../../../Redux/Clinic';
-import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
-import { SketchPicker } from 'react-color';
-import { paletterDataSelector } from '../../../Redux/Staff/selectors';
+import { findUserByEmailAction, emptyUserAutocompleteAction } from '@/Redux/Clinic';
+import { userSearchResultsSelector } from '@/Redux/Clinic/selectors';
+import { paletterDataSelector } from '@/Redux/Staff/selectors';
 
 interface Props {
   formData: any;
@@ -27,13 +19,7 @@ interface Props {
   className?: string;
 }
 
-export default function CustomerForm({
-  formData,
-  clinicData,
-  roleData = null,
-  photoPath = null,
-  className = '',
-}: Props) {
+export default function CustomerForm({ formData, clinicData, photoPath = null }: Props) {
   const dispatch = useAppDispatch();
   const appLang = useAppSelector(appLangSelector);
   const msg = new Lang({
@@ -54,22 +40,20 @@ export default function CustomerForm({
     file: null as File | null,
   });
   const [hideFields, setHideFields] = useState(false);
-  const [_, setCustomerColor] = useState('#000000');
-  const colorSettings = useAppSelector(paletterDataSelector);
+  useAppSelector(paletterDataSelector);
   const serchResults = useAppSelector(userSearchResultsSelector);
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/nf.png');
-  const { data, setData, processing, post, recentlySuccessful, progress } =
-    useForm({
-      id: formData.id,
-      file: null,
-      name: formData.name,
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      phone: formData.phone,
-      email: formData.email,
-      inn: formData.inn
-    });
+  const { processing, recentlySuccessful, progress } = useForm({
+    id: formData.id,
+    file: null,
+    name: formData.name,
+    first_name: formData.first_name,
+    last_name: formData.last_name,
+    phone: formData.phone,
+    email: formData.email,
+    inn: formData.inn,
+  });
 
   useEffect(() => {
     if (!selectedFile) {
@@ -79,26 +63,25 @@ export default function CustomerForm({
 
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
-    console.log(objectUrl)
+    console.log(objectUrl);
 
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile, photoPath]);
-
-
 
   const renderSearchResult = () => {
     if (serchResults.length > 0) {
       return (
         <div className="absolute autocomplete">
           <ul>
-            {serchResults.map(_res => (
+            {serchResults.map((_res) => (
+              // eslint-disable-next-line react/jsx-key
               <li
                 className="cursor-pointer"
                 onClick={() => {
                   setHideFields(true);
                   dispatch(emptyUserAutocompleteAction());
-                  setValues(values => ({
+                  setValues((values) => ({
                     ...values,
                     ['email']: _res.email,
                   }));
@@ -115,16 +98,16 @@ export default function CustomerForm({
     }
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChangeEmail = e => {
+  const handleChangeEmail = (e) => {
     const key = e.target.id;
     const value = e.target.value;
     if (value.length > 3) {
@@ -133,12 +116,11 @@ export default function CustomerForm({
       dispatch(emptyUserAutocompleteAction());
       setHideFields(false);
     }
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
-  console.log(selectedFile);
   useEffect(() => {
     if (!selectedFile) {
       setPreview(undefined);
@@ -161,7 +143,7 @@ export default function CustomerForm({
   //   }));
   // };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     if (formData.id) {
@@ -174,32 +156,29 @@ export default function CustomerForm({
   return (
     <section>
       <header>
-        <h2>
+        <h2 className="text-xl font-semibold leading-tight">
           <Link className="icon-back" href={'/customers'}>
             &nbsp;
           </Link>
-          {formData.id
-            ? msg.get('customer.title.edit')
-            : msg.get('customer.title.create')}
+          {formData.id ? msg.get('customer.title.edit') : msg.get('customer.title.create')}
         </h2>
       </header>
 
-      <form
-        onSubmit={submit}
-        className="mt-0 w-full"
-        encType="multipart/form-data"
-      >
-        <div className="flex mt-[50px] px-[100px] mb-[50px]">
+      <form onSubmit={submit} className="mt-0 w-full bg-white p-4" encType="multipart/form-data">
+        <div className="flex mt-[50px] px-[50px] mb-[50px]">
           <div className="w-1/3">
             <div className="flex flex-row relative">
-              <div className="file-preview inline-block">
-                {(!selectedFile && !photoPath) && (
+              <div className="file-preview inline-block bg-gray-50">
+                {!selectedFile && !photoPath && (
                   <img src="/images/nf.png" width={197} height={250} />
                 )}
-                {(!selectedFile && photoPath) && (
-                  <div className={'patient-avatar'} style={{
-                    backgroundImage: `url(${photoPath})`,
-                  }}></div>
+                {!selectedFile && photoPath && (
+                  <div
+                    className={'patient-avatar'}
+                    style={{
+                      backgroundImage: `url(${photoPath})`,
+                    }}
+                  ></div>
                 )}
                 {selectedFile && (
                   <div
@@ -214,11 +193,11 @@ export default function CustomerForm({
                   type="file"
                   id="file"
                   name="file"
-                  onChange={e => {
+                  onChange={(e) => {
                     const file = e.target.files?.[0];
-                    setValues(values => ({
+                    setValues((values) => ({
                       ...values,
-                      file: file,
+                      file: file ?? null,
                     }));
                     if (!file) {
                       setSelectedFile(undefined);
@@ -289,23 +268,15 @@ export default function CustomerForm({
                 required
                 label={msg.get('customer.phone')}
               />
-
-
             </div>
           </div>
         </div>
 
         <div className={`flex items-center ${hideFields ? 'hidden' : ''}`}>
-          <Link
-            className="btn-back"
-            title={msg.get('customer.back')}
-            href={`/customers`}
-          >
+          <Link className="btn-back" title={msg.get('customer.back')} href={`/customers`}>
             {msg.get('customer.back')}
           </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('customer.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('customer.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}
@@ -318,11 +289,7 @@ export default function CustomerForm({
           </Transition>
         </div>
         <div className={`flex items-center ${hideFields ? '' : 'hidden'}`}>
-          <Link
-            className="btn-invite"
-            title={msg.get('customer.invite')}
-            href={`/customer/invite`}
-          >
+          <Link className="btn-invite" title={msg.get('customer.invite')} href={`/customer/invite`}>
             {msg.get('customer.invite')}
           </Link>
         </div>

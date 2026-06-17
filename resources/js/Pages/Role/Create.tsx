@@ -1,19 +1,18 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { useSelector } from 'react-redux';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngRole from '../../Lang/Role/translation';
 import { Link } from '@inertiajs/react';
 import InputText from '../../Components/Form/InputText';
-import InputLabel from '../../Components/Form/InputLabel';
 import Checkbox from '../../Components/Form/Checkbox';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { PERMISSION_CATEGORIES } from '../../Constants/Permissions';
+import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
 
-export default function Create({ clinicData, permissionData }) {
+export default function Create({ permissionData }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngRole,
@@ -27,19 +26,19 @@ export default function Create({ clinicData, permissionData }) {
     permissions: [],
   });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handlePermission = el => {
+  const handlePermission = (el) => {
     const tmpPermis = [...values.permissions]; // Create a copy to avoid mutation
     const permissionId = parseInt(el.id);
-    
+
     if (el.checked) {
       // Only add if not already present
       if (!tmpPermis.includes(permissionId)) {
@@ -52,13 +51,13 @@ export default function Create({ clinicData, permissionData }) {
         tmpPermis.splice(index, 1); // 2nd parameter means remove one item only
       }
     }
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       ['permissions']: tmpPermis,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     router.post(`/role/store`, values);
   };
@@ -67,11 +66,7 @@ export default function Create({ clinicData, permissionData }) {
     <AuthenticatedLayout header={<Head title="Roles" />}>
       <Head title="Roles" />
       <div className="py-0">
-        <form
-          onSubmit={submit}
-          className="mt-0 space-y-4"
-          encType="multipart/form-data"
-        >
+        <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
             <section>
               <header>
@@ -101,25 +96,24 @@ export default function Create({ clinicData, permissionData }) {
                   {/* Using a grid layout to evenly distribute permission categories */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {PERMISSION_CATEGORIES.map((colName, i) => {
-                      const filteredPermissions = permissionData && 
-                        permissionData.filter(item => item.name.includes(colName));
-                      
+                      const filteredPermissions =
+                        permissionData &&
+                        permissionData.filter((item) => item.name.includes(colName));
+
                       // Only render category if it has permissions
                       if (!filteredPermissions || filteredPermissions.length === 0) {
                         return null;
                       }
-                      
+
                       return (
                         <div key={colName} className="permission-block">
-                          <h3 className="role-name-head">
-                            {colName.replace('-', ' ')}
-                          </h3>
+                          <h3 className="role-name-head">{msg.get(`role.${colName}`)}</h3>
                           <div className="space-y-2">
-                            {filteredPermissions.map(_p => {
+                            {filteredPermissions.map((_p) => {
                               const permissionId = parseInt(_p.id);
                               const isChecked = values['permissions'].includes(permissionId);
                               return (
-                                <div 
+                                <div
                                   key={_p.id}
                                   className={
                                     _p.name === 'clinic-delete'
@@ -132,7 +126,7 @@ export default function Create({ clinicData, permissionData }) {
                                     name={`remember[${_p.id}]`}
                                     className="permission-checkbox"
                                     checked={isChecked}
-                                    onChange={e => {
+                                    onChange={(e) => {
                                       handlePermission(e.target);
                                     }}
                                   />
@@ -149,16 +143,10 @@ export default function Create({ clinicData, permissionData }) {
                   </div>
                 </div>
                 <div className="flex items-center mt-5">
-                  <Link
-                    className="btn-back"
-                    title={msg.get('role.back')}
-                    href={`/roles`}
-                  >
+                  <Link className="btn-back" title={msg.get('role.back')} href={`/roles`}>
                     {msg.get('role.back')}
                   </Link>
-                  <PrimaryButton disabled={processing}>
-                    {msg.get('role.save')}
-                  </PrimaryButton>
+                  <PrimaryButton disabled={processing}>{msg.get('role.save')}</PrimaryButton>
 
                   <Transition
                     show={recentlySuccessful}
@@ -167,9 +155,7 @@ export default function Create({ clinicData, permissionData }) {
                     leave="transition ease-in-out"
                     leaveTo="opacity-0"
                   >
-                    <p className="text-sm text-gray-600">
-                      {msg.get('role.saved')}
-                    </p>
+                    <p className="text-sm text-gray-600">{msg.get('role.saved')}</p>
                   </Transition>
                 </div>
               </div>

@@ -151,50 +151,31 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                     <td className="">{item.invoice_number}</td>
                     <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
                     <td className="">
-                      {item.status === 'new' && (
-                        <>
-                          <svg
-                            xmlns="http://w3.org"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="gray"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <path d="M12 18v-4l4-4 4 4-4 4z"></path>
-                          </svg>
-                        </>
-                      )}
-                      {item.status === 'posted' && (
-                        /*<span style={{ background: '#F1F5F9', color: '#0ea5a4' }}>📄</span>*/
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#0ea5a4"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <path d="M9 15l2 2 4-4"></path>
-                        </svg>
-                      )}
+                      <span
+                        className={`doc-status ${
+                          item.status === 'new' ? 'status-new' : 'status-posted'
+                        }`}
+                      >
+                        <span className="status-dot"></span>
+                        {item.status === 'new' ? 'Новий' : 'Проведений'}
+                      </span>
                     </td>
                     <td className="" style={{ textAlign: 'right' }}>
                       {item.total_amount} {item.currency_name}
                     </td>
                     <td className="">
                       {Number(item.debt_amount) <= 0 ? (
-                        <span className="text-white bg-green-600 px-1.5 py-0.5 text-[12px] rounded-xl">
+                        <span
+                          className={`doc-status ${
+                            item.status === 'new'
+                              ? 'status-new'
+                              : item.status === 'posted'
+                                ? 'status-posted'
+                                : 'status-paid'
+                          }`}
+                        >
+                          <span className="status-dot"></span>
+
                           {msg.get('invoice_incoming.paid')}
                         </span>
                       ) : (
@@ -238,12 +219,9 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
               </DataTable>
             </section>
             {showModal && (
-              <div
-                id="paymentModal"
-                className="fixed inset-0 bg-black/50 flex items-center justify-center"
-              >
-                <div className="bg-black p-6 rounded-lg w-[450px]">
-                  <h2 className="text-md font-semibold leading-tight">
+              <div id="paymentModal" className="fixed inset-0  flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg w-[450px]">
+                  <h2 className="text-[20px] font-semibold leading-tight">
                     {msg.get('invoice_incoming.payment')} № {selectedInvoice?.invoice_number}
                   </h2>
 
@@ -256,7 +234,7 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                       </label>
                       <input
                         type="number"
-                        className="w-full border p-2 rounded text-black"
+                        className="input-text"
                         value={paymentAmount}
                         onChange={(e) => setPaymentAmount(e.target.value)}
                       />
@@ -267,7 +245,7 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                         {msg.get('invoice_incoming.payment_method')}
                       </label>
                       <select
-                        className="w-full border p-2 rounded text-black"
+                        className="w-full input-text"
                         value={paymentMethodId || ''}
                         onChange={(e) => {
                           const id = parseInt(e.target.value);

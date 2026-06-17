@@ -1,14 +1,14 @@
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngServiceCategories from '../../../Lang/Services/translation';
-import AddDynamicInputFields from '../Partials/Row';
+import AddDynamicInputFields, { AddDynamicInputFieldsRef } from '../Partials/Row';
 import { pricingItemsSelector, totalPriceItemsSelector } from '@/Redux/Service/selectors';
 
 export default function Form({
@@ -26,6 +26,7 @@ export default function Form({
   });
   const invoiceItems = useSelector(pricingItemsSelector);
   const totalItemPrice = useSelector(totalPriceItemsSelector);
+  const rowRef = useRef<AddDynamicInputFieldsRef | null>(null);
   const [values, setValues] = useState({
     name: formData.name,
     clinic_id: clinicData.id,
@@ -114,7 +115,7 @@ export default function Form({
           label={msg.get('service.price')}
         />
         <div className="relative">
-          <table className="w-full overflow-x-auto" cellPadding="5">
+          <table className="w-full invoice-table">
             <thead>
               <tr>
                 <th className="pb-3 text-white w-[47%] min-w-[400px]">
@@ -128,14 +129,14 @@ export default function Form({
                 <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.mark_up')}</th>
                 <th className="pb-3 w-btn text-white w-[14%]">{msg.get('service.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
             </thead>
             <tbody>
               {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} unitData={unitData} />
+                <AddDynamicInputFields ref={rowRef} formRowData={formRowData} unitData={unitData} />
               ) : (
                 <AddDynamicInputFields
+                  ref={rowRef}
                   formRowData={[
                     {
                       product_id: '',
@@ -150,6 +151,19 @@ export default function Form({
                 />
               )}
             </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={7}>
+                  <button
+                    type="button"
+                    className="btn-add-row pl-[10px] font-bold"
+                    onClick={() => rowRef.current?.addRow()}
+                  >
+                    + Додати матеріал
+                  </button>
+                </td>
+              </tr>
+            </tfoot>
           </table>
           <div className="w-full devider-table-custom text-right mt-4 font-bold ">
             <span className="pt-2 block">

@@ -152,8 +152,9 @@
     background-repeat: no-repeat;
 }
 .tabs-title {
-    @apply inline-block ml-[35px] text-white;
+    @apply inline-block ml-[35px];
+    color: #475569;
 }
 .stage-tabs .icon {
-    border-color: #9462dd !important
+    border-color: #0ea5a4 !important
 }

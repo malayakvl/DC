@@ -1,12 +1,28 @@
+//.btn-view {
+//    background-image: url('../../images/action-icons/view.svg');
+//    background-repeat: no-repeat;
+//    background-size: contain;
+//    width: 24px;
+//    height: 24px;
+//    cursor: pointer;
+//    display: inline-block;
+//    margin: 0 8px;
+//}
 .btn-view {
     background-image: url('../../images/action-icons/view.svg');
     background-repeat: no-repeat;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
+    //background-size: contain;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
+    padding: 5px;
+    border: solid 1px #d8f3f4;
+    background-color: #fefeff;
+    background-size: 50%;
+    background-position: center;
 }
 
 .btn-edit {
@@ -57,13 +73,29 @@
 .btn-assign {
     background-image: url('../../images/action-icons/attach.svg');
     background-repeat: no-repeat;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
+    //background-size: contain;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
+    padding: 5px;
+    border: solid 1px #d8f3f4;
+    background-color: #fefeff;
+    background-size: 50%;
+    background-position: center;
 }
+//.btn-assign {
+//    background-image: url('../../images/action-icons/attach.svg');
+//    background-repeat: no-repeat;
+//    background-size: contain;
+//    width: 24px;
+//    height: 24px;
+//    cursor: pointer;
+//    display: inline-block;
+//    margin: 0 8px;
+//}
 
 .btn-submit {
     display: inline-block;
@@ -267,4 +299,34 @@
 .btn-white.active {
     background: #ece7e7;
     color: #565252;
+}
+.f-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 8px;
+    border: solid 1px #41c7cc;
+    background-color: #c8fafc;
+    padding: 5px;
+    background-size: 50%;
+    background-position: center;
+}
+
+.f-purple {
+    border-color:#a615bd;
+    background: #efccf5;
+}
+.f-red {
+    border-color:#de0b2b;
+    background: #efc5cb;
+}
+.f-yellow {
+    border-color:#ffc107;
+    background: #faeab9;
+}
+.f-gray {
+    border-color: #181610;
+    background: #d3d3d2;
 }

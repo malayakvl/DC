@@ -1,14 +1,12 @@
 const lngPatient = {
   'en.patient': {
     firstName: 'Profile Information',
-    'information.descr':
-      "Update your account's profile information and email address.",
+    'information.descr': "Update your account's profile information and email address.",
     name: 'Name',
     save: 'Save',
     saved: 'Saved.',
     'update.title': 'Update Password',
-    'update.descr':
-      'Ensure your account is using a long, random password to stay secure.',
+    'update.descr': 'Ensure your account is using a long, random password to stay secure.',
     'password.current': 'Current Password',
     'password.new': 'New Password',
     'password.confirm': 'Confirm Password',
@@ -88,9 +86,10 @@ const lngPatient = {
     'last.visit': 'Останній візит',
     'discount.status': 'Статус знижки',
     'medical.card.no': 'Номер медичної картки',
-    'balance': 'Баланс',
+    balance: 'Баланс',
     'primary.phone': 'Основний телефон',
     'registered.at': 'Зареєстровано',
+    print: 'Друк',
   },
 };
 export default lngPatient;

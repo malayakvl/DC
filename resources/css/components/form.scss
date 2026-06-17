@@ -172,7 +172,7 @@ table td {
 
 .factqty {
     width: 120px !important;
-    border: 1px solid #94A3B8;
+    //border: 1px solid #94A3B8;
     border-radius: 0.5rem !important;
     height: 40px;
     padding: 0 10px;
@@ -447,29 +447,30 @@ label.float-label {
     @apply block text-sm font-medium;
     margin-bottom: 8px;
     font-size: 14px;
-    color:#0F172A;
+    color:#475569;
 }
 
 .role-label {
-    color: #fff;
+    color: #475569;
 }
 
 .role-name-head {
     @apply font-medium text-lg mb-3 capitalize;
-    color: #01bff8 !important;
+    color: #0ea5a4 !important;
     font-weight: bold !important;
     text-align: left
 }
 
 .permission-block {
     @apply rounded p-6;
-    background: #1a2235;
+    background: #fcfcfd;
+    border: solid 1px #0ea5a4;
 }
 
 .permission-checkbox {
     @apply rounded;
     background: transparent;
-    border-color: #01bff8;
+    border-color: #0ea5a4;
 }
 
 .input-inv-group {

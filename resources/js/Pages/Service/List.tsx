@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
+import { Head, router, useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngServiceCategories from '../../Lang/Services/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
@@ -15,7 +15,7 @@ import Modal from '../../Components/Modal/Modal';
 import InputText from '../../Components/Form/InputText';
 
 export default function List({ clinicData, tree, services, currency }) {
-  const dispatch = useDispatch();
+  useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngServiceCategories,
@@ -23,15 +23,7 @@ export default function List({ clinicData, tree, services, currency }) {
   });
   const [confirmingCategory, setConfirmingCategory] = useState(false);
   const [categoryName, setCategoryName] = useState('');
-  const {
-    data,
-    setData,
-    delete: destroy,
-    processing,
-    reset,
-    errors,
-    clearErrors,
-  } = useForm({
+  const { processing, reset, errors, clearErrors } = useForm({
     password: '',
   });
 
@@ -48,35 +40,32 @@ export default function List({ clinicData, tree, services, currency }) {
     setConfirmingCategory(false);
   };
 
-  const renderPriceBlock = (item, num) => {
-    // let bgColor =  ((Math.random().toString(16) + '000000').substring(2, 8).toUpperCase());
-
+  const renderPriceBlock = (item) => {
     return (
       <>
-        <div className={`price-container prс-${num}`}>
-          <b className="mb-4 block">{item.name}</b>
-          {services[item.id]?.map((_item, _index) => (
-            <Link href={`service/edit/${_item.id}`}>
-              <div
-                className={`mt-0 price-row ${_index === 0 ? 'first-child' : ''}`}
-              >
-                <div className="inline-block">
-                  <span className="px-[5px] py-[4px] ">{_item.name}</span>
-                </div>
-                <div className="price-value">
-                  <span className="px-[5px] py-[4px] ">
+        <div className="price-container">
+          <b className="service-category-title">{item.name}</b>
+
+          {services[item.id]?.map((_item) => (
+            <Link key={_item.id} href={`service/edit/${_item.id}`} className="service-link">
+              <div className="service-card">
+                <div className="service-info">{_item.name}</div>
+
+                <div className="service-meta">
+                  <span className="service-price">
                     {_item.total_price} {currency}
                   </span>
+
+                  <span className="service-arrow">→</span>
                 </div>
               </div>
             </Link>
           ))}
+
           <div className="mt-4">
-            <div className="price-btn">
-              <NavLink href={'/service/create'}>
-                {msg.get('service.add')}
-              </NavLink>
-            </div>
+            <NavLink href="/service/create" className="price-btn">
+              {msg.get('service.add')}
+            </NavLink>
           </div>
         </div>
       </>
@@ -90,42 +79,35 @@ export default function List({ clinicData, tree, services, currency }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex">
-                  <h2>{msg.get('service.title.list')}</h2>
-                  <div className="pl-5 mt-2">
-                    <PrimaryButton>
-                      <a onClick={() => setConfirmingCategory(true)} href={'#'}>
-                        {msg.get('service.create')}
-                      </a>
-                    </PrimaryButton>
-                  </div>
+            <header>
+              <div className="flex inline-flex w-full mb-4">
+                <h2 className="text-xl font-semibold leading-tight">
+                  {msg.get('service.title.list')}
+                </h2>
+                <div className="flex-1 text-right mt-[5px]">
+                  <PrimaryButton>
+                    <a onClick={() => setConfirmingCategory(true)} href={'#'}>
+                      {msg.get('service.create')}
+                    </a>
+                  </PrimaryButton>
                 </div>
-              </header>
-            </section>
-            <div className="mt-6">
-              {tree?.map((item, index) => <>{renderPriceBlock(item, index)}</>)}
-            </div>
+              </div>
+            </header>
+            <div className="mt-6">{tree?.map((item) => <>{renderPriceBlock(item)}</>)}</div>
           </div>
         </div>
         <Modal show={confirmingCategory} onClose={closeModal}>
           <form className="p-6 bg-black">
-            <h2>
-              {msg.get('service.create')}
-            </h2>
+            <h2>{msg.get('service.create')}</h2>
 
             <div className="mt-0">
-              <InputLabel
-                htmlFor="password"
-                value="Password"
-                className="sr-only" children={undefined} />
+              <InputLabel htmlFor="password" value="Password" className="sr-only" />
               <InputText
                 name={'name'}
                 values={''}
                 dataValue={''}
                 value={''}
-                onChange={e => setCategoryName(e.target.value)}
+                onChange={(e) => setCategoryName(e.target.value)}
                 required
                 label={msg.get('service.name')}
               />

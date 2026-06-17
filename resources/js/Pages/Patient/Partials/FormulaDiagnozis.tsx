@@ -3,15 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
-import {
-  getTeethDiagnozisSelector,
-  getRemoveDiaSelector,
-} from '../../../Redux/Formula/selectors';
-import {
-  setToothDiagnoze,
-  setRemoveDia,
-  setChangeDia,
-} from '../../../Redux/Formula';
+import { getTeethDiagnozisSelector, getRemoveDiaSelector } from '../../../Redux/Formula/selectors';
+import { setToothDiagnoze, setRemoveDia, setChangeDia } from '../../../Redux/Formula';
 
 export default function FormulaDiagnozis() {
   const dispatch = useDispatch<any>();
@@ -62,7 +55,7 @@ export default function FormulaDiagnozis() {
     'vinir',
     'inflamed_gums',
     'significantly_gums',
-    'no_inflammatory_process'
+    'no_inflammatory_process',
   ];
   // const dMetalicCrownArray = [
   //     'metalic_crown',
@@ -71,11 +64,10 @@ export default function FormulaDiagnozis() {
   const displayedDia = _dArray.concat(dColoredArray);
 
   const disableDia = (num, key) => {
-    console.log('disableDia')
     const currentDiagnozis = teethDiagnozis;
     currentDiagnozis[`tooth${num}`][`${key}`] = false;
     if (key === 'parodontit') {
-      currentDiagnozis[`tooth${num}`][`parodontit_stage`] = "";
+      currentDiagnozis[`tooth${num}`][`parodontit_stage`] = '';
     }
     dispatch(setToothDiagnoze(currentDiagnozis));
     dispatch(setChangeDia(Math.random()));
@@ -96,14 +88,11 @@ export default function FormulaDiagnozis() {
     dispatch(setChangeDia(Math.random()));
   };
 
-  const renderDiagnoze = num => {
+  const renderDiagnoze = (num) => {
     let _diagnozisStr = false;
     if (teethDiagnozis[`tooth${num}`]) {
       Object.keys(teethDiagnozis[`tooth${num}`]).forEach((key, _key) => {
-        if (
-          teethDiagnozis[`tooth${num}`][key] &&
-          displayedDia.indexOf(key) >= 0
-        ) {
+        if (teethDiagnozis[`tooth${num}`][key] && displayedDia.indexOf(key) >= 0) {
           _diagnozisStr = true;
         }
       });
@@ -122,13 +111,17 @@ export default function FormulaDiagnozis() {
               <React.Fragment key={_k}>
                 {teethDiagnozis[`tooth${num}`][_v] && _dArray.includes(_v) ? (
                   <span className="d-badge" onClick={() => disableDia(num, _v)}>
-                    {msgFormula.get(`formula.${_v}`)} {_v === 'parodontit' ? msgFormula.get(`formula.${teethDiagnozis[`tooth${num}`]['parodontit_stage']}`) : ''}
+                    {msgFormula.get(`formula.${_v}`)}{' '}
+                    {_v === 'parodontit'
+                      ? msgFormula.get(
+                          `formula.${teethDiagnozis[`tooth${num}`]['parodontit_stage']}`
+                        )
+                      : ''}
                   </span>
                 ) : (
                   ''
                 )}
-                {teethDiagnozis[`tooth${num}`][_v] &&
-                dColoredArray.includes(_v) ? (
+                {teethDiagnozis[`tooth${num}`][_v] && dColoredArray.includes(_v) ? (
                   <span
                     className={`d-badge ${teethDiagnozis[`tooth${num}`][`${_v}_color`]}`}
                     onClick={() => disableColorDia(num, _v)}
@@ -149,21 +142,17 @@ export default function FormulaDiagnozis() {
   };
 
   const renderJaw = () => {
-    const jawUp = [
-      18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28,
-    ];
-    const jawDown = [
-      48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
-    ];
+    const jawUp = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+    const jawDown = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
     return (
       <div className="w-full flex">
         <div className="w-1/2">
-          {jawUp.map((index, num) => (
+          {jawUp.map((index) => (
             <React.Fragment key={index}>{renderDiagnoze(index)}</React.Fragment>
           ))}
         </div>
         <div className="w-1/2">
-          {jawDown.map((index, num) => (
+          {jawDown.map((index) => (
             <React.Fragment key={index}>{renderDiagnoze(index)}</React.Fragment>
           ))}
         </div>

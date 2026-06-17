@@ -89,7 +89,7 @@ class MoneyOutController extends Controller
 
             $invoiceData = DB::select("
                 SELECT *
-                FROM core.get_money_in_by_clinic(
+                FROM core.get_money_out_by_clinic(
                     ?, 
                     ?,
                     ?,

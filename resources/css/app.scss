@@ -42,7 +42,7 @@ body {
     // background: #000;
     //font-family: "Manrope", sans-serif;
     font-family: 'Manrope', sans-serif;
-    background: #F8FAFC;
+    background: #fcfcfd;
 
     color:#000;
 
@@ -226,12 +226,13 @@ hr {
 
 .pagination-btns {
     @apply px-3 py-1 rounded text-sm;
-    color: #fff;
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
+    color: #000;
+    background: #e5e7eb;
 }
 
 .page-active {
-    @apply bg-gradient-to-r from-[#d7c7c6] to-[#1d535c] text-white;
+    @apply bg-[#0ea5a4] text-white;
+    background: #0ea5a4 !important;
 }
 
 .disabled-content-block {

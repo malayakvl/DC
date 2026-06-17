@@ -10,10 +10,11 @@ const lngDashboard = {
   'uk.dashboard': {
     logging: 'Ви зареєстровані',
     title: 'Панель керування',
-    enter: 'Перейти',
+    enter: 'Перейти →',
     clinic: 'Клініка',
     role: 'Роль',
     no_filials: 'Немає філіалів',
+    select: { title: 'Оберіть клініку для входу' },
   },
 };
 export default lngDashboard;

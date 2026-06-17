@@ -203,7 +203,7 @@ class CustomerController extends Controller
             }
             $photoPath = '';
             if ($formData->avatar) {
-                dd(1);exit;
+//                dd(1);exit;
                 $serverFilePath = public_path('storage/users/' . $formData->avatar);
                 if (file_exists($serverFilePath)) {
                     $photoPath = asset('storage/users/' . $formData->avatar);

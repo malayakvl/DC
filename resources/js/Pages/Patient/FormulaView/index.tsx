@@ -91,6 +91,7 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 
 export default function FormulaView({ formulaData, id }) {
+  console.log(formulaData);
 
   return (
     <>
@@ -134,185 +135,81 @@ export default function FormulaView({ formulaData, id }) {
           <BoneR />
           <BoneL />
           <g className="upper" id={`uB_${id}`}>
-            <Bone18 formulaToothData={formulaData.tooth18}/>
-            <Bone17 formulaToothData={formulaData.tooth17}/>
-            <Bone16 formulaToothData={formulaData.tooth16}/>
-            <Bone15 formulaToothData={formulaData.tooth15}/>
-            <Bone14 formulaToothData={formulaData.tooth14}/>
-            <Bone13 formulaToothData={formulaData.tooth13}/>
-            <Bone12 formulaToothData={formulaData.tooth12}/>
-            <Bone11 formulaToothData={formulaData.tooth11}/>
-            <Bone21 formulaToothData={formulaData.tooth21}/>
-            <Bone22 formulaToothData={formulaData.tooth22}/>
-            <Bone23 formulaToothData={formulaData.tooth23}/>
-            <Bone24 formulaToothData={formulaData.tooth24}/>
-            <Bone25 formulaToothData={formulaData.tooth25}/>
-            <Bone26 formulaToothData={formulaData.tooth26}/>
-            <Bone27 formulaToothData={formulaData.tooth27}/>
-            <Bone28 formulaToothData={formulaData.tooth28}/>
+            <Bone18 formulaToothData={formulaData.tooth18} />
+            <Bone17 formulaToothData={formulaData.tooth17} />
+            <Bone16 formulaToothData={formulaData.tooth16} />
+            <Bone15 formulaToothData={formulaData.tooth15} />
+            <Bone14 formulaToothData={formulaData.tooth14} />
+            <Bone13 formulaToothData={formulaData.tooth13} />
+            <Bone12 formulaToothData={formulaData.tooth12} />
+            <Bone11 formulaToothData={formulaData.tooth11} />
+            <Bone21 formulaToothData={formulaData.tooth21} />
+            <Bone22 formulaToothData={formulaData.tooth22} />
+            <Bone23 formulaToothData={formulaData.tooth23} />
+            <Bone24 formulaToothData={formulaData.tooth24} />
+            <Bone25 formulaToothData={formulaData.tooth25} />
+            <Bone26 formulaToothData={formulaData.tooth26} />
+            <Bone27 formulaToothData={formulaData.tooth27} />
+            <Bone28 formulaToothData={formulaData.tooth28} />
           </g>
           <BoneLL />
           <BoneRR />
 
           <g className="lower" id={`lower_${id}`}>
-            {formulaData.tooth48.show && (
-              <Tooth48 formulaToothData={formulaData.tooth48} />
-            )}
-            {formulaData.tooth47.show && (
-              <Tooth47 formulaToothData={formulaData.tooth47} />
-            )}
-            {formulaData.tooth46.show && (
-              <Tooth46 formulaToothData={formulaData.tooth47} />
-            )}
-            {formulaData.tooth45.show && (
-              <Tooth45 formulaToothData={formulaData.tooth45} />
-            )}
-            {formulaData.tooth85.show && (
-              <Tooth85 formulaToothData={formulaData.tooth85} />
-            )}
-            {formulaData.tooth44.show && (
-              <Tooth44 formulaToothData={formulaData.tooth44} />
-            )}
-            {formulaData.tooth84.show && (
-              <Tooth84 formulaToothData={formulaData.tooth84} />
-            )}
-            {formulaData.tooth43.show && (
-              <Tooth43 formulaToothData={formulaData.tooth43} />
-            )}
-            {formulaData.tooth83.show && (
-              <Tooth83 formulaToothData={formulaData.tooth83} />
-            )}
-            {formulaData.tooth42.show && (
-              <Tooth42 formulaToothData={formulaData.tooth42} />
-            )}
-            {formulaData.tooth82.show && (
-              <Tooth82 formulaToothData={formulaData.tooth82} />
-            )}
-            {formulaData.tooth41.show && (
-              <Tooth41 formulaToothData={formulaData.tooth41} />
-            )}
-            {formulaData.tooth81.show && (
-              <Tooth81 formulaToothData={formulaData.tooth81} />
-            )}
-            {formulaData.tooth31.show && (
-              <Tooth31 formulaToothData={formulaData.tooth31} />
-            )}
-            {formulaData.tooth71.show && (
-              <Tooth71 formulaToothData={formulaData.tooth71} />
-            )}
-            {formulaData.tooth32.show && (
-              <Tooth32 formulaToothData={formulaData.tooth32} />
-            )}
-            {formulaData.tooth72.show && (
-              <Tooth72 formulaToothData={formulaData.tooth72} />
-            )}
-            {formulaData.tooth33.show && (
-              <Tooth33 formulaToothData={formulaData.tooth33} />
-            )}
-            {formulaData.tooth73.show && (
-              <Tooth73 formulaToothData={formulaData.tooth73} />
-            )}
-            {formulaData.tooth34.show && (
-              <Tooth34 formulaToothData={formulaData.tooth34} />
-            )}
-            {formulaData.tooth74.show && (
-              <Tooth74 formulaToothData={formulaData.tooth74} />
-            )}
-            {formulaData.tooth35.show && (
-              <Tooth35 formulaToothData={formulaData.tooth35} />
-            )}
-            {formulaData.tooth75.show && (
-              <Tooth75 formulaToothData={formulaData.tooth75} />
-            )}
-            {formulaData.tooth36.show && (
-              <Tooth36 formulaToothData={formulaData.tooth36} />
-            )}
-            {formulaData.tooth37.show && (
-              <Tooth37 formulaToothData={formulaData.tooth37} />
-            )}
-            {formulaData.tooth38.show && (
-              <Tooth38 formulaToothData={formulaData.tooth38} />
-            )}
+            {formulaData.tooth48.show && <Tooth48 formulaToothData={formulaData.tooth48} />}
+            {formulaData.tooth47.show && <Tooth47 formulaToothData={formulaData.tooth47} />}
+            {formulaData.tooth46.show && <Tooth46 formulaToothData={formulaData.tooth47} />}
+            {formulaData.tooth45.show && <Tooth45 formulaToothData={formulaData.tooth45} />}
+            {formulaData.tooth85.show && <Tooth85 formulaToothData={formulaData.tooth85} />}
+            {formulaData.tooth44.show && <Tooth44 formulaToothData={formulaData.tooth44} />}
+            {formulaData.tooth84.show && <Tooth84 formulaToothData={formulaData.tooth84} />}
+            {formulaData.tooth43.show && <Tooth43 formulaToothData={formulaData.tooth43} />}
+            {formulaData.tooth83.show && <Tooth83 formulaToothData={formulaData.tooth83} />}
+            {formulaData.tooth42.show && <Tooth42 formulaToothData={formulaData.tooth42} />}
+            {formulaData.tooth82.show && <Tooth82 formulaToothData={formulaData.tooth82} />}
+            {formulaData.tooth41.show && <Tooth41 formulaToothData={formulaData.tooth41} />}
+            {formulaData.tooth81.show && <Tooth81 formulaToothData={formulaData.tooth81} />}
+            {formulaData.tooth31.show && <Tooth31 formulaToothData={formulaData.tooth31} />}
+            {formulaData.tooth71.show && <Tooth71 formulaToothData={formulaData.tooth71} />}
+            {formulaData.tooth32.show && <Tooth32 formulaToothData={formulaData.tooth32} />}
+            {formulaData.tooth72.show && <Tooth72 formulaToothData={formulaData.tooth72} />}
+            {formulaData.tooth33.show && <Tooth33 formulaToothData={formulaData.tooth33} />}
+            {formulaData.tooth73.show && <Tooth73 formulaToothData={formulaData.tooth73} />}
+            {formulaData.tooth34.show && <Tooth34 formulaToothData={formulaData.tooth34} />}
+            {formulaData.tooth74.show && <Tooth74 formulaToothData={formulaData.tooth74} />}
+            {formulaData.tooth35.show && <Tooth35 formulaToothData={formulaData.tooth35} />}
+            {formulaData.tooth75.show && <Tooth75 formulaToothData={formulaData.tooth75} />}
+            {formulaData.tooth36.show && <Tooth36 formulaToothData={formulaData.tooth36} />}
+            {formulaData.tooth37.show && <Tooth37 formulaToothData={formulaData.tooth37} />}
+            {formulaData.tooth38.show && <Tooth38 formulaToothData={formulaData.tooth38} />}
           </g>
           <g className="upper" id={`upper_${id}`}>
-            {formulaData.tooth28.show && (
-              <Tooth28 formulaToothData={formulaData.tooth28} />
-            )}
-            {formulaData.tooth27.show && (
-              <Tooth27 formulaToothData={formulaData.tooth27} />
-            )}
-            {formulaData.tooth26.show && (
-              <Tooth26 formulaToothData={formulaData.tooth26} />
-            )}
-            {formulaData.tooth25.show && (
-              <Tooth25 formulaToothData={formulaData.tooth25} />
-            )}
-            {formulaData.tooth65.show && (
-              <Tooth65 formulaToothData={formulaData.tooth65} />
-            )}
-            {formulaData.tooth24.show && (
-              <Tooth24 formulaToothData={formulaData.tooth24} />
-            )}
-            {formulaData.tooth64.show && (
-              <Tooth64 formulaToothData={formulaData.tooth64} />
-            )}
-            {formulaData.tooth23.show && (
-              <Tooth23 formulaToothData={formulaData.tooth23} />
-            )}
-            {formulaData.tooth63.show && (
-              <Tooth63 formulaToothData={formulaData.tooth63} />
-            )}
-            {formulaData.tooth22.show && (
-              <Tooth22 formulaToothData={formulaData.tooth22} />
-            )}
-            {formulaData.tooth62.show && (
-              <Tooth62 formulaToothData={formulaData.tooth62} />
-            )}
-            {formulaData.tooth21.show && (
-              <Tooth21 formulaToothData={formulaData.tooth21} />
-            )}
-            {formulaData.tooth61.show && (
-              <Tooth61 formulaToothData={formulaData.tooth61} />
-            )}
-            {formulaData.tooth11.show && (
-              <Tooth11 formulaToothData={formulaData.tooth11} />
-            )}
-            {formulaData.tooth51.show && (
-              <Tooth51 formulaToothData={formulaData.tooth51} />
-            )}
-            {formulaData.tooth12.show && (
-              <Tooth12 formulaToothData={formulaData.tooth12} />
-            )}
-            {formulaData.tooth52.show && (
-              <Tooth52 formulaToothData={formulaData.tooth52} />
-            )}
-            {formulaData.tooth13.show && (
-              <Tooth13 formulaToothData={formulaData.tooth13} />
-            )}
-            {formulaData.tooth53.show && (
-              <Tooth53 formulaToothData={formulaData.tooth53} />
-            )}
-            {formulaData.tooth14.show && (
-              <Tooth14 formulaToothData={formulaData.tooth14} />
-            )}
-            {formulaData.tooth54.show && (
-              <Tooth54 formulaToothData={formulaData.tooth54} />
-            )}
-            {formulaData.tooth15.show && (
-              <Tooth15 formulaToothData={formulaData.tooth15} />
-            )}
-            {formulaData.tooth55.show && (
-              <Tooth55 formulaToothData={formulaData.tooth55} />
-            )}
-            {formulaData.tooth16.show && (
-              <Tooth16 formulaToothData={formulaData.tooth16} />
-            )}
-            {formulaData.tooth17.show && (
-              <Tooth17 formulaToothData={formulaData.tooth17} />
-            )}
-            {formulaData.tooth18.show && (
-              <Tooth18 formulaToothData={formulaData.tooth18} />
-            )}
+            {formulaData.tooth28.show && <Tooth28 formulaToothData={formulaData.tooth28} />}
+            {formulaData.tooth27.show && <Tooth27 formulaToothData={formulaData.tooth27} />}
+            {formulaData.tooth26.show && <Tooth26 formulaToothData={formulaData.tooth26} />}
+            {formulaData.tooth25.show && <Tooth25 formulaToothData={formulaData.tooth25} />}
+            {formulaData.tooth65.show && <Tooth65 formulaToothData={formulaData.tooth65} />}
+            {formulaData.tooth24.show && <Tooth24 formulaToothData={formulaData.tooth24} />}
+            {formulaData.tooth64.show && <Tooth64 formulaToothData={formulaData.tooth64} />}
+            {formulaData.tooth23.show && <Tooth23 formulaToothData={formulaData.tooth23} />}
+            {formulaData.tooth63.show && <Tooth63 formulaToothData={formulaData.tooth63} />}
+            {formulaData.tooth22.show && <Tooth22 formulaToothData={formulaData.tooth22} />}
+            {formulaData.tooth62.show && <Tooth62 formulaToothData={formulaData.tooth62} />}
+            {formulaData.tooth21.show && <Tooth21 formulaToothData={formulaData.tooth21} />}
+            {formulaData.tooth61.show && <Tooth61 formulaToothData={formulaData.tooth61} />}
+            {formulaData.tooth11.show && <Tooth11 formulaToothData={formulaData.tooth11} />}
+            {formulaData.tooth51.show && <Tooth51 formulaToothData={formulaData.tooth51} />}
+            {formulaData.tooth12.show && <Tooth12 formulaToothData={formulaData.tooth12} />}
+            {formulaData.tooth52.show && <Tooth52 formulaToothData={formulaData.tooth52} />}
+            {formulaData.tooth13.show && <Tooth13 formulaToothData={formulaData.tooth13} />}
+            {formulaData.tooth53.show && <Tooth53 formulaToothData={formulaData.tooth53} />}
+            {formulaData.tooth14.show && <Tooth14 formulaToothData={formulaData.tooth14} />}
+            {formulaData.tooth54.show && <Tooth54 formulaToothData={formulaData.tooth54} />}
+            {formulaData.tooth15.show && <Tooth15 formulaToothData={formulaData.tooth15} />}
+            {formulaData.tooth55.show && <Tooth55 formulaToothData={formulaData.tooth55} />}
+            {formulaData.tooth16.show && <Tooth16 formulaToothData={formulaData.tooth16} />}
+            {formulaData.tooth17.show && <Tooth17 formulaToothData={formulaData.tooth17} />}
+            {formulaData.tooth18.show && <Tooth18 formulaToothData={formulaData.tooth18} />}
           </g>
         </svg>
       </section>

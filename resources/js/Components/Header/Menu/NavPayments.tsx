@@ -49,13 +49,13 @@ export default function NavPayments(props) {
                   </Link>
                 </MenuItem>
               )}
-              {permissions['store-create'] && (
-                <MenuItem>
-                  <Link className="submenu" href={'/finanses-report'}>
-                    {lng.get('menu.finanses.report')}
-                  </Link>
-                </MenuItem>
-              )}
+              {/*{permissions['store-create'] && (*/}
+              {/*  <MenuItem>*/}
+              {/*    <Link className="submenu" href={'/finanses-report'}>*/}
+              {/*      {lng.get('menu.finanses.report')}*/}
+              {/*    </Link>*/}
+              {/*  </MenuItem>*/}
+              {/*)}*/}
             </div>
           </MenuItems>
         </Menu>

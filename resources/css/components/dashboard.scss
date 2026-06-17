@@ -167,8 +167,9 @@ h5 {
 }
 
 .d-clinic-name {
-    @apply text-xl text-white mb-3 font-bold;
-    color: #02bff8 !important;
+    @apply text-xl mb-0 font-bold;
+    color: #0ea5a4 !important;
+    font-weight: bold;
     text-align: left;
 }
 
@@ -183,4 +184,126 @@ h5 {
     border-radius: 5px;
     display: block;
     font-weight: bold;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 4px 10px;
+
+    background: rgba(21,199,201,.12);
+
+    color: #15c7c9;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+.select-table {
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+/* header */
+
+.select-table thead th {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8 !important; /* slate */
+    padding-bottom: 14px;
+}
+
+/* rows */
+
+.select-table tbody tr {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+}
+
+.select-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+/* скругления */
+
+.select-table tbody tr td:first-child {
+    border-radius: 10px 0 0 10px;
+    padding-left: 18px;
+}
+
+.select-table tbody tr td:last-child {
+    border-radius: 0 10px 10px 0;
+    padding-right: 18px;
+}
+
+/* text */
+
+.select-table tbody td {
+    font-size: 14px;
+    font-weight: 400;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* role badge */
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 12px;
+
+    border-radius: 30px;
+
+    background: rgba(20, 184, 166, 0.12);
+
+    color: #2dd4bf;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    border: 1px solid rgba(45, 212, 191, 0.15);
+}
+
+/* enter button */
+
+.select-table a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 90px;
+
+    padding: 7px 14px;
+
+    border-radius: 8px;
+
+    border: 1px solid rgba(45, 212, 191, 0.25);
+
+    color: #2dd4bf;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    transition: all 0.2s ease;
+}
+
+.select-table a:hover {
+    background: #14b8a6;
+    color: white;
+    border-color: #14b8a6;
+}
+
+/* убрать старые бордеры */
+
+.select-table tbody tr.border-t {
+    border-top: none !important;
+}
+.no-wrap {
+    white-space: nowrap;
 }
