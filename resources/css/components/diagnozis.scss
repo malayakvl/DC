@@ -179,10 +179,12 @@
     font-size: 11px;
     height: 25px;
     margin-bottom: 10px;
-    background-color: rgb(252, 234, 252);
+    background-color: #dff1f2 !important;
     border-color: rgb(106, 19, 44);
     box-shadow: none !important;
-    background-color: rgba(228, 211, 250, 0.3);
+    //background-color: rgba(228, 211, 250, 0.3);
+    color:#2f9099;
+    font-weight: bold !important;
     line-height:10px;
     cursor:pointer;
 }
@@ -209,7 +211,7 @@
 }
 .descr-d {
     @apply inline-block text-[12px] float-left;
-    color: #f76ab0;
+    color: #27605b;
     font-weight: bold;
 }
 .chart-block {

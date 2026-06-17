@@ -68,20 +68,20 @@ export default function History({ patientData, type, treatmentData }) {
                 <div className="icon-block actions-block">
                   <ul>
                     <li className="inline-block">
-                      <Link href="/">
-                        <FontAwesomeIcon icon={faUserPlus} className="mr-3" />
+                      <Link href="/" className="f-action-btn f-purple">
+                        <FontAwesomeIcon icon={faUserPlus} color={'#a615bd'} className={'ml-1'} />
                       </Link>
                     </li>
                     {element.type === 'psr' && (
                       <>
                         <li className="inline-block">
-                          <Link href={`/psr/edit/${element.id}`}>
-                            <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                          <Link href={`/psr/edit/${element.id}`} className="f-action-btn">
+                            <FontAwesomeIcon icon={faPencil} />
                           </Link>
                         </li>
                         <li className="inline-block">
-                          <Link href={`/psr/copy/${element.id}`}>
-                            <FontAwesomeIcon icon={faCopy} className="mr-3" />
+                          <Link href={`/psr/copy/${element.id}`} className="f-action-btn">
+                            <FontAwesomeIcon icon={faCopy} />
                           </Link>
                         </li>
                       </>
@@ -89,13 +89,13 @@ export default function History({ patientData, type, treatmentData }) {
                     {element.type === 'perio' && (
                       <>
                         <li className="inline-block">
-                          <Link href={`/perio/edit/${element.id}`}>
-                            <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                          <Link href={`/perio/edit/${element.id}`} className="f-action-btn">
+                            <FontAwesomeIcon icon={faPencil} />
                           </Link>
                         </li>
                         <li className="inline-block">
-                          <Link href={`/perio/copy/${element.id}`}>
-                            <FontAwesomeIcon icon={faCopy} className="mr-3" />
+                          <Link href={`/perio/copy/${element.id}`} className="f-action-btn">
+                            <FontAwesomeIcon icon={faCopy} />
                           </Link>
                         </li>
                       </>
@@ -103,25 +103,25 @@ export default function History({ patientData, type, treatmentData }) {
                     {element.type === 'formula' && (
                       <>
                         <li className="inline-block">
-                          <Link href={`/formula/edit/${element.id}`}>
-                            <FontAwesomeIcon icon={faPencil} className="mr-3" />
+                          <Link href={`/formula/edit/${element.id}`} class="f-action-btn">
+                            <FontAwesomeIcon icon={faPencil} color={'#149b97'} className={'ml-1'} />
                           </Link>
                         </li>
                         <li className="inline-block">
-                          <Link href={`/formula/copy/${element.id}`}>
-                            <FontAwesomeIcon icon={faCopy} className="mr-3" />
+                          <Link href={`/formula/copy/${element.id}`} class="f-action-btn f-yellow">
+                            <FontAwesomeIcon icon={faCopy} color={'#ffc107'} className={'ml-1.5'} />
                           </Link>
                         </li>
                       </>
                     )}
                     <li className="inline-block">
-                      <Link href="">
-                        <FontAwesomeIcon icon={faPrint} className="mr-3" />
+                      <Link href="" className="f-action-btn f-gray">
+                        <FontAwesomeIcon icon={faPrint} color={'#000000'} className={'ml-1'} />
                       </Link>
                     </li>
                     <li className="inline-block">
-                      <Link href="">
-                        <FontAwesomeIcon icon={faTrash} />
+                      <Link href="" className="f-action-btn f-red">
+                        <FontAwesomeIcon icon={faTrash} color={'#de0b2b'} className={'ml-1.5'} />
                       </Link>
                     </li>
                   </ul>
@@ -392,88 +392,156 @@ export default function History({ patientData, type, treatmentData }) {
 
   return (
     <>
-      <div className="w-full patient-view-border mt-10 patient-stage flex">
-        <form onSubmit={submit} className="flex flex-row w-full" encType="multipart/form-data">
-          <div className="w-1/3">
-            <div className="mt-[-5px] stage-input">
-              <InputText
-                name={'stage_name'}
-                values={''}
-                onChange={(e) => {
-                  setStageName(e.target.value);
-                }}
-                required
-                placeholder={msg.get('patient.newstage')}
-                label={null}
-              />
-            </div>
+      <div className="tr-create-bar">
+        <form onSubmit={submit} className="tr-create-form" encType="multipart/form-data">
+          <div className="tr-input-wrap">
+            <InputText
+              name={'stage_name'}
+              values={''}
+              onChange={(e) => {
+                setStageName(e.target.value);
+              }}
+              required
+              placeholder={msg.get('patient.newstage')}
+              label={null}
+            />
           </div>
-          <div className="w-2/3">
-            <ul className="sub-tab text-right mt-1 mb-4 mt-[-10px]">
-              <li className="relative">
-                <button
-                  type="submit"
-                  onClick={() => {
-                    dispatch(setChangeDia(Math.random()));
-                    dispatch(setSelectedToothNumber(''));
-                    dispatch(setClearFormula(emptyFormula));
-                    setTrType('formula');
-                  }}
-                >
-                  <i className="icon-formula" />
-                  <span className="tabs-title">{msg.get('patient.tab.formula')}</span>
-                </button>
-              </li>
-              <li className="relative">
-                <button type="submit" onClick={() => setTrType('perio')}>
-                  <i className="icon-perio" />
-                  <span className="tabs-title">{msg.get('patient.tab.perio')}</span>
-                </button>
-              </li>
-              <li className="relative">
-                <button type="submit" onClick={() => setTrType('psr')}>
-                  <i className="icon-psr" />
-                  <span className="tabs-title">{msg.get('patient.tab.test')}</span>
-                </button>
-              </li>
-            </ul>
+
+          <div className="tr-submit-group">
+            <button
+              className="tr-submit-btn"
+              type="submit"
+              onClick={() => {
+                dispatch(setChangeDia(Math.random()));
+                dispatch(setSelectedToothNumber(''));
+                dispatch(setClearFormula(emptyFormula));
+                setTrType('formula');
+              }}
+            >
+              {msg.get('patient.tab.formula')}
+            </button>
+
+            <button className="tr-submit-btn" type="submit" onClick={() => setTrType('perio')}>
+              {msg.get('patient.tab.perio')}
+            </button>
+
+            <button className="tr-submit-btn" type="submit" onClick={() => setTrType('psr')}>
+              {msg.get('patient.tab.test')}
+            </button>
           </div>
         </form>
       </div>
+
+      {/*<div className="w-full patient-view-border mt-10 patient-stage flex">*/}
+      {/*  <form onSubmit={submit} className="flex flex-row w-full" encType="multipart/form-data">*/}
+      {/*    <div className="w-1/3">*/}
+      {/*      <div className="mt-[-5px] stage-input">*/}
+      {/*        <InputText*/}
+      {/*          name={'stage_name'}*/}
+      {/*          values={''}*/}
+      {/*          onChange={(e) => {*/}
+      {/*            setStageName(e.target.value);*/}
+      {/*          }}*/}
+      {/*          required*/}
+      {/*          placeholder={msg.get('patient.newstage')}*/}
+      {/*          label={null}*/}
+      {/*        />*/}
+      {/*      </div>*/}
+      {/*    </div>*/}
+      {/*    <div className="w-2/3">*/}
+      {/*      <ul className="sub-tab text-right mt-1 mb-4 mt-[-10px]">*/}
+      {/*        <li className="relative">*/}
+      {/*          <button*/}
+      {/*            type="submit"*/}
+      {/*            onClick={() => {*/}
+      {/*              dispatch(setChangeDia(Math.random()));*/}
+      {/*              dispatch(setSelectedToothNumber(''));*/}
+      {/*              dispatch(setClearFormula(emptyFormula));*/}
+      {/*              setTrType('formula');*/}
+      {/*            }}*/}
+      {/*          >*/}
+      {/*            <i className="icon-formula" />*/}
+      {/*            <span className="tabs-title">{msg.get('patient.tab.formula')}</span>*/}
+      {/*          </button>*/}
+      {/*        </li>*/}
+      {/*        <li className="relative">*/}
+      {/*          <button type="submit" onClick={() => setTrType('perio')}>*/}
+      {/*            <i className="icon-perio" />*/}
+      {/*            <span className="tabs-title">{msg.get('patient.tab.perio')}</span>*/}
+      {/*          </button>*/}
+      {/*        </li>*/}
+      {/*        <li className="relative">*/}
+      {/*          <button type="submit" onClick={() => setTrType('psr')}>*/}
+      {/*            <i className="icon-psr" />*/}
+      {/*            <span className="tabs-title">{msg.get('patient.tab.test')}</span>*/}
+      {/*          </button>*/}
+      {/*        </li>*/}
+      {/*      </ul>*/}
+      {/*    </div>*/}
+      {/*  </form>*/}
+      {/*</div>*/}
       {/*TABS BLOCK*/}
-      <div className="tabs-block w-full patient-view-border mt-10 patient-stage flex">
-        <div className={`stage-tabs w-full`}>
-          <ul className={'w-full'}>
-            <li
-              className={`inline-block w-1/3 text-center ${stageTab === 'formula' ? 'active' : ''}`}
-              onClick={() => setActiveStageTab('formula')}
-            >
-              <label>
-                <i className="icon formula-tab"></i>
-                <span className={`text-title-tab`}>{msg.get('patient.tab.formula')}</span>
-              </label>
-            </li>
-            <li
-              className={`inline-block w-1/3 text-center ${stageTab === 'perio' ? 'active' : ''}`}
-              onClick={() => setActiveStageTab('perio')}
-            >
-              <label>
-                <i className="icon perio-tab"></i>
-                <span className={`text-title-tab`}>{msg.get('patient.tab.perio')}</span>
-              </label>
-            </li>
-            <li
-              className={`inline-block w-1/3 text-center ${stageTab === 'psr' ? 'active' : ''}`}
-              onClick={() => setActiveStageTab('psr')}
-            >
-              <label>
-                <i className="icon psr-tab"></i>
-                <span className={`text-title-tab`}>{msg.get('patient.tab.test')}</span>
-              </label>
-            </li>
-          </ul>
+      <div className="stage-mode-panel">
+        <div className="exam-tabs">
+          <button
+            type="button"
+            className={stageTab === 'formula' ? 'exam-tab active' : 'exam-tab'}
+            onClick={() => setActiveStageTab('formula')}
+          >
+            {msg.get('patient.tab.formula')}
+          </button>
+
+          <button
+            type="button"
+            className={stageTab === 'perio' ? 'exam-tab active' : 'exam-tab'}
+            onClick={() => setActiveStageTab('perio')}
+          >
+            {msg.get('patient.tab.perio')}
+          </button>
+
+          <button
+            type="button"
+            className={stageTab === 'psr' ? 'exam-tab active' : 'exam-tab'}
+            onClick={() => setActiveStageTab('psr')}
+          >
+            {msg.get('patient.tab.test')}
+          </button>
         </div>
       </div>
+
+      {/*<div className="tabs-block w-full patient-view-border mt-10 patient-stage flex">*/}
+      {/*  <div className={`stage-tabs w-full`}>*/}
+      {/*    <ul className={'w-full'}>*/}
+      {/*      <li*/}
+      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'formula' ? 'active' : ''}`}*/}
+      {/*        onClick={() => setActiveStageTab('formula')}*/}
+      {/*      >*/}
+      {/*        <label>*/}
+      {/*          <i className="icon formula-tab"></i>*/}
+      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.formula')}</span>*/}
+      {/*        </label>*/}
+      {/*      </li>*/}
+      {/*      <li*/}
+      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'perio' ? 'active' : ''}`}*/}
+      {/*        onClick={() => setActiveStageTab('perio')}*/}
+      {/*      >*/}
+      {/*        <label>*/}
+      {/*          <i className="icon perio-tab"></i>*/}
+      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.perio')}</span>*/}
+      {/*        </label>*/}
+      {/*      </li>*/}
+      {/*      <li*/}
+      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'psr' ? 'active' : ''}`}*/}
+      {/*        onClick={() => setActiveStageTab('psr')}*/}
+      {/*      >*/}
+      {/*        <label>*/}
+      {/*          <i className="icon psr-tab"></i>*/}
+      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.test')}</span>*/}
+      {/*        </label>*/}
+      {/*      </li>*/}
+      {/*    </ul>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
       <div className="w-full">{renderTreatmentStages()}</div>
     </>
   );

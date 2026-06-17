@@ -1,7 +1,7 @@
 import React from 'react';
 import FormulaView from './FormulaView/index';
 import { useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector } from '../../Redux/Formula/selectors';
+import { getTeethDiagnozisSelector } from '@/Redux/Formula/selectors';
 
 export default function ViewFormula({ formulaData }) {
   const fData = JSON.parse(formulaData.formula);

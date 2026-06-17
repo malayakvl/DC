@@ -43,21 +43,19 @@ export default function Details({ patientData, clinicData, className = '' }) {
             <b className="text-p-name">
               {patientData.first_name} {patientData.last_name}
             </b>
-            <span className="p-phone">
-              {patientData.phone}
-            </span>
+            <span className="p-phone">{patientData.phone}</span>
           </div>
         </div>
         <div className="icon-block">
           <ul>
             <li>
               <Link href="/">
-                <FontAwesomeIcon style={{color: 'white'}} icon={faUserPlus} className="mr-3" />
+                <FontAwesomeIcon style={{ color: 'white' }} icon={faUserPlus} className="mr-3" />
               </Link>
             </li>
             <li>
               <Link href="">
-                <FontAwesomeIcon style={{color: 'white'}} icon={faPencil} />
+                <FontAwesomeIcon style={{ color: 'white' }} icon={faPencil} />
               </Link>
             </li>
           </ul>
@@ -83,7 +81,7 @@ export default function Details({ patientData, clinicData, className = '' }) {
               className={tab === 'plans' ? 'active' : ''}
               onClick={() => handleTabClick('plans')}
             >
-              Плани лікування
+              Плани лікування1
             </li>
             <li
               id="history"

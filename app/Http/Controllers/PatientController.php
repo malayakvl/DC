@@ -285,7 +285,7 @@ class PatientController extends Controller
             // $patientTreatment->fill($request->all());
             $patientTreatment->save();
             
-            $patientData = Patient::where('id', '=', $request->user_id)->first();
+            $patientData = Patient::withUser()->where('patients.id', '=', $request->user_id)->first();
             
             $clinicData = $request->user()->clinicByFilial($clinicId);
 
@@ -348,15 +348,14 @@ class PatientController extends Controller
     public function view(Request $request, $id, $scheduleId = '') {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id, $scheduleId) {
             $clinicData = $request->user()->clinicByFilial($clinicId);
-            $patientData = Patient::where('patients.id', '=', $id)
-                ->leftJoin('core.users', 'users.id', '=', 'patients.user_id')
+            $patientData = Patient::withUser()
+                ->where('patients.id', '=', $id)
                 ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
-                ->select('patients.*', 'core.users.first_name', 'core.users.last_name', 'core.users.email', 'patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->leftJoin('phones', function ($join) {
                     $join->on('phones.patient_id', '=', 'patients.id')
                          ->where('phones.is_primary', '=', true);
                 })
-                ->select('patients.*', 'core.users.first_name', 'core.users.last_name', 'core.users.email', 'phones.phone as primary_phone')
+                ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
 //            dd($patientData);exit;
             
@@ -369,57 +368,57 @@ class PatientController extends Controller
             $tree = $this->generateCategories($categories, $arrCat, 0);
             $type = $request->get('type');
 
-        //get acts
-        // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
-        $actData = [];
+            //get acts
+            // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
+            $actData = [];
 
 
-        $quickActData = '';
-        if ($scheduleId) {
-            $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
+            $quickActData = '';
+            if ($scheduleId) {
+                $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
 
-            return Inertia::render('Patient/View', [
-                'patientData' => $patientData,
-                'type' => $type,
-                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-                'treatmentData' => [],
-                'clinicData' => $clinicData,
-                'quickActData' => $quickActData[0],
-                'currency' => $clinicData->currency->symbol,
-                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
-                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
-                'categoriesData' => $categories,
-                'services' => $arrServices,
-                'tree' => $tree,
-                'scheduleId' => $scheduleId,
-                'actData' => $actData
-            ]);
-        } else {
-            return Inertia::render('Patient/View', [
-                'patientData' => $patientData,
-                'type' => 'documents',
-                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-                'treatmentData' => [],
-                'clinicData' => $clinicData,
-                'quickActData' => [],
-                'currency' => $clinicData->currency->symbol,
-                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
-                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
-                'categoriesData' => $categories,
-                'services' => $arrServices,
-                'tree' => $tree,
-                'scheduleId' => $scheduleId,
-                'actData' => $actData
-            ]);
-        }
-    });
+                return Inertia::render('Patient/View', [
+                    'patientData' => $patientData,
+                    'type' => $type,
+                    // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                    'treatmentData' => [],
+                    'clinicData' => $clinicData,
+                    'quickActData' => $quickActData[0],
+                    'currency' => $clinicData->currency->symbol,
+                    'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                    'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
+                    'categoriesData' => $categories,
+                    'services' => $arrServices,
+                    'tree' => $tree,
+                    'scheduleId' => $scheduleId,
+                    'actData' => $actData
+                ]);
+            } else {
+                return Inertia::render('Patient/View', [
+                    'patientData' => $patientData,
+                    'type' => 'documents',
+                     'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+//                    'treatmentData' => [],
+                    'clinicData' => $clinicData,
+                    'quickActData' => [],
+                    'currency' => $clinicData->currency->symbol,
+                    'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                    'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
+                    'categoriesData' => $categories,
+                    'services' => $arrServices,
+                    'tree' => $tree,
+                    'scheduleId' => $scheduleId,
+                    'actData' => $actData
+                ]);
+            }
+        });
     }
 
     /**
      * view patient clinic card
      */
     public function cliniccard(Request $request, $id) {
-        $patientData = Patient::where('id', '=', $id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $id)->first();
 
         return Inertia::render('Patient/Cliniccard', [
             'patientData' => $patientData
@@ -436,10 +435,23 @@ class PatientController extends Controller
     public function formulaEdit(Request $request, $id) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-            $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+//            $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
+            $patientData = Patient::withUser()
+                ->where('patients.id', '=', $patientTreatment->user_id)
+                ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
+                ->leftJoin('phones', function ($join) {
+                    $join->on('phones.patient_id', '=', 'patients.id')
+                        ->where('phones.is_primary', '=', true);
+                })
+                ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
+                ->first();
+//            dd($patientData);exit;
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+
             return Inertia::render('Patient/EditFormula', [
                 'patientData' => $patientData,
+                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
                 'clinicData' => $clinicData,
                 'treatmentData' => $patientTreatment,
             ]);
@@ -455,7 +467,7 @@ class PatientController extends Controller
      */
     public function formulaCopy(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         // copy row
@@ -529,7 +541,7 @@ class PatientController extends Controller
      */
     public function perioEdit(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         return Inertia::render('Patient/EditPerio', [
@@ -548,7 +560,7 @@ class PatientController extends Controller
      */
     public function perioCopy(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         // copy row
@@ -577,7 +589,7 @@ class PatientController extends Controller
      */
     public function psrEdit(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         return Inertia::render('Patient/EditPSR', [
@@ -596,7 +608,7 @@ class PatientController extends Controller
      */
     public function psrCopy(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::where('id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         // copy row

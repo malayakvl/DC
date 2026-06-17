@@ -178,8 +178,9 @@ body {
 }
 
 .submenu {
-  @apply block px-4 py-2 text-sm text-[#5c687a] data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none text-sm;
-  font-weight: normal;
+  @apply block px-4 py-2 text-sm text-[#0ea5a4] data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none text-sm;
+  //font-weight: normal;
+  font-weight: bold;
   border-radius: 0;
 }
 
@@ -226,8 +227,8 @@ body {
 }
 
 .top-submenu {
-  background: #fff;
-  color: #232e49 !important;
+  background: #dff1f2;
+  //border: solid 1px #0ea5a4 !important;
 }
 
 to-green-400 {

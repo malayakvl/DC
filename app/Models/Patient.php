@@ -68,6 +68,15 @@ class Patient extends Authenticatable
         return $this->hasOne(PatientDiscountStatus::class,'id','status_id');
     }
 
+    /**
+     * Scope to join core.users and include first_name, last_name, email.
+     */
+    public function scopeWithUser($query)
+    {
+        return $query->leftJoin('core.users', 'users.id', '=', 'patients.user_id')
+            ->addSelect('patients.*', 'core.users.first_name', 'core.users.last_name', 'core.users.email');
+    }
+
     public static function createInCore($attributes, $additionalData = [])
     {
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
