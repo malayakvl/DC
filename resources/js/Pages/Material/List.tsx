@@ -2,13 +2,13 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngMaterial from '../../Lang/Material/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
-import { PaginationType } from '../../Constants';
+import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 
 export default function List({ listData }) {
@@ -42,18 +42,6 @@ export default function List({ listData }) {
                   </div>
                 </div>
               </header>
-              {/*<header>*/}
-              {/*  <div className="flex inline-flex">*/}
-              {/*    <h2>{msg.get('material.title.list')}</h2>*/}
-              {/*    <div className="pl-5 mt-2">*/}
-              {/*      <PrimaryButton>*/}
-              {/*        <NavLink href={'/material/create'}>*/}
-              {/*          {msg.get('material.create')}*/}
-              {/*        </NavLink>*/}
-              {/*      </PrimaryButton>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</header>*/}
             </section>
             <section className="table-card">
               <DataTable paginationType={PaginationType.MATERIALS} sendRequest={sendRequest}>
