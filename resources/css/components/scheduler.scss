@@ -198,19 +198,20 @@
 
 .d-patient-list {
     font-size: 13px;
-    background: #000;
+    background: #ecf8f8;
     position: absolute;
     width: 100%;
     z-index: 999;
-    border: solid 1px #c9bfbf;
-    top: 57px;
+    border: solid 1px #0ea5a4;
+    top: 68px;
     padding: 5px;
 
     li {
         padding-bottom: 4px;
         padding-left: 10px;
         cursor: pointer;
-        color: #fff;
+        color: #0ea5a4;
+        font-weight: 600;
     }
 }
 
@@ -281,12 +282,12 @@
     padding: 2px 0;
 }
 
-.rbc-active {
-    background-image: none;
-    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    background-color: #6149d7 !important;
-    border-color: #6149d7 !important;
+.rbc-btn-group .rbc-active {
+    background-color: #0ea5a4 !important;
     color: #fff !important;
+}
+.rbc-header .rbc-button-link{
+    color:#1e293b !important;
 }
 
 .sch_tooltip {
@@ -470,9 +471,9 @@
     border-radius: 4px;
     float: left;
     margin-right: 10px;
-    border-color: #35466d;
+    border-color: #D8DEE8;;
     background-color: transparent;
-    color: #fff;
+    color: #475569;
 }
 
 .f-calendar {
@@ -500,7 +501,7 @@
 }
 
 .rbc-today {
-    background-color: #444c72 !important;
+    background-color: #ecf8f8 !important;
 }
 
 .rbc-timeslot-group {
@@ -522,8 +523,8 @@
 }
 
 .rbc-current-time-indicator {
-    background-color: #eb49bb !important;
-    height: 2px;
+    background-color: #ec0d27 !important;
+    height: 2px !important;
 }
 
 .rbc-timeslot-group {
@@ -539,30 +540,51 @@
 }
 
 .rbc-time-gutter .rbc-timeslot-group {
-    background-color: #2d3b5c;
-    color: #fff;
+    background-color: #ecf8f8;
+    color: #0ea5a4;
 }
 
 .rbc-time-gutter .rbc-time-slot {
-    border-bottom: solid 1px #444c72;
+    border-bottom: solid 1px #ecf8f8;
+}
+
+.rbc-time-content {
+    border-top: solid 1px #0ea5a4 !important;
+}
+.rbc-row-resource .rbc-header {
+    color:#fff;
+    background: #475569;
+    min-height: 35px !important;
+    padding-top: 5px !important;
+}
+
+.rbc-timeslot-group .rbc-time-slot:last-child {
+    border-bottom: 1px solid #0ea5a4;
+}
+.rbc-day-slot .rbc-time-slot {
+    border-top: dotted 1px #b3b4b9 !important;
 }
 
 .scheduler-popup {
-    @apply px-5 max-h-[75vh] form-scheduler bg-[#020e13] overflow-y-auto;
-    -webkit-box-shadow: -1px -1px 26px 0px rgba(243 68 184 / 0.75);
+    @apply px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto;
+    -webkit-box-shadow: -1px -1px 26px 0px rgba(197, 204, 204, 0.75);
 }
 
 .rbc-btn-group {
-    @apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+    //@apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3];
+    //background: #ecf8f8;
+    //border:solid 1px #0ea5a4;
     color: #fff;
 }
 
 .rbc-toolbar button {
-    color: #fff !important;
+    color: rgb(14, 165, 164) !important;
+    background: #ecf8f8 !important;
+    border:solid 1px #0ea5a4 !important;
 }
 
 .sh-d-select {
-    background-color: #032f62 !important;
+    //background-color: #032f62 !important;
     z-index: 9999;
 }
 
@@ -580,6 +602,9 @@
 }
 .scheduler-popup #comment {
     color: #fff;
+}
+.rbc-time-header .rbc-time-header-gutter{
+    min-width: 79px !important;
 }
 // .css-hlgwow div {
 //     background-color: #000 !important;

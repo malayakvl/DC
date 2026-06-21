@@ -53,10 +53,11 @@
 }
 
 .input-textarea {
-    @apply rounded-md border-[#35466d] shadow-sm w-full py-2 px-3 focus:border-[#1b2a40] focus:ring-indigo-500 text-[14px];
+    @apply rounded-md border-[#D8DEE8] shadow-sm w-full py-2 px-3 focus:border-[#1b2a40] focus:ring-indigo-500 text-[14px];
     height: 100px;
     background-color: transparent !important;
     margin-bottom: 1rem;
+    color: #032f62 !important;
 }
 
 .form-error {
@@ -311,7 +312,7 @@ table td {
 
 input[type="file"]::file-selector-button {
     //background-color: #760fe5 !important;
-    background-image: linear-gradient(to left top, rgb(217, 192, 245), rgb(144, 11, 154)) !important;
+    background-image: linear-gradient(to left top, rgb(76, 87, 87), rgb(20, 196, 196)) !important;
     width: 90px !important;
     height: 40px !important;
     color: #fff !important;

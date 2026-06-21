@@ -203,7 +203,7 @@ export default function index({ patientData }) {
                     <li className="active" onClick={() => {}}>
                       {msg.get('patient.upper.jaw')}
                     </li>
-                    <li className="active">{msg.get('patient.lower.jaw')}</li>
+                    <li className="active">{msg.get('patient.lower.jaw')}!</li>
                     <li className="active">{msg.get('patient.occlusion')}</li>
                     <li className="active">{msg.get('patient.periodontal')}</li>
                     <li className="active">{msg.get('patient.teeth')}</li>

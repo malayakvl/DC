@@ -58,6 +58,17 @@ class SchedulerController extends Controller
      */
     public function index(Request $request)
     {
+        return $this->withClinicSchema($request, function ($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $filialId = $request->session()->get('filial_id');
+            return Inertia::render('Scheduler/Index', [
+                'clinicData' => $clinicData,
+            ]);
+        });
+    }
+
+    public function indexOld(Request $request)
+    {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinicData = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
@@ -217,22 +228,38 @@ class SchedulerController extends Controller
                     })->values()->toArray()
                 ];
             })->values()->toArray();
+            $resources = DB::table('schedulers')
+                ->join('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+                ->join('core.users as doctor_user', 'doctor_user.id', '=', 'schedulers.doctor_id')
+                ->selectRaw("
+        DISTINCT
+        schedulers.cabinet_id,
+        schedulers.doctor_id,
+        CONCAT(schedulers.cabinet_id, '_', schedulers.doctor_id) as id,
+        CONCAT(cabinets.name, ' • ', doctor_user.first_name, ' ', doctor_user.last_name) as name
+    ")
+                ->get();
+//            dd($resources);exit;
+
+
         if ($request->session()->get('filial_id')) {
-            // dd(1);exit;
+//             dd(1);exit;
+//            $listCabinets = [];
             $listCabinets = DB::table('cabinets')
-                    ->select('cabinets.*', "clinic_filials.name AS filial_name")
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
-                    ->where('cabinets.filial_id', $request->session()->get('filial_id'))
-                    ->orderBy('name')->get();
-            // $listCabinets = DB::table('cabinets')
-            //     ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
-            //     ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
-            //     ->where('cabinets.clinic_id', $clinicData->id)
-            //     ->where('cabinets.filial_id', $request->session()->get('filial_id'))
-            //     ->orderBy('name')->get();
+                ->select(
+                    'cabinets.id',
+                    'cabinets.name AS cabinet_name'
+                );
+//            dd($listCabinets->get() );
+//             $listCabinets = DB::table('cabinets')
+//                 ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
+//                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
+//                 ->where('cabinets.clinic_id', $clinicData->id)
+//                 ->where('cabinets.filial_id', $request->session()->get('filial_id'))
+//                 ->orderBy('name')->get();
         } else {
             $listCabinets = DB::table('cabinets')
-                ->select('cabinets.*', "clinic_filials.name AS filial_name")
+                ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS title')
                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
                 ->where('cabinets.clinic_id', $clinicData->id)
                 ->orderBy('name')->get();
@@ -251,35 +278,132 @@ class SchedulerController extends Controller
         
         $weekStart = date("Y-m-d");
         $weekEnd = date("Y-m-d", strtotime('+3 days'));
-        // $eventsData = DB::table('schedulers')
-        //     ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
-        //         'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
-        //         'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
-        //         'schedulers.patient_id', 'schedulers.status_name AS event_status',
-        //         'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
-        //         'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-        //         'patient_statuses.discount', 'patient_statuses.name AS patient_status_name', 'patients.avatar',
-        //         DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
-        //         DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
-        //         DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
-        //         DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
-        //         DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
-        //         DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
-        //         DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
-        //         DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
-        //         DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-        //         'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
-        //     )
-        //     ->leftJoin('core.users', 'core.users.id', '=', 'schedulers.doctor_id')
-        //     ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-        //     ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
-        //     ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
-        //     ->where('schedulers.clinic_id', $clinicData->id)
-        //     ->whereBetween('event_date', [$weekStart, $weekEnd])
-        //     ->get();
-            $eventsData = [];   
-            
+//        $eventsData = DB::table('schedulers')
+//             ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+//                 'schedulers.event_time_to', 'clinic_filial_user.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+//                 'schedulers.event_time_to', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+//                 'schedulers.cabinet_id', 'schedulers.cabinet_id', 'users.first_name AS p_name', 'users.last_name AS pl_name',
+//                 'schedulers.patient_id', 'schedulers.status_name AS event_status',
+//                 'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.balance', 'patients.discount', 'users.id AS doctor_id',
+//                 'patient_discount_statuses.name AS status_name', 'patient_discount_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+//                 'patient_discount_statuses.discount', 'patient_discount_statuses.name AS patient_status_name', 'clinic_filial_user.avatar',
+//                 'cabinets.id AS resourceId', 'cabinets.name AS resourceId', 'schedulers.id AS event_id',
+//                 DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+//                 DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+//                 DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+//                 DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+//                 DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+//                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+//                 DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+//                 DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+//                 DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+//                 'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
+//             )
+//             ->leftJoin('clinic_filial_user', 'clinic_filial_user.id', '=', 'schedulers.doctor_id')
+//             ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+//             ->leftJoin('core.users', 'users.id', '=', 'schedulers.patient_id')
+//             ->leftJoin('patients', 'patients.user_id', '=', 'core.users.id')
+//             ->leftJoin('patient_discount_statuses', 'patients.status_id', '=', 'patient_discount_statuses.id')
+//             ->where('schedulers.clinic_id', $clinicData->id)
+//             ->whereBetween('event_date', [$weekStart, $weekEnd])
+//             ->get();
+
+            $eventsData = DB::table('schedulers')
+                ->select(
+                // Основные данные события
+                    'schedulers.id AS event_id',
+                    'schedulers.title',
+                    'schedulers.description',
+                    'schedulers.priority',
+                    'schedulers.services',
+                    'schedulers.event_date',
+                    'schedulers.event_time_from',
+                    'schedulers.event_time_to',
+                    'schedulers.status_color',
+                    'schedulers.status_name AS event_status',
+
+                    // Кабинет (ресурс)
+                    'schedulers.cabinet_id',
+                    'schedulers.cabinet_id AS resourceId',
+                    'cabinets.name AS cabinet_name',
+
+                    // Данные ПАЦИЕНТА (schedulers.patient_id -> patients.id -> core.users)
+                    'schedulers.patient_id',
+                    'patient_user.first_name AS p_name',
+                    'patient_user.last_name AS pl_name',
+                    'patients.birthday',
+                    'patients.balance',
+                    'patients.discount',
+                    'patient_discount_statuses.name AS status_name',
+                    'patient_discount_statuses.discount AS status_discount',
+
+                    // Данные ВРАЧА (doctor_id — это глобальный user_id)
+                    'schedulers.doctor_id',
+                    'doctor_user.first_name AS first_name',
+                    'doctor_user.last_name AS last_name',
+                    'core_clinic_user.avatar',          // Аватар теперь из core.clinic_user связи доктора с клиникой
+                    'clinic_filial_user.color',         // Цвет из свернутого подзапроса прав по филиалам
+
+                    // Компоненты даты и времени для фронтенда
+                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                    DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                    DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                    DB::raw("CONCAT(schedulers.cabinet_id, '_', schedulers.doctor_id) AS resourceId"),
+                    DB::raw("CONCAT(cabinets.name, ' • ', doctor_user.first_name, ' ', doctor_user.last_name) AS resource_label")
+                )
+                // 1. Привязываем кабинет
+                ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+
+                // 2. СВЯЗЬ ПАЦИЕНТА
+                ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+                ->leftJoin('core.users AS patient_user', 'patient_user.id', '=', 'patients.user_id')
+                ->leftJoin('patient_discount_statuses', 'patients.status_id', '=', 'patient_discount_statuses.id')
+
+                // 3. СВЯЗЬ ВРАЧА
+                ->leftJoin('core.users AS doctor_user', 'doctor_user.id', '=', 'schedulers.doctor_id')
+
+                // Подтягиваем аватар из связи доктора с клиникой core.clinic_user (связь 1-к-1 в рамках клиники, дубликатов нет)
+                ->leftJoin('core.clinic_user AS core_clinic_user', function($join) use ($clinicData) {
+                    $join->on('core_clinic_user.user_id', '=', 'doctor_user.id')
+                        ->where('core_clinic_user.clinic_id', '=', $clinicData->id);
+                })
+
+                // Подтягиваем только цвет, сворачивая права в филиалах через DISTINCT ON (PostgreSQL)
+                // чтобы событие не дублировалось, если у врача есть права в 2+ филиалах
+                ->leftJoin(DB::raw('(
+        SELECT DISTINCT ON (user_id) user_id, color 
+        FROM clinic_filial_user 
+        WHERE clinic_id = ' . (int)$clinicData->id . '
+    ) AS clinic_filial_user'), 'clinic_filial_user.user_id', '=', 'doctor_user.id')
+
+                // Фильтры
+                ->where('schedulers.clinic_id', $clinicData->id)
+                ->whereBetween('event_date', [$weekStart, $weekEnd])
+                ->get();
+
+//            $eventsData1 = DB::table('schedulers')
+//                ->select('schedulers.*',
+//                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+//                    DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+//                    DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+//                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+//                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+//                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+//                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+//                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+//                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to')
+//                )
+//                ->whereBetween('event_date', [$weekStart, $weekEnd])
+//                ->get();
+//            dd($eventsData1);
             $formData = new Scheduler();
+
             return Inertia::render('Scheduler/Index', [
                 'clinicData' => $clinicData,
                 'customerData' => $customerSelectData,
@@ -328,42 +452,45 @@ class SchedulerController extends Controller
     }
 
     public function updatePeriod(Request $request) {
-        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $qData = $request->all();
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+            $qData = $request->all();
 //        $weekStart = $qData['newDate'];
-        $decodedQueryData = (json_decode($qData['data']));
-        $weekStart = $decodedQueryData->newDate;
-        $date = new DateTime($weekStart);
-        $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
-        $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id', 'patients.first_name AS p_name', 'patients.last_name AS pl_name', 'patients.patronomic_name',
-                'schedulers.patient_id', 'schedulers.status_name AS event_status',
-                'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'patients.birthday', 'patients.dt_balance', 'users.id AS doctor_id',
-                'patients.kt_balance', 'patient_statuses.name AS status_name', 'patient_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-                'patient_statuses.discount', 'patient_statuses.name AS patient_status_name',
-                DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
-                DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
-                DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
-                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
-                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
-                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
-                DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
-                DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
-                DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
-            )
-            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
-            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
-            ->leftJoin('patient_statuses', 'patients.status_id', '=', 'patient_statuses.id')
-            ->where('schedulers.clinic_id', $clinicData->id)
-            ->whereBetween('event_date', [$weekStart, $weekEnd])
-            ->get();
-        return response()->json([
-            'items' => $eventsData
-        ]);
+            $decodedQueryData = (json_decode($qData['data']));
+            $weekStart = $decodedQueryData->newDate;
+            $date = new DateTime($weekStart);
+            $weekEnd = $date->modify('next Sunday')->format('Y-m-d');
+            $eventsData = DB::table('schedulers')
+                ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from', 'cabinets.name AS cabinet_name',
+                    'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name', 'schedulers.cabinet_id AS resourceId',
+                    'schedulers.cabinet_id', 'schedulers.cabinet_id', 'users.first_name AS p_name', 'users.last_name AS pl_name', 'users.patronomic_name',
+                    'schedulers.patient_id', 'schedulers.status_name AS event_status',
+                    'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'users.birthday', 'users.dt_balance', 'users.id AS doctor_id',
+                    'users.kt_balance', 'patient_discount_statuses.name AS status_name', 'patient_discount_statuses.discount AS status_discount', 'schedulers.id AS event_id',
+                    'patient_discount_statuses.discount', 'patient_discount_statuses.name AS patient_status_name',
+                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                    DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                    DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                    'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name', 'schedulers.priority'
+                )
+                ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
+                ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+                ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+                ->leftJoin('patient_discount_statuses', 'patients.status_id', '=', 'patient_discount_statuses.id')
+                ->where('schedulers.clinic_id', $clinicData->id)
+                ->whereBetween('event_date', [$weekStart, $weekEnd])
+                ->get();
+            return response()->json([
+                'items' => $eventsData
+            ]);
+        });
+
     }
 
 
@@ -399,14 +526,23 @@ class SchedulerController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request): Response {
-        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-        $formData = new User();
-        $rolesData = Role::all();
-        return Inertia::render('Customer/CustomerCreate', [
-            'clinicData' => $clinicData,
-            'formData' => $formData,
-            'roleData' => $rolesData
-        ]);
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            $formData = new User();
+            $rolesData = Role::all();
+            return Inertia::render('Customer/CustomerCreate', [
+                'clinicData' => $clinicData,
+                'formData' => $formData,
+                'roleData' => $rolesData
+            ]);
+        });
+//        $formData = new User();
+//        $rolesData = Role::all();
+//        return Inertia::render('Customer/CustomerCreate', [
+//            'clinicData' => $clinicData,
+//            'formData' => $formData,
+//            'roleData' => $rolesData
+//        ]);
     }
 
     /**
@@ -480,8 +616,12 @@ class SchedulerController extends Controller
      * Update the specified resource in storage.
      */
     public function update(SchedulerUpdateRequest $request) {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        if ($request->user()->can('schedule-create')) {
+
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            if (!$request->user()->canClinic('scheduler-edit')) {
+                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+            }
             if ($request->id) {
                 $scheduler = Scheduler::find($request->id);
                 $scheduler->title = $request->title;
@@ -531,7 +671,10 @@ class SchedulerController extends Controller
 
                 return Inertia::location(route('scheduler.index'));
             }
-        }
+        });
+
+
+
     }
 
     public function updateEvent(Request $request) {

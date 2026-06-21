@@ -195,11 +195,12 @@
     font-size: 11px;
     height: 25px;
     margin-bottom: 10px;
-    border-color: rgb(106, 19, 44);
+    border-color: #ffc107;
     box-shadow: none !important;
-    background-color: rgba(234, 187, 147, 0.3);
+    background-color: #faeab9;
     line-height:10px;
     cursor:pointer;
+    color: #625b48;
 }
 .d-badge-close {
     @apply absolute top-[3px] right-[5px] cursor-pointer;

@@ -98,13 +98,9 @@ import {
   getTeethDiagnozisSelector,
   changeDiaSelector,
   getStateFormulaSelector,
-} from '../../../Redux/Formula/selectors';
+} from '@/Redux/Formula/selectors';
 import FormulaDiagnozis from '../Partials/FormulaDiagnozis';
-import {
-  setDataDiagnozes,
-  setStateFormula,
-  setToothDiagnoze,
-} from '../../../Redux/Formula';
+import { setDataDiagnozes, setStateFormula } from '@/Redux/Formula';
 
 export default function Formula({
   formulaData,
@@ -114,11 +110,11 @@ export default function Formula({
   action: any;
 }) {
   const dispatch = useDispatch<any>();
-  const toothActive = useSelector(getStatusesSelector);
+  useSelector(getStatusesSelector);
   const activeNumber = useSelector(getActiveToothNumberSelector);
-  const teethType = useSelector(teethTypeSelector);
-  const teethDiagnozis = useSelector(getTeethDiagnozisSelector);
-  const changeDia = useSelector(changeDiaSelector);
+  useSelector(teethTypeSelector);
+  useSelector(getTeethDiagnozisSelector);
+  useSelector(changeDiaSelector);
   const editFormula = useSelector(getStateFormulaSelector);
 
   useEffect(() => {

@@ -41,18 +41,6 @@ export default function List({ listData, permissions }) {
                   </div>
                 </div>
               </header>
-              {/*<header>*/}
-              {/*  <div className="flex inline-flex">*/}
-              {/*    <h2>{msg.get('status.title.list')}</h2>*/}
-              {/*    <div className="pl-5 mt-2">*/}
-              {/*      <PrimaryButton>*/}
-              {/*        <NavLink href={'/patient-status/create'}>*/}
-              {/*          {msg.get('status.create')}*/}
-              {/*        </NavLink>*/}
-              {/*      </PrimaryButton>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</header>*/}
             </section>
             <section className="table-card">
               <DataTable paginationType={PaginationType.PATIENTSTATUSES} sendRequest={sendRequest}>

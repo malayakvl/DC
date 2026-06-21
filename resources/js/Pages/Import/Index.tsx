@@ -1,74 +1,68 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
-import { setDataLoadingAction } from '../../Redux/Layout/actions';
+import { appLangSelector } from '@/Redux/Layout/selectors';
+import { setDataLoadingAction } from '@/Redux/Layout';
 import Lang from 'lang.js';
 import lngImport from '../../Lang/Import/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
-import NavLink from '../../Components/Links/NavLink';
 import InputError from '../../Components/Form/InputError';
-import { paletterDataSelector } from '../../Redux/Staff/selectors';
-import { userSearchResultsSelector } from '../../Redux/Clinic/selectors';
 import { Transition } from '@headlessui/react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function Index() {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
-  
+
   const msg = new Lang({
     messages: lngImport,
     locale: appLang,
   });
-  const { errors, message } = usePage().props;
+  const { errors } = usePage().props;
   const [values, setValues] = useState({
     file: null,
-    type: ''
+    type: '',
   });
   const [importType, setImportType] = useState('');
-  const { data, setData, processing, post, recentlySuccessful, progress } =
-    useForm({
-      file: null,
-      type: null,
-    });
-  const notify = () => toast("Wow so easy!", { theme: "colored", });  
-
-  const handleChangeFile = e => {
+  const { processing, recentlySuccessful } = useForm({
+    file: null,
+    type: null,
+  });
+  const handleChangeFile = (e) => {
     const key = e.target.id;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: e.target.files[0],
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     values['type'] = importType;
-    
+
     // Set loading state to true
     dispatch(setDataLoadingAction(true));
-    
+
     router.post(`/import/save`, values, {
       onSuccess: () => {
         // Set loading state to false
         dispatch(setDataLoadingAction(false));
-        toast.success(msg.get('import.success_message') || "File uploaded successfully!", { 
-          theme: "colored",
-          position: "top-right",
+        toast.success(msg.get('import.success_message') || 'File uploaded successfully!', {
+          theme: 'colored',
+          position: 'top-right',
           autoClose: 5000,
         });
       },
-      onError: (errors) => {
+      onError: () => {
         // Set loading state to false
         dispatch(setDataLoadingAction(false));
-        toast.error(msg.get('import.error_message') || "File upload failed!", { 
-          theme: "colored",
-          position: "top-right",
+        toast.error(msg.get('import.error_message') || 'File upload failed!', {
+          theme: 'colored',
+          position: 'top-right',
           autoClose: 5000,
         });
-      }
+      },
     });
   };
 
@@ -78,69 +72,95 @@ export default function Index() {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            <form
-              onSubmit={submit}
-              className="mt-0 w-full"
-              encType="multipart/form-data"
-            >
-            <section>
+            <form onSubmit={submit} className="mt-0 w-full" encType="multipart/form-data">
+              <section>
                 <div className="">
-                  <h2 className={'w-full'}>{msg.get('import.title.list')}</h2>
-                  <div>
-                    <input type="radio" id={'customers'} onClick={() => setImportType('customers')} name="type" value={'customers'} />
-                    <label htmlFor={'customers'} onClick={() => setImportType('customers')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.customers')}</label>
-                  </div>
-                  <div>
-                    <input type="radio" id={'patients'} onClick={() => setImportType('patients')} name="type" value={'patients'} />
-                    <label htmlFor={'patients'} onClick={() => setImportType('patients')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.patients')}</label>
-                  </div>
-                  <div>
-                    <input type="radio" id={'dia'} onClick={() => setImportType('dia')} name="type" value={'dia'} />
-                    <label htmlFor={'dia'} onClick={() => setImportType('dia')} className={'ml-2 text-white text-[14px]'}>{msg.get('import.dia')}</label>
-                  </div>
-
-                  <div className="mt-2">
-                    <div className="input-container">
-                      <input
-                        type="file"
-                        id="file"
-                        className="w-full px-0 py-0 mt-4"
-                        style={{width: '100px', height: '40px', color: '#fff'}}
-                        name="file"
-                        onChange={handleChangeFile}
-                      />
-                      <InputError className="mt-2" message={errors.file} />
+                  <header>
+                    <div className="flex inline-flex w-full mb-4">
+                      <h2 className="text-xl font-semibold leading-tight">
+                        {msg.get('import.title.list')}
+                      </h2>
                     </div>
-                    {/*<PrimaryButton>*/}
-                    {/*  <NavLink href={'/role/create'}>*/}
-                    {/*    {msg.get('import.customers')}*/}
-                    {/*  </NavLink>*/}
-                    {/*</PrimaryButton>*/}
-                  </div>
-                  {/*<div className="pl-5 mt-2">*/}
-                  {/*  <PrimaryButton>*/}
-                  {/*    <NavLink href={'/role/create'}>*/}
-                  {/*      {msg.get('import.patients')}*/}
-                  {/*    </NavLink>*/}
-                  {/*  </PrimaryButton>*/}
-                  {/*</div>*/}
+                  </header>
                 </div>
-              <div className="flex items-center mt-[20px]">
-                <PrimaryButton disabled={processing}>
-                  {msg.get('import.save')}
-                </PrimaryButton>
+              </section>
+              <section className="table-card">
+                <div>
+                  <input
+                    type="radio"
+                    id={'customers'}
+                    onClick={() => setImportType('customers')}
+                    name="type"
+                    value={'customers'}
+                  />
+                  <label
+                    htmlFor={'customers'}
+                    onClick={() => setImportType('customers')}
+                    className={'ml-2 text-[14px]'}
+                  >
+                    {msg.get('import.customers')}
+                  </label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id={'patients'}
+                    onClick={() => setImportType('patients')}
+                    name="type"
+                    value={'patients'}
+                  />
+                  <label
+                    htmlFor={'patients'}
+                    onClick={() => setImportType('patients')}
+                    className={'ml-2 text-[14px]'}
+                  >
+                    {msg.get('import.patients')}
+                  </label>
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id={'dia'}
+                    onClick={() => setImportType('dia')}
+                    name="type"
+                    value={'dia'}
+                  />
+                  <label
+                    htmlFor={'dia'}
+                    onClick={() => setImportType('dia')}
+                    className={'ml-2 text-[14px]'}
+                  >
+                    {msg.get('import.dia')}
+                  </label>
+                </div>
 
-                <Transition
-                  show={recentlySuccessful}
-                  enter="transition ease-in-out"
-                  enterFrom="opacity-0"
-                  leave="transition ease-in-out"
-                  leaveTo="opacity-0"
-                >
-                  <p className="text-sm text-gray-600">{msg.get('import.processing')}</p>
-                </Transition>
-              </div>
-            </section>
+                <div className="mt-2">
+                  <div className="input-container">
+                    <input
+                      type="file"
+                      id="file"
+                      className="w-full px-0 py-0 mt-4"
+                      style={{ width: '100px', height: '40px', color: '#fff' }}
+                      name="file"
+                      onChange={handleChangeFile}
+                    />
+                    <InputError className="mt-2" message={errors.file} />
+                  </div>
+                </div>
+                <div className="flex items-center mt-[20px]">
+                  <PrimaryButton disabled={processing}>{msg.get('import.save')}</PrimaryButton>
+
+                  <Transition
+                    show={recentlySuccessful}
+                    enter="transition ease-in-out"
+                    enterFrom="opacity-0"
+                    leave="transition ease-in-out"
+                    leaveTo="opacity-0"
+                  >
+                    <p className="text-sm text-gray-600">{msg.get('import.processing')}</p>
+                  </Transition>
+                </div>
+              </section>
             </form>
           </div>
         </div>
