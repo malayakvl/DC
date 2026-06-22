@@ -1,29 +1,24 @@
 import React, { useMemo, useState } from 'react';
-import { addDays, format, parseISO } from 'date-fns';
+import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { cabinets, doctors, events } from './mock/data';
+import { cabinets, doctors, events, SchedulerEvent } from './mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
 import { Head } from '@inertiajs/react';
-import PrimaryButton from '@/Components/Form/PrimaryButton';
-import NavLink from '@/Components/Links/NavLink';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
-
 const FREE_SLOT_BG = '#fbfdff';
 const TODAY_BG = '#eef6ff';
 
 function getDays(baseDate: string, count: number) {
   const start = parseISO(baseDate);
-
   return Array.from({ length: count }).map((_, i) => {
     const d = addDays(start, i);
-
     return {
       date: format(d, 'yyyy-MM-dd'),
       label: format(d, 'EEE dd'),
@@ -35,11 +30,15 @@ export default function Index() {
   const [baseDate, setBaseDate] = useState('2026-06-21');
   const [view, setView] = useState<'day' | '3days'>('3days');
   const appLang = useSelector(appLangSelector);
+
+  // Рефы для блокировки кликов после перетаскивания / ресайза
+  const isResizingRef = React.useRef(false);
+  const isDraggingRef = React.useRef(false);
+
   const msg = new Lang({
     messages: lngScheduler,
     locale: appLang,
   });
-  const dispatch = useDispatch();
   const dayStep = view === 'day' ? 1 : 3;
 
   const days = useMemo(() => {
@@ -49,34 +48,8 @@ export default function Index() {
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
 
-  // ================= LOCAL EVENTS =================
-  const localEvents1 = useMemo(() => {
-    const targetCabinetId = cabinets[0]?.id || 1;
-    const targetDoctorId = doctors[0]?.id || 1;
-
-    const testEvent = {
-      id: 'test-sharp-event',
-      cabinet_id: targetCabinetId,
-      doctor_id: targetDoctorId,
-      event_date: '2026-06-21',
-
-      // Формат ISO (строго с буквой T), который требует твой getEventLayout
-      start: '2026-06-21T09:00:00',
-      end: '2026-06-21T10:30:00',
-
-      // Человеческий формат для текста внутри карточки
-      event_time_from: '09:00',
-      event_time_to: '10:30',
-
-      title: '💥 Тестовый замес (Консультация)',
-      status_color: '#38bdf8',
-    };
-
-    return [...events, testEvent];
-  }, []);
-
   // ================= INTERACTIVE EVENTS STATE =================
-  const [localEvents, setLocalEvents] = useState(() => {
+  const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     const targetCabinetId = cabinets[0]?.id || 1;
     const targetDoctorId = doctors[0]?.id || 1;
 
@@ -97,35 +70,99 @@ export default function Index() {
     ];
   });
 
+  // ================= DRAG & DROP ENGINE =================
+  const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
+    // Предотвращаем ресайз, если кликнули по хэндлеру ресайза
+    if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    isDraggingRef.current = true;
+
+    const startY = e.clientY;
+    const baseStart = parseISO(event.start);
+    const baseEnd = parseISO(event.end);
+    const durationMin = differenceInMinutes(baseEnd, baseStart);
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaY = moveEvent.clientY - startY;
+      // 2px = 1 минута, шаг — 15 минут
+      const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+
+      // Находим элемент колонки под курсором мыши
+      const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
+
+      let newDate = event.event_date;
+      let newCabinetId = event.cabinet_id;
+      let newDoctorId = event.doctor_id;
+
+      if (columnEl) {
+        newDate = columnEl.getAttribute('data-date') || newDate;
+        newCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || newCabinetId;
+        newDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || newDoctorId;
+      }
+
+      // Вычисляем новое время старта и конца
+      const newStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
+      const newEndDate = new Date(newStartDate.getTime() + durationMin * 60000);
+
+      const newStartISO = `${newDate}T${format(newStartDate, 'HH:mm:ss')}`;
+      const newEndISO = `${newDate}T${format(newEndDate, 'HH:mm:ss')}`;
+
+      setLocalEvents((prev) =>
+        prev.map((ev) => {
+          if (ev.id !== event.id) return ev;
+          return {
+            ...ev,
+            event_date: newDate,
+            cabinet_id: newCabinetId,
+            doctor_id: newDoctorId,
+            start: newStartISO,
+            end: newEndISO,
+            event_time_from: format(newStartDate, 'HH:mm'),
+            event_time_to: format(newEndDate, 'HH:mm'),
+          };
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      setTimeout(() => {
+        isDraggingRef.current = false;
+      }, 50);
+      console.log('✅ Драг закончен, ивент перенесен!');
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
   // ================= RESIZE ENGINE =================
   const handleResizeStart = (e: React.MouseEvent, eventId: string, currentEndISO: string) => {
-    e.stopPropagation(); // Чтобы не триггерился клик по самой карточке или сетке
+    e.stopPropagation();
     e.preventDefault();
 
     const startY = e.clientY;
     const baseEnd = parseISO(currentEndISO);
+    isResizingRef.current = true;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaY = moveEvent.clientY - startY;
-
-      // Переводим пиксели в минуты (у тебя 2px = 1 минута, значит делим на 2)
-      // И округляем до шага в 15 минут
       const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
 
       if (minutesDelta !== 0) {
-        // Вычисляем новое конечное время, добавляя дельту в минутах к базовому времени
-        // Используем чистый JS Date, чтобы не тягать лишние импорты для секундного экшена
         const newEndDate = new Date(baseEnd.getTime() + minutesDelta * 60000);
-
-        // Форматируем обратно в ISO и в человеческий вид
         const newEndISO = `${format(newEndDate, "yyyy-MM-dd'T'HH:mm:ss")}`;
         const newEndTimeHuman = format(newEndDate, 'HH:mm');
 
         setLocalEvents((prevEvents) =>
           prevEvents.map((ev) => {
             if (ev.id !== eventId) return ev;
-
-            // Проверяем, чтобы конец не стал раньше начала (минимальная длительность 15 мин)
             const startTime = parseISO(ev.start).getTime();
             if (newEndDate.getTime() <= startTime) return ev;
 
@@ -142,6 +179,10 @@ export default function Index() {
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+
+      setTimeout(() => {
+        isResizingRef.current = false;
+      }, 50);
       console.log('✅ Ресайз закончен, стейт зафиксирован!');
     };
 
@@ -156,53 +197,14 @@ export default function Index() {
     cabinet: (typeof cabinets)[0],
     doctor: (typeof doctors)[0]
   ) => {
+    if (isResizingRef.current || isDraggingRef.current) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const clickY = e.clientY - rect.top;
-
     const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
 
     if (slotIndex >= 0 && slotIndex < timeSlots.length) {
       const clickedSlot = timeSlots[slotIndex];
-
-      console.log('🔥 Клик по сетке:', {
-        date,
-        cabinetName: cabinet.name,
-        cabinetId: cabinet.id,
-        doctorName: doctor.name,
-        doctorId: doctor.id,
-        time: clickedSlot.label,
-      });
-
-      alert(
-        `Запердолить евент?\n📅 Дата: ${date}\n🕒 Время: ${clickedSlot.label}\n🚪 Кабинет: ${cabinet.name}\n👨‍⚕️ Врач: ${doctor.name}`
-      );
-    }
-  };
-
-  // ================= НАЖАТИЕ НА СЕТКУ (ВРЕМЯ) =================
-  const handleCellClick1 = (
-    e: React.MouseEvent<HTMLDivElement>,
-    date: string,
-    cabinet: (typeof cabinets)[0],
-    doctor: (typeof doctors)[0]
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickY = e.clientY - rect.top;
-
-    const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
-
-    if (slotIndex >= 0 && slotIndex < timeSlots.length) {
-      const clickedSlot = timeSlots[slotIndex];
-
-      console.log('🔥 Клик по сетке:', {
-        date,
-        cabinetName: cabinet.name,
-        cabinetId: cabinet.id,
-        doctorName: doctor.name,
-        doctorId: doctor.id,
-        time: clickedSlot.label,
-      });
-
       alert(
         `Запердолить евент?\n📅 Дата: ${date}\n🕒 Время: ${clickedSlot.label}\n🚪 Кабинет: ${cabinet.name}\n👨‍⚕️ Врач: ${doctor.name}`
       );
@@ -212,11 +214,11 @@ export default function Index() {
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
       <Head title="Customers" />
-      <div className="py-0">
+      <div>
         <div className="p-4 sm:p-8 content-data bg-content">
           <section>
             <header>
-              <div className="flex inline-flex w-full mb-4">
+              <div className="flex inline-flex w-full mb-0">
                 <h2 className="text-xl font-semibold leading-tight">
                   {msg.get('scheduler.title.list')}
                 </h2>
@@ -238,7 +240,8 @@ export default function Index() {
           {/* ================= NAV ================= */}
           <div
             style={{
-              padding: 12,
+              paddingTop: '0px',
+              paddingBottom: '8px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -257,8 +260,7 @@ export default function Index() {
                 Prev
               </button>
               <span style={{ margin: '0 12px', fontWeight: 600 }}>
-                {days[0].label}
-                {days.length > 1 && ` → ${days[days.length - 1].label}`}
+                {days[0].label} {days.length > 1 && ` → ${days[days.length - 1].label}`}
               </span>
               <button
                 className="btn-submit"
@@ -303,7 +305,7 @@ export default function Index() {
                     height: '100%',
                   }}
                 >
-                  {/* ================= FIXED HEADER AREA ================= */}
+                  {/* FIXED HEADER AREA */}
                   <div
                     style={{
                       flexShrink: 0,
@@ -312,7 +314,6 @@ export default function Index() {
                       boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
                     }}
                   >
-                    {/* DAY HEADER */}
                     <div
                       style={{
                         height: 44,
@@ -329,7 +330,6 @@ export default function Index() {
                       {day.label.toUpperCase()}
                     </div>
 
-                    {/* CAB + DOCTORS */}
                     <div style={{ display: 'flex' }}>
                       <div
                         style={{
@@ -339,7 +339,6 @@ export default function Index() {
                           borderRight: '2px solid #e2e8f0',
                         }}
                       />
-
                       <div style={{ display: 'flex', flex: 1 }}>
                         {cabinets.map((cab, cabIdx) => (
                           <div
@@ -350,7 +349,6 @@ export default function Index() {
                                 cabIdx < cabinets.length - 1 ? '2px solid #94a3b8' : 'none',
                             }}
                           >
-                            {/* Название кабинета */}
                             <div
                               style={{
                                 height: 40,
@@ -365,8 +363,6 @@ export default function Index() {
                             >
                               {cab.name}
                             </div>
-
-                            {/* Врачи в кабинете */}
                             <div style={{ display: 'flex', height: 34 }}>
                               {doctors.map((doc, docIdx) => (
                                 <div
@@ -394,7 +390,7 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* ================= SCROLLABLE BODY AREA ================= */}
+                  {/* SCROLLABLE BODY AREA */}
                   <div
                     style={{ display: 'flex', flex: 1, overflowY: 'auto', position: 'relative' }}
                   >
@@ -411,7 +407,6 @@ export default function Index() {
                     >
                       {timeSlots.map((slot, index) => {
                         const isHour = index % 4 === 0;
-
                         return (
                           <div
                             key={slot.label}
@@ -424,8 +419,9 @@ export default function Index() {
                               boxShadow: isHour
                                 ? 'inset 0 -1px 0 rgba(0,0,0,.15)'
                                 : 'inset 0 -1px 0 rgba(0,0,0,.04)',
+                              background: isHour ? '#0ea5a4' : '#fff',
                               fontWeight: isHour ? 600 : 400,
-                              color: isHour ? '#1e293b' : '#64748b',
+                              color: isHour ? '#fff' : '#64748b',
                               borderRight: '1px solid #e2e8f0',
                             }}
                           >
@@ -460,6 +456,11 @@ export default function Index() {
                               <div
                                 key={doc.id}
                                 onClick={(e) => handleCellClick(e, day.date, cab, doc)}
+                                // Важнейшие data-атрибуты для определения ячейки при Dnd:
+                                data-column-type="doctor-cell"
+                                data-date={day.date}
+                                data-cabinet-id={cab.id}
+                                data-doctor-id={doc.id}
                                 style={{
                                   flex: 1,
                                   position: 'relative',
@@ -468,14 +469,8 @@ export default function Index() {
                                   cursor: 'pointer',
                                   borderRight:
                                     docIdx < doctors.length - 1 ? '1px solid #e2e8f0' : 'none',
-                                  backgroundImage: `
-                                linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px),
-                                linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)
-                              `,
-                                  backgroundSize: `
-                                100% ${SLOT_HEIGHT * 4}px,
-                                100% ${SLOT_HEIGHT}px
-                              `,
+                                  backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)`,
+                                  backgroundSize: `100% ${SLOT_HEIGHT * 4}px, 100% ${SLOT_HEIGHT}px`,
                                 }}
                               >
                                 {dayEvents.map((event) => {
@@ -484,7 +479,7 @@ export default function Index() {
                                   return (
                                     <div
                                       key={event.id}
-                                      onClick={(e) => e.stopPropagation()}
+                                      onMouseDown={(e) => handleDragStart(e, event)} // Навесили Drag на всю карточку
                                       style={{
                                         position: 'absolute',
                                         top: layout.top,
@@ -501,7 +496,9 @@ export default function Index() {
                                         borderLeft: '3px solid rgba(0,0,0,.15)',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justifyContent: 'space-between', // Растянет контент, чтобы ресайзер ушел вниз
+                                        justifyContent: 'space-between',
+                                        cursor: 'move', // Курсор перетаскивания
+                                        userSelect: 'none',
                                       }}
                                     >
                                       <div>
@@ -515,22 +512,23 @@ export default function Index() {
                                         </div>
                                       </div>
 
-                                      {/* ХЕНДЛЕР ДЛЯ РЕСАЙЗА (Нижняя полосочка шириной во всю карточку) */}
+                                      {/* ХЕНДЛЕР ДЛЯ РЕСАЙЗА */}
                                       <div
                                         onMouseDown={(e) =>
                                           handleResizeStart(e, event.id, event.end)
                                         }
+                                        data-resize-handle="true" // Маркер для Dnd-движка, чтоб не конфликтовать
                                         style={{
                                           position: 'absolute',
                                           bottom: 0,
                                           left: 0,
                                           right: 0,
                                           height: 8,
-                                          cursor: 'ns-resize', // Курсор стрелочек "вверх-вниз"
+                                          cursor: 'ns-resize',
                                           background: 'transparent',
                                           zIndex: 20,
                                         }}
-                                        className="hover:bg-slate-400/30 transition-colors" // Подсветим при наведении для удобства
+                                        className="hover:bg-slate-400/30 transition-colors"
                                       />
                                     </div>
                                   );
