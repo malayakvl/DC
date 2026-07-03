@@ -13,6 +13,7 @@ import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
 import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
+import { IconLayoutDashboard } from '@tabler/icons-react';
 
 export default function NavMenu() {
   const appLang = useSelector(appLangSelector);
@@ -27,11 +28,12 @@ export default function NavMenu() {
 
   return (
     <>
-      <div className="md:space-x-4 md:flex pt-[2px]">
+      <div className="">
         {usePage().props.auth.role.length > 0 && (
-          <div className="md:mt-[3px]">
+          <div className="md:mt-[12px] md:mr-[20px]">
             <Menu as="div" className="relative top-menu-nav">
-              <MenuButton className="top-nav">
+              <MenuButton className="top-nav flex flex-col items-center">
+                <IconLayoutDashboard className={'w-[24px] h-[24px] block'} />
                 <NavLink href={'/dashboard'}>{lng.get('menu.dashboard')}</NavLink>
               </MenuButton>
             </Menu>

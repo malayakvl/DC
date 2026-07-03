@@ -30,7 +30,7 @@ export default function Dashboard(clinicName) {
                       </p>
                       <h5 className="mb-0 font-bold">
                         $53,000
-                        <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                        <span className="leading-normal text-sm font-bold text-[#0ea5a4]">
                           +55%
                         </span>
                       </h5>
@@ -54,7 +54,7 @@ export default function Dashboard(clinicName) {
                       </p>
                       <h5 className="mb-0 font-bold">
                         220
-                        <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                        <span className="leading-normal text-sm font-bold text-[#0ea5a4]">
                           +55%
                         </span>
                       </h5>
@@ -78,7 +78,7 @@ export default function Dashboard(clinicName) {
                       </p>
                       <h5 className="mb-0 font-bold">
                         10
-                        <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                        <span className="leading-normal text-sm font-bold text-[#0ea5a4]">
                           &nbsp;view schedule
                         </span>
                       </h5>
@@ -102,7 +102,7 @@ export default function Dashboard(clinicName) {
                       </p>
                       <h5 className="mb-0 font-bold">
                         12
-                        <span className="leading-normal text-sm font-weight-bolder text-lime-500">
+                        <span className="leading-normal text-sm font-bold text-[#0ea5a4]">
                           &nbsp;view schedule
                         </span>
                       </h5>

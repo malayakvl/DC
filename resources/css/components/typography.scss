@@ -8,8 +8,10 @@ h2 {
 
 h3 {
     @apply font-semibold leading-tight py-4 text-center;
-    color: #0000 !important;
+    color: #000 !important;
     font-weight: normal !important;
+    font-family: "Sora", "Helvetica", "Arial", sans-serif;
+    font-size: 18px;
 }
 h5 {
     @apply font-semibold leading-tight py-4;

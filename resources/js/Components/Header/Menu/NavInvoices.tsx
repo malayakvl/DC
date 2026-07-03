@@ -5,6 +5,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
+import { IconInvoice } from '@tabler/icons-react';
 
 export default function NavInvoices() {
   const appLang = useSelector(appLangSelector);
@@ -28,7 +29,11 @@ export default function NavInvoices() {
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuInvoice) && (
         <Menu as="div" className="relative top-menu-nav">
-          <MenuButton className="top-nav">{lng.get('menu.invoices')}</MenuButton>
+          <MenuButton className="top-nav flex flex-col items-center">
+            <IconInvoice className={'w-[24px] h-[24px] block'} />
+            <span className="hidden md:block">{lng.get('menu.invoices')}</span>
+          </MenuButton>
+          {/*<MenuButton className="top-nav">{lng.get('menu.invoices')}</MenuButton>*/}
           <MenuItems
             transition
             className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100

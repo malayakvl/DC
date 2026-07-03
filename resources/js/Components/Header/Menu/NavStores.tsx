@@ -1,10 +1,11 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
+import { IconBuildingWarehouse } from '@tabler/icons-react';
 
 export default function NavStores() {
   const appLang = useSelector(appLangSelector);
@@ -12,14 +13,18 @@ export default function NavStores() {
     messages: lngHeader,
     locale: appLang,
   });
-  const user = usePage().props.auth.user;
+  usePage().props.auth.user;
   const permissions = usePage().props.auth.can;
 
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['store-all']) && (
         <Menu as="div" className="relative top-menu-nav">
-          <MenuButton className="top-nav">{lng.get('menu.materials')}</MenuButton>
+          <MenuButton className="top-nav flex flex-col items-center">
+            <IconBuildingWarehouse className={'w-[24px] h-[24px] block'} />
+            <span className="hidden md:block">{lng.get('menu.materials')}</span>
+          </MenuButton>
+          {/*<MenuButton className="top-nav">{lng.get('menu.materials')}</MenuButton>*/}
           <MenuItems
             transition
             className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100

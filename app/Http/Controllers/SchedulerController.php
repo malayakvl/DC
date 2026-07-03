@@ -20,6 +20,7 @@ use Spatie\Permission\Models\Role;
 use DateTime; // Import the DateTime class from the global namespace
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
+use Carbon\Carbon;
 
 class SchedulerController extends Controller
 {
@@ -61,8 +62,144 @@ class SchedulerController extends Controller
         return $this->withClinicSchema($request, function ($clinicId) use ($request) {
             $clinicData = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
+            $formData = new Scheduler();
+
+            $startDate = $request->start_date
+                ? Carbon::parse($request->start_date)
+                : Carbon::today();
+
+            $endDate = $request->end_date
+                ? Carbon::parse($request->end_date)
+                : Carbon::today()->addDays(2); // текущий + 2 = 3 дня
+
+            $customerSelectData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                // ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                    $join->on('pfu.user_id', '=', 'u.id')
+                        ->where('pfu.filial_id', $filialId);
+                })
+                ->where('cu.clinic_id', $clinicId)
+                ->whereNull('pt.id') // 💥 вот ключевая строка
+                ->select(
+                    'u.id',
+                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'cu.avatar',
+                    'pfu.color',
+                    'pfu.avatar'
+                )
+                ->orderBy('u.last_name')
+                ->get();
+
+            $categories = PriceCategory::get();
+            $arrServices = [];
+            foreach ($categories as $category) {
+                $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+            }
+            $arrCat = array();
+            $tree = $this->generateCategories($categories, $arrCat, 0);
+
+            // Group users by role_name and format into groupedOptions
+            App::setLocale($request->user()->locale);
+
+            $customerData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                    $join->on('pfu.user_id', '=', 'u.id')
+                        ->where('pfu.filial_id', $filialId);
+                })
+                ->leftJoin("clinic_{$clinicId}.roles as r", 'r.id', '=', 'pfu.role_id')
+                ->where('cu.clinic_id', $clinicId)
+                ->whereNull('pt.id') // 💥 вот ключевая строка
+                ->select(
+                    'u.id',
+                    DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'cu.avatar',
+                    'pfu.color',
+                    'pfu.avatar',
+                    'r.name as role_name'
+                )
+                ->orderBy('u.last_name')
+                ->get();
+            $assistantSelectData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->where('cu.clinic_id', $clinicId)
+                ->whereNull('pt.id') // 💥 вот ключевая строка
+                ->select(
+                    'u.id',
+                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'cu.avatar'
+                )
+                ->orderBy('u.last_name')
+                ->get();
+
+            $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
+                return [
+                    'label' => __('roles.'.$roleName),
+                    'options' => $group->map(function ($user) {
+                        return [
+                            'id' => $user->id,
+                            'name' => $user->first_name . ' ' . $user->last_name,
+                            'color' => $user->color
+                        ];
+                    })->values()->toArray()
+                ];
+            })->values()->toArray();
+
+            $listCabinets = DB::table('cabinets')
+                ->select(
+                    'cabinets.id',
+                    'cabinets.name AS name',
+                    'cabinets.name AS cabinet_name'
+                )->get();
+
+            $events = DB::table('schedulers')
+                ->whereBetween('event_date', [
+                    $startDate->format('Y-m-d'),
+                    $endDate->format('Y-m-d')
+                ])
+                ->select(
+                    'schedulers.id',
+                    'title',
+                    'doctor_id',
+                    'patient_id',
+                    'cabinet_id',
+                    'event_date',
+                    'event_time_from',
+                    'event_time_to',
+                    'status_color',
+                    'status_name',
+                    'u.first_name',
+                    'u.last_name'
+                )
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'patient_id')
+                ->leftJoin('core.users as u', 'u.id', '=', 'pt.user_id')
+                ->get();
+
             return Inertia::render('Scheduler/Index', [
                 'clinicData' => $clinicData,
+                'groupedOptions' => $groupedOptions,
+                'customerSelectData' => $customerSelectData,
+                'assistantData' => $assistantSelectData,
+                'eventsData' => $events,
+                'tree' => $tree,
+                'arrServices' => $arrServices,
+                'customerData' => $customerData,
+                'currencyData' => $clinicData->currency,
+                'cabinetData' => $listCabinets,
+                'formData' => $formData,
             ]);
         });
     }
@@ -95,6 +232,23 @@ class SchedulerController extends Controller
             )
             ->orderBy('u.last_name')
             ->get();
+
+            $assistantSelectData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->where('cu.clinic_id', $clinicId)
+                ->whereNull('pt.id') // 💥 вот ключевая строка
+                ->select(
+                    'u.id',
+                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'cu.avatar'
+                )
+                ->orderBy('u.last_name')
+                ->get();
+
             // dd($customerSelectData);exit;
             
             // $customerSelectData = DB::select('

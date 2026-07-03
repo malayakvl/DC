@@ -1,10 +1,9 @@
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../Lang/Header/translation';
 import Dropdown from '../../Components/Form/Dropdown';
 import { usePage } from '@inertiajs/react';
-import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 
 export default function ProfileMenu() {
@@ -15,7 +14,6 @@ export default function ProfileMenu() {
     locale: appLang,
   });
   const permissions = usePage().props.auth.can;
-
   const source = user?.name;
   const array = source.split(' ');
   const fioResult =
@@ -36,9 +34,9 @@ export default function ProfileMenu() {
                     <small className="user-profile-role">
                       {usePage().props.auth.role.length > 0 ? (
                         <>
-                          {user?.current_clinic?.name}{' '}
+                          <span className="clinic-name">{user?.current_clinic?.name}</span>
                           <span className="flex gap-[12px]">
-                            {<small className="header-filial-name">{user?.current_filial}</small>}{' '}
+                            <small className="header-filial-name">{user?.current_filial}</small>{' '}
                             <span className="clinic-role">[{usePage().props.auth.role}]</span>
                           </span>
                         </>

@@ -20,6 +20,7 @@ import {
   minusServiceAction,
   plusServiceAction,
   setPopupCabinetAction,
+  setScheduleEditEventAction,
 } from './actions';
 
 const initialState = {
@@ -39,6 +40,7 @@ const initialState = {
   editEvent: null,
   weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
   weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
+  viewSchedule: 'patients',
 };
 
 // ------------------------------------
@@ -61,6 +63,12 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       showScheduleEditPopup: action.payload,
+    }),
+  },
+  [setScheduleEditEventAction]: {
+    next: (state, action) => ({
+      ...state,
+      eventsData: action.payload,
     }),
   },
   [showPricePopupAction]: {
@@ -131,35 +139,33 @@ const ACTION_HANDLERS = {
   },
   [setServicesAction]: {
     next: (state, action) => {
-      const exists = state.services.some(service => service.id === action.payload.id);
+      const exists = state.services.some((service) => service.id === action.payload.id);
       action.payload.qty = 1;
       return {
         ...state,
         services: exists
-          ? state.services.filter(service => service.id !== action.payload.id) // удалить
-          : [...state.services, action.payload] // добавить
+          ? state.services.filter((service) => service.id !== action.payload.id) // удалить
+          : [...state.services, action.payload], // добавить
       };
     },
   },
   [plusServiceAction]: {
     next: (state, action) => {
-      const _s  = state.services.map(item =>
+      const _s = state.services.map((item) =>
         item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
       );
 
       return {
         ...state,
-        services: _s
+        services: _s,
       };
     },
   },
   [minusServiceAction]: {
     next: (state, action) => {
-      const _s =  state.services
-        .map(item =>
-          item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item
-        )
-        .filter(item => item.qty > 0);
+      const _s = state.services
+        .map((item) => (item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item))
+        .filter((item) => item.qty > 0);
       // const _s  = state.services.map(item =>
       //   item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
       // );
@@ -167,7 +173,7 @@ const ACTION_HANDLERS = {
 
       return {
         ...state,
-        services: _s
+        services: _s,
       };
     },
   },
@@ -175,7 +181,7 @@ const ACTION_HANDLERS = {
     next: (state, action) => {
       return {
         ...state,
-        services: action.payload// добавить
+        services: action.payload, // добавить
       };
     },
   },
@@ -212,7 +218,8 @@ export {
   setExistServicesAction,
   plusServiceAction,
   minusServiceAction,
-  setPopupCabinetAction
+  setPopupCabinetAction,
+  setScheduleEditEventAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

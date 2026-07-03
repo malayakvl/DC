@@ -1,13 +1,3 @@
-//.btn-view {
-//    background-image: url('../../images/action-icons/view.svg');
-//    background-repeat: no-repeat;
-//    background-size: contain;
-//    width: 24px;
-//    height: 24px;
-//    cursor: pointer;
-//    display: inline-block;
-//    margin: 0 8px;
-//}
 .btn-view {
     background-image: url('../../images/action-icons/view.svg');
     background-repeat: no-repeat;
@@ -108,6 +98,14 @@
     //@apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
     margin: 5px;
 }
+.btn-prev, btn-next {
+    background: #6d4961 !important;
+}
+
+.btn-new-more {
+
+}
+
 
 .btn-back {
     // background: #343335;

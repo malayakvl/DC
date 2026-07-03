@@ -8,12 +8,9 @@ export const setEditEventAction = createAction('schedule/SET_EDIT_EVENT');
 
 export const showPricePopupAction = createAction('schedule/SHOW_PRICE_POPUP');
 
-export const showScheduleErrorPopupAction = createAction(
-  'schedule/SHOW_ERROR_POPUP'
-);
-export const setSchedulePopupDoctorAction = createAction(
-  'schedule/SETUP_DOCTOR'
-);
+export const showScheduleErrorPopupAction = createAction('schedule/SHOW_ERROR_POPUP');
+export const setScheduleEditEventAction = createAction('scheduler/SET_POPUP_EVENT_DATA');
+export const setSchedulePopupDoctorAction = createAction('schedule/SETUP_DOCTOR');
 export const setScheduleTimeAction = createAction('schedule/SETUP_TIME');
 export const setScheduleDateAction = createAction('schedule/SETUP_DATE');
 export const setScheduleStatusAction = createAction('schedule/SETUP_STATUS');
@@ -33,12 +30,8 @@ export const fetchEventsAction: any = createAction(
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
       return axios
-        .post(
-          `/scheduler/fetchEvents`,
-          { start: data.start, end: data.end },
-          {}
-        )
-        .then(async res => {
+        .post(`/scheduler/fetchEvents`, { start: data.start, end: data.end }, {})
+        .then(async (res) => {
           return res.data.items;
         });
     }
@@ -48,12 +41,9 @@ export const findPatientsAction: any = createAction(
   async (data: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
-      return axios
-        .get(`/scheduler/findPatients?strFind=${data}`,
-        )
-        .then(async res => {
-          return res.data.items;
-        });
+      return axios.get(`/scheduler/findPatients?strFind=${data}`).then(async (res) => {
+        return res.data.items;
+      });
     }
 );
 export const updateSchedulerPeriodAction: any = createAction(
@@ -61,12 +51,9 @@ export const updateSchedulerPeriodAction: any = createAction(
   async (data: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
-      return axios
-        .get(`/scheduler/updatePeriod?data=${JSON.stringify(data)}`,
-        )
-        .then(async res => {
-          return res.data.items;
-        });
+      return axios.get(`/scheduler/updatePeriod?data=${JSON.stringify(data)}`).then(async (res) => {
+        return res.data.items;
+      });
     }
 );
 export const updateEventsAction: any = createAction(
@@ -74,15 +61,8 @@ export const updateEventsAction: any = createAction(
   async (data: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
       const state = getState();
-      return axios
-        .post(
-          `/scheduler/update-event`,
-          data,
-          {}
-        )
-        .then(async res => {
-          return;
-        });
+      return axios.post(`/scheduler/update-event`, data, {}).then(async (res) => {
+        return;
+      });
     }
 );
-

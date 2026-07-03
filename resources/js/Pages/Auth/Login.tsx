@@ -52,6 +52,10 @@ export default function Login({ status, canResetPassword }) {
   return (
     <GuestLayout>
       <Head title={msg.get('auth.login')} />
+      <div className="auth-form-header">
+        <h2>Вхід в систему</h2>
+        <p>Увійдіть у ваш робочий простір</p>
+      </div>
 
       {status && <div className="mb-4 text-sm font-medium text-green-600">{status}</div>}
 

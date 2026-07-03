@@ -13,7 +13,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Manrope', ...defaultTheme.fontFamily.sans],
+        sans: ['Manrope', 'Sora', ...defaultTheme.fontFamily.sans],
         monospace: ['monospace'],
       },
     },

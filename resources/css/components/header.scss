@@ -59,14 +59,16 @@ body {
 }
 
 .gradient-text-h {
-  background: linear-gradient(90deg, #00BFFF, #32CD32);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  font-size: 3rem;
+  //background: linear-gradient(90deg, #3c4e63, #39d667);
+  color: #3c4e63;
+  font-weight: 700;
   /* регулируй по необходимости */
   font-family: 'Montserrat', sans-serif;
-  font-size: 20px !important;
+  font-size: 26px !important;
+}
+.gradient-text-h span {
+  color: #39d667;
+  font-weight: 600;
 }
 
 .mons-text {
@@ -77,7 +79,7 @@ body {
   @apply block md:inline-flex md:items-center;
   color: #475569;
   font-weight: 500;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 .logo-title-new {
@@ -217,9 +219,9 @@ body {
 }
 
 .user-profile-role {
-  @apply block text-left normal-case font-bold text-[10px];
+  @apply block text-left normal-case font-bold text-[12px];
   color: #475569;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .lng-menu {
@@ -235,17 +237,17 @@ to-green-400 {
   --tw-gradient-to: #4ade80 var(--tw-gradient-to-position);
 }
 
-.neon-header {
+.welcome-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 50px;
   //   background: rgba(10, 15, 28, 0.6); /* напівпрозорий фон */
-  background: rgb(26 39 71 / 60%);
-  backdrop-filter: blur(12px);
+  //background: rgb(26 39 71 / 60%);
+  //backdrop-filter: blur(12px);
   /* ефект скла */
   border-bottom: 2px solid transparent;
-  border-image: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5) 1;
+  //border-image: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5) 1;
   box-shadow: 0 0 20px rgba(183, 75, 213, 0.25),
     0 0 40px rgba(0, 198, 255, 0.2);
   position: relative;
@@ -253,6 +255,13 @@ to-green-400 {
   //   position: relative;
   //   z-index: 100;
   //   box-shadow: 0 2px 20px rgba(183, 75, 213, 0.2);
+}
+.w-nav-link {
+  color: #000a22;
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif
+}
+.w-nav {
+  @apply hidden md:flex items-center gap-8 text-sm md:min-w-[300px];
 }
 
 .neon-header::before {
@@ -265,6 +274,9 @@ to-green-400 {
   background: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5);
   box-shadow: 0 0 15px rgba(183, 75, 213, 0.7),
     0 0 25px rgba(0, 198, 255, 0.6);
+}
+.clinic-name {
+  background: #e0afef;
 }
 
 .neon-header nav ul {
@@ -336,8 +348,30 @@ to-green-400 {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white font-bold;
 }
 
+
+
 .lang-block {
-  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[-8px] relative md:mr-[135px] pt-[10px];
+  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[4px] relative md:mr-[135px] pt-[10px];
+}
+.w-lang .lang-block{
+  @apply md:mr-[30px] md:mt-[-10px];
+
+}
+
+.btn-login {
+  @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
+  color: #116aef;
+  border: solid 1px #116aef;
+  border-radius: 5px;
+}
+
+.btn-register {
+  @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
+  color: #fff;
+  border: solid 1px #116aef;
+  background: #116aef;
+  border-radius: 5px;
+  margin-left: 10px;
 }
 
 .body-main .lang-block {
@@ -352,13 +386,20 @@ to-green-400 {
 
 .clinic-role {
   text-transform: uppercase;
-  color: #f345b9;
+  color: #3f353c;
+  font-weight: bold;
+  border: 1px solid palevioletred;
+  background: #f3d4de;
+  padding: 2px 10px;
+  border-radius: 5px;
 }
 
 .header-filial-name {
   font-size: 13px;
-  color: #475569;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: #0ea5a4;
+  font-weight: bolder;
+  margin-top:4px;
+  //font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 .fio-user {
   color: #475569;
@@ -367,9 +408,9 @@ to-green-400 {
 
 .top-nav {
   @apply inline-flex items-center menu-main-btn text-sm font-bold;
-  font-family: "Inter", sans-serif;
+  font-family: "Sora", sans-serif;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 400;
   color: #475569;
 }
 .top-nav.active {
@@ -386,4 +427,12 @@ to-green-400 {
   height: 3px;
   background: #0EA5A4;
   border-radius: 999px;
+}
+.system-logo {
+  background: url(../../images/header/logo.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 65px;
+  height: 65px;
 }

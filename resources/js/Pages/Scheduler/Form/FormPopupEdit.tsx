@@ -1,7 +1,7 @@
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -13,38 +13,31 @@ import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import {
   minusServiceAction,
   plusServiceAction,
-  setExistServicesAction,
   setServicesAction,
   showPricePopupAction,
-  showScheduleEditPopupAction,
   showSchedulePopupAction,
-} from '../../../Redux/Scheduler';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+} from '@/Redux/Scheduler';
 import 'rc-time-picker/assets/index.css';
+import InputMask from 'react-input-mask';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import {
-  editEventSelector,
-  newPatientDataSelector, patientIdSelector,
+  newPatientDataSelector,
+  patientIdSelector,
+  popupCabinetSelector,
   popupDateSelector,
   popupDoctorSelector,
   popupStatusSelector,
   popupTimeSelector,
-  servicesSelector, showEditPopupSelector,
+  servicesSelector,
   showSchedulePopupSelector,
-} from '../../../Redux/Scheduler/selectors';
+} from '@/Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
-import { setPopupAction, showOverlayAction } from '../../../Redux/Layout';
-import InputMask from 'react-input-mask';
-import {
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons';
+import { setPopupAction, showOverlayAction } from '@/Redux/Layout';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import InputLabel from '../../../Components/Form/InputLabel';
 
 export default function SchedulerFormEdit({
   formData,
@@ -52,152 +45,199 @@ export default function SchedulerFormEdit({
   cabinetData,
   customerData,
   assistantData,
-  currency
+  currency,
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngScheduler,
     locale: appLang,
   });
-  const editEventData = useSelector(editEventSelector);
-  const [year, month, day] = editEventData.event_date.split('-'); // Split the input string
-  const formattedDate = `${day}.${month}.${year}`;
-  const [values, setValues] = useState({
-    title: editEventData.title,
-    clinic_id: clinicData.id,
-    cabinet_id: editEventData.cabinet_id,
-    doctor_id: editEventData.doctor_id,
-    assistent_id: editEventData.doctor_id,
-    comment: editEventData.comment,
-    status_id: editEventData.status_id,
-    event_date: formattedDate,
-    event_time_from: editEventData.event_time_from,
-    event_time_to: editEventData.event_time_to,
-  });
+  const parsedTimePlus30 = () => {
+    const time = timeStart;
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date(2025, 0, 1, hours, minutes);
+    date.setMinutes(date.getMinutes() + 30);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  };
 
+  const [values, setValues] = useState({
+    title: formData.title,
+    clinic_id: clinicData.id,
+    cabinet_id: formData.cabinet_id,
+    doctor_id: formData.doctor_id,
+    assistent: formData.assistent_id,
+    comment: formData.comment,
+    status_id: formData.status_id,
+    event_date: formData.event_date,
+    event_time_from: formData.event_time_from,
+    event_time_to: formData.event_time_to,
+  });
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
+  const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
-  const timeEnd = useSelector(popupTimeSelector);
-  const patientId = editEventData.patient_id;
+  const timeEnd = parsedTimePlus30();
+  const patientId = useSelector(patientIdSelector);
   const eventStatus = useSelector(popupStatusSelector);
   const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
-  const showPopup = useSelector(showEditPopupSelector);
+  const showPopup = useSelector(showSchedulePopupSelector);
   const popupServices = useSelector(servicesSelector);
-
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
+      ...values,
+      [key]: value,
+    }));
+  };
+  console.log('Doctor Id', doctorId);
+  const handleChange = (e) => {
+    const key = e.target.id;
+    const value = e.target.value;
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
+  const handleChangeTimeFrom = (value) => {
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    const isValid = regex.test(value);
+    if (isValid) {
+      setValues((values) => ({
+        ...values,
+        ['event_time_from']: value,
+      }));
+    }
+  };
+
+  const handleChangeTimeTo = (value) => {
+    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    const isValid = regex.test(value);
+    if (isValid) {
+      setValues((values) => ({
+        ...values,
+        ['event_time_to']: value,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    setValues((values) => ({
       ...values,
-      [key]: value,
+      ['event_time_from']: timeStart,
+      ['event_time_to']: timeEnd,
+      ['status_id']: eventStatus,
     }));
-  };
+  }, [timeStart]);
 
-  const handleChangeTimeFrom = value => {
-    setValues(values => ({
+  useEffect(() => {
+    console.log('Setup cabinet', cabinetId);
+    setValues((values) => ({
       ...values,
-      ['event_time_from']: value.format('HH:mm'),
+      ['event_date']: eventDate,
+      ['doctor_id']: doctorId,
+      ['status_id']: eventStatus,
+      ['cabinet_id']: cabinetId,
     }));
-  };
+  }, [eventDate, doctorId, eventStatus, cabinetId]);
 
-  const closeModal = () => {
-    dispatch(showSchedulePopupAction(false));
-    const element = document.getElementsByTagName('body')[0];
-    element.style.overflow = 'inherit';
-    dispatch(setPopupAction(false));
-  };
-
-  const submit = e => {
+  // const closeModal = () => {
+  //   dispatch(showSchedulePopupAction(false));
+  //   const element = document.getElementsByTagName('body')[0];
+  //   element.style.overflow = 'inherit';
+  //   dispatch(setPopupAction(false));
+  // };
+  const submit = (e) => {
     e.preventDefault();
     values['newPatientData'] = newPatientData;
-    values['status'] = eventStatus;
+    // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
+    const [day, month, year] = eventDate.split('.'); // Split the input string
+    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    values['event_date'] = formattedDate;
     values['services'] = popupServices;
     if (patientId) {
       values['patientId'] = patientId;
     }
-    const [day, month, year] = values['event_date'].split('.'); // Split the input string
-    values['fotmatted_date'] = `${year}-${month}-${day}`;
-    router.post(`/scheduler/update?id=${editEventData.event_id}`, values);
+    if (formData.id) {
+      router.post(`/scheduler/update?id=${formData.id}`, values);
+    } else {
+      router.post('/scheduler/update', values);
+    }
+    dispatch(showOverlayAction(false));
   };
 
-  const parsedTime = useMemo(() => {
-    return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
-  }, [timeStart]);
-  const parsedTimePlus30 = parsedTime ? parsedTime.add(30, 'minute') : null;
+  // const parsedTime = useMemo(() => {
+  //   return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
+  // }, [timeStart]);
 
-  const renderService = (item, num) => {
+  const renderService = (item) => {
     return (
       <div className="flex items-center justify-between px-2 py-1 bg-gray-100 mb-1 text-[12px] w-[405px]">
-        <div className="flex-1 text-left font-medium text-gray-800">
-          {item.name}
-        </div>
+        <div className="flex-1 text-left font-medium text-gray-800">{item.name}</div>
 
         <div className="w-[80px] text-center text-gray-600">
-          <span onClick={() => {
-            dispatch(minusServiceAction(item))
-          }}>
+          <span onClick={() => dispatch(minusServiceAction(item))}>
             <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
             </svg>
           </span>
-          <span className="mr-2 font-bold bg-white px-2 text-[10px]">{item.qty ? item.qty : 1}</span>
+          <span className="mr-2 font-bold bg-white px-2 text-[10px]">
+            {item.qty ? item.qty : 1}
+          </span>
           <span onClick={() => dispatch(plusServiceAction(item))}>
             <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </span>
         </div>
 
         <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
-          {item.price} {currency}
+          {item.total} {currency}
         </div>
 
         <div className="w-[25px] text-right">
-          <FontAwesomeIcon icon={faTrash} color={'#e13333'} className="mr-1" onClick={() => {
-            dispatch(setServicesAction(item));
-          }} />
+          <FontAwesomeIcon
+            icon={faTrash}
+            color={'#e13333'}
+            className="mr-1"
+            onClick={() => {
+              dispatch(setServicesAction(item));
+            }}
+          />
         </div>
       </div>
-    )
-  }
-  console.log(customerData, 'customerData');
+    );
+  };
+
+  console.log('values', values);
+
   return (
-    <section className={`px-5 max-h-[75vh] form-scheduler form-edit-schedulter bg-white overflow-y-auto ${showPopup ? '' : 'hidden'}`}>
+    <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
         <h2 className={'pt-7 pb-7'}>
-          {msg.get('scheduler.title.edit.visit')}!
+          {formData?.id
+            ? msg.get('mCategories.pricing.edit')
+            : msg.get('scheduler.title.create.visit')}
         </h2>
       </header>
 
       <form
-        onSubmit={event => submit(event)}
+        onSubmit={(event) => submit(event)}
         className="mt-0 space-y-3 min-w-[350px]"
         encType="multipart/form-data"
       >
-        <EventStatus defaultStatus={editEventData.event_status} defaultColor={editEventData.status_color} />
+        <EventStatus />
 
-        <div className={`relative`}>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 ">
-            {msg.get('scheduler.patient')}!
-            <span className="text-discount float-right">
-              &nbsp;{editEventData.status_name && `${editEventData.patient_status_name} (-${editEventData.discount}%)`}
-            </span>
-          </label>
-          <div className={'sh-p-view'}>{editEventData.pl_name} {editEventData.p_name}</div>
+        <EventPatient values={values} />
 
-        </div>
         <div className={'flex w-full'}>
           <div className={'w-1/2'}>
             <InputText
@@ -218,6 +258,7 @@ export default function SchedulerFormEdit({
               value={values.cabinet_id}
               options={cabinetData}
               onChange={handleChangeSelect}
+              defaultValue={cabinetId}
               required
               label={msg.get('scheduler.form.cabinet')}
             />
@@ -241,7 +282,7 @@ export default function SchedulerFormEdit({
             <InputSelect
               name={'assistent_id'}
               values={values}
-              value={values.assistent_id}
+              value={values.assistent}
               options={assistantData}
               defaultValue={doctorId}
               onChange={handleChangeSelect}
@@ -251,55 +292,80 @@ export default function SchedulerFormEdit({
           </div>
         </div>
         <div className={'clearfix'} />
-        {formattedDate && (
+
+        {/*<InputText*/}
+        {/*  name={'title'}*/}
+        {/*  values={values}*/}
+        {/*  dataValue={values.title}*/}
+        {/*  value={values.title}*/}
+        {/*  onChange={handleChange}*/}
+        {/*  required*/}
+        {/*  label={msg.get('scheduler.form.title')}*/}
+        {/*/>*/}
+        {/*<div className={'flex w-full'}>*/}
+        {/*  <div className={'w-1/2'}>*/}
+        {/*    <InputSelect*/}
+        {/*      name={'cabinet_id'}*/}
+        {/*      className={'w-1/2'}*/}
+        {/*      values={values}*/}
+        {/*      value={values.cabinet_id}*/}
+        {/*      defaultValue={cabinetId}*/}
+        {/*      options={cabinetData}*/}
+        {/*      onChange={handleChangeSelect}*/}
+        {/*      required*/}
+        {/*      label={msg.get('scheduler.form.cabinet')}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*  <div className={'w-1/2 ml-3'}>*/}
+        {/*    <InputSelect*/}
+        {/*      name={'doctor_id'}*/}
+        {/*      values={values}*/}
+        {/*      value={values.doctor_id}*/}
+        {/*      options={customerData}*/}
+        {/*      defaultValue={doctorId}*/}
+        {/*      onChange={handleChangeSelect}*/}
+        {/*      required*/}
+        {/*      label={msg.get('scheduler.form.doctor')}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
+        <div className={'clearfix'} />
+        {timeStart && (
           <div className="flex">
             <div className={'w-1/3 relative'}>
               <span className={'block text-[14px]'}>{msg.get('scheduler.sch.date')}</span>
               <InputMask
                 mask="99.99.9999"
                 name={'event_date'}
-                defaultValue={values.event_date}
+                defaultValue={eventDate}
+                onChange={(newValue) => handleChangeTimeFrom(newValue)}
                 className={'shc-form-date'}
-                onChange={(e) => {
-                  setValues(values => ({
-                    ...values,
-                    ['event_date']: e.target.value,
-                  }));
-                }}
               />
               <i className={'f-calendar'} />
             </div>
             <div className={'w-1/3 relative'}>
               <span className={'block text-[14px]'}>{msg.get('scheduler.time.from')}</span>
-              <InputMask mask="99:99"
+              <InputMask
+                mask="99:99"
                 name={'event_time_from'}
-                defaultValue={values.event_time_from ? values.event_time_from : timeStart}
+                defaultValue={formData.event_time_from ? formData.event_time_from : timeStart}
                 className={'shc-form-date'}
-                onChange={(e) => {
-                  setValues(values => ({
-                    ...values,
-                    ['event_time_from']: e.target.value,
-                  }));
-                }}
+                onChange={(newValue) => handleChangeTimeFrom(newValue)}
               />
               <i className={'f-clock'} />
             </div>
             <div className={'w-1/3 relative'}>
               <span className={'block text-[14px]'}>{msg.get('scheduler.time.to')}</span>
-              <InputMask mask="99:99"
+              <InputMask
+                mask="99:99"
                 name={'event_time_to'}
-                defaultValue={values.event_time_to ? values.event_time_to : timeEnd}
+                defaultValue={formData.event_time_to ? formData.event_time_to : timeEnd}
                 className={'shc-form-date'}
-                onChange={(e) => {
-                  setValues(values => ({
-                    ...values,
-                    ['event_time_to']: e.target.value,
-                  }));
-                }}
+                onChange={(e) => handleChangeTimeTo(e.target.value)}
               />
               <i className={'f-clock'} />
             </div>
-
           </div>
         )}
         <InputTextarea
@@ -311,12 +377,17 @@ export default function SchedulerFormEdit({
           label={msg.get('scheduler.form.comment')}
         />
         <div className={'manipulation flex'}>
-          <div className={'add-services ml-3 btn-link font-bold text-[14px]'} onClick={() => {
-            dispatch(showPricePopupAction(true))
-          }}> 📌 {msg.get('scheduler.btn.add')}
+          <div
+            className={'add-services ml-3 btn-link font-bold text-[14px]'}
+            onClick={() => {
+              dispatch(showPricePopupAction(true));
+            }}
+          >
+            {' '}
+            📌 {msg.get('scheduler.btn.add')}
           </div>
           <div className="mt-0 ml-4 text-sm">
-            {popupServices?.map((item, index) => <>{renderService(item, index)}</>)}
+            {popupServices?.map((item) => <>{renderService(item)}</>)}
           </div>
           <div className={'clearfix'} />
         </div>
@@ -326,7 +397,7 @@ export default function SchedulerFormEdit({
             onClick={() => {
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
-              dispatch(showScheduleEditPopupAction(false));
+              dispatch(showSchedulePopupAction(false));
               dispatch(showOverlayAction(false));
               dispatch(setPopupAction(false));
             }}
@@ -334,9 +405,7 @@ export default function SchedulerFormEdit({
           >
             {msg.get('scheduler.close')}
           </SecondaryButton>
-          <PrimaryButton disabled={processing}>
-            {msg.get('scheduler.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('scheduler.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}
@@ -345,9 +414,7 @@ export default function SchedulerFormEdit({
             leave="transition ease-in-out"
             leaveTo="opacity-0"
           >
-            <p className="text-sm text-gray-600">
-              {msg.get('mCategories.saved')}
-            </p>
+            <p className="text-sm text-gray-600">{msg.get('mCategories.saved')}</p>
           </Transition>
         </div>
       </form>

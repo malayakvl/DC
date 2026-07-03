@@ -153,13 +153,14 @@ h5 {
     padding: 12px;
     border-radius: 16px;
     border: 2px solid transparent;
-    background: linear-gradient(#0a0f1c, #0a0f1c) padding-box, linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
+    background: whitesmoke;
+    //background: linear-gradient(#0a0f1c, #0a0f1c) padding-box, linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
     box-shadow: 0 0 20px rgba(183, 75, 213, 0.6), 0 0 40px rgba(0, 198, 255, 0.4);
-    color: #fff;
+    color: #000a22;
 }
 
 .dashboard-block h5 {
-    color: #fff;
+    color: #000a22;
 }
 
 .dashboard-icon {

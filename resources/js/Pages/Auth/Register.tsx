@@ -5,10 +5,9 @@ import TextInput from '../../Components/Form/TextInput';
 import GuestLayout from '../../Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAuth from '../../Lang/Auth/translation';
-
 
 export default function Register() {
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -24,7 +23,7 @@ export default function Register() {
     locale: appLang,
   });
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     post(route('register'), {
@@ -46,13 +45,12 @@ export default function Register() {
             value={data.name}
             className="input-text"
             isFocused={true}
-            onChange={e => setData('first_name', e.target.value)}
+            onChange={(e) => setData('first_name', e.target.value)}
             required
           />
 
           <InputError message={errors.first_name} className="mt-2" />
         </div>
-
 
         <div>
           <InputLabel htmlFor="last_name" value={msg.get('auth.last_name')} />
@@ -63,7 +61,7 @@ export default function Register() {
             value={data.name}
             className="input-text"
             isFocused={true}
-            onChange={e => setData('last_name', e.target.value)}
+            onChange={(e) => setData('last_name', e.target.value)}
             required
           />
 
@@ -80,7 +78,7 @@ export default function Register() {
             value={data.email}
             className="input-text"
             autoComplete="username"
-            onChange={e => setData('email', e.target.value)}
+            onChange={(e) => setData('email', e.target.value)}
             required
           />
 
@@ -97,7 +95,7 @@ export default function Register() {
             value={data.password}
             className="input-text"
             autoComplete="new-password"
-            onChange={e => setData('password', e.target.value)}
+            onChange={(e) => setData('password', e.target.value)}
             required
           />
 
@@ -105,10 +103,7 @@ export default function Register() {
         </div>
 
         <div className="mt-4">
-          <InputLabel
-            htmlFor="password_confirmation"
-            value={msg.get('auth.confirm_password')}
-          />
+          <InputLabel htmlFor="password_confirmation" value={msg.get('auth.confirm_password')} />
 
           <TextInput
             id="password_confirmation"
@@ -117,7 +112,7 @@ export default function Register() {
             value={data.password_confirmation}
             className="input-text"
             autoComplete="new-password"
-            onChange={e => setData('password_confirmation', e.target.value)}
+            onChange={(e) => setData('password_confirmation', e.target.value)}
             required
           />
 

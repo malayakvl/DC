@@ -5,8 +5,9 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
+import { IconUserHeart } from '@tabler/icons-react';
 
-export default function NavPatients(props) {
+export default function NavPatients() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -18,7 +19,11 @@ export default function NavPatients(props) {
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['patient-edit']) && (
         <Menu as="div" className="relative top-menu-nav">
-          <MenuButton className="top-nav">{lng.get('menu.patients')}</MenuButton>
+          <MenuButton className="top-nav flex flex-col items-center">
+            <IconUserHeart className={'w-[24px] h-[24px] block'} />
+            <span className="hidden md:block">{lng.get('menu.patients')}</span>
+          </MenuButton>
+          {/*<MenuButton className="top-nav">{lng.get('menu.patients')}</MenuButton>*/}
           <MenuItems
             transition
             className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100

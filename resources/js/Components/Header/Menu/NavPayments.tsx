@@ -1,11 +1,13 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
+import { IconMoneybag } from '@tabler/icons-react';
+import React from 'react';
 
-export default function NavPayments(props) {
+export default function NavPayments() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -17,7 +19,10 @@ export default function NavPayments(props) {
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative top-menu-nav">
-          <MenuButton className="top-nav">{lng.get('menu.finanses')}</MenuButton>
+          <MenuButton className="top-nav flex flex-col items-center">
+            <IconMoneybag className={'w-[24px] h-[24px] block'} />
+            <span className="hidden md:block">{lng.get('menu.finanses')}</span>
+          </MenuButton>
           <MenuItems
             transition
             className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100

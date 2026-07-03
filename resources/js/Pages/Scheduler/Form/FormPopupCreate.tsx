@@ -92,7 +92,7 @@ export default function SchedulerFormCreate({
       [key]: value,
     }));
   };
-
+  console.log('Doctor Id', doctorId);
   const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -134,6 +134,7 @@ export default function SchedulerFormCreate({
   }, [timeStart]);
 
   useEffect(() => {
+    console.log('Setup cabinet', cabinetId);
     setValues((values) => ({
       ...values,
       ['event_date']: eventDate,
@@ -149,7 +150,6 @@ export default function SchedulerFormCreate({
   //   element.style.overflow = 'inherit';
   //   dispatch(setPopupAction(false));
   // };
-
   const submit = (e) => {
     e.preventDefault();
     values['newPatientData'] = newPatientData;
@@ -217,6 +217,8 @@ export default function SchedulerFormCreate({
     );
   };
 
+  console.log('values', values);
+
   return (
     <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
@@ -256,6 +258,7 @@ export default function SchedulerFormCreate({
               value={values.cabinet_id}
               options={cabinetData}
               onChange={handleChangeSelect}
+              defaultValue={cabinetId}
               required
               label={msg.get('scheduler.form.cabinet')}
             />

@@ -35,7 +35,7 @@ export default function AuthenticatedLayout({ header, children }) {
     <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'auto' }}>
       {header && (
         <header className="">
-          <div className="flex py-2 px-4 sm:px-10 top-header font-sans min-h-[50px] tracking-wide relative z-50 header-fixed">
+          <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
             <div className="relative flex w-full">
               <div>
                 <Link href="/">
@@ -78,6 +78,7 @@ export default function AuthenticatedLayout({ header, children }) {
       )}
 
       <main className="pt-[60px]">
+        <div className="teaser-container">Управляйте клінікою легко та ефективно</div>
         <div className="mx-auto w-full px-1">
           <div>{children}</div>
         </div>
