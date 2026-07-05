@@ -95,6 +95,8 @@ class HandleInertiaRequests extends Middleware
             'permissions' => $permissions,
         ]);
 
+        $user?->load('clinicUser');
+
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $user,

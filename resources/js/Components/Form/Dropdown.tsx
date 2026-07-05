@@ -3,13 +3,13 @@ import { Link } from '@inertiajs/react';
 import { createContext, useContext, useState } from 'react';
 
 // let DropDownContext: React.Context<unknown>;
-let DropDownContext = createContext({});
+const DropDownContext = createContext({});
 
 const Dropdown = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
-    setOpen(previousState => !previousState);
+    setOpen((previousState) => !previousState);
   };
 
   return (
@@ -26,12 +26,7 @@ const Trigger = ({ children }) => {
     <>
       <div onClick={toggleOpen}>{children}</div>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setOpen(false)}
-        ></div>
-      )}
+      {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)}></div>}
     </>
   );
 };
@@ -40,6 +35,7 @@ const Content = ({
   align = 'right',
   width = '48',
   contentClasses = 'py-1 dropdown-menu',
+  dropdownWClasses = '',
   children,
 }) => {
   const { open, setOpen } = useContext(DropDownContext);
@@ -57,6 +53,7 @@ const Content = ({
   if (width === '48') {
     widthClasses = 'w-48';
   }
+  if (dropdownWClasses) widthClasses = dropdownWClasses;
 
   return (
     <>
@@ -73,11 +70,7 @@ const Content = ({
           className={`absolute z-50 mt-2 rounded-md shadow-lg ${alignmentClasses} ${widthClasses}`}
           onClick={() => setOpen(false)}
         >
-          <div
-            className={
-              `rounded-md ring-1 ring-black ring-opacity-5 ` + contentClasses
-            }
-          >
+          <div className={`rounded-md ring-1 ring-black ring-opacity-5 ` + contentClasses}>
             {children}
           </div>
         </div>

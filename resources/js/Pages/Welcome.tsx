@@ -185,7 +185,7 @@ export default function Welcome({ auth }) {
               <div className="stat-card appointments-card">
                 <div className="stat-card-header">
                   <div className="stat-icon">
-                    <IconUsers size={18} />
+                    <IconCalendar size={18} />
                   </div>
 
                   <span className="stat-card-label">Сьогодні прийомів</span>
@@ -198,7 +198,7 @@ export default function Welcome({ auth }) {
               <div className="stat-card revenue-card">
                 <div className="stat-card-header">
                   <div className="stat-icon">
-                    <IconUsers size={18} />
+                    <IconWallet size={18} />
                   </div>
 
                   <span className="stat-card-label">Дохід за місяць</span>
@@ -316,6 +316,10 @@ export default function Welcome({ auth }) {
               <p>
                 Оптимізуйте щоденні процеси, автоматизуйте рутину та зосередьтесь на розвитку вашої
                 клініки.
+              </p>
+              <p>
+                Від першого запису пацієнта до фінансової аналітики — усі ключові процеси об'єднані
+                в одній сучасній системі управління.
               </p>
 
               <div className="tooth-preview">
@@ -466,7 +470,7 @@ export default function Welcome({ auth }) {
             </div>
           </section>
           <section className="trust-section">
-            <div className="container">
+            <div className="">
               <div className="trust-header">
                 <h2>
                   Нам довіряють клініки,
@@ -499,7 +503,7 @@ export default function Welcome({ auth }) {
                 <div className="author">
                   <div className="avatar">ОК</div>
 
-                  <div>
+                  <div className="info">
                     <h4>Олена Коваль</h4>
                     <span>Smile Dental · Львів</span>
                   </div>

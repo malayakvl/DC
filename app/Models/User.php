@@ -161,4 +161,9 @@ class User extends Authenticatable
             ->where('permissions.name', $permission)
             ->exists();
     }
+
+    public function clinicUser()
+    {
+        return $this->hasOne(ClinicUser::class, 'user_id', 'id');
+    }
 }

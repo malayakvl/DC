@@ -25,7 +25,7 @@ export default function NavPayments() {
           </MenuButton>
           <MenuItems
             transition
-            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+            className="absolute right-0 top-[50px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform

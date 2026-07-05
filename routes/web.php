@@ -45,11 +45,14 @@ Route::get('/', function () {
 Route::get('/clinic-new', [ClinicController::class, 'create'])
     ->name('clinic.new');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard.index');
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard.index');
 Route::get('/dashboard-select', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('dashboard.index');
+    ->middleware(['auth', 'verified'])->name('dashboard.select');
+
+Route::get('/dashboard', [DashboardController::class, 'indexFilial'])
+    ->middleware(['auth', 'verified'])->name('dashboard.filial');
 
 Route::get('/dashboard-select', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard.select');

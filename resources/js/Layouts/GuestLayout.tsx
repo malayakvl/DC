@@ -78,9 +78,9 @@ export default function GuestLayout({ children, auth }) {
             </div>
 
             <div className="auth-floating team-card">
-              <span>Команда</span>
-              <strong>∞</strong>
-              <small>Додавайте лікарів</small>
+              <span>Лікарі і філіали</span>
+              <strong>Створюйте свою мережу</strong>
+              <small>Ведення обліку кліники</small>
             </div>
           </div>
 

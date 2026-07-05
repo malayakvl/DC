@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
@@ -26,7 +26,7 @@ export default function NavPatients() {
           {/*<MenuButton className="top-nav">{lng.get('menu.patients')}</MenuButton>*/}
           <MenuItems
             transition
-            className="absolute right-0 top-[26px] z-10 w-56 origin-top-right divide-y divide-gray-100
+            className="absolute right-0 top-[50px] z-10 w-56 origin-top-right divide-y divide-gray-100
                                         top-submenu menu-btn
                                         transition focus:outline-none
                                         data-[closed]:scale-95 data-[closed]:transform

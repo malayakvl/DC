@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { usePage } from '@inertiajs/react';
@@ -16,12 +16,11 @@ export default function NavCabinets(props) {
 
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' ||
-        permissions['cabinet-all']) && (
-          <NavLink className="top-menu-nav" href={'/cabinets'}>
-            {lng.get('menu.cabinets')}
-          </NavLink>
-        )}
+      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['cabinet-all']) && (
+        <NavLink className="top-menu-nav" href={'/cabinets'}>
+          {lng.get('menu.cabinets')}
+        </NavLink>
+      )}
     </>
   );
 }

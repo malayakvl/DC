@@ -16,6 +16,152 @@ export default function Dashboard({ clinicsData }) {
   const renderClinicBlock = (clinic) => {
     return (
       <div key={clinic.clinic_id} className="mb-6 border border-gray-600 rounded p-4">
+        <div className="workspace-page">
+          <div className="workspace-header">
+            <div>
+              <span className="workspace-badge">👋 Вітаємо, Вікторе</span>
+
+              <h1>Оберіть клініку для входу</h1>
+
+              <p>
+                Ви маєте доступ до декількох клінік та філій. Оберіть робочий простір, у якому
+                хочете працювати.
+              </p>
+            </div>
+
+            <div className="workspace-stats">
+              <div className="workspace-stat">
+                <strong>2</strong>
+                <span>Клініки</span>
+              </div>
+
+              <div className="workspace-stat">
+                <strong>1</strong>
+                <span>Філій</span>
+              </div>
+
+              <div className="workspace-stat">
+                <strong>2</strong>
+                <span>Ролі</span>
+              </div>
+            </div>
+          </div>
+          <div></div>
+
+          <div className="clinic-card">
+            <div className="clinic-info">
+              <div className="clinic-logo">{/*<IconTooth />*/}</div>
+
+              <div>
+                <h2>Sunshine Dental</h2>
+
+                <span className="clinic-type">Головна клініка</span>
+
+                <div className="clinic-summary">
+                  <div>
+                    <strong>2</strong>
+                    <span>Філії</span>
+                  </div>
+
+                  <div>
+                    <strong>18</strong>
+                    <span>Лікарів</span>
+                  </div>
+
+                  <div>
+                    <strong>1260</strong>
+                    <span>Пацієнтів</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="clinic-branches">
+              <div className="branch-row">
+                <div>
+                  <strong>Філія 1</strong>
+
+                  <span>вул. Шевченка, 15</span>
+                </div>
+
+                <span className="role-pill">CEO</span>
+
+                <button>Перейти →</button>
+              </div>
+
+              <div className="branch-row">
+                <div>
+                  <strong>Філія 2</strong>
+
+                  <span>вул. Хрещатик, 22</span>
+                </div>
+
+                <span className="role-pill">Doctor</span>
+
+                <button>Перейти →</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="clinic-card">
+            <div className="clinic-info">
+              <div className="clinic-logo">{/*<IconTooth />*/}</div>
+
+              <div>
+                <h2>Sunshine Dental</h2>
+
+                <span className="clinic-type">Головна клініка</span>
+
+                <div className="clinic-summary">
+                  <div>
+                    <strong>2</strong>
+                    <span>Філії</span>
+                  </div>
+
+                  <div>
+                    <strong>18</strong>
+                    <span>Лікарів</span>
+                  </div>
+
+                  <div>
+                    <strong>1260</strong>
+                    <span>Пацієнтів</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="clinic-branches">
+              <div className="branch-row">
+                <div>
+                  <strong>Філія 1</strong>
+
+                  <span>вул. Шевченка, 15</span>
+                </div>
+
+                <span className="role-pill">CEO</span>
+
+                <button>Перейти →</button>
+              </div>
+
+              <div className="branch-row">
+                <div>
+                  <strong>Філія 2</strong>
+
+                  <span>вул. Хрещатик, 22</span>
+                </div>
+
+                <span className="role-pill">Doctor</span>
+
+                <button>Перейти →</button>
+              </div>
+            </div>
+          </div>
+
+          {/*<ClinicCard />*/}
+
+          {/*<ClinicCard />*/}
+        </div>
         {/* Название клиники */}
         <h3 className="text-xl text-yellow mb-3 font-bold">{clinic.clinic_name}</h3>
 
@@ -23,7 +169,7 @@ export default function Dashboard({ clinicsData }) {
         <table className="data-table w-full">
           <thead>
             <tr>
-              <th className="text-left text-white py-2">!!!{msg.get('dashboard.filial')}</th>
+              <th className="text-left text-white py-2">{msg.get('dashboard.filial')}</th>
               <th className="text-right text-white py-2">{msg.get('dashboard.action')}</th>
             </tr>
           </thead>

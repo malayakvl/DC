@@ -24,10 +24,6 @@ export default function NavServices() {
             <IconListDetails className={'w-[24px] h-[24px] block'} />
             <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>
           </MenuButton>
-          {/*<MenuButton className="top-nav">*/}
-          {/*  <IconListDetails className={'w-[24px] h-[24px] block'} />*/}
-          {/*  <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>*/}
-          {/*</MenuButton>*/}
         </Menu>
       )}
     </>

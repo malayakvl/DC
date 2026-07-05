@@ -78,7 +78,7 @@ export default function AuthenticatedLayout({ header, children }) {
       )}
 
       <main className="pt-[60px]">
-        <div className="teaser-container">Управляйте клінікою легко та ефективно</div>
+        {/*<div className="teaser-container">Управляйте клінікою легко та ефективно</div>*/}
         <div className="mx-auto w-full px-1">
           <div>{children}</div>
         </div>

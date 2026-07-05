@@ -8,6 +8,7 @@ use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Filial;
 use App\Models\Store;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -54,7 +55,7 @@ class DashboardController extends Controller
             // Получаем филиалы с информацией о ролях
             $filials = DB::table('clinic_filials')
                 ->whereIn('id', $assignedFilialIds)
-                ->select('id', 'name')
+                ->select('id', 'name', 'address')
                 ->get()
                 ->map(function ($filial) use ($assignedFilialData) {
                     $assignment = $assignedFilialData->firstWhere('filial_id', $filial->id);
@@ -75,6 +76,25 @@ class DashboardController extends Controller
         // dd($result);exit;
         return Inertia::render('Dashboard/DashboardSelect', [
             'clinicsData' => $result,
+        ]);
+    }
+
+
+    public function indexFilial(Request $request)
+    {
+        $userId = $request->user()->id;
+        $user = User::where('id', $userId)->first();
+//        $clinicId = $request->session()->get('clinic_id');
+//        $filialId = $request->session()->get('filial_id');
+//        $filial = ClinicFilial::where('id', $filialId)->first();
+//        $stores = Store::where('filial_id', $filialId)->get();
+//        return Inertia::render('Store/StoreIndex', [
+//            'clinicData' => $clinic,
+//            'filialData' => $filial,
+//            'storesData' => $stores,
+//        ]);
+
+        return Inertia::render('Dashboard/Dashboard', [
         ]);
     }
 

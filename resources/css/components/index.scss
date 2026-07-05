@@ -1013,7 +1013,7 @@
 .why-section {
   display: grid;
   grid-template-columns: 35% 65%;
-  padding: 120px 80px;
+  padding: 60px 80px;
   position: relative;
   background: #F8FAFC;
   padding-bottom: 50px;
@@ -1034,6 +1034,7 @@
 }
 .why-section p {
   color:#000;
+  padding: 15px 0px;
 }
 .why-left {
   display: flex;
@@ -1047,6 +1048,7 @@
   background: url(../../images/main-page/t3-preview.png) no-repeat center center/cover !important;
   width: 520px;
   height: 520px;
+  display: none;
 }
 
 .tooth-preview img {
@@ -1156,8 +1158,8 @@
 }
 
 .right-middle {
-  top: 320px;
-  right: 35px;
+  top: 120px;
+  right: 95px;
 }
 
 .bottom-center {
@@ -1166,7 +1168,7 @@
   transform: translateX(-50%);
 }
 .trust-section {
-  padding: 140px 0;
+  padding: 70px 0;
   background: #ffffff;
 }
 .trust-header {
@@ -1176,9 +1178,9 @@
 }
 
 .trust-header h2 {
-  font-size: 64px;
+  font-size: 49px;
   line-height: 1.1;
-  font-weight: 800;
+  font-weight: 500;
   color: #0f172a;
   margin-bottom: 20px;
 }
@@ -1196,9 +1198,10 @@
 .trust-header h2 {
   font-size: 64px;
   line-height: 1.1;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f172a;
   margin-bottom: 20px;
+  font-family: "Manrope", "Helvetica", "Arial", sans-serif;
 }
 
 .trust-header h2 span {
@@ -1254,19 +1257,17 @@
   margin-bottom: 25px;
 }
 .featured-testimonial blockquote {
-  font-size: 28px;
+  font-size: 20px;
   line-height: 1.5;
-
   color: #334155;
-
   margin-bottom: 40px;
-
   font-weight: 500;
 }
 .author {
   display: flex;
   align-items: center;
   gap: 16px;
+  color: #64748b;
 }
 .avatar {
   width: 56px;
@@ -1287,7 +1288,13 @@
   color: white;
   font-weight: 700;
 }
-
+.author .info {
+ margin-left: 20px
+}
+.author .info h4 {
+  font-weight: bold;
+  color:#2563eb;
+}
 
 
 

@@ -53,7 +53,7 @@ const lngHeader = {
   'uk.menu': {
     dashboard: 'Огляд',
     clinics: 'Клініки',
-    profile: 'Профіль',
+    profile: 'Налаштування профілю',
     stores: 'Склади',
     filials: 'Філіали',
     scheduler: 'Розклад',
@@ -105,6 +105,7 @@ const lngHeader = {
     'payment-methods': 'Каси і рахунки',
     'finanses.report': 'Звіт по фінансах',
     'visit.schedule.statuses': 'Статуси візитів',
+    'user.hprofile': 'Профіль користувача',
   },
 };
 export default lngHeader;
