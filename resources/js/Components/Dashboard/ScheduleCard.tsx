@@ -26,7 +26,7 @@ const appointments = [
 
 export default function ScheduleCard() {
   return (
-    <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-6">
+    <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-2 text-[14px]">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-slate-800">Найближчі прийоми</h2>
@@ -64,16 +64,16 @@ export default function ScheduleCard() {
               <div className="w-1/4">
                 <div className="font-semibold text-slate-800">
                   {appointment.patient}
-                  <span className="block text-slate-400">+39088811131</span>
+                  <span className="block text-slate-400 text-[12px]">+39088811131</span>
                 </div>
               </div>
               <div className="w-1/4">
-                <div className="text-slate-500">{appointment.procedure}</div>
+                <div className="text-slate-500 text-[13px]">{appointment.procedure}</div>
               </div>
               <div className="w-1/4">
                 <div className="text-black mt-1">
                   <b>{appointment.doctor}</b>
-                  <span className="block text-slate-400">Кабінет 1</span>
+                  <span className="block text-slate-400 text-[12px]">Кабінет 1</span>
                 </div>
               </div>
             </div>

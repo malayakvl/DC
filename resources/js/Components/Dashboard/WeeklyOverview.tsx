@@ -56,13 +56,15 @@ export default function WeeklyOverview() {
               key={item.title}
               className="rounded-2xl bg-slate-50 p-5 hover:bg-slate-100 transition"
             >
-              <div
-                className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center mb-4`}
-              >
-                <Icon className={item.color} size={22} />
-              </div>
+              <div className="flex flex-row">
+                <div
+                  className={`w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center mb-4`}
+                >
+                  <Icon className={item.color} size={22} />
+                </div>
 
-              <div className="text-3xl font-bold text-slate-800">{item.value}</div>
+                <div className="text-2xl font-bold text-slate-800 ml-1 mt-1">{item.value}</div>
+              </div>
 
               <div className="text-sm text-slate-500 mt-1">{item.title}</div>
             </div>
