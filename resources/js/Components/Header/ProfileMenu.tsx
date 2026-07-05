@@ -14,7 +14,6 @@ import {
   IconReceiptTax,
   IconUser,
   IconLogout,
-  IconChevronCompactRight,
 } from '@tabler/icons-react';
 
 export default function ProfileMenu() {
@@ -40,23 +39,38 @@ export default function ProfileMenu() {
               <div className="relative">
                 <button type="button" className="profile-top-btn">
                   <div className="mt-0 relative text-white">
-                    <div className="icon-user"></div>
-                    <span className="fio-user">{fioResult}</span>
-                    <small className="user-profile-role">
-                      {usePage().props.auth.role.length > 0 ? (
-                        <>
-                          <span className="clinic-name">{user?.current_clinic?.name}</span>
-                          <span className="flex gap-[12px]">
-                            <small className="header-filial-name">{user?.current_filial}</small>
-                            <span>{' \u00B7'}</span>
-                            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-                            <span className="clinic-role">{usePage().props.auth.role}</span>
-                          </span>
-                        </>
-                      ) : (
-                        user?.current_clinic?.name || lng.get('menu.no.clinic')
-                      )}
-                    </small>
+                    {/*<div className="icon-user"></div>*/}
+                    <div>
+                      <div className="h-avatar-user">
+                        <img
+                          src={
+                            user.clinic_user.avatar
+                              ? '/storage/users/' + user.clinic_user.avatar
+                              : ''
+                          }
+                          alt={user.name}
+                          className="w-[40px] h-[40px] rounded-full"
+                        />
+                      </div>
+                      <div className="h-info-user">
+                        <span className="fio-user">{fioResult}</span>
+                        <small className="user-profile-role">
+                          {usePage().props.auth.role.length > 0 ? (
+                            <>
+                              <span className="clinic-name">{user?.current_clinic?.name}</span>
+                              <span className="flex gap-[12px]">
+                                <small className="header-filial-name">{user?.current_filial}</small>
+                                <span>{' \u00B7'}</span>
+                                {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                                <span className="clinic-role">{usePage().props.auth.role}</span>
+                              </span>
+                            </>
+                          ) : (
+                            user?.current_clinic?.name || lng.get('menu.no.clinic')
+                          )}
+                        </small>
+                      </div>
+                    </div>
                   </div>
                   <span className="icon-arrow-down" />
                 </button>

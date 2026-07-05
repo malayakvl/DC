@@ -28,7 +28,7 @@ export default function List({ tree }) {
       <Head title={'Material Categories'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex w-full mb-4">
@@ -37,7 +37,9 @@ export default function List({ tree }) {
                   </h2>
                   <div className="flex-1 text-right mt-[5px]">
                     <PrimaryButton>
-                      <NavLink href={'/material-category/create'}>{msg.get('mCategories.create')}</NavLink>
+                      <NavLink href={'/material-category/create'}>
+                        {msg.get('mCategories.create')}
+                      </NavLink>
                     </PrimaryButton>
                   </div>
                 </div>
@@ -52,9 +54,7 @@ export default function List({ tree }) {
                       {item.level == 0 ? <b>{item.name}</b> : item.name}
                     </td>
                     <td className="">{item.producerName}</td>
-                    <td className="">
-                      {item.percent > 0 ? `${item.percent}%` : ''}
-                    </td>
+                    <td className="">{item.percent > 0 ? `${item.percent}%` : ''}</td>
                     <td className="text-right">
                       {!item.special && (
                         <>

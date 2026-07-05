@@ -32,7 +32,7 @@ export default function List({ listData, currency }) {
       <Head title={msg.get('patient.title.list')} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex w-full mb-4">

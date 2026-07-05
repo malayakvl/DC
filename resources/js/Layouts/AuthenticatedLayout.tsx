@@ -14,6 +14,7 @@ import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
 import { ToastContainer } from 'react-toastify';
+import Footer from '@/Components/Footer/Footer';
 
 export default function AuthenticatedLayout({ header, children }) {
   const appLang = useSelector(appLangSelector);
@@ -93,6 +94,7 @@ export default function AuthenticatedLayout({ header, children }) {
         </div>
       )}
       <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
+      <Footer />
     </div>
   );
 }

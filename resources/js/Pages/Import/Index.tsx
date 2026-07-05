@@ -71,7 +71,7 @@ export default function Index() {
       <Head title={msg.get('import.title.list')} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <form onSubmit={submit} className="mt-0 w-full" encType="multipart/form-data">
               <section>
                 <div className="">

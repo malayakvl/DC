@@ -36,7 +36,7 @@ export default function index({ patientData }) {
   const teethType = useSelector(teethTypeSelector);
   const dispatch = useDispatch<any>();
 
-  const handleTabClick = tabName => {
+  const handleTabClick = (tabName) => {
     setTab(tabName);
   };
 
@@ -45,7 +45,7 @@ export default function index({ patientData }) {
       <Head title={'Patient Card'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <div className="patient-view-border relative">
               <div className="flex">
                 {patientData.avatar ? (
@@ -122,56 +122,34 @@ export default function index({ patientData }) {
             {tab === 'history' && (
               <ul className="sub-tab text-right mt-5">
                 <li className="relative">
-                  <Link
-                    href="javascript:;"
-                    onClick={() => dispatch(setPatientTab('stage'))}
-                  >
+                  <Link href="javascript:;" onClick={() => dispatch(setPatientTab('stage'))}>
                     <i className="icon-plan-treatment" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.stage')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.stage')}</span>
                   </Link>
                 </li>
                 <li className="relative">
-                  <Link
-                    href="javascript:;"
-                    onClick={() => dispatch(setPatientTab('formula'))}
-                  >
+                  <Link href="javascript:;" onClick={() => dispatch(setPatientTab('formula'))}>
                     <i className="icon-formula" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.formula')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.formula')}</span>
                   </Link>
                 </li>
                 <li className="relative">
-                  <Link
-                    href="javascript:;"
-                    onClick={() => dispatch(setPatientTab('psr'))}
-                  >
+                  <Link href="javascript:;" onClick={() => dispatch(setPatientTab('psr'))}>
                     <i className="icon-psr" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.test')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.test')}</span>
                   </Link>
                 </li>
                 <li className="relative">
-                  <Link
-                    href="javascript:;"
-                    onClick={() => dispatch(setPatientTab('perio'))}
-                  >
+                  <Link href="javascript:;" onClick={() => dispatch(setPatientTab('perio'))}>
                     <i className="icon-perio" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.perio')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.perio')}</span>
                   </Link>
                 </li>
               </ul>
             )}
             <div className="mt-2">
               <div className="inline w-full">
-                <h3 className="text-left inline-block w-[80%]">
-                  Зубна формула
-                </h3>
+                <h3 className="text-left inline-block w-[80%]">Зубна формула</h3>
                 <ul className="action-patient-icon inline-block w-[20%] text-right">
                   <li>
                     <Link href={`patient/edit/`}>

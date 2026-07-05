@@ -32,7 +32,7 @@ export default function List({ listData, permissions }) {
       <Head title={'Invoice Outgoing'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
@@ -47,11 +47,8 @@ export default function List({ listData, permissions }) {
                 </div>
               </header>
             </section>
-            <DataTable
-              paginationType={PaginationType.INCOMINGINVOICES}
-              sendRequest={sendRequest}
-            >
-              {listData?.map(item => (
+            <DataTable paginationType={PaginationType.INCOMINGINVOICES} sendRequest={sendRequest}>
+              {listData?.map((item) => (
                 <tr className="" key={item.id}>
                   <td className="">{item.invoice_number}</td>
                   <td className="">{item.invoice_date}</td>

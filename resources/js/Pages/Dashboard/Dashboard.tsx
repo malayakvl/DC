@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import React from 'react';
 
-export default function Dashboard(clinicName) {
+export default function Dashboard() {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngDashboard,
@@ -17,7 +17,7 @@ export default function Dashboard(clinicName) {
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('dashboard.title')} />
       <div className="py-0">
-        <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+        <div className="p-4 sm:p-4 mb-8 content-data bg-content">
           <h2>{msg.get('dashboard.title')}&nbsp;</h2>
           <div className="grid grid-cols-4 gap-4">
             <div className="dashboard-block">

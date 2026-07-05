@@ -371,7 +371,7 @@ to-green-400 {
 
 
 .lang-block {
-  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[4px] relative md:mr-[150px] pt-[10px];
+  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[4px] relative md:mr-[200px] pt-[10px];
 }
 .w-lang .lang-block{
   @apply md:mr-[30px] md:mt-[-10px];
@@ -450,12 +450,12 @@ to-green-400 {
   border-radius: 999px;
 }
 .system-logo {
-  background: url(../../images/header/logo.png);
+  background: url(../../images/header/new-logo.png);
   background-size: contain;
   background-repeat: no-repeat;
   display: inline-block;
-  width: 65px;
-  height: 65px;
+  width: 55px;
+  height: 55px;
 }
 .dropdown-span-header {
   @apply block text-sm px-2 py-1.5 cursor-pointer;
@@ -507,4 +507,21 @@ to-green-400 {
 }
 .c-name-header {
   justify-content: space-between;
+}
+.h-avatar-user {
+  float: left;
+  margin-right: 10px;
+}
+.h-avatar-user img {
+  margin-top: 7px;
+}
+.h-info-user {
+  float: left;
+}
+.slogan {
+  display: block;
+  color: gray !important;
+  font-size: 12px;
+  font-family: "Google Sans", sans-serif;
+  font-weight: normal !important;
 }

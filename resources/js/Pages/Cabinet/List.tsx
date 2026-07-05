@@ -11,7 +11,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 
-export default function List({ listData}) {
+export default function List({ listData }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -28,7 +28,7 @@ export default function List({ listData}) {
       <Head title={'Cabinets'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex w-full mb-4">

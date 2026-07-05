@@ -18,7 +18,7 @@ export default function Create({ formData, rolesData, imagePath }) {
     locale: appLang,
   });
 
-  const renderRoleData = roles => {
+  const renderRoleData = (roles) => {
     return (
       <>
         {roles.length > 0 && (
@@ -26,9 +26,7 @@ export default function Create({ formData, rolesData, imagePath }) {
             {roles.map((option: any) => (
               <li className="mb-2">
                 <b>{option.filialName}</b>:&nbsp;&nbsp;
-                {option.clinicId
-                  ? option.roleName
-                  : msgRole.get(`role.${option.roleName}`)}
+                {option.clinicId ? option.roleName : msgRole.get(`role.${option.roleName}`)}
               </li>
             ))}
           </ul>
@@ -38,13 +36,11 @@ export default function Create({ formData, rolesData, imagePath }) {
   };
 
   return (
-    <AuthenticatedLayout
-      header={<Head title={msg.get('customer.title.show')} />}
-    >
+    <AuthenticatedLayout header={<Head title={msg.get('customer.title.show')} />}>
       <Head title={msg.get('customer.title.show')} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <header>
               <h2>
                 <Link className="icon-back" href={'/customers'}>
@@ -86,11 +82,7 @@ export default function Create({ formData, rolesData, imagePath }) {
               </div>
             </div>
             <div className="block">
-              <Link
-                className="btn-back"
-                title={msg.get('customer.edit')}
-                href={`/customers`}
-              >
+              <Link className="btn-back" title={msg.get('customer.edit')} href={`/customers`}>
                 {msg.get('customer.back')}
               </Link>
             </div>

@@ -3,18 +3,13 @@ import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
 
-export default function Create({
-  clinicData,
-  formData,
-  customerData,
-  filialData,
-}) {
+export default function Create({ clinicData, formData, customerData, filialData }) {
   return (
     <AuthenticatedLayout header={<Head title="Store" />}>
       <Head title={'Store Create'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
               filialData={filialData}
               customerData={customerData}

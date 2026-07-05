@@ -19,7 +19,7 @@ export default function Edit({ clinicData, formData, currencyData }) {
       <Head title={msg.get('payment_method.edit')} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
               clinicData={clinicData}
               formData={formData}
