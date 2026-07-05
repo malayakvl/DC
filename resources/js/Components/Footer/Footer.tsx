@@ -20,53 +20,51 @@ export default function Footer({ type = 'relative' }) {
       <div className="footer-container">
         {/* TOP */}
 
-        <div className="footer-hero">
-          {/*<img src="../../images/new-diz/logo-e.png" alt="DentalCare" className="footer-logo" />*/}
-
+        <div className={`footer-hero ${user ? 'footer-hero-auth' : ''}`}>
           <h2>DentalCare</h2>
-
           <p>The operating system for modern dental clinics.</p>
-
           <span>Scheduling. Patients. Finance. Growth.</span>
-
-          <button className="footer-cta">Почати безкоштовно</button>
+          {!user && <button className="footer-cta">Зареєструватися безкоштовно</button>}
         </div>
 
         {/* LINKS */}
+        {!user && (
+          <>
+            <div className="footer-links-grid">
+              <div>
+                <h4>Product</h4>
 
-        <div className="footer-links-grid">
-          <div>
-            <h4>Product</h4>
+                <a href="#">Pricing</a>
+                <a href="#">API</a>
+                <a href="#">Documentation</a>
+              </div>
 
-            <a href="#">Pricing</a>
-            <a href="#">API</a>
-            <a href="#">Documentation</a>
-          </div>
+              <div>
+                <h4>Company</h4>
 
-          <div>
-            <h4>Company</h4>
+                <a href="#">Contacts</a>
+                <a href="#">Support</a>
+                <a href="#">About</a>
+              </div>
 
-            <a href="#">Contacts</a>
-            <a href="#">Support</a>
-            <a href="#">About</a>
-          </div>
+              <div>
+                <h4>Account</h4>
 
-          <div>
-            <h4>Account</h4>
+                <a href="#">Login</a>
+                <a href="#">Register</a>
+                <a href="#">Reset Password</a>
+              </div>
 
-            <a href="#">Login</a>
-            <a href="#">Register</a>
-            <a href="#">Reset Password</a>
-          </div>
+              <div>
+                <h4>Legal</h4>
 
-          <div>
-            <h4>Legal</h4>
-
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms</a>
-            <a href="#">Data Processing</a>
-          </div>
-        </div>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms</a>
+                <a href="#">Data Processing</a>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* BOTTOM */}
 

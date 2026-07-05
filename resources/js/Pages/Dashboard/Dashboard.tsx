@@ -25,7 +25,7 @@ export default function Dashboard() {
       <Head title={msg.get('dashboard.title')} />
       <div className="py-0">
         <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-          <h2>{msg.get('dashboard.title')}&nbsp;</h2>
+          <h2 className={'mt-4 mb-4'}>{msg.get('dashboard.title')}&nbsp;</h2>
           <div className="flex flex-row">
             <div className="left-d-block">
               <div className="grid grid-cols-4 gap-4">
