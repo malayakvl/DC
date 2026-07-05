@@ -150,7 +150,7 @@ h5 {
 
 .dashboard-block {
     display: inline-block;
-    padding: 12px;
+    //padding: 12px;
     border-radius: 16px;
     border: 1px solid #e1e0e0;
     background: white;
@@ -158,6 +158,13 @@ h5 {
     box-shadow: 0 0 20px rgba(238, 234, 239, 0.6), 0 0 40px rgba(173, 178, 180, 0.4);
     color: #000a22;
 }
+.dashboard-block h4 {
+    color: #000a22;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
 
 .dashboard-block h5 {
     color: #000a22;
@@ -307,4 +314,57 @@ h5 {
 }
 .no-wrap {
     white-space: nowrap;
+
+}
+.left-d-block {
+    width: calc(100% - 340px);
+}
+.right-d-block {
+    width: 340px;
+    height: 400px;
+    float: right;
+    margin-left: 15px;
+}
+.d-icon {
+    border-radius: 5px;
+    padding: 5px;
+}
+.icon-1 {
+    background: #eff4fe;
+}
+.icon-2 {
+    background: #f3fbf5;
+}
+.icon-3 {
+    background: #f3edfc;
+}
+.icon-4 {
+    background: #fef9f2;
+}
+.d-right-white {
+    background: white;
+    display: inline-block;
+    border-radius: 16px;
+    border: 1px solid #e1e0e0;
+    box-shadow: 0 0 20px rgba(238, 234, 239, 0.6), 0 0 40px rgba(173, 178, 180, 0.4);
+    color: #000a22;
+    padding: 20px;
+    width: 100%;
+}
+.d-right-white h4 {
+    color: #000a22;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.d-right-white-item {
+    display: flex;
+    flex-direction: row;
+    background: #f8f9fd;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+}
+.record-visit {
+    border-bottom: solid 1px #eff2f6;
 }
