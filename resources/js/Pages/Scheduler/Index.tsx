@@ -279,7 +279,6 @@ export default function Index({
     const rect = e.currentTarget.getBoundingClientRect();
     const clickY = e.clientY - rect.top;
     const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
-    alert('Show popup');
 
     if (slotIndex >= 0 && slotIndex < timeSlots.length) {
       const clickedSlot = timeSlots[slotIndex];
@@ -299,7 +298,7 @@ export default function Index({
       }
       dispatch(showSchedulePopupAction(true));
       dispatch(setPopupCabinetAction(cabinet.id));
-      dispatch(setSchedulePopupDoctorAction(doctor.value));
+      dispatch(setSchedulePopupDoctorAction(doctor.id));
       dispatch(showOverlayAction(true));
       dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
       dispatch(setScheduleTimeAction(clickedSlot.label)); // Сохраняем как HH:mm

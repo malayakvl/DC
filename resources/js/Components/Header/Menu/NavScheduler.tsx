@@ -5,7 +5,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
-import { IconCalendarCog } from '@tabler/icons-react';
+import { DoorOpen, CalendarDays, CalendarRange, Check } from 'lucide-react';
 
 export default function NavInvoices() {
   const appLang = useSelector(appLangSelector);
@@ -23,7 +23,7 @@ export default function NavInvoices() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuScheduler) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <IconCalendarCog className={'w-[24px] h-[24px] block'} />
+            <CalendarDays className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.scheduler')}</span>
           </MenuButton>
           <MenuItems
@@ -39,6 +39,7 @@ export default function NavInvoices() {
               {permissions['scheduler-create'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/cabinets'}>
+                    <DoorOpen className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.cabinets')}
                   </Link>
                 </MenuItem>
@@ -46,6 +47,7 @@ export default function NavInvoices() {
               {permissions['patient-edit'] && (
                 <MenuItem>
                   <Link href={'/visit-schedule-statuses'} className="submenu">
+                    <Check className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.visit.schedule.statuses')}
                   </Link>
                 </MenuItem>
@@ -53,6 +55,7 @@ export default function NavInvoices() {
               {permissions['scheduler-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/scheduler'}>
+                    <CalendarRange className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.scheduler')}
                   </Link>
                 </MenuItem>

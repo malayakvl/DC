@@ -1,10 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  setChangeDia,
-  setSelectedToothNumber,
-  setToothDiagnoze,
-} from '../../../Redux/Formula';
+import { setChangeDia, setSelectedToothNumber, setToothDiagnoze } from '../../../Redux/Formula';
 import {
   allTeethAdultSelector,
   getCeramicCrownColorSelector,
@@ -40,16 +36,15 @@ export default function Bone45() {
       style={{ opacity: 1, transition: 'opacity 0.2s' }}
       onMouseOver={() => {
         !teethDiagnozis.tooth45.active &&
-        !allTeeth &&
-        document.getElementById('45').classList.add('tooth-number-hover');
+          !allTeeth &&
+          document.getElementById('45').classList.add('tooth-number-hover');
       }}
       onMouseLeave={() => {
         !teethDiagnozis.tooth45.active &&
-        !allTeeth &&
-        document.getElementById('45').classList.remove('tooth-number-hover');
+          !allTeeth &&
+          document.getElementById('45').classList.remove('tooth-number-hover');
       }}
       onClick={() => {
-        alert(45)
         if (excludeToothEffect.includes(diagnozis)) {
           dispatch(setSelectedToothNumber(45));
           dispatch(setChangeDia(Math.random()));
@@ -72,9 +67,7 @@ export default function Bone45() {
         }
       }}
     >
-      <g
-        style={{ opacity: tooth45Diagnozis.paradont_health ? 1 : 0 }}
-      >
+      <g style={{ opacity: tooth45Diagnozis.paradont_health ? 1 : 0 }}>
         <path
           className="pdtfill"
           d="M728.2,1206.3c-6.3,40.9-14.5,83.3-24.5,123.3c-10.6,42.2-25.3,91.9-40.2,133.4
@@ -87,17 +80,19 @@ export default function Bone45() {
           className="pdt"
           d="M630.6,1202.1c0.4,0,0.9,0,1.3,0c2.9,0.2,5.4,1.8,7.8,3.4c10.2,6.7,21.3,12.8,34,13.9
                 c15.6,1.4,30.2-4.9,44.5-10.3c3.3-1.2,6.6-2.5,10-2.7"
-          style={{ strokeWidth: tooth45Diagnozis.inflamed_gums ? 5 :
-              tooth45Diagnozis.significantly_gums ? 9: 2 }}
+          style={{
+            strokeWidth: tooth45Diagnozis.inflamed_gums
+              ? 5
+              : tooth45Diagnozis.significantly_gums
+                ? 9
+                : 2,
+          }}
         />
       </g>
       <g
         style={{
           opacity:
-            (tooth45Diagnozis.parodontit &&
-              tooth45Diagnozis.parodontit_stage === 'pst1')
-              ? 1
-              : 0,
+            tooth45Diagnozis.parodontit && tooth45Diagnozis.parodontit_stage === 'pst1' ? 1 : 0,
         }}
       >
         <path
@@ -111,17 +106,19 @@ export default function Bone45() {
           className="pdt"
           d="M626.4,1227.6c0.4,0,0.8,0,1.2,0.1c7.9,1.7,22.7,17.3,51.8,17.2
                 c30.3-0.1,38.6-12.6,44.5-12.5"
-          style={{ strokeWidth: tooth45Diagnozis.inflamed_gums ? 5 :
-              tooth45Diagnozis.significantly_gums ? 9: 2 }}
+          style={{
+            strokeWidth: tooth45Diagnozis.inflamed_gums
+              ? 5
+              : tooth45Diagnozis.significantly_gums
+                ? 9
+                : 2,
+          }}
         />
       </g>
       <g
         style={{
           opacity:
-            (tooth45Diagnozis.parodontit &&
-              tooth45Diagnozis.parodontit_stage === 'pst2')
-              ? 1
-              : 0,
+            tooth45Diagnozis.parodontit && tooth45Diagnozis.parodontit_stage === 'pst2' ? 1 : 0,
         }}
       >
         <path
@@ -135,17 +132,19 @@ export default function Bone45() {
           className="pdt"
           d="M621.2,1254.3c0.3,0,0.6,0,0.8,0.1c7.5,1.1,21.6,20.6,50.7,20.6
                 c30.3-0.1,39.2-14.5,46.1-14.5"
-          style={{ strokeWidth: tooth45Diagnozis.inflamed_gums ? 5 :
-              tooth45Diagnozis.significantly_gums ? 9: 2 }}
+          style={{
+            strokeWidth: tooth45Diagnozis.inflamed_gums
+              ? 5
+              : tooth45Diagnozis.significantly_gums
+                ? 9
+                : 2,
+          }}
         />
       </g>
       <g
         style={{
           opacity:
-            (tooth45Diagnozis.parodontit &&
-              tooth45Diagnozis.parodontit_stage === 'pst3')
-              ? 1
-              : 0,
+            tooth45Diagnozis.parodontit && tooth45Diagnozis.parodontit_stage === 'pst3' ? 1 : 0,
         }}
       >
         <path
@@ -159,8 +158,13 @@ export default function Bone45() {
           className="pdt"
           d="M615.2,1280.9c0.1,0,0.1,0,0.2,0c8.1,1.5,21.6,18.4,50.7,18.4
                 c29.8-0.1,41.3-12.4,47.5-12.9"
-          style={{ strokeWidth: tooth45Diagnozis.inflamed_gums ? 5 :
-              tooth45Diagnozis.significantly_gums ? 9: 2 }}
+          style={{
+            strokeWidth: tooth45Diagnozis.inflamed_gums
+              ? 5
+              : tooth45Diagnozis.significantly_gums
+                ? 9
+                : 2,
+          }}
         />
       </g>
     </g>

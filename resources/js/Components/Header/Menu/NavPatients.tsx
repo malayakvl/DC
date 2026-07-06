@@ -5,7 +5,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
-import { IconUserHeart } from '@tabler/icons-react';
+import { LucideContactRound, LucideContact2, Percent } from 'lucide-react';
 
 export default function NavPatients() {
   const appLang = useSelector(appLangSelector);
@@ -20,7 +20,7 @@ export default function NavPatients() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['patient-edit']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <IconUserHeart className={'w-[24px] h-[24px] block'} />
+            <LucideContactRound className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.patients')}</span>
           </MenuButton>
           {/*<MenuButton className="top-nav">{lng.get('menu.patients')}</MenuButton>*/}
@@ -37,6 +37,7 @@ export default function NavPatients() {
               {permissions['patient-edit'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/patients'}>
+                    <LucideContact2 className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.patients')}
                   </Link>
                 </MenuItem>
@@ -44,6 +45,7 @@ export default function NavPatients() {
               {permissions['patient-edit'] && (
                 <MenuItem>
                   <Link href={'/patient-statuses'} className="submenu">
+                    <Percent className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.patient.statuses')}
                   </Link>
                 </MenuItem>

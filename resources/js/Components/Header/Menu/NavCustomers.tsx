@@ -5,7 +5,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
-import { IconUsers } from '@tabler/icons-react';
+import { UsersRound, ShieldUser } from 'lucide-react';
 
 export default function NavCustomers() {
   const appLang = useSelector(appLangSelector);
@@ -20,7 +20,7 @@ export default function NavCustomers() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <IconUsers className={'w-[24px] h-[24px] block'} />
+            <UsersRound className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.customers')}</span>
           </MenuButton>
           <MenuItems
@@ -36,6 +36,7 @@ export default function NavCustomers() {
               {permissions['customer-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/customers'}>
+                    <UsersRound className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.customer.list')}
                   </Link>
                 </MenuItem>
@@ -43,6 +44,7 @@ export default function NavCustomers() {
               {permissions['customer-all'] && (
                 <MenuItem>
                   <Link href={'/roles'} className="submenu">
+                    <ShieldUser className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.customer.roles')}
                   </Link>
                 </MenuItem>

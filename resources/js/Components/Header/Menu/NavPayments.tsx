@@ -4,7 +4,8 @@ import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
-import { IconMoneybag } from '@tabler/icons-react';
+import { CircleMinus, Wallet, CirclePlus } from 'lucide-react';
+
 import React from 'react';
 
 export default function NavPayments() {
@@ -20,7 +21,7 @@ export default function NavPayments() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <IconMoneybag className={'w-[24px] h-[24px] block'} />
+            <Wallet className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.finanses')}</span>
           </MenuButton>
           <MenuItems
@@ -36,6 +37,7 @@ export default function NavPayments() {
               {permissions['customer-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/payment-methods'}>
+                    <Wallet className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.payment-methods')}
                   </Link>
                 </MenuItem>
@@ -43,6 +45,7 @@ export default function NavPayments() {
               {permissions['customer-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/money-in'}>
+                    <CirclePlus className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.money-in')}
                   </Link>
                 </MenuItem>
@@ -50,6 +53,7 @@ export default function NavPayments() {
               {permissions['producer-all'] && (
                 <MenuItem>
                   <Link className="submenu" href={'/money-out'}>
+                    <CircleMinus className={'w-[20px] h-[20px] mr-2'} color={'#7b7c7e'} />
                     {lng.get('menu.money-out')}
                   </Link>
                 </MenuItem>

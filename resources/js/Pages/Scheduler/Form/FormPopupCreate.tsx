@@ -3,7 +3,7 @@ import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import InputText from '../../../Components/Form/InputText';
 import InputTextarea from '../../../Components/Form/InputTextarea';

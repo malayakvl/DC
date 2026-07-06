@@ -13,8 +13,7 @@ import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
 import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
-import { IconLayoutDashboard } from '@tabler/icons-react';
-
+import { Gauge } from 'lucide-react';
 export default function NavMenu() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -33,7 +32,7 @@ export default function NavMenu() {
           <div className="md:mt-[12px] md:mr-[20px]">
             <Menu as="div" className="relative top-menu-nav">
               <MenuButton className="top-nav flex flex-col items-center">
-                <IconLayoutDashboard className={'w-[24px] h-[24px] block'} />
+                <Gauge className={'w-[24px] h-[24px] block'} />
                 <NavLink href={'/dashboard'}>{lng.get('menu.dashboard')}</NavLink>
               </MenuButton>
             </Menu>
