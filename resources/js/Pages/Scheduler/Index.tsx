@@ -65,9 +65,10 @@ export default function Index({
   groupedOptions,
   assistantData,
   eventsData,
-  currency,
+  currencyData,
   tree,
   services,
+  serviceCategories,
 }) {
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [view, setView] = useState<'day' | '3days'>('3days');
@@ -83,7 +84,6 @@ export default function Index({
   const isDraggingRef = React.useRef(false);
   const tab = useSelector(viewScheduleSelector);
   const showPrice = useSelector(pricePopupSelector);
-  console.log('Services', services);
 
   // Динамическая фильтрация и группировка опций для вкладок
   const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
@@ -317,7 +317,6 @@ export default function Index({
   };
 
   const handleEventClick = (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
-    console.log(cellEvent);
     dispatch(setScheduleEditEventAction(cellEvent));
     dispatch(showScheduleEditPopupAction(true));
   };
@@ -387,7 +386,9 @@ export default function Index({
             cabinetData={cabinetData}
             assistantData={assistantData}
             customerData={customerData}
-            currency={currency}
+            currency={currencyData}
+            serviceCategories={serviceCategories}
+            services={services}
           />
         )}
         {editEventPopup && (
@@ -396,7 +397,7 @@ export default function Index({
             cabinetData={cabinetData}
             assistantData={assistantData}
             customerData={customerData}
-            currency={currency}
+            currency={currencyData}
           />
         )}
         {showPrice && (

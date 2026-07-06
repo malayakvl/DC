@@ -46,6 +46,8 @@ export default function SchedulerFormCreate({
   customerData,
   assistantData,
   currency,
+  serviceCategories,
+  services,
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -84,6 +86,10 @@ export default function SchedulerFormCreate({
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showSchedulePopupSelector);
   const popupServices = useSelector(servicesSelector);
+  const [showServices, setShowServices] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(
+    serviceCategories.length ? serviceCategories[0].id : null
+  );
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -172,52 +178,82 @@ export default function SchedulerFormCreate({
   // const parsedTime = useMemo(() => {
   //   return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
   // }, [timeStart]);
-
+  console.log('Currency', currency);
   const renderService = (item) => {
     return (
-      <div className="flex items-center justify-between px-2 py-1 bg-gray-100 mb-1 text-[12px] w-[405px]">
-        <div className="flex-1 text-left font-medium text-gray-800">{item.name}</div>
-
-        <div className="w-[80px] text-center text-gray-600">
-          <span onClick={() => dispatch(minusServiceAction(item))}>
-            <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
-            </svg>
-          </span>
-          <span className="mr-2 font-bold bg-white px-2 text-[10px]">
-            {item.qty ? item.qty : 1}
-          </span>
-          <span onClick={() => dispatch(plusServiceAction(item))}>
-            <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </span>
+      <div className="selected-service selected-services-block">
+        <div className="service-info">
+          <div className="service-title">{item.name}</div>
+          <div className="service-price-selected">
+            {item.price} {currency}
+          </div>
         </div>
 
-        <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
-          {item.total} {currency}
+        <div className="service-actions">
+          <button className="qty-btn" onClick={() => dispatch(minusServiceAction(item))}>
+            −
+          </button>
+
+          <span className="qty-value">{item.qty ?? 1}</span>
+
+          <button className="qty-btn" onClick={() => dispatch(plusServiceAction(item))}>
+            +
+          </button>
         </div>
 
-        <div className="w-[25px] text-right">
-          <FontAwesomeIcon
-            icon={faTrash}
-            color={'#e13333'}
-            className="mr-1"
-            onClick={() => {
-              dispatch(setServicesAction(item));
-            }}
-          />
+        <div className="service-total">
+          {item.price * item.qty} {currency}
         </div>
+
+        <button className="delete-btn" onClick={() => dispatch(setServicesAction(item))}>
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
       </div>
+      // <div className="flex items-center justify-between px-2 py-2 bg-gray-100 mb-1 text-[14px] w-full">
+      //   <div className="flex-1 text-left font-medium text-gray-800">{item.name}</div>
+      //
+      //   <div className="w-[80px] text-center text-gray-600">
+      //     <span onClick={() => dispatch(minusServiceAction(item))}>
+      //       <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      //         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
+      //       </svg>
+      //     </span>
+      //     <span className="mr-2 font-bold bg-white px-2 text-[10px]">
+      //       {item.qty ? item.qty : 1}
+      //     </span>
+      //     <span onClick={() => dispatch(plusServiceAction(item))}>
+      //       <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      //         <path
+      //           strokeLinecap="round"
+      //           strokeLinejoin="round"
+      //           strokeWidth="2"
+      //           d="M12 4v16m8-8H4"
+      //         />
+      //       </svg>
+      //     </span>
+      //   </div>
+      //
+      //   <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
+      //     {item.total} {currency}
+      //   </div>
+      //
+      //   <div className="w-[25px] text-right">
+      //     <FontAwesomeIcon
+      //       icon={faTrash}
+      //       color={'#e13333'}
+      //       className="mr-1"
+      //       onClick={() => {
+      //         dispatch(setServicesAction(item));
+      //       }}
+      //     />
+      //   </div>
+      // </div>
     );
   };
 
-  console.log('values', values);
+  const addService = (_item) => {
+    dispatch(setServicesAction(_item));
+  };
 
   return (
     <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
@@ -376,19 +412,72 @@ export default function SchedulerFormCreate({
           required
           label={msg.get('scheduler.form.comment')}
         />
-        <div className={'manipulation flex'}>
+        <div className={'manipulation flex flex-col'}>
           <div
             className={'add-services ml-3 btn-link font-bold text-[14px]'}
             onClick={() => {
-              dispatch(showPricePopupAction(true));
+              // dispatch(showPricePopupAction(true));
+              setShowServices(!showServices);
             }}
           >
             {' '}
             📌 {msg.get('scheduler.btn.add')}
           </div>
-          <div className="mt-0 ml-4 text-sm">
+          <div className="mt-2 ml-0">
             {popupServices?.map((item) => <>{renderService(item)}</>)}
           </div>
+          {showServices && (
+            <div className="services-selector">
+              <div className="service-categories">
+                <div className="services-title">Категорії</div>
+
+                {serviceCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    className={`category-btn ${selectedCategory === category.id ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory(category.id)}
+                  >
+                    <span>{category.name}</span>
+
+                    <span className="category-count">{services[category.id]?.length ?? 0}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="services-panel">
+                <div className="services-header">
+                  <div className="services-title">Послуги</div>
+
+                  <input className="service-search" placeholder="Пошук..." />
+                </div>
+
+                <div className="services-list">
+                  {(services[selectedCategory] || []).length === 0 && (
+                    <div className="empty-services">У даній категорії ще немає послуг</div>
+                  )}
+
+                  {(services[selectedCategory] || []).map((service) => (
+                    <div
+                      key={service.id}
+                      className="service-item"
+                      onClick={() => addService(service)}
+                    >
+                      <div className="service-name">{service.name}</div>
+
+                      <div className="service-duration">{service.duration ?? 30} хв</div>
+
+                      <div className="service-price">{service.price} ₴</div>
+
+                      <button type="button" className="service-add-btn">
+                        +
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
           <div className={'clearfix'} />
         </div>
         <div className="flex items-center pb-7">

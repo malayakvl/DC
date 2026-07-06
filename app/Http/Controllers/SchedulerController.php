@@ -188,7 +188,6 @@ class SchedulerController extends Controller
                 ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'patient_id')
                 ->leftJoin('core.users as u', 'u.id', '=', 'pt.user_id')
                 ->get();
-
             return Inertia::render('Scheduler/Index', [
                 'clinicData' => $clinicData,
                 'groupedOptions' => $groupedOptions,
@@ -197,8 +196,9 @@ class SchedulerController extends Controller
                 'eventsData' => $events,
                 'tree' => $tree,
                 'services' => $arrServices,
+                'serviceCategories' => $categories,
                 'customerData' => $customerData,
-                'currencyData' => $clinicData->currency,
+                'currencyData' => $clinicData->currency->name,
                 'cabinetData' => $listCabinets,
                 'formData' => $formData,
             ]);
