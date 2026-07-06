@@ -103,6 +103,7 @@ class SchedulerController extends Controller
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
 
+
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
 
@@ -195,7 +196,7 @@ class SchedulerController extends Controller
                 'assistantData' => $assistantSelectData,
                 'eventsData' => $events,
                 'tree' => $tree,
-                'arrServices' => $arrServices,
+                'services' => $arrServices,
                 'customerData' => $customerData,
                 'currencyData' => $clinicData->currency,
                 'cabinetData' => $listCabinets,

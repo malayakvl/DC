@@ -1,6 +1,5 @@
 import { createAction } from 'redux-actions';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
 
 export const showSchedulePopupAction = createAction('schedule/SHOW_POPUP');
 export const showScheduleEditPopupAction = createAction('schedule/SHOW_EDIT_POPUP');

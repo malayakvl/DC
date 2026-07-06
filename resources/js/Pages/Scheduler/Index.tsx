@@ -27,9 +27,14 @@ import {
   setSchedulePopupDoctorAction,
   showScheduleEditPopupAction,
   setScheduleEditEventAction,
+  showPricePopupAction,
 } from '@/Redux/Scheduler';
 import { showOverlayAction } from '@/Redux/Layout';
 import dayjs from 'dayjs';
+import Pricing from './Pricing';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import SecondaryButton from '@/Components/Form/SecondaryButton';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
@@ -77,6 +82,8 @@ export default function Index({
   const isResizingRef = React.useRef(false);
   const isDraggingRef = React.useRef(false);
   const tab = useSelector(viewScheduleSelector);
+  const showPrice = useSelector(pricePopupSelector);
+  console.log('Services', services);
 
   // Динамическая фильтрация и группировка опций для вкладок
   const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
@@ -218,6 +225,10 @@ export default function Index({
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleTabClick = (tab) => {
+    console.log(tab);
   };
 
   // ================= RESIZE ENGINE =================
@@ -387,6 +398,37 @@ export default function Index({
             customerData={customerData}
             currency={currency}
           />
+        )}
+        {showPrice && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
+              <div
+                className={'absolute right-[20px] top-[10px] cursor-pointer z-50'}
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+              >
+                <FontAwesomeIcon icon={faClose} className="ml-5" />
+              </div>
+              <div style={{ maxHeight: '400px', overflow: 'scroll' }}>
+                <Pricing
+                  clinicData={clinicData}
+                  currency={currency}
+                  services={services}
+                  tree={tree}
+                />
+              </div>
+              <SecondaryButton
+                className="btn-back float-right mt-4 mr-[30px]"
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+                title={msg.get('scheduler.close')}
+              >
+                {msg.get('scheduler.close')}
+              </SecondaryButton>
+            </div>
+          </div>
         )}
         {/*CALENDAR SCRIPT*/}
         <div
