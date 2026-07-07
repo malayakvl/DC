@@ -14,7 +14,6 @@ import {
   minusServiceAction,
   plusServiceAction,
   setServicesAction,
-  showPricePopupAction,
   showSchedulePopupAction,
 } from '@/Redux/Scheduler';
 import 'rc-time-picker/assets/index.css';
@@ -38,6 +37,7 @@ import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '@/Redux/Layout';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Trash, ListPlus } from 'lucide-react';
 
 export default function SchedulerFormCreate({
   formData,
@@ -206,7 +206,7 @@ export default function SchedulerFormCreate({
         </div>
 
         <button className="delete-btn" onClick={() => dispatch(setServicesAction(item))}>
-          <FontAwesomeIcon icon={faTrash} />
+          <Trash className={'w-4 h-4 ml-2'} />
         </button>
       </div>
       // <div className="flex items-center justify-between px-2 py-2 bg-gray-100 mb-1 text-[14px] w-full">
@@ -329,43 +329,6 @@ export default function SchedulerFormCreate({
         </div>
         <div className={'clearfix'} />
 
-        {/*<InputText*/}
-        {/*  name={'title'}*/}
-        {/*  values={values}*/}
-        {/*  dataValue={values.title}*/}
-        {/*  value={values.title}*/}
-        {/*  onChange={handleChange}*/}
-        {/*  required*/}
-        {/*  label={msg.get('scheduler.form.title')}*/}
-        {/*/>*/}
-        {/*<div className={'flex w-full'}>*/}
-        {/*  <div className={'w-1/2'}>*/}
-        {/*    <InputSelect*/}
-        {/*      name={'cabinet_id'}*/}
-        {/*      className={'w-1/2'}*/}
-        {/*      values={values}*/}
-        {/*      value={values.cabinet_id}*/}
-        {/*      defaultValue={cabinetId}*/}
-        {/*      options={cabinetData}*/}
-        {/*      onChange={handleChangeSelect}*/}
-        {/*      required*/}
-        {/*      label={msg.get('scheduler.form.cabinet')}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*  <div className={'w-1/2 ml-3'}>*/}
-        {/*    <InputSelect*/}
-        {/*      name={'doctor_id'}*/}
-        {/*      values={values}*/}
-        {/*      value={values.doctor_id}*/}
-        {/*      options={customerData}*/}
-        {/*      defaultValue={doctorId}*/}
-        {/*      onChange={handleChangeSelect}*/}
-        {/*      required*/}
-        {/*      label={msg.get('scheduler.form.doctor')}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-
         <div className={'clearfix'} />
         {timeStart && (
           <div className="flex">
@@ -414,14 +377,14 @@ export default function SchedulerFormCreate({
         />
         <div className={'manipulation flex flex-col'}>
           <div
-            className={'add-services ml-3 btn-link font-bold text-[14px]'}
+            className={'add-services'}
             onClick={() => {
               // dispatch(showPricePopupAction(true));
               setShowServices(!showServices);
             }}
           >
-            {' '}
-            📌 {msg.get('scheduler.btn.add')}
+            <ListPlus className={'w-[16px] h-[16px] block mt-[4px] ml-[3px]'} />
+            &nbsp;{msg.get('scheduler.btn.add')}
           </div>
           <div className="mt-2 ml-0">
             {popupServices?.map((item) => <>{renderService(item)}</>)}

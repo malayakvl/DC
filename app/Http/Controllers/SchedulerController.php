@@ -174,6 +174,7 @@ class SchedulerController extends Controller
                 ->select(
                     'schedulers.id',
                     'title',
+                    'schedulers.services',
                     'doctor_id',
                     'patient_id',
                     'cabinet_id',
@@ -183,11 +184,18 @@ class SchedulerController extends Controller
                     'status_color',
                     'status_name',
                     'u.first_name',
-                    'u.last_name'
+                    'u.last_name',
+                    'ud.first_name AS doctor_name',
+                    'ud.first_name AS doctor_first_name',
+                    'ud.last_name AS doctor_last_name',
+                    'ct.name AS cabinet_name',
                 )
                 ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'patient_id')
+                ->leftJoin("clinic_{$clinicId}.cabinets as ct", 'ct.id', '=', 'cabinet_id')
                 ->leftJoin('core.users as u', 'u.id', '=', 'pt.user_id')
+                ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
                 ->get();
+
             return Inertia::render('Scheduler/Index', [
                 'clinicData' => $clinicData,
                 'groupedOptions' => $groupedOptions,

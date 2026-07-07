@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { cabinets, doctors, SchedulerEvent } from './mock/data';
@@ -84,6 +84,14 @@ export default function Index({
   const isDraggingRef = React.useRef(false);
   const tab = useSelector(viewScheduleSelector);
   const showPrice = useSelector(pricePopupSelector);
+  const [hoverPreview, setHoverPreview] = useState<{
+    x: number;
+    y: number;
+    event: any;
+    services: any[];
+  } | null>(null);
+
+  const hoverTimeout = useRef<number>();
 
   // Динамическая фильтрация и группировка опций для вкладок
   const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
@@ -132,6 +140,16 @@ export default function Index({
   const days = useMemo(() => {
     return getDays(baseDate, dayStep, appLang);
   }, [baseDate, dayStep]);
+  // const [servicesPopover, setServicesPopover] = useState<{
+  //   event: any;
+  //   anchor: HTMLElement | null;
+  // } | null>(null);
+  // const [popover, setPopover] = useState<{
+  //   x: number;
+  //   y: number;
+  //   services: any[];
+  //   total: number;
+  // } | null>(null);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
@@ -152,6 +170,9 @@ export default function Index({
       status_color: event.status_color,
       status_name: event.status_name,
       patient_name: event.last_name + ' ' + event.first_name,
+      services: event.services,
+      cabinet_name: event.cabinet_name,
+      doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
     }));
   });
 
@@ -332,6 +353,53 @@ export default function Index({
     return name.slice(0, 2).toUpperCase();
   }
 
+  const PREVIEW_WIDTH = 340;
+  const PREVIEW_HEIGHT = 280;
+
+  const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const margin = 12;
+
+    let x = rect.right + margin;
+    let y = rect.top;
+
+    // ---------- справа не помещается ----------
+    if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
+      x = rect.left - PREVIEW_WIDTH - margin;
+    }
+
+    // ---------- если и слева мало места ----------
+    if (x < margin) {
+      x = margin;
+    }
+
+    // ---------- снизу не помещается ----------
+    if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
+      y = window.innerHeight - PREVIEW_HEIGHT - margin;
+    }
+
+    // ---------- сверху ----------
+    if (y < margin) {
+      y = margin;
+    }
+    const _services = event ? JSON.parse(event.services) : [];
+    const previewTotal = event
+      ? _services.reduce(
+          (sum, service) =>
+            sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
+          0
+        )
+      : 0;
+    event.amount_total = previewTotal;
+
+    setHoverPreview({
+      x,
+      y,
+      event,
+      services,
+    });
+  };
+
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
       <Head title="Scheduler Management" />
@@ -414,7 +482,7 @@ export default function Index({
               <div style={{ maxHeight: '400px', overflow: 'scroll' }}>
                 <Pricing
                   clinicData={clinicData}
-                  currency={currency}
+                  currency={currencyData}
                   services={services}
                   tree={tree}
                 />
@@ -761,67 +829,146 @@ export default function Index({
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
+                                  const compact = layout.height < 70;
+                                  const medium = layout.height >= 70 && layout.height < 110;
+                                  const large = layout.height >= 110;
+                                  const previewTotal = hoverPreview
+                                    ? hoverPreview.services.reduce(
+                                        (sum, service) =>
+                                          sum +
+                                          Number(service.total_price ?? service.price) *
+                                            Number(service.qty ?? 1),
+                                        0
+                                      )
+                                    : 0;
+
+                                  const services = (() => {
+                                    try {
+                                      return JSON.parse(event.services || '[]');
+                                    } catch {
+                                      return [];
+                                    }
+                                  })();
+
+                                  const servicesCount = services.length;
+
                                   return (
                                     <div
                                       key={event.id}
                                       onClick={(e) => handleEventClick(e, event)}
-                                      onMouseDown={(e) => handleDragStart(e, event)} // Навесили Drag на всю карточку
+                                      onMouseDown={(e) => handleDragStart(e, event)}
+                                      onMouseEnter={(e) => showPreview(e, event, services)}
+                                      onMouseLeave={() => {
+                                        setHoverPreview(null);
+                                      }}
+                                      className={`calendar-event ${compact ? 'compact' : ''}`}
                                       style={{
                                         position: 'absolute',
                                         top: layout.top,
                                         height: layout.height,
                                         left: 4,
                                         right: 4,
-                                        background: '#dff1ff',
-                                        borderRadius: 6,
-                                        padding: '4px 6px',
-                                        fontSize: 11,
-                                        overflow: 'hidden',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,.08)',
-                                        zIndex: 10,
-                                        borderLeft: '3px solid ' + event.status_color,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        cursor: 'move', // Курсор перетаскивания
-                                        userSelect: 'none',
+                                        borderLeft: `4px solid ${event.status_color}`,
                                       }}
                                     >
-                                      <div>
-                                        <div
-                                          style={{
-                                            fontSize: 11,
-                                            color: '#d21261',
-                                            fontWeight: 700,
-                                          }}
-                                        >
-                                          {event.event_time_from} — {event.event_time_to}
+                                      <div className="calendar-event-body">
+                                        {/* ---------- HEADER ---------- */}
+
+                                        <div className="calendar-event-header">
+                                          <div className="calendar-event-patient">
+                                            {event.patient_name}
+                                          </div>
+
+                                          {!compact && (
+                                            <div className="calendar-event-price">
+                                              {event.price} ₴
+                                            </div>
+                                          )}
                                         </div>
-                                        <div>
-                                          <b>{event.patient_name}</b>
+
+                                        {/* ---------- SERVICES ---------- */}
+
+                                        <div className="calendar-event-services">
+                                          {servicesCount === 0 && (
+                                            <div className="calendar-event-service">
+                                              {event.title}
+                                            </div>
+                                          )}
+
+                                          {servicesCount === 1 && (
+                                            <div className="calendar-event-service">
+                                              🦷 {services[0].name}
+                                            </div>
+                                          )}
+
+                                          {servicesCount > 1 && large && (
+                                            <>
+                                              {services.slice(0, 2).map((service) => (
+                                                <div
+                                                  key={service.id}
+                                                  className="calendar-event-service"
+                                                >
+                                                  🦷 {service.name}
+                                                </div>
+                                              ))}
+
+                                              {services.length > 2 && (
+                                                <div className="calendar-event-more">
+                                                  +{services.length - 2} ще...
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+
+                                          {servicesCount > 1 && !large && (
+                                            <div className="calendar-event-more hover-target">
+                                              🦷 {servicesCount} послуги
+                                            </div>
+                                          )}
                                         </div>
-                                        <div style={{ fontWeight: 600, color: '#1e293b' }}>
-                                          {event.title}
-                                        </div>
+
+                                        {/* ---------- FOOTER ---------- */}
+
+                                        {!compact && (
+                                          <div className="calendar-event-footer">
+                                            <div className="calendar-event-time">
+                                              <svg
+                                                width="12"
+                                                height="12"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                              >
+                                                <circle
+                                                  cx="12"
+                                                  cy="12"
+                                                  r="9"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2"
+                                                />
+
+                                                <path
+                                                  d="M12 7v5l3 2"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2"
+                                                  strokeLinecap="round"
+                                                />
+                                              </svg>
+                                              {event.event_time_from} — {event.event_time_to}
+                                            </div>
+
+                                            <div className="calendar-event-duration">
+                                              {event.duration ?? 30} хв
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
 
-                                      {/* ХЕНДЛЕР ДЛЯ РЕСАЙЗА */}
                                       <div
                                         onMouseDown={(e) =>
                                           handleResizeStart(e, event.id, event.end)
                                         }
-                                        data-resize-handle="true" // Маркер для Dnd-движка, чтоб не конфликтовать
-                                        style={{
-                                          position: 'absolute',
-                                          bottom: 0,
-                                          left: 0,
-                                          right: 0,
-                                          height: 8,
-                                          cursor: 'ns-resize',
-                                          background: 'transparent',
-                                          zIndex: 20,
-                                        }}
-                                        className="hover:bg-slate-400/30 transition-colors"
+                                        data-resize-handle
+                                        className="calendar-event-resize"
                                       />
                                     </div>
                                   );
@@ -836,6 +983,47 @@ export default function Index({
                 </div>
               );
             })}
+            {hoverPreview && (
+              <div
+                className="calendar-preview"
+                style={{
+                  left: hoverPreview.x,
+                  top: hoverPreview.y,
+                }}
+                onMouseEnter={() => {
+                  window.clearTimeout(hoverTimeout.current);
+                }}
+                onMouseLeave={() => {
+                  setHoverPreview(null);
+                }}
+              >
+                <div className="flex flex-row justify-between">
+                  <div className="calendar-preview-title">{hoverPreview.event.patient_name}</div>
+                  <div className="calendar-preview-cab-title">
+                    {hoverPreview.event.cabinet_name}
+                    <span className="calendar-doctor">{hoverPreview.event.doctor_name}</span>
+                  </div>
+                </div>
+                <div className="calendar-preview-subtitle">Послуги</div>
+                <div className="calendar-preview-list">
+                  <table className="preview-table">
+                    {hoverPreview.services.map((service) => (
+                      <tr key={service.id} style={{ width: '100%' }}>
+                        <td className="service-pr-name">{service.name}</td>
+                        <td className="service-pr-price">
+                          <strong>{service.total_price} ₴</strong>
+                        </td>
+                      </tr>
+                    ))}
+                  </table>
+                </div>
+
+                <div className="calendar-preview-footer">
+                  <span>Разом</span>
+                  <strong>{hoverPreview.event.amount_total} ₴</strong>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

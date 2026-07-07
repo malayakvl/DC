@@ -8,13 +8,11 @@
 
 .add-patient {
     display: inline-block;
-    background-image: url("../../images/scheduler/add-patient.svg");
-    background-repeat: no-repeat;
     width: 16px;
     height: 16px;
     position: absolute;
-    right: 14px;
-    top: 35px;
+    right: 10px;
+    top: 32px;
     z-index: 44;
 }
 
@@ -176,6 +174,9 @@
 
 .add-services {
     color: #424d71;
+    display: flex;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .bg-price {
@@ -467,7 +468,7 @@
 
 .shc-form-date {
     min-width: 120px;
-    width: 160px;
+    width: 245px;
     border-radius: 4px;
     float: left;
     margin-right: 10px;
@@ -1031,4 +1032,832 @@
     max-height: 200px;
     overflow-y: scroll;
     margin-bottom: 20px;
+}
+.patient-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+
+    background: #fff;
+    border: 1px solid #d9e4f4;
+    border-radius: 18px;
+
+    box-shadow:
+            0 20px 45px rgba(18, 38, 63, .12),
+            0 8px 20px rgba(18, 38, 63, .06);
+
+    max-height: 360px;
+    overflow-y: auto;
+
+    z-index: 100;
+    padding: 8px;
+}
+
+.patient-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 12px 14px;
+
+    border: none;
+    background: transparent;
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    transition: .18s;
+}
+
+.patient-item:hover {
+    background: #f4fbff;
+}
+
+.patient-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#14b8a6,#116aef);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+.patient-avatar-sch {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#14b8a6,#116aef);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+.patient-sch-meta {
+
+}
+
+.patient-info{
+    flex:1;
+    min-width:0;
+}
+
+.patient-name{
+    font-size:17px;
+    font-weight:600;
+    color:#1f2a44;
+}
+
+.patient-sch-meta{
+    margin-top:-10px;
+    font-size:13px;
+    color:#8b97ad;
+}
+
+.patient-arrow{
+    color:#b8c3d5;
+    transition:.2s;
+}
+.sch-status {
+    @apply inline-block w-[15px] h-[15px] border mr-[5px];
+    border-radius: 50%;
+    color: #000a22 !important;
+    margin-top: 3px;
+}
+.sch-status-text {
+    @apply text-center inline-flex;
+    font-size: 14px;
+    color: #000a22 !important;
+
+}
+
+.patient-item:hover .patient-arrow{
+    color:#14b8a6;
+    transform:translateX(3px);
+}
+
+.patient-empty{
+    padding:35px;
+    text-align:center;
+    color:#9aa6bc;
+}
+.patient-item{
+    all: unset;
+
+    box-sizing: border-box;
+
+    width:100%;
+
+    display:flex !important;
+    align-items:center;
+    gap:16px;
+
+    padding:7px 9px !important;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.18s;
+}
+
+.patient-item:hover{
+    background:#f4fbff;
+}
+.patient-dropdown{
+    box-sizing:border-box;
+}
+.patient-select{
+    position:relative;
+}
+
+.scheduler-status-block{
+    width:260px;
+    padding:8px;
+    margin:0;
+    list-style:none;
+    background:#fff;
+    border-radius:18px;
+    border:1px solid #e7eef8;
+    z-index: 999;
+    //box-shadow:
+    //        0 20px 45px rgba(18,38,63,.12),
+    //        0 8px 20px rgba(18,38,63,.06);
+}
+
+.scheduler-status-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.18s;
+    font-size: 14px;
+}
+
+.scheduler-status-item:hover{
+    background:#f4fbff;
+}
+
+.status-dot{
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    flex-shrink:0;
+
+    box-shadow:0 0 0 4px rgba(20,184,166,.08);
+}
+
+
+.status-title{
+    font-size:15px;
+    font-weight:500;
+    color:#25324b;
+    flex:1;
+}
+
+.scheduler-status-item:hover .status-title{
+    color:#14b8a6;
+}
+
+.calendar-event{
+
+    position:absolute;
+    left:4px;
+    right:4px;
+
+    background:#fff;
+
+    border-radius:12px;
+    border-left:4px solid;
+
+    padding:8px 10px;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    box-shadow:
+            0 8px 18px rgba(15,23,42,.08),
+            0 2px 6px rgba(15,23,42,.04);
+
+    cursor:grab;
+
+    transition:.18s;
+}
+
+.calendar-event:hover{
+
+    transform:translateY(-1px);
+
+    box-shadow:
+            0 12px 26px rgba(15,23,42,.12);
+}
+
+.calendar-event:active{
+
+    cursor:grabbing;
+}
+
+.calendar-event-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+.calendar-event-status{
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    flex-shrink:0;
+}
+
+.calendar-event-patient{
+
+    flex:1;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    color:#172033;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.calendar-event-price{
+
+    font-size:11px;
+
+    font-weight:700;
+
+    color:#14b8a6;
+}
+
+.calendar-event-service{
+
+    margin-top:5px;
+
+    font-size:12px;
+
+    color:#64748b;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.calendar-event-footer{
+
+    margin-top:auto;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding-top:6px;
+}
+
+.calendar-event-time{
+
+    font-size:11px;
+
+    color:#94a3b8;
+
+    font-weight:600;
+}
+
+.calendar-event-duration{
+
+    font-size:11px;
+
+    color:#94a3b8;
+}
+
+.calendar-event.compact{
+
+    padding:6px 8px;
+}
+
+.calendar-event.compact
+.calendar-event-header{
+
+    margin-bottom:0;
+}
+
+.calendar-event.compact
+.calendar-event-patient{
+
+    font-size:12px;
+}
+
+.calendar-event.compact
+.calendar-event-time{
+
+    margin-top:2px;
+
+    font-size:10px;
+}
+
+.calendar-event-resize{
+
+    position:absolute;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:8px;
+
+    cursor:ns-resize;
+
+    transition:.15s;
+}
+
+.calendar-event-resize:hover{
+
+    background:rgba(20,184,166,.15);
+}
+
+
+.calendar-event{
+    position:absolute;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(16,24,40,.10);
+    overflow:visible;
+    cursor:move;
+    transition:.18s;
+}
+
+.calendar-event:hover{
+    box-shadow:0 10px 25px rgba(16,24,40,.18);
+    transform:translateY(-1px);
+}
+
+.calendar-event-body{
+    padding:8px 10px;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+.calendar-event-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:5px;
+}
+
+.calendar-event-patient{
+    font-weight:700;
+    color:#1f2937;
+    font-size:13px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.calendar-event-price{
+    color:#0ea5a4;
+    font-weight:700;
+    font-size:12px;
+    margin-left:8px;
+}
+
+.calendar-event-services{
+    flex:1;
+}
+
+.calendar-event-service{
+    font-size:12px;
+    color:#475569;
+    margin-bottom:3px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
+.calendar-event-more{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+
+    padding:3px 8px;
+
+    background:#eef7ff;
+
+    color:#3b82f6;
+
+    border-radius:20px;
+
+    font-size:11px;
+
+    cursor:default;
+
+    position:relative;
+}
+
+.calendar-event-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:auto;
+
+    font-size:11px;
+    color:#64748b;
+}
+
+.calendar-event-time{
+    display:flex;
+    align-items:center;
+    gap:4px;
+}
+
+.calendar-event-duration{
+    font-weight:600;
+}
+
+.calendar-event.compact .calendar-event-body{
+    justify-content:center;
+}
+
+.calendar-event.compact .calendar-event-footer{
+    display:none;
+}
+
+.calendar-event.compact .calendar-event-price{
+    display:none;
+}
+.calendar-services-popup{
+
+    position:absolute;
+
+    left:0;
+    top:calc(100% + 8px);
+
+    width:260px;
+
+    background:white;
+
+    border-radius:14px;
+
+    padding:14px;
+
+    box-shadow:
+            0 20px 50px rgba(0,0,0,.18);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:translateY(8px);
+
+    transition:.18s;
+
+    z-index:9999;
+
+    pointer-events:none;
+}
+
+.hover-target:hover .calendar-services-popup{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translateY(0);
+
+}
+.popup-title{
+
+    font-weight:700;
+
+    margin-bottom:10px;
+
+    color:#0f172a;
+
+}
+
+.popup-service{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:6px 0;
+
+    font-size:13px;
+
+    border-bottom:1px solid #eef2f7;
+
+}
+
+.popup-total{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-top:10px;
+
+    padding-top:10px;
+
+    border-top:2px solid #eef2f7;
+
+    font-weight:700;
+
+}
+.services-popover {
+    position: absolute;
+    z-index: 9999;
+    display: none;
+    width: 540px;
+    max-width: 340px;
+
+    background: #fff;
+    border-radius: 18px;
+
+    padding: 18px;
+
+    border: 1px solid #edf2f8;
+
+    box-shadow:
+            0 18px 45px rgba(16,24,40,.14),
+            0 6px 18px rgba(16,24,40,.08);
+}
+.calendar-event-more:hover .services-popover {
+    opacity: 1;
+    display: block;
+
+    pointer-events: auto;
+
+    transform: translateY(0);
+}
+
+.services-popover-title{
+    font-size:20px;
+    font-weight:700;
+    color:#1f2937;
+
+    margin-bottom:14px;
+}
+
+.services-popover-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.services-popover-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    gap:16px;
+
+    padding:10px 0;
+
+    border-bottom:1px solid #eef2f7;
+}
+
+.services-popover-item:last-child{
+    border-bottom:none;
+}
+
+.services-popover-name{
+    flex:1;
+
+    color:#334155;
+    font-size:15px;
+    line-height:1.4;
+
+    word-break:break-word;
+}
+
+.services-popover-price{
+    flex-shrink:0;
+
+    font-weight:700;
+    color:#14b8a6;
+}
+
+.services-popover-total{
+    margin-top:16px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding-top:14px;
+
+    border-top:2px solid #edf2f7;
+
+    font-size:17px;
+    font-weight:700;
+}
+
+.service-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#14b8a6;
+    margin-top:7px;
+    flex-shrink:0;
+}
+
+
+.calendar-preview{
+
+    position:fixed;
+
+    width:340px;
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:18px;
+
+    border:1px solid #edf2f7;
+
+    box-shadow:
+            0 18px 45px rgba(15,23,42,.14),
+            0 8px 20px rgba(15,23,42,.08);
+
+    z-index:999999;
+
+    animation:previewIn .15s ease;
+}
+
+@keyframes previewIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(6px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}
+
+.calendar-preview-title{
+    font-size:17px;
+    font-weight:700;
+    color:#1f2937;
+    margin-bottom:12px;
+    display: inline-block;
+}
+.calendar-preview-cab-title{
+    font-size:15px;
+    font-weight:500;
+    color: #0ea5a4;
+    margin-bottom:12px;
+    display: inline-block;
+    text-align: right;
+}
+.calendar-doctor {
+    color: #1f2937;
+    display: block;
+    font-size: 13px;
+}
+.calendar-preview-price{
+    font-size:15px;
+    font-weight:500;
+    color:#14b8a6;
+    margin-bottom:16px;
+}
+
+.calendar-preview-subtitle{
+    font-size:13px;
+    color:#94a3b8;
+    margin-bottom:12px;
+    display: block;
+}
+
+.calendar-preview-list{
+    display:flex;
+    flex-direction:column;
+}
+//
+//.calendar-preview-item{
+//    display:flex;
+//    justify-content:space-between;
+//    align-items:flex-start;
+//    border-bottom:1px solid #930568;
+//    padding-bottom:0;
+//    background: lightblue;
+//}
+.calendar-preview-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;   /* вместо flex-start */
+    gap:12px;
+
+    padding:8px 0;
+
+    border-bottom:1px solid #edf2f7;
+}
+.calendar-preview-item:last-child{
+    border-bottom:none;
+}
+
+.calendar-preview-item span{
+    flex:1;
+    font-size:14px;
+    color:#334155;
+    line-height:1.1;
+    //background: yellow;
+}
+
+.calendar-preview-item strong{
+    color:#0ea5a4;
+    white-space:nowrap;
+    //background: palevioletred;
+}
+
+.calendar-preview-footer{
+    margin-top:14px;
+    padding-top:14px;
+    //border-top:2px solid #edf2f7;
+    display:flex;
+    justify-content:space-between;
+    font-size:14px;
+    font-weight:700;
+}
+.calendar-preview-item span{
+    flex:1;
+    min-width:0;
+
+    font-size:14px;
+    line-height:1.35;
+    color:#334155;
+}
+
+.calendar-preview-item strong{
+    flex-shrink:0;
+
+    color:#0ea5a4;
+    font-weight:700;
+    white-space:nowrap;
+}
+.service-pr-name, .service-pr-price {
+    font-size: 14px;
+    color: #334155;
+}
+.service-pr-price {
+    color:#0ea5a4;
+    white-space: nowrap;
+}
+
+.preview-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.preview-table td {
+    vertical-align: top;
+    line-height: 1.1;
+    padding-top: 8px;
+    padding-bottom: 7px;
+    border-bottom: solid 1px #edf2f7;
+}
+.calendar-preview-item:last-child{
+    border-bottom:none;
 }
