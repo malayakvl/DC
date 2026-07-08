@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { cabinets, doctors, SchedulerEvent } from './mock/data';
@@ -176,6 +176,32 @@ export default function Index({
     }));
   });
 
+  // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ СЕТКИ ПРИ ИЗМЕНЕНИИ ДАННЫХ С СЕРВЕРА
+  useEffect(() => {
+    if (eventsData) {
+      setLocalEvents(
+        eventsData.map((event) => ({
+          id: String(event.id),
+          title: event.title,
+          doctor_id: event.doctor_id,
+          patient_id: event.patient_id,
+          cabinet_id: event.cabinet_id,
+          event_date: event.event_date,
+          event_time_from: event.event_time_from.slice(0, 5),
+          event_time_to: event.event_time_to.slice(0, 5),
+          start: `${event.event_date}T${event.event_time_from}`,
+          end: `${event.event_date}T${event.event_time_to}`,
+          status_color: event.status_color,
+          status_name: event.status_name,
+          patient_name: event.last_name + ' ' + event.first_name,
+          services: event.services,
+          cabinet_name: event.cabinet_name,
+          doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+        }))
+      );
+    }
+  }, [eventsData]); // Реагирует на любые изменения пропса eventsData
+
   // ================= DRAG & DROP ENGINE =================
   const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
     // Предотвращаем ресайз, если кликнули по хэндлеру ресайза
@@ -342,6 +368,45 @@ export default function Index({
     dispatch(showScheduleEditPopupAction(true));
   };
 
+  // Функция для добавления или обновления ивента в реальном времени
+  const handleSaveLocalEvent = (rawEvent: any) => {
+    const formattedEvent = {
+      id: String(rawEvent.id),
+      title: rawEvent.title,
+      doctor_id: Number(rawEvent.doctor_id),
+      patient_id: Number(rawEvent.patient_id),
+      cabinet_id: Number(rawEvent.cabinet_id),
+      event_date: rawEvent.event_date,
+      event_time_from: rawEvent.event_time_from.slice(0, 5),
+      event_time_to: rawEvent.event_time_to.slice(0, 5),
+      start: `${rawEvent.event_date}T${rawEvent.event_time_from}`,
+      end: `${rawEvent.event_date}T${rawEvent.event_time_to}`,
+      status_color: rawEvent.status_color || '#0ea5a4',
+      status_name: rawEvent.status_name,
+      patient_name: rawEvent.last_name
+        ? `${rawEvent.last_name} ${rawEvent.first_name}`
+        : rawEvent.patient_name,
+      services:
+        typeof rawEvent.services === 'string'
+          ? rawEvent.services
+          : JSON.stringify(rawEvent.services || []),
+      cabinet_name: rawEvent.cabinet_name,
+      doctor_name: rawEvent.doctor_first_name
+        ? `${rawEvent.doctor_first_name} ${rawEvent.doctor_last_name}`
+        : rawEvent.doctor_name,
+    };
+
+    setLocalEvents((prev) => {
+      const exists = prev.some((ev) => ev.id === formattedEvent.id);
+      if (exists) {
+        // Если редактировали — обновляем старый
+        return prev.map((ev) => (ev.id === formattedEvent.id ? formattedEvent : ev));
+      }
+      // Если новый — добавляем в массив
+      return [...prev, formattedEvent];
+    });
+  };
+
   // Функция для создания инициалов (например, "Иван Иванов" -> "И. И.")
   // Или если это один кусочек: "Victory" -> "Vi"
   function getInitials(name: string) {
@@ -398,6 +463,28 @@ export default function Index({
       event,
       services,
     });
+  };
+
+  const formatDuration = (from: string, to: string) => {
+    const [fh, fm] = from.split(':').map(Number);
+    const [th, tm] = to.split(':').map(Number);
+
+    const minutes = th * 60 + tm - (fh * 60 + fm);
+
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hours === 0) return `${mins} хв`;
+    if (mins === 0) return `${hours} год`;
+
+    return `${hours} год ${mins} хв`;
+  };
+
+  const getDuration = (from: string, to: string) => {
+    const [fh, fm] = from.split(':').map(Number);
+    const [th, tm] = to.split(':').map(Number);
+
+    return th * 60 + tm - (fh * 60 + fm);
   };
 
   return (
@@ -457,6 +544,7 @@ export default function Index({
             currency={currencyData}
             serviceCategories={serviceCategories}
             services={services}
+            onSuccess={handleSaveLocalEvent}
           />
         )}
         {editEventPopup && (
@@ -466,6 +554,7 @@ export default function Index({
             assistantData={assistantData}
             customerData={customerData}
             currency={currencyData}
+            onSuccess={handleSaveLocalEvent}
           />
         )}
         {showPrice && (
@@ -903,7 +992,7 @@ export default function Index({
 
                                           {servicesCount > 1 && large && (
                                             <>
-                                              {services.slice(0, 2).map((service) => (
+                                              {services.slice(0, 3).map((service) => (
                                                 <div
                                                   key={service.id}
                                                   className="calendar-event-service"
@@ -912,7 +1001,7 @@ export default function Index({
                                                 </div>
                                               ))}
 
-                                              {services.length > 2 && (
+                                              {services.length > 3 && (
                                                 <div className="calendar-event-more">
                                                   +{services.length - 2} ще...
                                                 </div>
@@ -957,7 +1046,10 @@ export default function Index({
                                             </div>
 
                                             <div className="calendar-event-duration">
-                                              {event.duration ?? 30} хв
+                                              {formatDuration(
+                                                event.event_time_from,
+                                                event.event_time_to
+                                              )}
                                             </div>
                                           </div>
                                         )}
@@ -1020,7 +1112,7 @@ export default function Index({
 
                 <div className="calendar-preview-footer">
                   <span>Разом</span>
-                  <strong>{hoverPreview.event.amount_total} ₴</strong>
+                  <strong>{hoverPreview.event.amount_total.toFixed(2)} ₴</strong>
                 </div>
               </div>
             )}

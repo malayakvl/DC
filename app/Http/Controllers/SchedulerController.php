@@ -699,13 +699,6 @@ class SchedulerController extends Controller
                 'roleData' => $rolesData
             ]);
         });
-//        $formData = new User();
-//        $rolesData = Role::all();
-//        return Inertia::render('Customer/CustomerCreate', [
-//            'clinicData' => $clinicData,
-//            'formData' => $formData,
-//            'roleData' => $rolesData
-//        ]);
     }
 
     /**
@@ -774,11 +767,77 @@ class SchedulerController extends Controller
         }
     }
 
+    public function update(SchedulerUpdateRequest $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            if (!$request->user()->canClinic('scheduler-edit')) {
+                // Здесь тоже лучше редиректить с ошибкой во flash, но если рендеришь — то ок
+                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+            }
 
+            if ($request->id) {
+                $scheduler = Scheduler::find($request->id);
+                $scheduler->title = $request->title;
+
+                // КСТАТИ: обрати внимание, у тебя тут опечатка в $request->fotmatted_date (пропущена r)
+                // Если во фронте ты передаешь event_date, то лучше юзать: $request->event_date
+                $scheduler->event_date = $request->event_date ?? $request->fotmatted_date;
+
+                $scheduler->event_time_from = $request->event_time_from;
+                $scheduler->event_time_to = $request->event_time_to;
+                $scheduler->clinic_id = $clinic->id;
+                $scheduler->cabinet_id = $request->cabinet_id;
+                $scheduler->doctor_id = $request->doctor_id;
+                $scheduler->patient_id = $request->patientId;
+                $scheduler->description = $request->comment ? $request->comment : '';
+                $scheduler->status_name = $request->status["name"];
+                $scheduler->status_color = $request->status["color"];
+                $scheduler->services = json_encode($request->services);
+                $scheduler->save();
+
+                // МЕНЯЕМ ТУТ: Обычный редирект Inertia, чтобы не перезагружать страницу
+                return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
+            }
+            else {
+                if ($request->newPatientData) {
+                    // create patient
+                    $patient = new Patient();
+                    $patient->first_name = $request->newPatientData['firstName'];
+                    $patient->last_name = $request->newPatientData['lastName'];
+                    $patient->phone = $request->newPatientData['phone'];
+                    $patient->email = $request->newPatientData['email'] ? $request->newPatientData['email'] : $request->newPatientData['phone'];
+                    $patient->password = Hash::make($request->newPatientData['phone']);
+                    $patient->save();
+
+                    $patientId = $patient->id;
+                } else {
+                    $patientId = $request->patientId;
+                }
+
+                $scheduler = new Scheduler();
+                $scheduler->title = $request->title;
+                $scheduler->event_date = $request->event_date;
+                $scheduler->event_time_from = $request->event_time_from;
+                $scheduler->event_time_to = $request->event_time_to;
+                $scheduler->clinic_id = $clinic->id;
+                $scheduler->cabinet_id = $request->cabinet_id;
+                $scheduler->doctor_id = $request->doctor_id;
+                $scheduler->patient_id = $patientId;
+                $scheduler->description = $request->comment ? $request->comment : '';
+                $scheduler->status_name = $request->status_id["name"];
+                $scheduler->status_color = $request->status_id["color"];
+                $scheduler->services = json_encode($request->services);
+                $scheduler->save();
+
+                // МЕНЯЕМ ТУТ: Обычный редирект Inertia
+                return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
+            }
+        });
+    }
     /**
      * Update the specified resource in storage.
      */
-    public function update(SchedulerUpdateRequest $request) {
+    public function update1(SchedulerUpdateRequest $request) {
 
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
@@ -835,9 +894,6 @@ class SchedulerController extends Controller
                 return Inertia::location(route('scheduler.index'));
             }
         });
-
-
-
     }
 
     public function updateEvent(Request $request) {

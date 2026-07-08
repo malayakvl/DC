@@ -35,8 +35,6 @@ import {
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '@/Redux/Layout';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Trash, ListPlus } from 'lucide-react';
 
 export default function SchedulerFormCreate({
@@ -61,7 +59,6 @@ export default function SchedulerFormCreate({
     date.setMinutes(date.getMinutes() + 30);
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   };
-
   const [values, setValues] = useState({
     title: formData.title,
     clinic_id: clinicData.id,
@@ -98,7 +95,7 @@ export default function SchedulerFormCreate({
       [key]: value,
     }));
   };
-  console.log('Doctor Id', doctorId);
+
   const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -150,13 +147,7 @@ export default function SchedulerFormCreate({
     }));
   }, [eventDate, doctorId, eventStatus, cabinetId]);
 
-  // const closeModal = () => {
-  //   dispatch(showSchedulePopupAction(false));
-  //   const element = document.getElementsByTagName('body')[0];
-  //   element.style.overflow = 'inherit';
-  //   dispatch(setPopupAction(false));
-  // };
-  const submit = (e) => {
+  const submitOld = (e) => {
     e.preventDefault();
     values['newPatientData'] = newPatientData;
     // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
@@ -175,10 +166,45 @@ export default function SchedulerFormCreate({
     dispatch(showOverlayAction(false));
   };
 
+  const submit = (e) => {
+    e.preventDefault();
+
+    values['newPatientData'] = newPatientData;
+    const [day, month, year] = eventDate.split('.');
+    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    values['event_date'] = formattedDate;
+    values['services'] = popupServices;
+
+    if (patientId) {
+      values['patientId'] = patientId;
+    }
+
+    const url = formData.id ? `/scheduler/update?id=${formData.id}` : '/scheduler/update';
+
+    router.post(url, values, {
+      preserveState: true, // Чтобы страница не перезагружалась и не сбрасывала стейт React
+      preserveScroll: true, // Чтобы сетка календаря не прыгала вверх
+      onSuccess: () => {
+        // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
+        // Нам нужно просто закрыть модалку
+        dispatch(showOverlayAction(false));
+        dispatch(showSchedulePopupAction(false));
+        dispatch(showOverlayAction(false));
+        dispatch(setPopupAction(false));
+
+        // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
+        // dispatch(showSchedulePopupAction(false));
+        // dispatch(showScheduleEditPopupAction(false));
+      },
+      onError: (errors) => {
+        console.error('Ошибки при сохранении:', errors);
+      },
+    });
+  };
+
   // const parsedTime = useMemo(() => {
   //   return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
   // }, [timeStart]);
-  console.log('Currency', currency);
   const renderService = (item) => {
     return (
       <div className="selected-service selected-services-block">
