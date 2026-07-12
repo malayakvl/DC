@@ -202,9 +202,6 @@ export default function SchedulerFormCreate({
     });
   };
 
-  // const parsedTime = useMemo(() => {
-  //   return timeStart ? dayjs(`2000-01-01T${timeStart}`) : null;
-  // }, [timeStart]);
   const renderService = (item) => {
     return (
       <div className="selected-service selected-services-block">
@@ -235,45 +232,6 @@ export default function SchedulerFormCreate({
           <Trash className={'w-4 h-4 ml-2'} />
         </button>
       </div>
-      // <div className="flex items-center justify-between px-2 py-2 bg-gray-100 mb-1 text-[14px] w-full">
-      //   <div className="flex-1 text-left font-medium text-gray-800">{item.name}</div>
-      //
-      //   <div className="w-[80px] text-center text-gray-600">
-      //     <span onClick={() => dispatch(minusServiceAction(item))}>
-      //       <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      //         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
-      //       </svg>
-      //     </span>
-      //     <span className="mr-2 font-bold bg-white px-2 text-[10px]">
-      //       {item.qty ? item.qty : 1}
-      //     </span>
-      //     <span onClick={() => dispatch(plusServiceAction(item))}>
-      //       <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      //         <path
-      //           strokeLinecap="round"
-      //           strokeLinejoin="round"
-      //           strokeWidth="2"
-      //           d="M12 4v16m8-8H4"
-      //         />
-      //       </svg>
-      //     </span>
-      //   </div>
-      //
-      //   <div className="text-gray-600 text-right pr-[2] w-[50px] whitespace-nowrap font-bold">
-      //     {item.total} {currency}
-      //   </div>
-      //
-      //   <div className="w-[25px] text-right">
-      //     <FontAwesomeIcon
-      //       icon={faTrash}
-      //       color={'#e13333'}
-      //       className="mr-1"
-      //       onClick={() => {
-      //         dispatch(setServicesAction(item));
-      //       }}
-      //     />
-      //   </div>
-      // </div>
     );
   };
 

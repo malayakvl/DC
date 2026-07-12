@@ -21,6 +21,7 @@ import {
   plusServiceAction,
   setPopupCabinetAction,
   setScheduleEditEventAction,
+  initServicesAction,
 } from './actions';
 
 const initialState = {
@@ -137,6 +138,12 @@ const ACTION_HANDLERS = {
       eventsData: action.payload,
     }),
   },
+  [initServicesAction]: {
+    next: (state, action) => ({
+      ...state,
+      services: Array.isArray(action.payload) ? action.payload : [],
+    }),
+  },
   [setServicesAction]: {
     next: (state, action) => {
       const exists = state.services.some((service) => service.id === action.payload.id);
@@ -220,6 +227,7 @@ export {
   minusServiceAction,
   setPopupCabinetAction,
   setScheduleEditEventAction,
+  initServicesAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

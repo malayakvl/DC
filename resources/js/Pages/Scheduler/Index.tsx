@@ -28,6 +28,7 @@ import {
   showScheduleEditPopupAction,
   setScheduleEditEventAction,
   showPricePopupAction,
+  initServicesAction,
 } from '@/Redux/Scheduler';
 import { showOverlayAction } from '@/Redux/Layout';
 import dayjs from 'dayjs';
@@ -364,7 +365,12 @@ export default function Index({
   };
 
   const handleEventClick = (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
+    console.log('cellEvent', cellEvent);
     dispatch(setScheduleEditEventAction(cellEvent));
+    dispatch(setScheduleDateAction(cellEvent.event_date));
+    dispatch(initServicesAction(JSON.parse(cellEvent.services || '[]')));
+    dispatch(setScheduleTimeAction(cellEvent.event_time_from));
+    dispatch(showOverlayAction(true));
     dispatch(showScheduleEditPopupAction(true));
   };
 
@@ -486,7 +492,7 @@ export default function Index({
 
     return th * 60 + tm - (fh * 60 + fm);
   };
-
+  console.log('Edit popup:', editEventPopup);
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
       <Head title="Scheduler Management" />
@@ -549,16 +555,19 @@ export default function Index({
         )}
         {editEventPopup && (
           <SchedulerFormEdit
+            formData={formData}
             clinicData={clinicData}
             cabinetData={cabinetData}
             assistantData={assistantData}
             customerData={customerData}
             currency={currencyData}
+            serviceCategories={serviceCategories}
+            services={services}
             onSuccess={handleSaveLocalEvent}
           />
         )}
         {showPrice && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="fixed inset-0 flex items-center justify-center">
             <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
               <div
                 className={'absolute right-[20px] top-[10px] cursor-pointer z-50'}
@@ -610,7 +619,7 @@ export default function Index({
               alignItems: 'center',
               background: '#fff',
               borderBottom: '1px solid #e2e8f0',
-              zIndex: showEventPopup ? 0 : 100,
+              zIndex: showEventPopup || editEventPopup ? 0 : 100,
             }}
           >
             <div>
@@ -674,7 +683,7 @@ export default function Index({
                     background: '#fff',
                     borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
                     height: '100%',
-                    zIndex: showEventPopup ? 0 : 40,
+                    zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
                   {/* FIXED HEADER AREA */}
@@ -967,12 +976,6 @@ export default function Index({
                                           <div className="calendar-event-patient">
                                             {event.patient_name}
                                           </div>
-
-                                          {!compact && (
-                                            <div className="calendar-event-price">
-                                              {event.price} ₴
-                                            </div>
-                                          )}
                                         </div>
 
                                         {/* ---------- SERVICES ---------- */}

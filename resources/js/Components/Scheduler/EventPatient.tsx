@@ -9,7 +9,7 @@ import { patientsDataSelector } from '@/Redux/Scheduler/selectors';
 import { setSchedulePatientIdAction } from '@/Redux/Scheduler';
 import { UserPlus } from 'lucide-react';
 
-export default function EventPatient() {
+export default function EventPatient({ editPatientData = null }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -106,7 +106,7 @@ export default function EventPatient() {
           <InputText
             name={'patient'}
             values={patientData}
-            value={patientData.patient}
+            value={patientData.patient || editPatientData.patient}
             onChange={handleChange}
             required
             label={msg.get('scheduler.patient')}
