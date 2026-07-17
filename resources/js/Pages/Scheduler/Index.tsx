@@ -34,7 +34,7 @@ import { showOverlayAction } from '@/Redux/Layout';
 import dayjs from 'dayjs';
 import Pricing from './Pricing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 import SecondaryButton from '@/Components/Form/SecondaryButton';
 
 // ================= CORE GRID ENGINE =================
@@ -508,7 +508,7 @@ export default function Index({
       const now = moment();
       dispatch(setExistServicesAction([]));
       // Создаем полную дату и время из выбранной даты и временного слота
-      const selectedDateTime = moment(`${date} ${clickedSlot.label}`, 'YYYY-MM-DD HH:mm');
+      const selectedDateTime = moment(`${date} ${clickedSlot.time}`, 'YYYY-MM-DD HH:mm');
 
       // Проверка: нельзя планировать на прошедшее время
       if (selectedDateTime.isBefore(now)) {
@@ -522,7 +522,7 @@ export default function Index({
       dispatch(setSchedulePopupDoctorAction(doctor.id));
       dispatch(showOverlayAction(true));
       dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
-      dispatch(setScheduleTimeAction(clickedSlot.label)); // Сохраняем как HH:mm
+      dispatch(setScheduleTimeAction(clickedSlot.time)); // Сохраняем как HH:mm
     }
   };
 
@@ -774,7 +774,6 @@ export default function Index({
             marginLeft: '20px',
             marginRight: '20px',
             flexDirection: 'column',
-            // height: '100vh',
             overflow: 'hidden',
             background: '#f1f5f9',
             marginBottom: '100px',
@@ -850,22 +849,27 @@ export default function Index({
                 <div
                   key={day.date}
                   style={{
-                    // minWidth: 900,
                     display: 'flex',
                     flexDirection: 'column',
                     background: '#fff',
                     borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
                     height: '100%',
+                    // Включаем липкость для всего дня, чтобы шапка внутри ориентировалась на этот контейнер
+                    position: 'relative',
                     zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
                   {/* FIXED HEADER AREA */}
                   <div
+                    className={'calendar-header'}
                     style={{
-                      flexShrink: 0,
+                      position: 'sticky',
+                      top: 0, // Прижимает шапку к верху экрана браузера при общем скролле
+                      zIndex: 45, // Перекрывает визиты, которые уходят вверх
                       background: '#fff',
-                      zIndex: 40,
                       boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
+                      width: '100%',
+                      flexShrink: 0,
                     }}
                   >
                     <div
@@ -1030,7 +1034,7 @@ export default function Index({
                         const isHour = index % 4 === 0;
                         return (
                           <div
-                            key={slot.label}
+                            key={slot.time}
                             style={{
                               height: SLOT_HEIGHT,
                               fontSize: 13,
@@ -1046,7 +1050,7 @@ export default function Index({
                               borderRight: '1px solid #e2e8f0',
                             }}
                           >
-                            {slot.label}
+                            {slot.time}
                           </div>
                         );
                       })}
@@ -1101,17 +1105,17 @@ export default function Index({
                                   const layout = getEventLayout(event);
 
                                   const compact = layout.height < 70;
-                                  const medium = layout.height >= 70 && layout.height < 110;
+                                  // const medium = layout.height >= 70 && layout.height < 110;
                                   const large = layout.height >= 110;
-                                  const previewTotal = hoverPreview
-                                    ? hoverPreview.services.reduce(
-                                        (sum, service) =>
-                                          sum +
-                                          Number(service.total_price ?? service.price) *
-                                            Number(service.qty ?? 1),
-                                        0
-                                      )
-                                    : 0;
+                                  // const previewTotal = hoverPreview
+                                  //   ? hoverPreview.services.reduce(
+                                  //       (sum, service) =>
+                                  //         sum +
+                                  //         Number(service.total_price ?? service.price) *
+                                  //           Number(service.qty ?? 1),
+                                  //       0
+                                  //     )
+                                  //   : 0;
 
                                   const services = (() => {
                                     try {
