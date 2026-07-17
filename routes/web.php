@@ -254,6 +254,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/scheduler/updatePeriod', [SchedulerController::class, 'updatePeriod'])->name('scheduler.updatePeriod');
     Route::post('/scheduler/update-event', [SchedulerController::class, 'updateEvent'])->name('scheduler.updateEvent');
 
+    Route::put('/scheduler/update-position/{id}', [SchedulerController::class, 'updatePosition'])->name('scheduler.update-position');
+
+
     Route::get('/currency', [CurrencyController::class, 'index'])->name('currency.index');
     Route::get('/currency/edit/{id}', [CurrencyController::class, 'edit'])->name('currency.edit');
     Route::post('/currency/update', [CurrencyController::class, 'update'])->name('currency.updated');

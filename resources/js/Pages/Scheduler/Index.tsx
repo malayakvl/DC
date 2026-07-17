@@ -4,7 +4,7 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { cabinets, doctors, SchedulerEvent } from './mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +34,7 @@ import { showOverlayAction } from '@/Redux/Layout';
 import dayjs from 'dayjs';
 import Pricing from './Pricing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import SecondaryButton from '@/Components/Form/SecondaryButton';
 
 // ================= CORE GRID ENGINE =================
@@ -83,6 +83,7 @@ export default function Index({
   // Рефы для блокировки кликов после перетаскивания / ресайза
   const isResizingRef = React.useRef(false);
   const isDraggingRef = React.useRef(false);
+  const blockClickRef = React.useRef(false); // <--- ДОБАВИТЬ СЮДА
   const tab = useSelector(viewScheduleSelector);
   const showPrice = useSelector(pricePopupSelector);
   const [hoverPreview, setHoverPreview] = useState<{
@@ -131,7 +132,7 @@ export default function Index({
         return doctorsTabOptions;
     }
   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
-  const DOCTOR_WIDTH = 150;
+  const DOCTOR_WIDTH = 180;
 
   const msg = new Lang({
     messages: lngScheduler,
@@ -141,16 +142,6 @@ export default function Index({
   const days = useMemo(() => {
     return getDays(baseDate, dayStep, appLang);
   }, [baseDate, dayStep]);
-  // const [servicesPopover, setServicesPopover] = useState<{
-  //   event: any;
-  //   anchor: HTMLElement | null;
-  // } | null>(null);
-  // const [popover, setPopover] = useState<{
-  //   x: number;
-  //   y: number;
-  //   services: any[];
-  //   total: number;
-  // } | null>(null);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
@@ -205,6 +196,175 @@ export default function Index({
 
   // ================= DRAG & DROP ENGINE =================
   const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
+    if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const baseStart = parseISO(event.start);
+    const baseEnd = parseISO(event.end);
+    const durationMin = differenceInMinutes(baseEnd, baseStart);
+
+    let hasMovedEnough = false;
+
+    // СЮДА выносим переменные, которые будут общими для MouseMove и MouseUp:
+    let finalDate = event.event_date;
+    let finalCabinetId = event.cabinet_id;
+    let finalDoctorId = event.doctor_id;
+    let finalStartDate = baseStart;
+    let finalEndDate = baseEnd;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+
+      if (!hasMovedEnough && Math.sqrt(deltaX * deltaX + deltaY * deltaY) < 5) {
+        return;
+      }
+
+      if (!hasMovedEnough) {
+        hasMovedEnough = true;
+        isDraggingRef.current = true;
+        blockClickRef.current = true; // <--- ВЗВОДИМ БЛОКИРОВКУ КЛИКА ПРИ СДВИГЕ
+      }
+
+      const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+      const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
+
+      if (columnEl) {
+        finalDate = columnEl.getAttribute('data-date') || finalDate;
+        finalCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || finalCabinetId;
+        finalDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || finalDoctorId;
+      }
+
+      finalStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
+      finalEndDate = new Date(finalStartDate.getTime() + durationMin * 60000);
+
+      const newStartISO = `${finalDate}T${format(finalStartDate, 'HH:mm:ss')}`;
+      const newEndISO = `${finalDate}T${format(finalEndDate, 'HH:mm:ss')}`;
+
+      setLocalEvents((prev) =>
+        prev.map((ev) => {
+          if (ev.id !== event.id) return ev;
+          return {
+            ...ev,
+            event_date: finalDate,
+            cabinet_id: finalCabinetId,
+            doctor_id: finalDoctorId,
+            start: newStartISO,
+            end: newEndISO,
+            event_time_from: format(finalStartDate, 'HH:mm'),
+            event_time_to: format(finalEndDate, 'HH:mm'),
+          };
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      if (!hasMovedEnough) {
+        // Если реального движения не было — сбрасываем всё сразу, клик сработает штатно
+        isDraggingRef.current = false;
+        blockClickRef.current = false;
+        return;
+      }
+
+      // --- ПРОВЕРКА НА ПЕРЕСЕЧЕНИЯ ---
+      const hasIntersection = localEvents.some((ev) => {
+        if (ev.id === event.id) return false;
+        if (ev.event_date !== finalDate) return false;
+
+        const sameDoctor = Number(ev.doctor_id) === Number(finalDoctorId);
+        const sameCabinet = Number(ev.cabinet_id) === Number(finalCabinetId);
+
+        if (!sameDoctor && !sameCabinet) return false;
+
+        const evStart = parseISO(ev.start);
+        const evEnd = parseISO(ev.end);
+        const isTimeOverlapping = finalStartDate < evEnd && finalEndDate > evStart;
+
+        return isTimeOverlapping;
+      });
+
+      if (hasIntersection) {
+        alert('Ошибка: Данное время уже занято этим врачом или кабинетом!');
+
+        // ОТКАТ: возвращаем ивент в исходное состояние
+        setLocalEvents((prev) =>
+          prev.map((ev) => {
+            if (ev.id !== event.id) return ev;
+            return {
+              ...ev,
+              event_date: event.event_date,
+              cabinet_id: event.cabinet_id,
+              doctor_id: event.doctor_id,
+              start: event.start,
+              end: event.end,
+              event_time_from: event.event_time_from,
+              event_time_to: event.event_time_to,
+            };
+          })
+        );
+
+        // ИСПРАВЛЕНИЕ: Гасим флаги строго с задержкой, чтобы уберечь от фантомных кликов
+        setTimeout(() => {
+          isDraggingRef.current = false;
+          blockClickRef.current = false;
+        }, 100);
+
+        return;
+      }
+
+      // ========================================================
+      // ЕСЛИ ПРОВЕРКА ПРОЙДЕНА — ОТПРАВЛЯЕМ НА БЭКЕНД
+      // ========================================================
+      console.log('Отправляем перемещение на бэк:', {
+        id: event.id,
+        event_date: finalDate,
+        cabinet_id: finalCabinetId,
+        doctor_id: finalDoctorId,
+        event_time_from: format(finalStartDate, 'HH:mm'),
+        event_time_to: format(finalEndDate, 'HH:mm'),
+      });
+
+      router.put(
+        route('scheduler.update-position', event.id),
+        {
+          event_date: finalDate,
+          cabinet_id: finalCabinetId,
+          doctor_id: finalDoctorId,
+          event_time_from: format(finalStartDate, 'HH:mm'),
+          event_time_to: format(finalEndDate, 'HH:mm'),
+        },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            // После успешного сохранения тушим флаги с задержкой
+            setTimeout(() => {
+              isDraggingRef.current = false;
+              blockClickRef.current = false;
+            }, 100);
+          },
+          onError: () => {
+            // В случае ошибки бэка тоже делаем откат и тушим
+            setTimeout(() => {
+              isDraggingRef.current = false;
+              blockClickRef.current = false;
+            }, 100);
+          },
+        }
+      );
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  const handleDragStartOld = (e: React.MouseEvent, event: SchedulerEvent) => {
     // Предотвращаем ресайз, если кликнули по хэндлеру ресайза
     if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
 
@@ -243,7 +403,8 @@ export default function Index({
 
       const newStartISO = `${newDate}T${format(newStartDate, 'HH:mm:ss')}`;
       const newEndISO = `${newDate}T${format(newEndDate, 'HH:mm:ss')}`;
-
+      console.log('Перемещаем');
+      console.log(newCabinetId, newDoctorId);
       setLocalEvents((prev) =>
         prev.map((ev) => {
           if (ev.id !== event.id) return ev;
@@ -355,6 +516,7 @@ export default function Index({
         setShowAlert(true); // Показать алерт
         return;
       }
+
       dispatch(showSchedulePopupAction(true));
       dispatch(setPopupCabinetAction(cabinet.id));
       dispatch(setSchedulePopupDoctorAction(doctor.id));
@@ -365,7 +527,15 @@ export default function Index({
   };
 
   const handleEventClick = (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
-    console.log('cellEvent', cellEvent);
+    // ЖЕЛЕЗОБЕТОННО останавливаем всплытие, чтобы клик по ивенту НЕ вызывал клик по ячейке!
+    e.stopPropagation();
+
+    // Если ивент только что перетаскивали, ресайзили или сработал блок клика — полностью блокируем
+    if (isDraggingRef.current || isResizingRef.current || blockClickRef.current) {
+      e.preventDefault();
+      return;
+    }
+
     dispatch(setScheduleEditEventAction(cellEvent));
     dispatch(setScheduleDateAction(cellEvent.event_date));
     dispatch(initServicesAction(JSON.parse(cellEvent.services || '[]')));
@@ -492,12 +662,12 @@ export default function Index({
 
     return th * 60 + tm - (fh * 60 + fm);
   };
-  console.log('Edit popup:', editEventPopup);
+
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
       <Head title="Scheduler Management" />
       <div>
-        <div className="p-4 sm:p-8 mb-4 content-data bg-content">
+        <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
           <div className="pv-shell">
             <div className="pv-top">
               <div className="pv-user">
@@ -597,16 +767,18 @@ export default function Index({
             </div>
           </div>
         )}
-        {/*CALENDAR SCRIPT*/}
+        {/* FIXED HEADER AREA */}
         <div
           style={{
             display: 'flex',
-            marginLeft: '40px',
-            marginRight: '40px',
+            marginLeft: '20px',
+            marginRight: '20px',
             flexDirection: 'column',
-            height: '100vh',
+            // height: '100vh',
             overflow: 'hidden',
             background: '#f1f5f9',
+            marginBottom: '100px',
+            borderBottom: 'solid 1px #d5d7d9',
           }}
         >
           {/* ================= NAV ================= */}
@@ -663,6 +835,7 @@ export default function Index({
 
           {/* ================= MAIN HORIZONTAL SCROLL CONTAINER ================= */}
           <div
+            className={'calendar'}
             style={{
               display: 'flex',
               overflowX: 'auto',
@@ -1022,13 +1195,39 @@ export default function Index({
                                         {/* ---------- FOOTER ---------- */}
 
                                         {!compact && (
-                                          <div className="calendar-event-footer">
-                                            <div className="calendar-event-time">
+                                          <div
+                                            className="calendar-event-footer"
+                                            style={{
+                                              display: 'flex',
+                                              justifyContent: 'space-between',
+                                              alignItems: 'center',
+                                              gap: '4px',
+                                              marginTop: 'auto',
+                                              width: '100%',
+                                              overflow: 'hidden',
+                                              paddingTop: '4px',
+                                              borderTop: '1px dashed rgba(0,0,0,0.08)', // Легкое визуальное отделение футера
+                                            }}
+                                          >
+                                            <div
+                                              className="calendar-event-time"
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '3px',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '10px', // Слегка уменьшим до 10px для запаса места
+                                                flexShrink: 1,
+                                                minWidth: 0,
+                                                color: '#475569',
+                                              }}
+                                            >
                                               <svg
-                                                width="12"
-                                                height="12"
+                                                width="11"
+                                                height="11"
                                                 viewBox="0 0 24 24"
                                                 fill="none"
+                                                style={{ flexShrink: 0, minWidth: '11px' }}
                                               >
                                                 <circle
                                                   cx="12"
@@ -1037,7 +1236,6 @@ export default function Index({
                                                   stroke="currentColor"
                                                   strokeWidth="2"
                                                 />
-
                                                 <path
                                                   d="M12 7v5l3 2"
                                                   stroke="currentColor"
@@ -1045,14 +1243,85 @@ export default function Index({
                                                   strokeLinecap="round"
                                                 />
                                               </svg>
-                                              {event.event_time_from} — {event.event_time_to}
+                                              <span>
+                                                {event.event_time_from}-{event.event_time_to}
+                                              </span>
                                             </div>
 
-                                            <div className="calendar-event-duration">
-                                              {formatDuration(
-                                                event.event_time_from,
-                                                event.event_time_to
-                                              )}
+                                            {/* БЛОК С ДЛИТЕЛЬНОСТЬЮ И КНОПКОЙ АКТА */}
+                                            <div
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                flexShrink: 0,
+                                              }}
+                                            >
+                                              <span
+                                                className="calendar-event-duration"
+                                                style={{
+                                                  whiteSpace: 'nowrap',
+                                                  fontSize: '10px',
+                                                  color: '#64748b',
+                                                }}
+                                              >
+                                                {formatDuration(
+                                                  event.event_time_from,
+                                                  event.event_time_to
+                                                )}
+                                              </span>
+
+                                              {/* КНОПКА "СТВОРИТИ АКТ" */}
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation(); // ЖЕЛЕЗОБЕТОННО блокируем открытие редактирования визита!
+                                                  e.preventDefault();
+
+                                                  // Твоя логика создания акта. Например:
+                                                  console.log('Создаем акт для визита:', event.id);
+                                                  // router.visit(route('acts.create', { event_id: event.id }));
+                                                  alert(`Создаем акт для: ${event.patient_name}`);
+                                                }}
+                                                title="Створити акт"
+                                                style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  width: '20px',
+                                                  height: '20px',
+                                                  borderRadius: '4px',
+                                                  background: '#0ea5a4', // Твой фирменный бирюзовый цвет
+                                                  color: '#fff',
+                                                  border: 'none',
+                                                  cursor: 'pointer',
+                                                  transition: 'all 0.2s',
+                                                  flexShrink: 0,
+                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  e.currentTarget.style.background = '#0d9488'; // Эффект наведения
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.currentTarget.style.background = '#0ea5a4';
+                                                }}
+                                              >
+                                                {/* Аккуратная SVG иконка документа с плюсиком внутри кнопки */}
+                                                <svg
+                                                  width="11"
+                                                  height="11"
+                                                  viewBox="0 0 24 24"
+                                                  fill="none"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2.5"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                >
+                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                                                </svg>
+                                              </button>
                                             </div>
                                           </div>
                                         )}

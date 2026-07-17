@@ -28,7 +28,7 @@ export default function ProfileMenu() {
   const array = source.split(' ');
   const fioResult =
     array[0] + ' ' + (array[1] ? array[1][0] : '') + '. ' + (array[2] ? array[2][0] : '') + '.';
-  console.log(user.clinic_user);
+
   return (
     <div>
       <div className="md:space-x-4 md:flex md:pr-[30px] relative">

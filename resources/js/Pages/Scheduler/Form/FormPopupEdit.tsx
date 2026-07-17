@@ -54,13 +54,7 @@ export default function SchedulerFormEdit({
     locale: appLang,
   });
   const currentEventData = useSelector(eventsDataSelector);
-  const parsedTimePlus30 = () => {
-    const time = '10:00';
-    const [hours, minutes] = time.split(':').map(Number);
-    const date = new Date(2025, 0, 1, hours, minutes);
-    date.setMinutes(date.getMinutes() + 30);
-    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-  };
+
   const formatDate = (date) => {
     if (!date) return '';
 

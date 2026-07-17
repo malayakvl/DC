@@ -834,6 +834,41 @@ class SchedulerController extends Controller
             }
         });
     }
+
+    public function updatePosition(Request $request, $id) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
+            if (!$request->user()->canClinic('scheduler-edit')) {
+                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+            }
+
+            // 1. Валидация входящих параметров с фронтенда
+            $validated = $request->validate([
+                'event_date'      => 'required|date_format:Y-m-d',
+                'cabinet_id'      => 'required|integer',
+                'doctor_id'       => 'required|integer',
+                'event_time_from' => 'required|date_format:H:i',
+                'event_time_to'   => 'required|date_format:H:i',
+            ]);
+
+            // 2. Находим визит (ID берем либо из параметров метода Laravel, либо из запроса)
+            $eventId = $id ?? $request->input('id');
+            $scheduler = Scheduler::findOrFail($eventId);
+dd($scheduler);
+
+            // 3. Обновляем поля модели значениями, прошедшими валидацию
+            $scheduler->update([
+                'event_date'      => $validated['event_date'],
+                'cabinet_id'      => $validated['cabinet_id'],
+                'doctor_id'       => $validated['doctor_id'],
+                'event_time_from' => $validated['event_time_from'],
+                'event_time_to'   => $validated['event_time_to'],
+            ]);
+
+            // 4. Возвращаем назад. Inertia автоматически обновит props (eventsData) на фронте!
+            return redirect()->back();
+        });
+    }
     /**
      * Update the specified resource in storage.
      */

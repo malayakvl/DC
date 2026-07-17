@@ -106,7 +106,7 @@ export default function EventPatient({ editPatientData = null }) {
           <InputText
             name={'patient'}
             values={patientData}
-            value={patientData.patient || editPatientData.patient}
+            value={patientData.patient || editPatientData?.patient}
             onChange={handleChange}
             required
             label={msg.get('scheduler.patient')}
