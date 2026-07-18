@@ -59,6 +59,7 @@ export default function SchedulerFormCreate({
     date.setMinutes(date.getMinutes() + 30);
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   };
+
   const [values, setValues] = useState({
     title: formData.title,
     clinic_id: clinicData.id,
@@ -71,10 +72,12 @@ export default function SchedulerFormCreate({
     event_time_from: formData.event_time_from,
     event_time_to: formData.event_time_to,
   });
+
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
   const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
+  console.log(timeStart);
   const timeEnd = parsedTimePlus30();
   const patientId = useSelector(patientIdSelector);
   const eventStatus = useSelector(popupStatusSelector);

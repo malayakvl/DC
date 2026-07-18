@@ -254,7 +254,7 @@ class ActController extends Controller
                     ->pluck('name', 'id')
                     ->toArray();
 
-                // Enrich components with display names
+                // Enrich componentsOld with display names
                 $rowData->each(function ($item) use ($materialMap, $unitMap) {
                     $components = is_array($item->components) ? $item->components : json_decode($item->components ?? '[]', true);
                     foreach ($components as &$component) {
@@ -501,7 +501,7 @@ class ActController extends Controller
                     $actItem = ActItem::create([
                         'act_id' => $actId,
                         'service_id' => $row['service_id'],
-                        'components' => json_encode($row['components']),
+                        'componentsOld' => json_encode($row['componentsOld']),
                         'qty' => $serviceQty,
                         'price' => $row['price'],
                         'total' => $serviceTotal
@@ -518,7 +518,7 @@ class ActController extends Controller
                     //     'total' => $serviceTotal
                     // ]);
                     // 3️⃣ Списание материалов по компонентам
-                    foreach ($row['components'] as $component) {
+                    foreach ($row['componentsOld'] as $component) {
                         $remainingFactQty = (float)$component['quantity']; // граммы / мл
 
                         if ($remainingFactQty <= 0) {

@@ -12,10 +12,10 @@ class ActItem extends Model
         'qty',
         'price',
         'total',
-        'components'
+        'componentsOld'
     ];
 
     protected $casts = [
-        'components' => 'array',
+        'componentsOld' => 'array',
     ];
 }

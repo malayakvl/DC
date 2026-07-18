@@ -86,12 +86,63 @@ export default function Index({
   const blockClickRef = React.useRef(false); // <--- ДОБАВИТЬ СЮДА
   const tab = useSelector(viewScheduleSelector);
   const showPrice = useSelector(pricePopupSelector);
+
+  const useStickyHeader = (offset = 0) => {
+    const [isSticky, setIsSticky] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const handleScroll = () => {
+        if (!ref.current) return;
+        const rect = ref.current.getBoundingClientRect();
+        if (rect.top <= offset) {
+          setIsSticky(true);
+        } else {
+          setIsSticky(false);
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, [offset]);
+
+    return { ref, isSticky };
+  };
+
   const [hoverPreview, setHoverPreview] = useState<{
     x: number;
     y: number;
     event: any;
     services: any[];
   } | null>(null);
+
+  const useIntersectionSticky = () => {
+    const [isSticky, setIsSticky] = useState(false);
+    const sentinelRef = useRef<HTMLDivElement>(null);
+    const headerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (!sentinelRef.current) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          // Когда сентинел исчезает - шапка фиксируется
+          setIsSticky(!entry.isIntersecting);
+        },
+        {
+          threshold: 0,
+          rootMargin: '-1px 0px 0px 0px', // Чуть раньше срабатывает
+        }
+      );
+
+      observer.observe(sentinelRef.current);
+      return () => observer.disconnect();
+    }, []);
+
+    return { sentinelRef, headerRef, isSticky };
+  };
+  const { ref: headerRef, isSticky } = useStickyHeader(0);
+  const sentinelRef = useRef<HTMLDivElement>(null); // этот не нужен, удали
 
   const hoverTimeout = useRef<number>();
 
@@ -664,7 +715,7 @@ export default function Index({
   };
 
   return (
-    <AuthenticatedLayout header={<Head title="Customers" />}>
+    <AuthenticatedLayout header={<Head title="Scheduler" />}>
       <Head title="Scheduler Management" />
       <div>
         <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
@@ -778,6 +829,7 @@ export default function Index({
             background: '#f1f5f9',
             marginBottom: '100px',
             borderBottom: 'solid 1px #d5d7d9',
+            position: isSticky ? 'fixed' : 'relative',
           }}
         >
           {/* ================= NAV ================= */}

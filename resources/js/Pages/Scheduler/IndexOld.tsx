@@ -1,24 +1,48 @@
-import React, { useMemo, useState } from 'react';
-import { addDays, format, parseISO } from 'date-fns';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { cabinets, doctors, events, SchedulerEvent } from './mock/data';
+import { cabinets, doctors, SchedulerEvent } from './mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
-import { Head } from '@inertiajs/react';
-// import PrimaryButton from '@/Components/Form/PrimaryButton';
-// import NavLink from '@/Components/Links/NavLink';
+import { Head, router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
+import {
+  pricePopupSelector,
+  showEditPopupSelector,
+  showSchedulePopupSelector,
+  viewScheduleSelector,
+} from '@/Redux/Scheduler/selectors';
+import SchedulerFormCreate from '@/Pages/Scheduler/Form/FormPopupCreate';
+import SchedulerFormEdit from '@/Pages/Scheduler/Form/FormPopupEdit';
+import moment from 'moment/moment';
+import {
+  setExistServicesAction,
+  setPopupCabinetAction,
+  setScheduleDateAction,
+  setScheduleTimeAction,
+  showSchedulePopupAction,
+  setSchedulePopupDoctorAction,
+  showScheduleEditPopupAction,
+  setScheduleEditEventAction,
+  showPricePopupAction,
+  initServicesAction,
+} from '@/Redux/Scheduler';
+import { showOverlayAction } from '@/Redux/Layout';
+import dayjs from 'dayjs';
+import Pricing from './Pricing';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import SecondaryButton from '@/Components/Form/SecondaryButton';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
-
 const FREE_SLOT_BG = '#fbfdff';
 const TODAY_BG = '#eef6ff';
 
-function getDays(baseDate: string, count: number) {
+function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
 
   return Array.from({ length: count }).map((_, i) => {
@@ -26,24 +50,97 @@ function getDays(baseDate: string, count: number) {
 
     return {
       date: format(d, 'yyyy-MM-dd'),
-      label: format(d, 'EEE dd'),
+      label: new Intl.DateTimeFormat(appLang, {
+        weekday: 'short',
+        day: '2-digit',
+      }).format(d),
     };
   });
 }
 
-export default function Index() {
-  const [baseDate, setBaseDate] = useState('2026-06-21');
+export default function Index({
+  customerData,
+  formData,
+  clinicData,
+  cabinetData,
+  groupedOptions,
+  assistantData,
+  eventsData,
+  currencyData,
+  tree,
+  services,
+  serviceCategories,
+}) {
+  const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [view, setView] = useState<'day' | '3days'>('3days');
   const appLang = useSelector(appLangSelector);
+  const dispatch = useDispatch();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, setShowAlert] = useState(false);
+  useSelector(pricePopupSelector);
+  const showEventPopup = useSelector(showSchedulePopupSelector);
+  const editEventPopup = useSelector(showEditPopupSelector);
+  // Рефы для блокировки кликов после перетаскивания / ресайза
   const isResizingRef = React.useRef(false);
+  const isDraggingRef = React.useRef(false);
+  const blockClickRef = React.useRef(false); // <--- ДОБАВИТЬ СЮДА
+  const tab = useSelector(viewScheduleSelector);
+  const showPrice = useSelector(pricePopupSelector);
+  const [hoverPreview, setHoverPreview] = useState<{
+    x: number;
+    y: number;
+    event: any;
+    services: any[];
+  } | null>(null);
+
+  const hoverTimeout = useRef<number>();
+
+  // Динамическая фильтрация и группировка опций для вкладок
+  const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
+    let doctorsOptions: any[] = [];
+    let assistantsOptions: any[] = [];
+    let othersOptions: any[] = [];
+
+    groupedOptions?.forEach((group: any) => {
+      if (group.label === 'roles.doctor') {
+        doctorsOptions = [...doctorsOptions, ...(group.options || [])];
+      } else if (group.label === 'roles.assistant') {
+        assistantsOptions = [...assistantsOptions, ...(group.options || [])];
+      } else {
+        // Все остальные роли (ceo, nurse, receptionist и т.д.) уходят во вкладку "Інші"
+        othersOptions = [...othersOptions, ...(group.options || [])];
+      }
+    });
+
+    return {
+      doctorsTabOptions: doctorsOptions,
+      assistantsTabOptions: assistantsOptions,
+      othersTabOptions: othersOptions,
+    };
+  }, [groupedOptions]);
+
+  // Определяем, какой список людей рендерить в сетке в зависимости от активной вкладки
+  const currentTabPeople = useMemo(() => {
+    switch (tab) {
+      case 'patients': // Первая вкладка (по логике в коде она называется patients, но там врачи)
+        return doctorsTabOptions;
+      case 'visits': // Вкладка "Асистенти"
+        return assistantsTabOptions;
+      case 'plans': // Вкладка "Інші"
+        return othersTabOptions;
+      default:
+        return doctorsTabOptions;
+    }
+  }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
+  const DOCTOR_WIDTH = 180;
+
   const msg = new Lang({
     messages: lngScheduler,
     locale: appLang,
   });
   const dayStep = view === 'day' ? 1 : 3;
-
   const days = useMemo(() => {
-    return getDays(baseDate, dayStep);
+    return getDays(baseDate, dayStep, appLang);
   }, [baseDate, dayStep]);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
@@ -51,56 +148,319 @@ export default function Index() {
 
   // ================= INTERACTIVE EVENTS STATE =================
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
-    const targetCabinetId = cabinets[0]?.id || 1;
-    const targetDoctorId = doctors[0]?.id || 1;
-
-    return [
-      ...events,
-      {
-        id: 'test-sharp-event',
-        cabinet_id: targetCabinetId,
-        doctor_id: targetDoctorId,
-        event_date: '2026-06-21',
-        start: '2026-06-21T09:00:00',
-        end: '2026-06-21T10:30:00',
-        event_time_from: '09:00',
-        event_time_to: '10:30',
-        title: '💥 Тестовый замес (Консультация)',
-        status_color: '#38bdf8',
-      },
-    ];
+    return eventsData.map((event) => ({
+      id: String(event.id),
+      title: event.title,
+      doctor_id: event.doctor_id,
+      patient_id: event.patient_id,
+      cabinet_id: event.cabinet_id,
+      event_date: event.event_date,
+      event_time_from: event.event_time_from.slice(0, 5),
+      event_time_to: event.event_time_to.slice(0, 5),
+      start: `${event.event_date}T${event.event_time_from}`,
+      end: `${event.event_date}T${event.event_time_to}`,
+      status_color: event.status_color,
+      status_name: event.status_name,
+      patient_name: event.last_name + ' ' + event.first_name,
+      services: event.services,
+      cabinet_name: event.cabinet_name,
+      doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+    }));
   });
+
+  // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ СЕТКИ ПРИ ИЗМЕНЕНИИ ДАННЫХ С СЕРВЕРА
+  useEffect(() => {
+    if (eventsData) {
+      setLocalEvents(
+        eventsData.map((event) => ({
+          id: String(event.id),
+          title: event.title,
+          doctor_id: event.doctor_id,
+          patient_id: event.patient_id,
+          cabinet_id: event.cabinet_id,
+          event_date: event.event_date,
+          event_time_from: event.event_time_from.slice(0, 5),
+          event_time_to: event.event_time_to.slice(0, 5),
+          start: `${event.event_date}T${event.event_time_from}`,
+          end: `${event.event_date}T${event.event_time_to}`,
+          status_color: event.status_color,
+          status_name: event.status_name,
+          patient_name: event.last_name + ' ' + event.first_name,
+          services: event.services,
+          cabinet_name: event.cabinet_name,
+          doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+        }))
+      );
+    }
+  }, [eventsData]); // Реагирует на любые изменения пропса eventsData
+
+  // ================= DRAG & DROP ENGINE =================
+  const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
+    if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const baseStart = parseISO(event.start);
+    const baseEnd = parseISO(event.end);
+    const durationMin = differenceInMinutes(baseEnd, baseStart);
+
+    let hasMovedEnough = false;
+
+    // СЮДА выносим переменные, которые будут общими для MouseMove и MouseUp:
+    let finalDate = event.event_date;
+    let finalCabinetId = event.cabinet_id;
+    let finalDoctorId = event.doctor_id;
+    let finalStartDate = baseStart;
+    let finalEndDate = baseEnd;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+
+      if (!hasMovedEnough && Math.sqrt(deltaX * deltaX + deltaY * deltaY) < 5) {
+        return;
+      }
+
+      if (!hasMovedEnough) {
+        hasMovedEnough = true;
+        isDraggingRef.current = true;
+        blockClickRef.current = true; // <--- ВЗВОДИМ БЛОКИРОВКУ КЛИКА ПРИ СДВИГЕ
+      }
+
+      const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+      const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
+
+      if (columnEl) {
+        finalDate = columnEl.getAttribute('data-date') || finalDate;
+        finalCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || finalCabinetId;
+        finalDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || finalDoctorId;
+      }
+
+      finalStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
+      finalEndDate = new Date(finalStartDate.getTime() + durationMin * 60000);
+
+      const newStartISO = `${finalDate}T${format(finalStartDate, 'HH:mm:ss')}`;
+      const newEndISO = `${finalDate}T${format(finalEndDate, 'HH:mm:ss')}`;
+
+      setLocalEvents((prev) =>
+        prev.map((ev) => {
+          if (ev.id !== event.id) return ev;
+          return {
+            ...ev,
+            event_date: finalDate,
+            cabinet_id: finalCabinetId,
+            doctor_id: finalDoctorId,
+            start: newStartISO,
+            end: newEndISO,
+            event_time_from: format(finalStartDate, 'HH:mm'),
+            event_time_to: format(finalEndDate, 'HH:mm'),
+          };
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      if (!hasMovedEnough) {
+        // Если реального движения не было — сбрасываем всё сразу, клик сработает штатно
+        isDraggingRef.current = false;
+        blockClickRef.current = false;
+        return;
+      }
+
+      // --- ПРОВЕРКА НА ПЕРЕСЕЧЕНИЯ ---
+      const hasIntersection = localEvents.some((ev) => {
+        if (ev.id === event.id) return false;
+        if (ev.event_date !== finalDate) return false;
+
+        const sameDoctor = Number(ev.doctor_id) === Number(finalDoctorId);
+        const sameCabinet = Number(ev.cabinet_id) === Number(finalCabinetId);
+
+        if (!sameDoctor && !sameCabinet) return false;
+
+        const evStart = parseISO(ev.start);
+        const evEnd = parseISO(ev.end);
+        const isTimeOverlapping = finalStartDate < evEnd && finalEndDate > evStart;
+
+        return isTimeOverlapping;
+      });
+
+      if (hasIntersection) {
+        alert('Ошибка: Данное время уже занято этим врачом или кабинетом!');
+
+        // ОТКАТ: возвращаем ивент в исходное состояние
+        setLocalEvents((prev) =>
+          prev.map((ev) => {
+            if (ev.id !== event.id) return ev;
+            return {
+              ...ev,
+              event_date: event.event_date,
+              cabinet_id: event.cabinet_id,
+              doctor_id: event.doctor_id,
+              start: event.start,
+              end: event.end,
+              event_time_from: event.event_time_from,
+              event_time_to: event.event_time_to,
+            };
+          })
+        );
+
+        // ИСПРАВЛЕНИЕ: Гасим флаги строго с задержкой, чтобы уберечь от фантомных кликов
+        setTimeout(() => {
+          isDraggingRef.current = false;
+          blockClickRef.current = false;
+        }, 100);
+
+        return;
+      }
+
+      // ========================================================
+      // ЕСЛИ ПРОВЕРКА ПРОЙДЕНА — ОТПРАВЛЯЕМ НА БЭКЕНД
+      // ========================================================
+      console.log('Отправляем перемещение на бэк:', {
+        id: event.id,
+        event_date: finalDate,
+        cabinet_id: finalCabinetId,
+        doctor_id: finalDoctorId,
+        event_time_from: format(finalStartDate, 'HH:mm'),
+        event_time_to: format(finalEndDate, 'HH:mm'),
+      });
+
+      router.put(
+        route('scheduler.update-position', event.id),
+        {
+          event_date: finalDate,
+          cabinet_id: finalCabinetId,
+          doctor_id: finalDoctorId,
+          event_time_from: format(finalStartDate, 'HH:mm'),
+          event_time_to: format(finalEndDate, 'HH:mm'),
+        },
+        {
+          preserveScroll: true,
+          onSuccess: () => {
+            // После успешного сохранения тушим флаги с задержкой
+            setTimeout(() => {
+              isDraggingRef.current = false;
+              blockClickRef.current = false;
+            }, 100);
+          },
+          onError: () => {
+            // В случае ошибки бэка тоже делаем откат и тушим
+            setTimeout(() => {
+              isDraggingRef.current = false;
+              blockClickRef.current = false;
+            }, 100);
+          },
+        }
+      );
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+  const handleDragStartOld = (e: React.MouseEvent, event: SchedulerEvent) => {
+    // Предотвращаем ресайз, если кликнули по хэндлеру ресайза
+    if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    isDraggingRef.current = true;
+
+    const startY = e.clientY;
+    const baseStart = parseISO(event.start);
+    const baseEnd = parseISO(event.end);
+    const durationMin = differenceInMinutes(baseEnd, baseStart);
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaY = moveEvent.clientY - startY;
+      // 2px = 1 минута, шаг — 15 минут
+      const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+
+      // Находим элемент колонки под курсором мыши
+      const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+      const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
+
+      let newDate = event.event_date;
+      let newCabinetId = event.cabinet_id;
+      let newDoctorId = event.doctor_id;
+
+      if (columnEl) {
+        newDate = columnEl.getAttribute('data-date') || newDate;
+        newCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || newCabinetId;
+        newDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || newDoctorId;
+      }
+
+      // Вычисляем новое время старта и конца
+      const newStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
+      const newEndDate = new Date(newStartDate.getTime() + durationMin * 60000);
+
+      const newStartISO = `${newDate}T${format(newStartDate, 'HH:mm:ss')}`;
+      const newEndISO = `${newDate}T${format(newEndDate, 'HH:mm:ss')}`;
+      console.log('Перемещаем');
+      console.log(newCabinetId, newDoctorId);
+      setLocalEvents((prev) =>
+        prev.map((ev) => {
+          if (ev.id !== event.id) return ev;
+          return {
+            ...ev,
+            event_date: newDate,
+            cabinet_id: newCabinetId,
+            doctor_id: newDoctorId,
+            start: newStartISO,
+            end: newEndISO,
+            event_time_from: format(newStartDate, 'HH:mm'),
+            event_time_to: format(newEndDate, 'HH:mm'),
+          };
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      setTimeout(() => {
+        isDraggingRef.current = false;
+      }, 50);
+      console.log('✅ Драг закончен, ивент перенесен!');
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleTabClick = (tab) => {
+    console.log(tab);
+  };
 
   // ================= RESIZE ENGINE =================
   const handleResizeStart = (e: React.MouseEvent, eventId: string, currentEndISO: string) => {
-    e.stopPropagation(); // Чтобы не триггерился клик по самой карточке или сетке
+    e.stopPropagation();
     e.preventDefault();
 
     const startY = e.clientY;
     const baseEnd = parseISO(currentEndISO);
-    isResizingRef.current = true; // <-- Включили режим ресайза
+    isResizingRef.current = true;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaY = moveEvent.clientY - startY;
-
-      // Переводим пиксели в минуты (у тебя 2px = 1 минута, значит делим на 2)
-      // И округляем до шага в 15 минут
       const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
 
       if (minutesDelta !== 0) {
-        // Вычисляем новое конечное время, добавляя дельту в минутах к базовому времени
-        // Используем чистый JS Date, чтобы не тягать лишние импорты для секундного экшена
         const newEndDate = new Date(baseEnd.getTime() + minutesDelta * 60000);
-
-        // Форматируем обратно в ISO и в человеческий вид
         const newEndISO = `${format(newEndDate, "yyyy-MM-dd'T'HH:mm:ss")}`;
         const newEndTimeHuman = format(newEndDate, 'HH:mm');
 
         setLocalEvents((prevEvents) =>
           prevEvents.map((ev) => {
             if (ev.id !== eventId) return ev;
-
-            // Проверяем, чтобы конец не стал раньше начала (минимальная длительность 15 мин)
             const startTime = parseISO(ev.start).getTime();
             if (newEndDate.getTime() <= startTime) return ev;
 
@@ -118,11 +478,9 @@ export default function Index() {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
 
-      // Сбрасываем флаг чуть позже, чтобы сработавший следом клик заблокировался
       setTimeout(() => {
         isResizingRef.current = false;
       }, 50);
-
       console.log('✅ Ресайз закончен, стейт зафиксирован!');
     };
 
@@ -137,56 +495,289 @@ export default function Index() {
     cabinet: (typeof cabinets)[0],
     doctor: (typeof doctors)[0]
   ) => {
-    // Если мы только что ресайзили — на выход, никакой модалки/алерта!
-    if (isResizingRef.current) return;
-
+    if (isResizingRef.current || isDraggingRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickY = e.clientY - rect.top;
-
     const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
 
     if (slotIndex >= 0 && slotIndex < timeSlots.length) {
       const clickedSlot = timeSlots[slotIndex];
+      // alert(
+      //   `Запердолить евент?\n📅 Дата: ${date}\n🕒 Время: ${clickedSlot.label}\n🚪 Кабинет: ${cabinet.name}\n👨‍⚕️ Врач: ${doctor.name}`
+      // );
+      const now = moment();
+      dispatch(setExistServicesAction([]));
+      // Создаем полную дату и время из выбранной даты и временного слота
+      const selectedDateTime = moment(`${date} ${clickedSlot.time}`, 'YYYY-MM-DD HH:mm');
 
-      console.log('🔥 Клик по сетке:', {
-        date,
-        cabinetName: cabinet.name,
-        cabinetId: cabinet.id,
-        doctorName: doctor.name,
-        doctorId: doctor.id,
-        time: clickedSlot.label,
-      });
+      // Проверка: нельзя планировать на прошедшее время
+      if (selectedDateTime.isBefore(now)) {
+        alert(msg.get('scheduler.error.pastTime'));
+        setShowAlert(true); // Показать алерт
+        return;
+      }
 
-      alert(
-        `Запердолить евент?\n📅 Дата: ${date}\n🕒 Время: ${clickedSlot.label}\n🚪 Кабинет: ${cabinet.name}\n👨‍⚕️ Врач: ${doctor.name}`
-      );
+      dispatch(showSchedulePopupAction(true));
+      dispatch(setPopupCabinetAction(cabinet.id));
+      dispatch(setSchedulePopupDoctorAction(doctor.id));
+      dispatch(showOverlayAction(true));
+      dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
+      dispatch(setScheduleTimeAction(clickedSlot.time)); // Сохраняем как HH:mm
     }
+  };
+
+  const handleEventClick = (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
+    // ЖЕЛЕЗОБЕТОННО останавливаем всплытие, чтобы клик по ивенту НЕ вызывал клик по ячейке!
+    e.stopPropagation();
+
+    // Если ивент только что перетаскивали, ресайзили или сработал блок клика — полностью блокируем
+    if (isDraggingRef.current || isResizingRef.current || blockClickRef.current) {
+      e.preventDefault();
+      return;
+    }
+
+    dispatch(setScheduleEditEventAction(cellEvent));
+    dispatch(setScheduleDateAction(cellEvent.event_date));
+    dispatch(initServicesAction(JSON.parse(cellEvent.services || '[]')));
+    dispatch(setScheduleTimeAction(cellEvent.event_time_from));
+    dispatch(showOverlayAction(true));
+    dispatch(showScheduleEditPopupAction(true));
+  };
+
+  // Функция для добавления или обновления ивента в реальном времени
+  const handleSaveLocalEvent = (rawEvent: any) => {
+    const formattedEvent = {
+      id: String(rawEvent.id),
+      title: rawEvent.title,
+      doctor_id: Number(rawEvent.doctor_id),
+      patient_id: Number(rawEvent.patient_id),
+      cabinet_id: Number(rawEvent.cabinet_id),
+      event_date: rawEvent.event_date,
+      event_time_from: rawEvent.event_time_from.slice(0, 5),
+      event_time_to: rawEvent.event_time_to.slice(0, 5),
+      start: `${rawEvent.event_date}T${rawEvent.event_time_from}`,
+      end: `${rawEvent.event_date}T${rawEvent.event_time_to}`,
+      status_color: rawEvent.status_color || '#0ea5a4',
+      status_name: rawEvent.status_name,
+      patient_name: rawEvent.last_name
+        ? `${rawEvent.last_name} ${rawEvent.first_name}`
+        : rawEvent.patient_name,
+      services:
+        typeof rawEvent.services === 'string'
+          ? rawEvent.services
+          : JSON.stringify(rawEvent.services || []),
+      cabinet_name: rawEvent.cabinet_name,
+      doctor_name: rawEvent.doctor_first_name
+        ? `${rawEvent.doctor_first_name} ${rawEvent.doctor_last_name}`
+        : rawEvent.doctor_name,
+    };
+
+    setLocalEvents((prev) => {
+      const exists = prev.some((ev) => ev.id === formattedEvent.id);
+      if (exists) {
+        // Если редактировали — обновляем старый
+        return prev.map((ev) => (ev.id === formattedEvent.id ? formattedEvent : ev));
+      }
+      // Если новый — добавляем в массив
+      return [...prev, formattedEvent];
+    });
+  };
+
+  // Функция для создания инициалов (например, "Иван Иванов" -> "И. И.")
+  // Или если это один кусочек: "Victory" -> "Vi"
+  function getInitials(name: string) {
+    if (!name) return '';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return `${parts[0].charAt(0)}.${parts[1].charAt(0)}.`;
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  const PREVIEW_WIDTH = 340;
+  const PREVIEW_HEIGHT = 280;
+
+  const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const margin = 12;
+
+    let x = rect.right + margin;
+    let y = rect.top;
+
+    // ---------- справа не помещается ----------
+    if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
+      x = rect.left - PREVIEW_WIDTH - margin;
+    }
+
+    // ---------- если и слева мало места ----------
+    if (x < margin) {
+      x = margin;
+    }
+
+    // ---------- снизу не помещается ----------
+    if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
+      y = window.innerHeight - PREVIEW_HEIGHT - margin;
+    }
+
+    // ---------- сверху ----------
+    if (y < margin) {
+      y = margin;
+    }
+    const _services = event ? JSON.parse(event.services) : [];
+    const previewTotal = event
+      ? _services.reduce(
+          (sum, service) =>
+            sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
+          0
+        )
+      : 0;
+    event.amount_total = previewTotal;
+
+    setHoverPreview({
+      x,
+      y,
+      event,
+      services,
+    });
+  };
+
+  const formatDuration = (from: string, to: string) => {
+    const [fh, fm] = from.split(':').map(Number);
+    const [th, tm] = to.split(':').map(Number);
+
+    const minutes = th * 60 + tm - (fh * 60 + fm);
+
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hours === 0) return `${mins} хв`;
+    if (mins === 0) return `${hours} год`;
+
+    return `${hours} год ${mins} хв`;
+  };
+
+  const getDuration = (from: string, to: string) => {
+    const [fh, fm] = from.split(':').map(Number);
+    const [th, tm] = to.split(':').map(Number);
+
+    return th * 60 + tm - (fh * 60 + fm);
   };
 
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
-      <Head title="Customers" />
+      <Head title="Scheduler Management" />
       <div>
-        <div className="p-4 sm:p-8 content-data bg-content">
-          <section>
-            <header>
-              <div className="flex inline-flex w-full mb-0">
-                <h2 className="text-xl font-semibold leading-tight">
-                  {msg.get('scheduler.title.list')}
-                </h2>
+        <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
+          <div className="pv-shell">
+            <div className="pv-top">
+              <div className="pv-user">
+                <div className="pv-info">
+                  <section>
+                    <header>
+                      <div className="flex inline-flex w-full mb-0">
+                        <h2 className="text-xl font-semibold leading-tight">
+                          {msg.get('scheduler.title.list')}
+                        </h2>
+                      </div>
+                    </header>
+                  </section>
+                </div>
               </div>
-            </header>
-          </section>
+            </div>
+            <div className="pv-shell">
+              <div className="pv-tabs">
+                <button
+                  className={tab === 'patients' ? 'pv-tab active' : 'pv-tab'}
+                  onClick={() => handleTabClick('patients')}
+                >
+                  {msg.get('scheduler.tab.patients')}
+                </button>
+
+                <button
+                  className={tab === 'visits' ? 'pv-tab active' : 'pv-tab'}
+                  onClick={() => handleTabClick('visits')}
+                >
+                  Асистенти
+                </button>
+
+                <button
+                  className={tab === 'plans' ? 'pv-tab active' : 'pv-tab'}
+                  onClick={() => handleTabClick('plans')}
+                >
+                  Інші
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+        {showEventPopup && (
+          <SchedulerFormCreate
+            formData={formData}
+            clinicData={clinicData}
+            cabinetData={cabinetData}
+            assistantData={assistantData}
+            customerData={customerData}
+            currency={currencyData}
+            serviceCategories={serviceCategories}
+            services={services}
+            onSuccess={handleSaveLocalEvent}
+          />
+        )}
+        {editEventPopup && (
+          <SchedulerFormEdit
+            formData={formData}
+            clinicData={clinicData}
+            cabinetData={cabinetData}
+            assistantData={assistantData}
+            customerData={customerData}
+            currency={currencyData}
+            serviceCategories={serviceCategories}
+            services={services}
+            onSuccess={handleSaveLocalEvent}
+          />
+        )}
+        {showPrice && (
+          <div className="fixed inset-0 flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-xl p-0 max-w-[550px] pb-[30px] relative">
+              <div
+                className={'absolute right-[20px] top-[10px] cursor-pointer z-50'}
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+              >
+                <FontAwesomeIcon icon={faClose} className="ml-5" />
+              </div>
+              <div style={{ maxHeight: '400px', overflow: 'scroll' }}>
+                <Pricing
+                  clinicData={clinicData}
+                  currency={currencyData}
+                  services={services}
+                  tree={tree}
+                />
+              </div>
+              <SecondaryButton
+                className="btn-back float-right mt-4 mr-[30px]"
+                onClick={() => {
+                  dispatch(showPricePopupAction(false));
+                }}
+                title={msg.get('scheduler.close')}
+              >
+                {msg.get('scheduler.close')}
+              </SecondaryButton>
+            </div>
+          </div>
+        )}
+        {/* FIXED HEADER AREA */}
         <div
           style={{
             display: 'flex',
             marginLeft: '20px',
             marginRight: '20px',
             flexDirection: 'column',
-            height: '100vh',
-            overflow: 'hidden',
+            // overflow: 'hidden',
             background: '#f1f5f9',
+            marginBottom: '100px',
+            borderBottom: 'solid 1px #d5d7d9',
           }}
         >
           {/* ================= NAV ================= */}
@@ -199,29 +790,28 @@ export default function Index() {
               alignItems: 'center',
               background: '#fff',
               borderBottom: '1px solid #e2e8f0',
-              zIndex: 100,
+              zIndex: showEventPopup || editEventPopup ? 0 : 100,
             }}
           >
             <div>
               <button
-                className="btn-submit"
+                className="btn-submit btn-prev"
                 onClick={() =>
                   setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
                 }
               >
-                Prev
+                {msg.get('scheduler.prev')}
               </button>
               <span style={{ margin: '0 12px', fontWeight: 600 }}>
-                {days[0].label}
-                {days.length > 1 && ` → ${days[days.length - 1].label}`}
+                {days[0].label} {days.length > 1 && ` → ${days[days.length - 1].label}`}
               </span>
               <button
-                className="btn-submit"
+                className="btn-submit btn-prev"
                 onClick={() =>
                   setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
                 }
               >
-                Next
+                {msg.get('scheduler.next')}
               </button>
             </div>
 
@@ -230,19 +820,28 @@ export default function Index() {
                 onClick={() => setView('day')}
                 style={{ marginRight: 8, opacity: view === 'day' ? 1 : 0.5 }}
               >
-                Day
+                {msg.get('scheduler.day')}
               </button>
               <button
+                className="btn-submit"
                 onClick={() => setView('3days')}
                 style={{ opacity: view === '3days' ? 1 : 0.5 }}
               >
-                3 Days
+                {msg.get('scheduler.3days')}
               </button>
             </div>
           </div>
 
           {/* ================= MAIN HORIZONTAL SCROLL CONTAINER ================= */}
-          <div style={{ display: 'flex', flex: 1, overflowX: 'auto', alignItems: 'stretch' }}>
+          <div
+            className={'calendar'}
+            style={{
+              display: 'flex',
+              overflowX: 'auto',
+              alignItems: 'flex-start',
+              width: '100%',
+            }}
+          >
             {days.map((day, dayIdx) => {
               const isToday = day.date === format(new Date(), 'yyyy-MM-dd');
 
@@ -250,24 +849,29 @@ export default function Index() {
                 <div
                   key={day.date}
                   style={{
-                    minWidth: 900,
                     display: 'flex',
                     flexDirection: 'column',
                     background: '#fff',
                     borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
                     height: '100%',
+                    // Включаем липкость для всего дня, чтобы шапка внутри ориентировалась на этот контейнер
+                    position: 'relative',
+                    zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
-                  {/* ================= FIXED HEADER AREA ================= */}
+                  {/* FIXED HEADER AREA */}
                   <div
+                    className={'calendar-header'}
                     style={{
-                      flexShrink: 0,
+                      position: 'sticky',
+                      top: 0, // Прижимает шапку к верху экрана браузера при общем скролле
+                      zIndex: 45, // Перекрывает визиты, которые уходят вверх
                       background: '#fff',
-                      zIndex: 40,
                       boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
+                      width: '100%',
+                      flexShrink: 0,
                     }}
                   >
-                    {/* DAY HEADER */}
                     <div
                       style={{
                         height: 44,
@@ -284,7 +888,6 @@ export default function Index() {
                       {day.label.toUpperCase()}
                     </div>
 
-                    {/* CAB + DOCTORS */}
                     <div style={{ display: 'flex' }}>
                       <div
                         style={{
@@ -292,20 +895,19 @@ export default function Index() {
                           flexShrink: 0,
                           background: '#fff',
                           borderRight: '2px solid #e2e8f0',
+                          height: '115px',
                         }}
                       />
-
                       <div style={{ display: 'flex', flex: 1 }}>
-                        {cabinets.map((cab, cabIdx) => (
+                        {cabinetData.map((cab, cabIdx) => (
                           <div
                             key={cab.id}
                             style={{
                               flex: 1,
                               borderRight:
-                                cabIdx < cabinets.length - 1 ? '2px solid #94a3b8' : 'none',
+                                cabIdx < cabinetData.length - 1 ? '2px solid #94a3b8' : 'none',
                             }}
                           >
-                            {/* Название кабинета */}
                             <div
                               style={{
                                 height: 40,
@@ -318,30 +920,94 @@ export default function Index() {
                                 boxShadow: 'inset 0 -1px 0 #cbd5e1',
                               }}
                             >
-                              {cab.name}
+                              {cab.cabinet_name}
                             </div>
-
-                            {/* Врачи в кабинете */}
                             <div style={{ display: 'flex', height: 34 }}>
-                              {doctors.map((doc, docIdx) => (
-                                <div
-                                  key={doc.id}
-                                  style={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: 12,
-                                    fontWeight: 600,
-                                    color: '#475569',
-                                    background: '#fff',
-                                    borderRight:
-                                      docIdx < doctors.length - 1 ? '1px solid #e2e8f0' : 'none',
-                                  }}
-                                >
-                                  {doc.name}
-                                </div>
-                              ))}
+                              {currentTabPeople.map((doc, docIdx) => {
+                                const fullName = doc.name || doc.label || '';
+                                const initials = getInitials(fullName);
+                                // Используем цвет из базы, либо генерируем дефолтный серый/синий для заглушки
+                                const avatarBg = doc.color || '#94a3b8';
+
+                                return (
+                                  <div
+                                    key={doc.id}
+                                    style={{
+                                      width: DOCTOR_WIDTH,
+                                      flexShrink: 0,
+                                      flex: 1,
+                                      display: 'flex',
+                                      flexDirection: 'column', // Элементы друг под другом
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      height: '70px',
+                                      padding: '4px 2px',
+                                      background: '#fff',
+                                      borderRight:
+                                        docIdx < currentTabPeople.length - 1
+                                          ? '1px solid #e2e8f0'
+                                          : '1px solid #e2e8f0',
+                                      minWidth: 0, // Важно для работы text-overflow: ellipsis в flex-контейнерах
+                                    }}
+                                  >
+                                    {/* КРУГЛЫЙ АВАТАР */}
+                                    <div
+                                      style={{
+                                        width: 28,
+                                        height: 28,
+                                        borderRadius: '50%',
+                                        backgroundColor: avatarBg,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        color: '#fff',
+                                        overflow: 'hidden',
+                                        marginBottom: 2,
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                      }}
+                                      title={fullName} // При наведении покажет полное имя
+                                    >
+                                      {doc.avatar ? (
+                                        <img
+                                          src={`/storage/${doc.avatar}`} // Корректируй путь в зависимости от твоего Laravel Storage
+                                          alt={fullName}
+                                          style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                          }}
+                                          onError={(e) => {
+                                            // Если картинка не прогрузилась — покажем инициалы
+                                            (e.target as HTMLElement).style.display = 'none';
+                                          }}
+                                        />
+                                      ) : (
+                                        initials
+                                      )}
+                                    </div>
+
+                                    {/* ТЕКСТ ПОД АВАТАРОМ С АВТО-СОКРАЩЕНИЕМ */}
+                                    <div
+                                      style={{
+                                        fontSize: 10,
+                                        fontWeight: 600,
+                                        color: '#334155',
+                                        textAlign: 'center',
+                                        width: '100%',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis', // Добавит "..." если имя всё равно слишком длинное
+                                        padding: '0 2px',
+                                      }}
+                                      title={fullName} // При наведении покажет полное имя
+                                    >
+                                      {fullName}
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -349,7 +1015,7 @@ export default function Index() {
                     </div>
                   </div>
 
-                  {/* ================= SCROLLABLE BODY AREA ================= */}
+                  {/* SCROLLABLE BODY AREA */}
                   <div
                     style={{ display: 'flex', flex: 1, overflowY: 'auto', position: 'relative' }}
                   >
@@ -366,10 +1032,9 @@ export default function Index() {
                     >
                       {timeSlots.map((slot, index) => {
                         const isHour = index % 4 === 0;
-
                         return (
                           <div
-                            key={slot.label}
+                            key={slot.time}
                             style={{
                               height: SLOT_HEIGHT,
                               fontSize: 13,
@@ -385,7 +1050,7 @@ export default function Index() {
                               borderRight: '1px solid #e2e8f0',
                             }}
                           >
-                            {slot.label}
+                            {slot.time}
                           </div>
                         );
                       })}
@@ -404,7 +1069,7 @@ export default function Index() {
                               cabIdx < cabinets.length - 1 ? '2px solid #94a3b8' : 'none',
                           }}
                         >
-                          {doctors.map((doc, docIdx) => {
+                          {currentTabPeople.map((doc, docIdx) => {
                             const dayEvents = localEvents.filter(
                               (e) =>
                                 e.event_date === day.date &&
@@ -416,77 +1081,262 @@ export default function Index() {
                               <div
                                 key={doc.id}
                                 onClick={(e) => handleCellClick(e, day.date, cab, doc)}
+                                // Важнейшие data-атрибуты для определения ячейки при Dnd:
+                                data-column-type="doctor-cell"
+                                data-date={day.date}
+                                data-cabinet-id={cab.id}
+                                data-doctor-id={doc.id}
                                 style={{
+                                  width: DOCTOR_WIDTH,
                                   flex: 1,
                                   position: 'relative',
                                   height: '100%',
                                   backgroundColor: FREE_SLOT_BG,
                                   cursor: 'pointer',
                                   borderRight:
-                                    docIdx < doctors.length - 1 ? '1px solid #e2e8f0' : 'none',
-                                  backgroundImage: `
-                                linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px),
-                                linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)
-                              `,
-                                  backgroundSize: `
-                                100% ${SLOT_HEIGHT * 4}px,
-                                100% ${SLOT_HEIGHT}px
-                              `,
+                                    docIdx < doctors.length - 1
+                                      ? '1px solid #e2e8f0'
+                                      : '1px solid #e2e8f0',
+                                  backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)`,
+                                  backgroundSize: `100% ${SLOT_HEIGHT * 4}px, 100% ${SLOT_HEIGHT}px`,
                                 }}
                               >
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
+                                  const compact = layout.height < 70;
+                                  // const medium = layout.height >= 70 && layout.height < 110;
+                                  const large = layout.height >= 110;
+                                  // const previewTotal = hoverPreview
+                                  //   ? hoverPreview.services.reduce(
+                                  //       (sum, service) =>
+                                  //         sum +
+                                  //         Number(service.total_price ?? service.price) *
+                                  //           Number(service.qty ?? 1),
+                                  //       0
+                                  //     )
+                                  //   : 0;
+
+                                  const services = (() => {
+                                    try {
+                                      return JSON.parse(event.services || '[]');
+                                    } catch {
+                                      return [];
+                                    }
+                                  })();
+
+                                  const servicesCount = services.length;
+
                                   return (
                                     <div
                                       key={event.id}
-                                      onClick={(e) => e.stopPropagation()}
+                                      onClick={(e) => handleEventClick(e, event)}
+                                      onMouseDown={(e) => handleDragStart(e, event)}
+                                      onMouseEnter={(e) => showPreview(e, event, services)}
+                                      onMouseLeave={() => {
+                                        setHoverPreview(null);
+                                      }}
+                                      className={`calendar-event ${compact ? 'compact' : ''}`}
                                       style={{
                                         position: 'absolute',
                                         top: layout.top,
                                         height: layout.height,
                                         left: 4,
                                         right: 4,
-                                        background: event.status_color || '#dff1ff',
-                                        borderRadius: 6,
-                                        padding: '4px 6px',
-                                        fontSize: 11,
-                                        overflow: 'hidden',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,.08)',
-                                        zIndex: 10,
-                                        borderLeft: '3px solid rgba(0,0,0,.15)',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between', // Растянет контент, чтобы ресайзер ушел вниз
+                                        borderLeft: `4px solid ${event.status_color}`,
                                       }}
                                     >
-                                      <div>
-                                        <div style={{ fontWeight: 600, color: '#1e293b' }}>
-                                          {event.title}
+                                      <div className="calendar-event-body">
+                                        {/* ---------- HEADER ---------- */}
+
+                                        <div className="calendar-event-header">
+                                          <div className="calendar-event-patient">
+                                            {event.patient_name}
+                                          </div>
                                         </div>
-                                        <div
-                                          style={{ fontSize: 10, opacity: 0.8, color: '#334155' }}
-                                        >
-                                          {event.event_time_from} — {event.event_time_to}
+
+                                        {/* ---------- SERVICES ---------- */}
+
+                                        <div className="calendar-event-services">
+                                          {servicesCount === 0 && (
+                                            <div className="calendar-event-service">
+                                              {event.title}
+                                            </div>
+                                          )}
+
+                                          {servicesCount === 1 && (
+                                            <div className="calendar-event-service">
+                                              🦷 {services[0].name}
+                                            </div>
+                                          )}
+
+                                          {servicesCount > 1 && large && (
+                                            <>
+                                              {services.slice(0, 3).map((service) => (
+                                                <div
+                                                  key={service.id}
+                                                  className="calendar-event-service"
+                                                >
+                                                  🦷 {service.name}
+                                                </div>
+                                              ))}
+
+                                              {services.length > 3 && (
+                                                <div className="calendar-event-more">
+                                                  +{services.length - 2} ще...
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+
+                                          {servicesCount > 1 && !large && (
+                                            <div className="calendar-event-more hover-target">
+                                              🦷 {servicesCount} послуги
+                                            </div>
+                                          )}
                                         </div>
+
+                                        {/* ---------- FOOTER ---------- */}
+
+                                        {!compact && (
+                                          <div
+                                            className="calendar-event-footer"
+                                            style={{
+                                              display: 'flex',
+                                              justifyContent: 'space-between',
+                                              alignItems: 'center',
+                                              gap: '4px',
+                                              marginTop: 'auto',
+                                              width: '100%',
+                                              overflow: 'hidden',
+                                              paddingTop: '4px',
+                                              borderTop: '1px dashed rgba(0,0,0,0.08)', // Легкое визуальное отделение футера
+                                            }}
+                                          >
+                                            <div
+                                              className="calendar-event-time"
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '3px',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '10px', // Слегка уменьшим до 10px для запаса места
+                                                flexShrink: 1,
+                                                minWidth: 0,
+                                                color: '#475569',
+                                              }}
+                                            >
+                                              <svg
+                                                width="11"
+                                                height="11"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                style={{ flexShrink: 0, minWidth: '11px' }}
+                                              >
+                                                <circle
+                                                  cx="12"
+                                                  cy="12"
+                                                  r="9"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2"
+                                                />
+                                                <path
+                                                  d="M12 7v5l3 2"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2"
+                                                  strokeLinecap="round"
+                                                />
+                                              </svg>
+                                              <span>
+                                                {event.event_time_from}-{event.event_time_to}
+                                              </span>
+                                            </div>
+
+                                            {/* БЛОК С ДЛИТЕЛЬНОСТЬЮ И КНОПКОЙ АКТА */}
+                                            <div
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                flexShrink: 0,
+                                              }}
+                                            >
+                                              <span
+                                                className="calendar-event-duration"
+                                                style={{
+                                                  whiteSpace: 'nowrap',
+                                                  fontSize: '10px',
+                                                  color: '#64748b',
+                                                }}
+                                              >
+                                                {formatDuration(
+                                                  event.event_time_from,
+                                                  event.event_time_to
+                                                )}
+                                              </span>
+
+                                              {/* КНОПКА "СТВОРИТИ АКТ" */}
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation(); // ЖЕЛЕЗОБЕТОННО блокируем открытие редактирования визита!
+                                                  e.preventDefault();
+
+                                                  // Твоя логика создания акта. Например:
+                                                  console.log('Создаем акт для визита:', event.id);
+                                                  // router.visit(route('acts.create', { event_id: event.id }));
+                                                  alert(`Создаем акт для: ${event.patient_name}`);
+                                                }}
+                                                title="Створити акт"
+                                                style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  width: '20px',
+                                                  height: '20px',
+                                                  borderRadius: '4px',
+                                                  background: '#0ea5a4', // Твой фирменный бирюзовый цвет
+                                                  color: '#fff',
+                                                  border: 'none',
+                                                  cursor: 'pointer',
+                                                  transition: 'all 0.2s',
+                                                  flexShrink: 0,
+                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  e.currentTarget.style.background = '#0d9488'; // Эффект наведения
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.currentTarget.style.background = '#0ea5a4';
+                                                }}
+                                              >
+                                                {/* Аккуратная SVG иконка документа с плюсиком внутри кнопки */}
+                                                <svg
+                                                  width="11"
+                                                  height="11"
+                                                  viewBox="0 0 24 24"
+                                                  fill="none"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2.5"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                >
+                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                                                </svg>
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
 
-                                      {/* ХЕНДЛЕР ДЛЯ РЕСАЙЗА (Нижняя полосочка шириной во всю карточку) */}
                                       <div
                                         onMouseDown={(e) =>
                                           handleResizeStart(e, event.id, event.end)
                                         }
-                                        style={{
-                                          position: 'absolute',
-                                          bottom: 0,
-                                          left: 0,
-                                          right: 0,
-                                          height: 8,
-                                          cursor: 'ns-resize', // Курсор стрелочек "вверх-вниз"
-                                          background: 'transparent',
-                                          zIndex: 20,
-                                        }}
-                                        className="hover:bg-slate-400/30 transition-colors" // Подсветим при наведении для удобства
+                                        data-resize-handle
+                                        className="calendar-event-resize"
                                       />
                                     </div>
                                   );
@@ -501,6 +1351,47 @@ export default function Index() {
                 </div>
               );
             })}
+            {hoverPreview && (
+              <div
+                className="calendar-preview"
+                style={{
+                  left: hoverPreview.x,
+                  top: hoverPreview.y,
+                }}
+                onMouseEnter={() => {
+                  window.clearTimeout(hoverTimeout.current);
+                }}
+                onMouseLeave={() => {
+                  setHoverPreview(null);
+                }}
+              >
+                <div className="flex flex-row justify-between">
+                  <div className="calendar-preview-title">{hoverPreview.event.patient_name}</div>
+                  <div className="calendar-preview-cab-title">
+                    {hoverPreview.event.cabinet_name}
+                    <span className="calendar-doctor">{hoverPreview.event.doctor_name}</span>
+                  </div>
+                </div>
+                <div className="calendar-preview-subtitle">Послуги</div>
+                <div className="calendar-preview-list">
+                  <table className="preview-table">
+                    {hoverPreview.services.map((service) => (
+                      <tr key={service.id} style={{ width: '100%' }}>
+                        <td className="service-pr-name">{service.name}</td>
+                        <td className="service-pr-price">
+                          <strong>{service.total_price} ₴</strong>
+                        </td>
+                      </tr>
+                    ))}
+                  </table>
+                </div>
+
+                <div className="calendar-preview-footer">
+                  <span>Разом</span>
+                  <strong>{hoverPreview.event.amount_total.toFixed(2)} ₴</strong>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

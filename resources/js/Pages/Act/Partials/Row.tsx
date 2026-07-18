@@ -152,7 +152,7 @@ export default function AddDynamicInputFields({
   const calcPos = (index) => {
     // Get service items for this specific row to calculate height adjustment
     const rowServiceItems = serviceItemsByRow[index] || [];
-    // Base position calculation plus additional space for service components if they exist
+    // Base position calculation plus additional space for service componentsOld if they exist
     const serviceComponentsHeight = rowServiceItems.length > 0 ? rowServiceItems.length * 25 : 0; // Approximate height per service component
 
     if (index >= 1) {
@@ -233,7 +233,7 @@ export default function AddDynamicInputFields({
                   return updated;
                 });
 
-                // Fetch service components and update the Redux state
+                // Fetch service componentsOld and update the Redux state
                 dispatch(findServiceItemsAction(_res.id, numRow));
               }}
             >
@@ -275,7 +275,7 @@ export default function AddDynamicInputFields({
 
                 return rowComponents.length > 0 && (
                   <div className="mt-1 text-xs bg-black p-2 text-white services-block">
-                    <span className="title-service">{msg.get('act.title.components')}</span>
+                    <span className="title-service">{msg.get('act.title.componentsOld')}</span>
                     <ul className="list-disc pl-5 mt-1">
                       {rowComponents.map((component, idx) => (
                         <li key={idx} className="flex items-center justify-between py-0.5 border-b border-gray-800 last:border-0">

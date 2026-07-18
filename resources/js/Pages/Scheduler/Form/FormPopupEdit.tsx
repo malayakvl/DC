@@ -62,6 +62,7 @@ export default function SchedulerFormEdit({
   };
 
   const [values, setValues] = useState({
+    id: currentEventData.id,
     title: currentEventData.title,
     clinic_id: clinicData.id,
     cabinet_id: currentEventData.cabinet_id,
@@ -92,7 +93,7 @@ export default function SchedulerFormEdit({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     serviceCategories.length ? serviceCategories[0].id : null
   );
-  console.log('popup services', popupServices);
+
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -141,42 +142,103 @@ export default function SchedulerFormEdit({
     }));
   }, [timeStart]);
 
-  useEffect(() => {
-    console.log('Setup cabinet', cabinetId);
-    setValues((values) => ({
-      ...values,
-      ['event_date']: eventDate,
-      ['doctor_id']: doctorId,
-      ['status_id']: eventStatus,
-      ['cabinet_id']: cabinetId,
-    }));
-  }, [eventDate, doctorId, eventStatus, cabinetId]);
+  // useEffect(() => {
+  //   setValues((values) => ({
+  //     ...values,
+  //     ['event_date']: eventDate,
+  //     ['doctor_id']: doctorId,
+  //     ['status_id']: eventStatus,
+  //     ['cabinet_id']: cabinetId,
+  //   }));
+  // }, [eventDate, doctorId, eventStatus, cabinetId]);
 
-  const submitOld = (e) => {
-    e.preventDefault();
-    values['newPatientData'] = newPatientData;
-    // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
-    const [day, month, year] = eventDate.split('.'); // Split the input string
-    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    values['event_date'] = formattedDate;
-    values['services'] = popupServices;
-    if (patientId) {
-      values['patientId'] = patientId;
-    }
-    if (formData.id) {
-      router.post(`/scheduler/update?id=${formData.id}`, values);
-    } else {
-      router.post('/scheduler/update', values);
-    }
-    dispatch(showOverlayAction(false));
-  };
+  // const submitOld = (e) => {
+  //   e.preventDefault();
+  //   values['newPatientData'] = newPatientData;
+  //   // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
+  //   const [day, month, year] = eventDate.split('.'); // Split the input string
+  //   const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  //   values['event_date'] = formattedDate;
+  //   values['services'] = popupServices;
+  //   if (patientId) {
+  //     values['patientId'] = patientId;
+  //   }
+  //   if (formData.id) {
+  //     router.post(`/scheduler/update?id=${formData.id}`, values);
+  //   } else {
+  //     router.post('/scheduler/update', values);
+  //   }
+  //   dispatch(showOverlayAction(false));
+  // };
+
+  // const submit2 = (e) => {
+  //   e.preventDefault();
+  //
+  //   values['newPatientData'] = newPatientData;
+  //   const [day, month, year] = eventDate.split('.');
+  //   console.log(eventDate);
+  //   const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  //   values['event_date'] = formattedDate;
+  //   values['services'] = popupServices;
+  //
+  //   if (patientId) {
+  //     values['patientId'] = patientId;
+  //   }
+  //
+  //   const url = formData.id ? `/scheduler/update?id=${formData.id}` : '/scheduler/update';
+  //
+  //   router.post(url, values, {
+  //     preserveState: true, // Чтобы страница не перезагружалась и не сбрасывала стейт React
+  //     preserveScroll: true, // Чтобы сетка календаря не прыгала вверх
+  //     onSuccess: () => {
+  //       // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
+  //       // Нам нужно просто закрыть модалку
+  //       dispatch(showOverlayAction(false));
+  //       dispatch(showSchedulePopupAction(false));
+  //       dispatch(showOverlayAction(false));
+  //       dispatch(setPopupAction(false));
+  //
+  //       // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
+  //       // dispatch(showSchedulePopupAction(false));
+  //       // dispatch(showScheduleEditPopupAction(false));
+  //     },
+  //     onError: (errors) => {
+  //       console.error('Ошибки при сохранении:', errors);
+  //     },
+  //   });
+  // };
 
   const submit = (e) => {
     e.preventDefault();
 
     values['newPatientData'] = newPatientData;
-    const [day, month, year] = eventDate.split('.');
-    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    values['cabinet_id'] = Number(values.cabinet_id);
+    values['doctor_id'] = Number(values.doctor_id);
+    values['assistent_id'] = Number(values.assistent); // К слову, у тебя инпут assistant_id пишет в values.assistent, поправь тут бэку
+    // Безопасно проверяем, есть ли вообще дата
+    if (!eventDate) {
+      console.error('Ошибка: eventDate не задана');
+      return;
+    }
+
+    let formattedDate = eventDate;
+
+    // Если дата в формате DD.MM.YYYY (содержит точки), пересобираем её для бэка
+    if (eventDate.includes('.')) {
+      const [day, month, year] = eventDate.split('.');
+
+      // Защита на случай, если точка есть, но формат всё равно битый
+      if (day && month && year) {
+        formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      } else {
+        console.error('Ошибка: Неверный формат даты с точками:', eventDate);
+      }
+    }
+    // Если дата уже в формате YYYY-MM-DD (содержит дефисы), оставляем как есть
+    else if (eventDate.includes('-')) {
+      formattedDate = eventDate;
+    }
+
     values['event_date'] = formattedDate;
     values['services'] = popupServices;
 
@@ -185,21 +247,13 @@ export default function SchedulerFormEdit({
     }
 
     const url = formData.id ? `/scheduler/update?id=${formData.id}` : '/scheduler/update';
-
     router.post(url, values, {
-      preserveState: true, // Чтобы страница не перезагружалась и не сбрасывала стейт React
-      preserveScroll: true, // Чтобы сетка календаря не прыгала вверх
+      preserveState: true,
+      preserveScroll: true,
       onSuccess: () => {
-        // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
-        // Нам нужно просто закрыть модалку
         dispatch(showOverlayAction(false));
-        dispatch(showSchedulePopupAction(false));
-        dispatch(showOverlayAction(false));
+        dispatch(showScheduleEditPopupAction(false));
         dispatch(setPopupAction(false));
-
-        // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
-        // dispatch(showSchedulePopupAction(false));
-        // dispatch(showScheduleEditPopupAction(false));
       },
       onError: (errors) => {
         console.error('Ошибки при сохранении:', errors);
@@ -252,7 +306,7 @@ export default function SchedulerFormEdit({
       event_date: e.target.value,
     }));
   };
-
+  console.log('Values', values);
   return (
     <section className={`scheduler-popup ${showPopup ? 'edit-scheduler-popup' : 'hidden'}`}>
       <header>
@@ -295,7 +349,7 @@ export default function SchedulerFormEdit({
               value={values.cabinet_id}
               options={cabinetData}
               onChange={handleChangeSelect}
-              defaultValue={cabinetId}
+              // defaultValue={cabinetId}
               required
               label={msg.get('scheduler.form.cabinet')}
             />

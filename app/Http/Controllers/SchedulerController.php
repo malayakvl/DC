@@ -777,25 +777,38 @@ class SchedulerController extends Controller
 
             if ($request->id) {
                 $scheduler = Scheduler::find($request->id);
+
+                // 1. Логируем во storage/logs/laravel.log, чтобы увидеть чистые данные из фронта
+                \Log::info('Scheduler Update Data:', $request->all());
                 $scheduler->title = $request->title;
 
-                // КСТАТИ: обрати внимание, у тебя тут опечатка в $request->fotmatted_date (пропущена r)
-                // Если во фронте ты передаешь event_date, то лучше юзать: $request->event_date
-                $scheduler->event_date = $request->event_date ?? $request->fotmatted_date;
+                // 2. ИСПРАВЛЕНИЕ: На фронте ты шлешь 'event_date'.
+                // В твоем коде было $request->fotmatted_date (через o). Меняем на правильный event_date
+                $scheduler->event_date = $request->event_date;
 
                 $scheduler->event_time_from = $request->event_time_from;
                 $scheduler->event_time_to = $request->event_time_to;
                 $scheduler->clinic_id = $clinic->id;
                 $scheduler->cabinet_id = $request->cabinet_id;
                 $scheduler->doctor_id = $request->doctor_id;
-                $scheduler->patient_id = $request->patientId;
+
+                // 3. ИСПРАВЛЕНИЕ: На фронте в values ты передаешь 'patient_id'.
+                // А в контроллере у тебя $request->patientId (с большой I). Из-за этого писался null!
+                $scheduler->patient_id = $request->patient_id ?? $request->patientId;
+
                 $scheduler->description = $request->comment ? $request->comment : '';
-                $scheduler->status_name = $request->status["name"];
-                $scheduler->status_color = $request->status["color"];
+
+                // 4. ОПАСНЫЙ МОМЕНТ: На фронте в values['status_id'] у тебя улетает просто строка/число.
+                // Если $request->status приходит пустой, то $request->status["name"] выбросит ошибку.
+                // Если бэк падал тут, то до save() дело вообще не доходило. Окружи защитой:
+                $scheduler->status_name = is_array($request->status_id) ? ($request->status_id["name"] ?? '') : 'Визит';
+                $scheduler->status_color = is_array($request->status_id) ? ($request->status_id["color"] ?? '#000') : '#000';
+
                 $scheduler->services = json_encode($request->services);
+
                 $scheduler->save();
 
-                // МЕНЯЕМ ТУТ: Обычный редирект Inertia, чтобы не перезагружать страницу
+                // Возвращаем чистый редирект Inertia, чтобы транзакция успешно закоммитилась
                 return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
             }
             else {
@@ -854,7 +867,6 @@ class SchedulerController extends Controller
             // 2. Находим визит (ID берем либо из параметров метода Laravel, либо из запроса)
             $eventId = $id ?? $request->input('id');
             $scheduler = Scheduler::findOrFail($eventId);
-dd($scheduler);
 
             // 3. Обновляем поля модели значениями, прошедшими валидацию
             $scheduler->update([
