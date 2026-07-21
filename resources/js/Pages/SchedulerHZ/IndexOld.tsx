@@ -15,8 +15,8 @@ import {
   showSchedulePopupSelector,
   viewScheduleSelector,
 } from '@/Redux/Scheduler/selectors';
-import SchedulerFormCreate from '@/Pages/Scheduler/Form/FormPopupCreate';
-import SchedulerFormEdit from '@/Pages/Scheduler/Form/FormPopupEdit';
+import SchedulerFormCreate from '@/Pages/SchedulerHZ/Form/FormPopupCreate';
+import SchedulerFormEdit from '@/Pages/SchedulerHZ/Form/FormPopupEdit';
 import moment from 'moment/moment';
 import {
   setExistServicesAction,

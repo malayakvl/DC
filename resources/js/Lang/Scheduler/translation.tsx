@@ -1,6 +1,6 @@
 const lngScheduler = {
   'en.scheduler': {
-    'title.list': 'Scheduler Management',
+    'title.list': 'SchedulerHZ Management',
   },
   'uk.scheduler': {
     'title.list': 'Розклад відвідувань',

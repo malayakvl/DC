@@ -196,7 +196,7 @@ class SchedulerController extends Controller
                 ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
                 ->get();
 
-            return Inertia::render('Scheduler/Index', [
+            return Inertia::render('SchedulerHZ/Index', [
                 'clinicData' => $clinicData,
                 'groupedOptions' => $groupedOptions,
                 'customerSelectData' => $customerSelectData,
@@ -567,7 +567,7 @@ class SchedulerController extends Controller
 //            dd($eventsData1);
             $formData = new Scheduler();
 
-            return Inertia::render('Scheduler/Index', [
+            return Inertia::render('SchedulerV2/Index', [
                 'clinicData' => $clinicData,
                 'customerData' => $customerSelectData,
                 'assistantData' => $assistantSelectData,
@@ -581,6 +581,20 @@ class SchedulerController extends Controller
                 'tree' => $tree,
                 'currency' => $clinicData->currency->symbol
             ]);
+//            return Inertia::render('SchedulerHZ/Index', [
+//                'clinicData' => $clinicData,
+//                'groupedOptions' => $groupedOptions,
+//                'customerSelectData' => $customerSelectData,
+//                'assistantData' => $assistantSelectData,
+//                'eventsData' => $events,
+//                'tree' => $tree,
+//                'services' => $arrServices,
+//                'serviceCategories' => $categories,
+//                'customerData' => $customerData,
+//                'currencyData' => $clinicData->currency->name,
+//                'cabinetData' => $listCabinets,
+//                'formData' => $formData,
+//            ]);
         });
     }
 
@@ -772,14 +786,14 @@ class SchedulerController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('scheduler-edit')) {
                 // Здесь тоже лучше редиректить с ошибкой во flash, но если рендеришь — то ок
-                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+                return Inertia::render('SchedulerHZ/List', ['error' => 'Insufficient permissions']);
             }
 
             if ($request->id) {
                 $scheduler = Scheduler::find($request->id);
 
                 // 1. Логируем во storage/logs/laravel.log, чтобы увидеть чистые данные из фронта
-                \Log::info('Scheduler Update Data:', $request->all());
+                \Log::info('SchedulerHZ Update Data:', $request->all());
                 $scheduler->title = $request->title;
 
                 // 2. ИСПРАВЛЕНИЕ: На фронте ты шлешь 'event_date'.
@@ -852,7 +866,7 @@ class SchedulerController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             $clinic = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('scheduler-edit')) {
-                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+                return Inertia::render('SchedulerHZ/List', ['error' => 'Insufficient permissions']);
             }
 
             // 1. Валидация входящих параметров с фронтенда
@@ -889,7 +903,7 @@ class SchedulerController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
             if (!$request->user()->canClinic('scheduler-edit')) {
-                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
+                return Inertia::render('SchedulerHZ/List', ['error' => 'Insufficient permissions']);
             }
             if ($request->id) {
                 $scheduler = Scheduler::find($request->id);

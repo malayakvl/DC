@@ -44,11 +44,11 @@ const lngRole = {
     'invoice-outgoing-delete': 'InvoiceIncoming Outgoing Delete',
     'invoice-outgoing-view': 'InvoiceIncoming Outgoing View',
 
-    'schedule-all': 'Scheduler',
-    'schedule-create': 'Scheduler Create',
-    'schedule-edit': 'Scheduler Edit',
-    'schedule-delete': 'Scheduler Delete',
-    'schedule-view': 'Scheduler View',
+    'schedule-all': 'SchedulerHZ',
+    'schedule-create': 'SchedulerHZ Create',
+    'schedule-edit': 'SchedulerHZ Edit',
+    'schedule-delete': 'SchedulerHZ Delete',
+    'schedule-view': 'SchedulerHZ View',
 
     Customer: 'Customer',
     Nurse: 'Nurse',

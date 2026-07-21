@@ -268,23 +268,23 @@ export default function Index({
     if (shEvents && shEvents.length) {
       const transformed = shEvents.map((_event) => ({
         ..._event,
-        id: _event.event_id,          // Важно для календаря
+        id: _event.event_id, // Важно для календаря
         resourceId: _event.cabinet_id, // Чтобы событие попало в нужный кабинет
         start: new Date(
-            parseInt(_event.year, 10),
-            parseInt(_event.month, 10) - 1,
-            parseInt(_event.day, 10),
-            parseInt(_event.hour_from, 10),
-            parseInt(_event.minute_from, 10),
-            0
+          parseInt(_event.year, 10),
+          parseInt(_event.month, 10) - 1,
+          parseInt(_event.day, 10),
+          parseInt(_event.hour_from, 10),
+          parseInt(_event.minute_from, 10),
+          0
         ),
         end: new Date(
-            parseInt(_event.year, 10),
-            parseInt(_event.month, 10) - 1,
-            parseInt(_event.day, 10),
-            parseInt(_event.hour_to, 10),
-            parseInt(_event.minute_to, 10),
-            0
+          parseInt(_event.year, 10),
+          parseInt(_event.month, 10) - 1,
+          parseInt(_event.day, 10),
+          parseInt(_event.hour_to, 10),
+          parseInt(_event.minute_to, 10),
+          0
         ),
       }));
 
@@ -300,20 +300,20 @@ export default function Index({
         id: _event.event_id, // Важно для react-big-calendar
         resourceId: _event.cabinet_id, // Чтобы событие попало в нужный кабинет
         start: new Date(
-            parseInt(_event.year, 10),
-            parseInt(_event.month, 10) - 1,
-            parseInt(_event.day, 10),
-            parseInt(_event.hour_from, 10),
-            parseInt(_event.minute_from, 10),
-            0
+          parseInt(_event.year, 10),
+          parseInt(_event.month, 10) - 1,
+          parseInt(_event.day, 10),
+          parseInt(_event.hour_from, 10),
+          parseInt(_event.minute_from, 10),
+          0
         ),
         end: new Date(
-            parseInt(_event.year, 10),
-            parseInt(_event.month, 10) - 1,
-            parseInt(_event.day, 10),
-            parseInt(_event.hour_to, 10),
-            parseInt(_event.minute_to, 10),
-            0
+          parseInt(_event.year, 10),
+          parseInt(_event.month, 10) - 1,
+          parseInt(_event.day, 10),
+          parseInt(_event.hour_to, 10),
+          parseInt(_event.minute_to, 10),
+          0
         ),
       }));
 
@@ -748,8 +748,8 @@ export default function Index({
       const parsedData = JSON.parse(event.services);
       if (Array.isArray(parsedData)) {
         parsedData.forEach(
-            (_s) =>
-                (servicesData += `<span class="block text-[11px] text-gray-500 italic leading-tight">• ${_s.name}</span>`)
+          (_s) =>
+            (servicesData += `<span class="block text-[11px] text-gray-500 italic leading-tight">• ${_s.name}</span>`)
         );
       }
     } catch (error) {
@@ -779,112 +779,117 @@ export default function Index({
     }
 
     return (
-        <div className="p-1 h-full flex flex-col justify-center font-sans overflow-hidden select-none w-full">
+      <div className="p-1 h-full flex flex-col justify-center font-sans overflow-hidden select-none w-full">
+        {/* РЕЖИМ 1: КОРОТКИЙ ВИЗИТ (30 минут и меньше) — СТРОГО ГОРИЗОНТАЛЬНЫЙ ЛЕЙАУТ */}
+        {isShortEvent ? (
+          <div className="flex items-center gap-1.5 min-w-0 w-full h-full">
+            {/* Аватарка слева — уменьшена, чтобы не давить по высоте */}
+            <img
+              className="w-7 h-7 rounded-full object-cover bg-gray-100 flex-shrink-0 border border-slate-200"
+              src={event.avatar ? `/storage/users/${event.avatar}` : `/images/hause.png`}
+              alt="avatar"
+            />
 
-          {/* РЕЖИМ 1: КОРОТКИЙ ВИЗИТ (30 минут и меньше) — СТРОГО ГОРИЗОНТАЛЬНЫЙ ЛЕЙАУТ */}
-          {isShortEvent ? (
-              <div className="flex items-center gap-1.5 min-w-0 w-full h-full">
-                {/* Аватарка слева — уменьшена, чтобы не давить по высоте */}
-                <img
-                    className="w-7 h-7 rounded-full object-cover bg-gray-100 flex-shrink-0 border border-slate-200"
-                    src={event.avatar ? `/storage/users/${event.avatar}` : `/images/hause.png`}
-                    alt="avatar"
-                />
-
-                {/* Текстовый блок справа (2 плотные строчки) */}
-                <div className="flex flex-col min-w-0 flex-1 justify-center leading-none space-y-0.5">
-                  {/* Строка 1: Пациент + Скидка + Время */}
-                  <div className="flex items-center justify-between gap-1 w-full text-[11px]">
-                    <div className="flex items-center gap-1 min-w-0">
-                <span className="font-bold truncate" style={{ color: balanceColor }}>
-                  {shortenName(`${event.pl_name} ${event.p_name}`)}
-                </span>
-                      {event.discount && (
-                          <span className="text-[9px] font-extrabold bg-red-50 text-red-500 px-0.5 rounded">
-                    {event.discount}%
-                  </span>
-                      )}
-                    </div>
-                    <span className="text-[10px] font-medium text-slate-500 flex-shrink-0">
-                {timeFromStr}
-              </span>
-                  </div>
-
-                  {/* Строка 2: Название приема (Карієс) + Доктор */}
-                  <div className="flex items-center justify-between gap-1.5 w-full text-[10px]">
-              <span className="font-extrabold text-slate-900 truncate flex-1">
-                {event.title}
-              </span>
-                    <span className="truncate max-w-[40%] text-right text-[#16a8a7] font-bold">
-                {`${event.last_name} ${event.first_name}`}
-              </span>
-                  </div>
-                </div>
-              </div>
-          ) : (
-
-              /* РЕЖИМ 2: ПОЛНОРАЗМЕРНЫЙ ВИЗИТ (от 45 минут) — ВЕРТИКАЛЬНЫЙ СТЕК */
-              <div className="space-y-1 w-full h-full flex flex-col justify-between">
-                <div>
-                  {/* Шапка: Крупная аватарка */}
-                  <div className="flex items-start justify-between border-b border-gray-100 pb-1 mb-1 gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <img
-                          className="w-8 h-8 rounded-full object-cover bg-gray-100 border border-gray-200 shadow-sm flex-shrink-0"
-                          src={event.avatar ? `/storage/users/${event.avatar}` : `/images/hause.png`}
-                          alt="avatar"
-                      />
-                      <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-[12px] text-slate-800 truncate" style={{ color: balanceColor }}>
+            {/* Текстовый блок справа (2 плотные строчки) */}
+            <div className="flex flex-col min-w-0 flex-1 justify-center leading-none space-y-0.5">
+              {/* Строка 1: Пациент + Скидка + Время */}
+              <div className="flex items-center justify-between gap-1 w-full text-[11px]">
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="font-bold truncate" style={{ color: balanceColor }}>
                     {shortenName(`${event.pl_name} ${event.p_name}`)}
                   </span>
-                        <span className="text-[10px] font-semibold text-slate-500">
-                    {timeFromStr} - {timeToStr}
-                  </span>
-                      </div>
-                    </div>
-                    {event.discount && (
-                        <span className="text-[9px] font-bold bg-red-50 text-red-500 px-1 py-0.5 rounded">
-                  {event.discount}%
+                  {event.discount && (
+                    <span className="text-[9px] font-extrabold bg-red-50 text-red-500 px-0.5 rounded">
+                      {event.discount}%
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium text-slate-500 flex-shrink-0">
+                  {timeFromStr}
                 </span>
-                    )}
-                  </div>
+              </div>
 
-                  {/* Тело */}
-                  <div className="space-y-1">
-                    <div className="font-extrabold text-slate-900 text-[12px] leading-tight line-clamp-1">
-                      {event.title}
-                    </div>
-
-                    {event.description && (
-                        <div className="text-[10px] text-slate-700 font-medium bg-slate-100 p-1 rounded border border-slate-200/60 line-clamp-2">
-                          {event.description}
-                        </div>
-                    )}
-
-                    <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1</div>">
-                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: event.color || '#ccc' }}></span>
-                      <span className="truncate">
-                  Д-р: <span className="text-slate-600 font-semibold">{shortenName(`${event.last_name} ${event.first_name}`)}</span>
+              {/* Строка 2: Название приема (Карієс) + Доктор */}
+              <div className="flex items-center justify-between gap-1.5 w-full text-[10px]">
+                <span className="font-extrabold text-slate-900 truncate flex-1">{event.title}</span>
+                <span className="truncate max-w-[40%] text-right text-[#16a8a7] font-bold">
+                  {`${event.last_name} ${event.first_name}`}
                 </span>
-                    </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* РЕЖИМ 2: ПОЛНОРАЗМЕРНЫЙ ВИЗИТ (от 45 минут) — ВЕРТИКАЛЬНЫЙ СТЕК */
+          <div className="space-y-1 w-full h-full flex flex-col justify-between">
+            <div>
+              {/* Шапка: Крупная аватарка */}
+              <div className="flex items-start justify-between border-b border-gray-100 pb-1 mb-1 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <img
+                    className="w-8 h-8 rounded-full object-cover bg-gray-100 border border-gray-200 shadow-sm flex-shrink-0"
+                    src={event.avatar ? `/storage/users/${event.avatar}` : `/images/hause.png`}
+                    alt="avatar"
+                  />
+                  <div className="flex flex-col min-w-0">
+                    <span
+                      className="font-bold text-[12px] text-slate-800 truncate"
+                      style={{ color: balanceColor }}
+                    >
+                      {shortenName(`${event.pl_name} ${event.p_name}`)}
+                    </span>
+                    <span className="text-[10px] font-semibold text-slate-500">
+                      {timeFromStr} - {timeToStr}
+                    </span>
                   </div>
                 </div>
-
-                {servicesData && (
-                    <div className="mt-1 pt-1 border-t border-dashed border-slate-200 max-h-[32px] overflow-hidden">
-                      <div dangerouslySetInnerHTML={{ __html: servicesData }} />
-                    </div>
+                {event.discount && (
+                  <span className="text-[9px] font-bold bg-red-50 text-red-500 px-1 py-0.5 rounded">
+                    {event.discount}%
+                  </span>
                 )}
               </div>
-          )}
-        </div>
+
+              {/* Тело */}
+              <div className="space-y-1">
+                <div className="font-extrabold text-slate-900 text-[12px] leading-tight line-clamp-1">
+                  {event.title}
+                </div>
+
+                {event.description && (
+                  <div className="text-[10px] text-slate-700 font-medium bg-slate-100 p-1 rounded border border-slate-200/60 line-clamp-2">
+                    {event.description}
+                  </div>
+                )}
+
+                <div className="text-[10px] text-slate-400 font-medium flex items-center gap-1</div>">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: event.color || '#ccc' }}
+                  ></span>
+                  <span className="truncate">
+                    Д-р:{' '}
+                    <span className="text-slate-600 font-semibold">
+                      {shortenName(`${event.last_name} ${event.first_name}`)}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {servicesData && (
+              <div className="mt-1 pt-1 border-t border-dashed border-slate-200 max-h-[32px] overflow-hidden">
+                <div dangerouslySetInnerHTML={{ __html: servicesData }} />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     );
   };
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Scheduler'} />
+      <Head title={'SchedulerHZ'} />
       <div style={{ minHeight: '100vh', fontFamily: 'Manrope, sans-serif' }}>
         {/* Кастомный алерт */}
         <div>

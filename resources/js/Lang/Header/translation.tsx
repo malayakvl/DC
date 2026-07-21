@@ -4,7 +4,7 @@ const lngHeader = {
     clinics: 'Clinics',
     stores: 'Stores',
     filials: 'Filials',
-    scheduler: 'Scheduler',
+    scheduler: 'SchedulerHZ',
     profile: 'Profile',
     logout: 'Logout',
     create: 'Create',
