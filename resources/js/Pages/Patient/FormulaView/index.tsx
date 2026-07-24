@@ -91,7 +91,6 @@ import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 
 export default function FormulaView({ formulaData, id }) {
-  console.log(formulaData);
 
   return (
     <>
@@ -213,10 +212,6 @@ export default function FormulaView({ formulaData, id }) {
           </g>
         </svg>
       </section>
-
-      {/*<section className="selected-diagnozis">*/}
-      {/*   <FormulaDiagnozisView tData={formulaData} />*/}
-      {/*</section>*/}
     </>
   );
 }

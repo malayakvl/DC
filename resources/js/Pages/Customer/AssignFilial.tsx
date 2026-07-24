@@ -12,12 +12,7 @@ import { Transition } from '@headlessui/react';
 
 import { InputColor } from '../../Components/Form/InputColor';
 
-export default function AssignFilial({
-  clinicData,
-  filialData,
-  rolesData,
-  customer,
-}) {
+export default function AssignFilial({ clinicData, filialData, rolesData, customer }) {
   const dispatch = useDispatch();
   const user = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
@@ -30,7 +25,7 @@ export default function AssignFilial({
     permissions: [],
   });
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     router.post(`/customer/assign-submit?id=${clinicData.id}`, {
@@ -44,7 +39,7 @@ export default function AssignFilial({
     <AuthenticatedLayout header={<Head title="Customers" />}>
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
@@ -58,24 +53,22 @@ export default function AssignFilial({
               </header>
             </section>
             <div>
-              <form
-                onSubmit={submit}
-                className="mt-0 space-y-4"
-                encType="multipart/form-data"
-              >
+              <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
                 <div className="grid grid-cols-4 gap-4">
-                  {filialData?.map(item => (
+                  {filialData?.map((item) => (
                     <div key={item.id}>
                       <h5 className="text-lg font-bold text-[#f344b8]">{item.name}</h5>
                       <InputRoleSelect
                         name={`role_id_${item.id}`}
                         values={null}
                         options={rolesData}
-                        onChange={e => {
-                          let tmpPerm = values['permissions'];
+                        onChange={(e) => {
+                          const tmpPerm = values['permissions'];
                           const filialId = parseInt(e.target.id.replace('role_id_', ''));
-                          const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
-                          
+                          const existingIdx = tmpPerm.findIndex(
+                            (obj) => obj.filial_id === filialId
+                          );
+
                           if (existingIdx !== -1) {
                             if (parseInt(e.target.value) > 0) {
                               tmpPerm[existingIdx].role_id = e.target.value;
@@ -86,10 +79,10 @@ export default function AssignFilial({
                             tmpPerm.push({
                               filial_id: item.id,
                               role_id: e.target.value,
-                              color: customer.color || '#000000'
+                              color: customer.color || '#000000',
                             });
                           }
-                          setValues(values => ({
+                          setValues((values) => ({
                             ...values,
                             permissions: [...tmpPerm],
                           }));
@@ -101,13 +94,15 @@ export default function AssignFilial({
                         <InputColor
                           defaultColor={customer.color || '#000000'}
                           name={`color_${item.id}`}
-                          onChange={e => {
-                            let tmpPerm = values['permissions'];
+                          onChange={(e) => {
+                            const tmpPerm = values['permissions'];
                             const filialId = parseInt(e.target.id.replace('color_', ''));
-                            const existingIdx = tmpPerm.findIndex(obj => obj.filial_id === filialId);
+                            const existingIdx = tmpPerm.findIndex(
+                              (obj) => obj.filial_id === filialId
+                            );
                             if (existingIdx !== -1) {
                               tmpPerm[existingIdx].color = e.target.value;
-                              setValues(values => ({
+                              setValues((values) => ({
                                 ...values,
                                 permissions: [...tmpPerm],
                               }));
@@ -120,9 +115,7 @@ export default function AssignFilial({
                   ))}
                 </div>
                 <div className="flex items-center gap-4 mt-5">
-                  <PrimaryButton disabled={processing}>
-                    {msg.get('customer.save')}
-                  </PrimaryButton>
+                  <PrimaryButton disabled={processing}>{msg.get('customer.save')}</PrimaryButton>
 
                   <Transition
                     show={recentlySuccessful}
@@ -131,9 +124,7 @@ export default function AssignFilial({
                     leave="transition ease-in-out"
                     leaveTo="opacity-0"
                   >
-                    <p className="text-sm text-gray-600">
-                      {msg.get('customer.saved')}
-                    </p>
+                    <p className="text-sm text-gray-600">{msg.get('customer.saved')}</p>
                   </Transition>
                 </div>
               </form>

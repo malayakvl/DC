@@ -37,7 +37,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           mark_up: '',
           price: '',
           total: '',
-          basePrice: '',
+          base_price: '',
         },
       ]);
     };
@@ -64,10 +64,10 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
         const markupValue = parseFloat(event.target.value) || 0;
 
         // сохраняем исходную цену один раз
-        if (!inputs[index].basePrice) {
-          inputs[index].basePrice = parseFloat(inputs[index].price) || 0;
+        if (!inputs[index].base_price) {
+          inputs[index].base_price = parseFloat(inputs[index].price) || 0;
         }
-        const basePrice = inputs[index].basePrice;
+        const basePrice = inputs[index].base_price;
         const newPrice = basePrice + (basePrice * markupValue) / 100;
         inputs[index].price = parseFloat(newPrice.toFixed(2));
         inputs[index].total = parseFloat((inputs[index].price * inputs[index].quantity).toFixed(2));

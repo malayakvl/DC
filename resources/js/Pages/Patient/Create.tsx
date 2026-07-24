@@ -9,12 +9,8 @@ export default function Create({ formData, customerData, contactData }) {
       <Head title="Patient" />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            <Form
-              formData={formData}
-              customerData={customerData}
-              contactData={contactData}
-            />
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+            <Form formData={formData} customerData={customerData} contactData={contactData} />
           </div>
         </div>
       </div>

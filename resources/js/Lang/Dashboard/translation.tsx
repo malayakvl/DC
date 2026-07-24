@@ -15,6 +15,14 @@ const lngDashboard = {
     role: 'Роль',
     no_filials: 'Немає філіалів',
     select: { title: 'Оберіть клініку для входу' },
+    quick_actions: 'Швидкі дії',
+    new_patient: 'Новий пацієнт',
+    new_appointment: 'Записати на прийом',
+    new_invoice: 'Створити рахунок',
+    new_payment: 'Створити платіж',
+    total_income: 'Дохід за сьогодні',
+    patients: 'Пацієнтів',
+    appointments: 'Найближчі прийоми',
   },
 };
 export default lngDashboard;

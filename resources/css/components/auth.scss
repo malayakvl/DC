@@ -1,0 +1,187 @@
+.auth-page {
+  display: flex;
+  background: #F8FBFF;
+  padding-top: 72px;
+  min-height: 790px;
+}
+.auth-left {
+  position: relative;
+  width: 62%;
+  overflow: hidden;
+  padding: 120px 80px;
+  //padding-top: 72px;
+  min-height: 700px;
+
+  background: linear-gradient(
+                  135deg,
+                  #EAF6FF 0%,
+                  #DDF1FF 45%,
+                  #EEF8FF 100%
+  );
+
+  display: flex;
+  align-items: center;
+}
+.auth-glow {
+  position: absolute;
+
+  width: 700px;
+  height: 700px;
+
+  right: 120px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+                  circle,
+                  rgba(20,184,166,.12) 0%,
+                  rgba(17,106,239,.08) 40%,
+                  transparent 70%
+  );
+
+  filter: blur(80px);
+}
+.auth-branding {
+  position: relative;
+  z-index: 10;
+  max-width: 520px;
+  margin-top:-150px;
+}
+.auth-label {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+
+  color: #116AEF;
+}
+.auth-branding h1 {
+  font-size: 76px;
+  line-height: 1;
+  font-weight: 800;
+
+  margin-bottom: 24px;
+
+  color: #071B42;
+}
+.auth-branding p {
+  font-size: 20px;
+  line-height: 1.1;
+
+  color: #071B42;
+
+  max-width: 540px;
+}
+.auth-right {
+  width: 38%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  //min-height: 100vh;
+  padding: 60px;
+  min-height: 760px;
+  background: #FAFCFF;
+}
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  margin-top: -50px;
+  background: white;
+
+  padding: 50px;
+
+  border-radius: 28px;
+
+  box-shadow:
+          0 10px 40px rgba(15,23,42,.06);
+}
+.auth-floating {
+  position: absolute;
+
+  background: rgba(255,255,255,.85);
+
+  backdrop-filter: blur(12px);
+
+  padding: 24px;
+
+  width: 220px;
+
+  border-radius: 24px;
+
+  box-shadow:
+          0 8px 25px rgba(15,23,42,.05);
+
+  border: 1px solid rgba(255,255,255,.6);
+}
+.auth-floating span {
+  display: block;
+
+  font-size: 14px;
+
+  color: #64748B;
+
+  margin-bottom: 10px;
+}
+.auth-floating strong {
+  display: block;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  color: #071B42;
+}
+.auth-floating small {
+  display: block;
+
+  margin-top: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #10B981;
+}
+.patients {
+  left: 90px;
+  bottom: -50px;
+
+  transform: rotate(-4deg);
+}
+
+.revenue {
+  left: 240px;
+  bottom: 40px;
+
+  transform: rotate(3deg);
+}
+
+.schedule {
+  left: 500px;
+  bottom: 80px;
+
+  transform: rotate(-5deg);
+}
+
+.trial-card {
+  right: 100px;
+  top: 50px;
+  transform: rotate(-4deg);
+}
+
+.clinic-card {
+  left: 160px;
+  bottom: 80px;
+  transform: rotate(3deg);
+}
+
+.team-card {
+  left: 620px;
+  bottom: 140px;
+  transform: rotate(-5deg);
+}

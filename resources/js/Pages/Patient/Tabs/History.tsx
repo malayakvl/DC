@@ -148,7 +148,7 @@ export default function History({ patientData, type, treatmentData }) {
                   </div>
                   <div className="w-1/2">
                     <ul className="tabs">
-                      <li className={'active'} id={`up-t-${element.id}`}>
+                      <li className={'green-tab active'} id={`up-t-${element.id}`}>
                         <span
                           onClick={() => {
                             if (
@@ -223,7 +223,7 @@ export default function History({ patientData, type, treatmentData }) {
                           {msgFormula.get('formula.maxilla')}
                         </span>
                       </li>
-                      <li className={'active'} id={`bottom-t-${element.id}`}>
+                      <li className={'green-tab active'} id={`bottom-t-${element.id}`}>
                         <span
                           onClick={() => {
                             if (
@@ -276,7 +276,7 @@ export default function History({ patientData, type, treatmentData }) {
                           {msgFormula.get('formula.mandible')}
                         </span>
                       </li>
-                      <li className={'active'} id={`occlusion-${element.id}`}>
+                      <li className={'green-tab active'} id={`occlusion-${element.id}`}>
                         <span
                           onClick={() => {
                             document

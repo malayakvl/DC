@@ -8,8 +8,10 @@ h2 {
 
 h3 {
     @apply font-semibold leading-tight py-4 text-center;
-    color: #0000 !important;
+    color: #000 !important;
     font-weight: normal !important;
+    font-family: "Sora", "Helvetica", "Arial", sans-serif;
+    font-size: 18px;
 }
 h5 {
     @apply font-semibold leading-tight py-4;
@@ -18,8 +20,9 @@ h5 {
 }
 
 .dropdown-span {
-    @apply block text-sm px-4 py-2 cursor-pointer;
+    @apply block text-sm px-2 py-2 cursor-pointer;
     font-weight: normal;
+    display: flex;
 }
 .dropdown-span:hover {
     background-color: #01bff8;

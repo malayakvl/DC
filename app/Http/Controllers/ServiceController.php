@@ -221,7 +221,7 @@ class ServiceController extends Controller
                         $pricingItem->price = $row["price"];
                         $pricingItem->total = $row["total"];
                         $pricingItem->mark_up = $row["mark_up"];
-                        $pricingItem->base_price = $row["basePrice"];
+                        $pricingItem->base_price = $row["base_price"] || $row["basePrice"];
                         $total += $row["total"];
                         $pricingItem->save();
                     }

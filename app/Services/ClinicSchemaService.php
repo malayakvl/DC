@@ -307,7 +307,7 @@ class ClinicSchemaService
                 event_time_to TIME,
                 description TEXT,
                 status_color VARCHAR(255),
-                status_name INTEGER,
+                status_name VARCHAR(255),
                 services TEXT,
                 priority BOOLEAN,
                 assistent_id INTEGER,

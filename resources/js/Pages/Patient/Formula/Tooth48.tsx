@@ -52,20 +52,16 @@ export default function Tooth48() {
   const setColordedPart = (diagnozis, toothPart = '') => {
     if (diagnozis === 'caries') {
       if (toothPart === 'bottom') {
-        teethDiagnozis.tooth48.caries_bottom =
-          !teethDiagnozis.tooth48.caries_bottom;
+        teethDiagnozis.tooth48.caries_bottom = !teethDiagnozis.tooth48.caries_bottom;
       }
       if (toothPart === 'center') {
-        teethDiagnozis.tooth48.caries_center =
-          !teethDiagnozis.tooth48.caries_center;
+        teethDiagnozis.tooth48.caries_center = !teethDiagnozis.tooth48.caries_center;
       }
       if (toothPart === 'left') {
-        teethDiagnozis.tooth48.caries_left =
-          !teethDiagnozis.tooth48.caries_left;
+        teethDiagnozis.tooth48.caries_left = !teethDiagnozis.tooth48.caries_left;
       }
       if (toothPart === 'right') {
-        teethDiagnozis.tooth48.caries_right =
-          !teethDiagnozis.tooth48.caries_right;
+        teethDiagnozis.tooth48.caries_right = !teethDiagnozis.tooth48.caries_right;
       }
       if (toothPart === 'top') {
         teethDiagnozis.tooth48.caries_top = !teethDiagnozis.tooth48.caries_top;
@@ -74,72 +70,43 @@ export default function Tooth48() {
     }
     if (diagnozis === 'seal') {
       if (toothPart === 'center') {
-        if (
-          teethDiagnozis.tooth48.seal_center_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth48.seal_center_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth48.seal_center_color = sealColor1;
           teethDiagnozis.tooth48.seal_center = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_center_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_center_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth48.seal_center_color = sealColor2;
           teethDiagnozis.tooth48.seal_center = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_center_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_center_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth48.seal_center_color = sealColor3;
           teethDiagnozis.tooth48.seal_center = true;
         } else {
-          teethDiagnozis.tooth48.seal_center =
-            !teethDiagnozis.tooth48.seal_center;
+          teethDiagnozis.tooth48.seal_center = !teethDiagnozis.tooth48.seal_center;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'bottom') {
-        if (
-          teethDiagnozis.tooth48.seal_bottom_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth48.seal_bottom_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth48.seal_bottom_color = sealColor1;
           teethDiagnozis.tooth48.seal_bottom = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_bottom_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_bottom_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth48.seal_bottom_color = sealColor2;
           teethDiagnozis.tooth48.seal_bottom = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_bottom_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_bottom_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth48.seal_bottom_color = sealColor3;
           teethDiagnozis.tooth48.seal_bottom = true;
         } else {
-          teethDiagnozis.tooth48.seal_bottom =
-            !teethDiagnozis.tooth48.seal_bottom;
+          teethDiagnozis.tooth48.seal_bottom = !teethDiagnozis.tooth48.seal_bottom;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'left') {
-        if (
-          teethDiagnozis.tooth48.seal_left_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth48.seal_left_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth48.seal_left_color = sealColor1;
           teethDiagnozis.tooth48.seal_left = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_left_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_left_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth48.seal_left_color = sealColor2;
           teethDiagnozis.tooth48.seal_left = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_left_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_left_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth48.seal_left_color = sealColor3;
           teethDiagnozis.tooth48.seal_left = true;
         } else {
@@ -148,47 +115,28 @@ export default function Tooth48() {
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'right') {
-        if (
-          teethDiagnozis.tooth48.seal_right_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth48.seal_right_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth48.seal_right_color = sealColor1;
           teethDiagnozis.tooth48.seal_right = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_right_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_right_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth48.seal_right_color = sealColor2;
           teethDiagnozis.tooth48.seal_right = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_right_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_right_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth48.seal_right_color = sealColor3;
           teethDiagnozis.tooth48.seal_right = true;
         } else {
-          teethDiagnozis.tooth48.seal_right =
-            !teethDiagnozis.tooth48.seal_right;
+          teethDiagnozis.tooth48.seal_right = !teethDiagnozis.tooth48.seal_right;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'top') {
-        if (
-          teethDiagnozis.tooth48.seal_top_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth48.seal_top_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth48.seal_top_color = sealColor1;
           teethDiagnozis.tooth48.seal_top = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_top_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_top_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth48.seal_top_color = sealColor2;
           teethDiagnozis.tooth48.seal_top = true;
-        } else if (
-          teethDiagnozis.tooth48.seal_top_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth48.seal_top_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth48.seal_top_color = sealColor3;
           teethDiagnozis.tooth48.seal_top = true;
         } else {
@@ -211,7 +159,7 @@ export default function Tooth48() {
     }
   };
 
-  const showHideTeeth = type => {
+  const showHideTeeth = (type) => {
     if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth48.show) {
         document.getElementById('TH-48').classList.add('f-tooth-active');
@@ -227,10 +175,7 @@ export default function Tooth48() {
 
   return (
     <>
-      <g
-        id="48"
-        className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}
-      >
+      <g id="48" className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}>
         <text
           transform="matrix(1 0 0 1 247.1699 842.0025)"
           className={`st3 st4 st5 ${selectedTooth === 48 ? 'num-active' : ''}`}
@@ -306,9 +251,7 @@ export default function Tooth48() {
             <g
               style={{
                 visibility:
-                  !tooth48Diagnozis.culttab &&
-                  !tooth48Diagnozis.implant &&
-                  !tooth48Diagnozis.shaper
+                  !tooth48Diagnozis.culttab && !tooth48Diagnozis.implant && !tooth48Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -323,9 +266,7 @@ export default function Tooth48() {
             <g
               style={{
                 visibility:
-                  tooth48Diagnozis?.apex || tooth48Diagnozis?.change_color
-                    ? 'inherit'
-                    : 'hidden',
+                  tooth48Diagnozis?.apex || tooth48Diagnozis?.change_color ? 'inherit' : 'hidden',
               }}
             >
               <path
@@ -375,9 +316,7 @@ export default function Tooth48() {
             className="implant"
             style={{
               visibility:
-                tooth48Diagnozis.implant || tooth48Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
+                tooth48Diagnozis.implant || tooth48Diagnozis.shaper ? 'inherit' : 'hidden',
             }}
           >
             <circle className="st48" cx="265.5" cy="936.5" r="26.5" />
@@ -435,13 +374,7 @@ export default function Tooth48() {
               className="st47"
               d="M225.131 931.54L225.131 931.543C224.924 934.562 224.992 937.664 225.132 940.729L225.132 940.731C225.343 945.489 225.767 950.128 228.412 954.141L228.418 954.151L228.418 954.151C231.009 958.182 235.587 961.367 240.911 963.706L240.914 963.707C244.634 965.352 248.704 966.588 252.848 967.344L252.851 967.345C258.048 968.31 263.33 968.657 268.719 968.797L268.722 968.797C275.966 969.007 283.214 968.851 289.247 966.288L289.25 966.287C292.287 965.011 294.872 963.19 297.295 961.192L297.302 961.187L297.308 961.182C299.759 959.231 301.931 957.243 303.161 954.924C303.961 953.396 304.326 951.781 304.538 950.058C304.645 949.195 304.711 948.317 304.778 947.41L304.786 947.309C304.85 946.441 304.916 945.546 305.02 944.648C305.215 942.905 305.594 941.139 305.961 939.424C306.071 938.914 306.179 938.408 306.282 937.908C306.736 935.693 307.082 933.558 306.983 931.451L306.983 931.445C306.85 928.211 305.787 924.951 303.901 921.934C302.014 918.917 299.313 916.16 295.93 914.073L295.924 914.069C289.662 910.141 281.544 908.375 273.705 909.664L273.702 909.664C273.098 909.761 272.476 909.88 271.841 910.001C269.898 910.371 267.829 910.765 265.763 910.655C264.874 910.616 264.021 910.463 263.216 910.294C262.943 910.236 262.681 910.178 262.424 910.122C261.896 910.005 261.391 909.894 260.862 909.802L260.85 909.8L260.85 909.8C257.96 909.265 254.913 909.395 251.8 909.536L251.794 909.536L251.794 909.536C248.22 909.676 244.684 909.953 241.521 910.957C237.699 912.225 234.591 914.434 231.921 916.954C230.041 918.755 228.377 920.557 227.258 922.586L225.131 931.54ZM225.131 931.54C225.34 928.349 225.753 925.32 227.258 922.586L225.131 931.54Z"
             ></path>
-            <ellipse
-              className="st45"
-              cx="266"
-              cy="940.571"
-              rx="13"
-              ry="13.1313"
-            />
+            <ellipse className="st45" cx="266" cy="940.571" rx="13" ry="13.1313" />
           </g>
           {/* PIN */}
           <g
@@ -597,7 +530,6 @@ export default function Tooth48() {
             <g
               className="caries-filling"
               onClick={() => {
-                alert(1);
                 setColordedPart(diagnozis, 'top');
               }}
             >
@@ -673,10 +605,8 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_left &&
-                      !tooth48Diagnozis.seal_bottom) ||
-                    (!tooth48Diagnozis.seal_left &&
-                      tooth48Diagnozis.seal_bottom)
+                    (tooth48Diagnozis.seal_left && !tooth48Diagnozis.seal_bottom) ||
+                    (!tooth48Diagnozis.seal_left && tooth48Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -688,10 +618,8 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_left &&
-                      !tooth48Diagnozis.seal_center) ||
-                    (!tooth48Diagnozis.seal_left &&
-                      tooth48Diagnozis.seal_center)
+                    (tooth48Diagnozis.seal_left && !tooth48Diagnozis.seal_center) ||
+                    (!tooth48Diagnozis.seal_left && tooth48Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -703,8 +631,7 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_left &&
-                      !tooth48Diagnozis.seal_top) ||
+                    (tooth48Diagnozis.seal_left && !tooth48Diagnozis.seal_top) ||
                     (!tooth48Diagnozis.seal_left && tooth48Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -717,8 +644,7 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_center &&
-                      !tooth48Diagnozis.seal_top) ||
+                    (tooth48Diagnozis.seal_center && !tooth48Diagnozis.seal_top) ||
                     (!tooth48Diagnozis.seal_center && tooth48Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -731,8 +657,7 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_right &&
-                      !tooth48Diagnozis.seal_top) ||
+                    (tooth48Diagnozis.seal_right && !tooth48Diagnozis.seal_top) ||
                     (!tooth48Diagnozis.seal_right && tooth48Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -745,10 +670,8 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth48Diagnozis.seal_right &&
-                      tooth48Diagnozis.seal_center) ||
-                    (tooth48Diagnozis.seal_right &&
-                      !tooth48Diagnozis.seal_center)
+                    (!tooth48Diagnozis.seal_right && tooth48Diagnozis.seal_center) ||
+                    (tooth48Diagnozis.seal_right && !tooth48Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -760,13 +683,11 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_right &&
-                      !tooth48Diagnozis.seal_bottom) ||
+                    (tooth48Diagnozis.seal_right && !tooth48Diagnozis.seal_bottom) ||
                     (!tooth48Diagnozis.seal_right &&
                       tooth48Diagnozis.seal_bottom &&
                       tooth48Diagnozis.seal_center) ||
-                    (!tooth48Diagnozis.seal_right &&
-                      tooth48Diagnozis.seal_bottom)
+                    (!tooth48Diagnozis.seal_right && tooth48Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -778,10 +699,8 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth48Diagnozis.seal_center &&
-                      tooth48Diagnozis.seal_bottom) ||
-                    (tooth48Diagnozis.seal_center &&
-                      !tooth48Diagnozis.seal_bottom)
+                    (!tooth48Diagnozis.seal_center && tooth48Diagnozis.seal_bottom) ||
+                    (tooth48Diagnozis.seal_center && !tooth48Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -912,9 +831,7 @@ export default function Tooth48() {
             <g
               style={{
                 visibility:
-                  !tooth48Diagnozis.implant &&
-                  !tooth48Diagnozis.apex &&
-                  !tooth48Diagnozis.shaper
+                  !tooth48Diagnozis.implant && !tooth48Diagnozis.apex && !tooth48Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -1065,9 +982,7 @@ export default function Tooth48() {
             className="implant"
             style={{
               visibility:
-                tooth48Diagnozis.abutment ||
-                tooth48Diagnozis.implant ||
-                tooth48Diagnozis.shaper
+                tooth48Diagnozis.abutment || tooth48Diagnozis.implant || tooth48Diagnozis.shaper
                   ? 'inherit'
                   : 'hidden',
             }}
@@ -1077,41 +992,11 @@ export default function Tooth48() {
               d="M220.8,1126.7c0,0-8.8,27.5-11.9,39.6c-3.2,12.1-7.2,39.1-7.4,40.5s5.8,9.5,13.5,12.1
                             c7.7,2.6,15.1-1.1,15.6-1.4c0.5-0.4,25.2-43.1,28.9-50.8s7.9-18.6,7.9-18.6L220.8,1126.7z"
             />
-            <line
-              className="st19"
-              x1="214.8"
-              y1="1131.2"
-              x2="265.3"
-              y2="1162.8"
-            />
-            <line
-              className="st19"
-              x1="209.8"
-              y1="1146.2"
-              x2="260.3"
-              y2="1177.8"
-            />
-            <line
-              className="st19"
-              x1="203.8"
-              y1="1161.2"
-              x2="254.3"
-              y2="1192.8"
-            />
-            <line
-              className="st19"
-              x1="197.8"
-              y1="1175.2"
-              x2="248.3"
-              y2="1206.8"
-            />
-            <line
-              className="st19"
-              x1="192.8"
-              y1="1191.2"
-              x2="243.3"
-              y2="1222.8"
-            />
+            <line className="st19" x1="214.8" y1="1131.2" x2="265.3" y2="1162.8" />
+            <line className="st19" x1="209.8" y1="1146.2" x2="260.3" y2="1177.8" />
+            <line className="st19" x1="203.8" y1="1161.2" x2="254.3" y2="1192.8" />
+            <line className="st19" x1="197.8" y1="1175.2" x2="248.3" y2="1206.8" />
+            <line className="st19" x1="192.8" y1="1191.2" x2="243.3" y2="1222.8" />
           </g>
           <g
             className="toutline "
@@ -1141,9 +1026,7 @@ export default function Tooth48() {
             className="wedge-shaped "
             style={{
               visibility:
-                !tooth48Diagnozis.culttab && !tooth48Diagnozis.abutment
-                  ? 'inherit'
-                  : 'hidden',
+                !tooth48Diagnozis.culttab && !tooth48Diagnozis.abutment ? 'inherit' : 'hidden',
             }}
           >
             <path
@@ -1181,10 +1064,7 @@ export default function Tooth48() {
             ></path>
           </g>
           {/*КАРИЕС*/}
-          <g
-            className="header caries-filling "
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="header caries-filling " style={{ visibility: 'inherit' }}>
             {/*КАРИЕС ЦЕНТР*/}
             <g
               className="caries-filling"
@@ -1297,8 +1177,7 @@ export default function Tooth48() {
                     (tooth48Diagnozis.seal_left &&
                       tooth48Diagnozis.seal_top &&
                       !tooth48Diagnozis.seal_center) ||
-                    (!tooth48Diagnozis.seal_left &&
-                      tooth48Diagnozis.seal_center)
+                    (!tooth48Diagnozis.seal_left && tooth48Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -1310,8 +1189,7 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_left &&
-                      !tooth48Diagnozis.seal_bottom) ||
+                    (tooth48Diagnozis.seal_left && !tooth48Diagnozis.seal_bottom) ||
                     (!tooth48Diagnozis.seal_left &&
                       tooth48Diagnozis.seal_bottom &&
                       !tooth48Diagnozis.seal_center) ||
@@ -1353,8 +1231,7 @@ export default function Tooth48() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth48Diagnozis.seal_right &&
-                      !tooth48Diagnozis.seal_bottom) ||
+                    (tooth48Diagnozis.seal_right && !tooth48Diagnozis.seal_bottom) ||
                     (!tooth48Diagnozis.seal_right &&
                       tooth48Diagnozis.seal_bottom &&
                       !tooth48Diagnozis.seal_center) ||
@@ -1378,8 +1255,7 @@ export default function Tooth48() {
                     (tooth48Diagnozis.seal_right &&
                       tooth48Diagnozis.seal_top &&
                       !tooth48Diagnozis.seal_center) ||
-                    (!tooth48Diagnozis.seal_right &&
-                      tooth48Diagnozis.seal_center)
+                    (!tooth48Diagnozis.seal_right && tooth48Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}

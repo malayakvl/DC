@@ -68,7 +68,6 @@ export default function index({
     dispatch(setPatientTab(tabName));
   };
 
-
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head
@@ -78,98 +77,7 @@ export default function index({
       />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            {/*<div className="patient-view-border relative">*/}
-            {/*  <div className="patient-header">*/}
-            {/*    <div className="patient-profile">*/}
-            {/*      {patientData.avatar ? (*/}
-            {/*        <div*/}
-            {/*          className="profile-photo"*/}
-            {/*          style={{*/}
-            {/*            backgroundImage: `url(/uploads/patients/${patientData.avatar})`,*/}
-            {/*          }}*/}
-            {/*        />*/}
-            {/*      ) : (*/}
-            {/*        <div className="profile-photo patient-initials">*/}
-            {/*          {patientData.first_name?.[0]}*/}
-            {/*          {patientData.last_name?.[0]}*/}
-            {/*        </div>*/}
-            {/*      )}*/}
-
-            {/*      <div className="patient-meta">*/}
-            {/*        <div className="patient-fullname">*/}
-            {/*          {patientData.first_name} {patientData.last_name}*/}
-            {/*        </div>*/}
-
-            {/*        <div className="patient-phone">{patientData.primary_phone}</div>*/}
-
-            {/*        {patientData.discount && (*/}
-            {/*          <div className="patient-discount">*/}
-            {/*            {discountStatus || msg.get('patient.discount')} -*/}
-            {/*            {discountValue || patientData.discount}%*/}
-            {/*          </div>*/}
-            {/*        )}*/}
-            {/*      </div>*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*  <div className="icon-block">*/}
-            {/*    <ul>*/}
-            {/*      <li>*/}
-            {/*        <Link href="/">*/}
-            {/*          <FontAwesomeIcon*/}
-            {/*            style={{ color: 'white' }}*/}
-            {/*            icon={faUserPlus}*/}
-            {/*            className="mr-3"*/}
-            {/*          />*/}
-            {/*        </Link>*/}
-            {/*      </li>*/}
-            {/*      <li>*/}
-            {/*        <Link href={`/patient/edit/${patientData.id}`}>*/}
-            {/*          <FontAwesomeIcon style={{ color: 'white' }} icon={faPencil} />*/}
-            {/*        </Link>*/}
-            {/*      </li>*/}
-            {/*    </ul>*/}
-            {/*  </div>*/}
-            {/*  <div className="tabs-block">*/}
-            {/*    <ul>*/}
-            {/*      <li*/}
-            {/*        id="documents"*/}
-            {/*        className={tab === 'documents' ? 'active' : ''}*/}
-            {/*        onClick={() => handleTabClick('documents')}*/}
-            {/*      >*/}
-            {/*        Документи*/}
-            {/*      </li>*/}
-            {/*      <li*/}
-            {/*        id="visits"*/}
-            {/*        className={tab === 'visits' ? 'active' : ''}*/}
-            {/*        onClick={() => handleTabClick('visits')}*/}
-            {/*      >*/}
-            {/*        Візити*/}
-            {/*      </li>*/}
-            {/*      <li*/}
-            {/*        id="plans"*/}
-            {/*        className={tab === 'plans' ? 'active' : ''}*/}
-            {/*        onClick={() => handleTabClick('plans')}*/}
-            {/*      >*/}
-            {/*        Плани лікування*/}
-            {/*      </li>*/}
-            {/*      <li*/}
-            {/*        id="history"*/}
-            {/*        className={tab === 'history' ? 'active' : ''}*/}
-            {/*        onClick={() => handleTabClick('history')}*/}
-            {/*      >*/}
-            {/*        Історія лікування*/}
-            {/*      </li>*/}
-            {/*      <li*/}
-            {/*        id="finances"*/}
-            {/*        className={tab === 'finances' ? 'active' : ''}*/}
-            {/*        onClick={() => handleTabClick('finances')}*/}
-            {/*      >*/}
-            {/*        {msg.get('patient.finances')}*/}
-            {/*      </li>*/}
-            {/*    </ul>*/}
-            {/*  </div>*/}
-            {/*</div>*/}
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <div className="pv-shell">
               <div className="pv-top">
                 <div className="pv-user">

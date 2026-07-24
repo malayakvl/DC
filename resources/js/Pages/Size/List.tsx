@@ -28,26 +28,21 @@ export default function List({ listData, permissions }) {
       <Head title={'Sizes'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
                   <h2>{msg.get('size.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
-                      <NavLink href={'/size/create'}>
-                        {msg.get('size.create')}
-                      </NavLink>
+                      <NavLink href={'/size/create'}>{msg.get('size.create')}</NavLink>
                     </PrimaryButton>
                   </div>
                 </div>
               </header>
             </section>
-            <DataTable
-              paginationType={PaginationType.PRODUCERS}
-              sendRequest={sendRequest}
-            >
-              {listData?.map(item => (
+            <DataTable paginationType={PaginationType.PRODUCERS} sendRequest={sendRequest}>
+              {listData?.map((item) => (
                 <tr className="" key={item.id}>
                   <td className="">{item.name}</td>
                   <td className="text-right">

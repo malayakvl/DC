@@ -1,17 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { appLangSelector } from '../../Redux/Layout/selectors';
-import Lang from 'lang.js';
-import lngHeader from '../../Lang/Header/translation';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Dropdown from '../../Components/Form/Dropdown';
-import { changeLangAction } from '../../Redux/Layout';
+import { changeLangAction } from '@/Redux/Layout';
 
 export default function LangMenu() {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
-  const lng = new Lang({
-    messages: lngHeader,
-    locale: appLang,
-  });
 
   return (
     <div className="lang-block">
@@ -34,16 +28,10 @@ export default function LangMenu() {
         </Dropdown.Trigger>
 
         <Dropdown.Content>
-          <span
-            className="dropdown-span"
-            onClick={() => dispatch(changeLangAction('uk'))}
-          >
+          <span className="dropdown-span" onClick={() => dispatch(changeLangAction('uk'))}>
             Укр
           </span>
-          <span
-            className="dropdown-span"
-            onClick={() => dispatch(changeLangAction('en'))}
-          >
+          <span className="dropdown-span" onClick={() => dispatch(changeLangAction('en'))}>
             En
           </span>
         </Dropdown.Content>

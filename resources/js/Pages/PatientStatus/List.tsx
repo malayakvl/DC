@@ -27,7 +27,7 @@ export default function List({ listData, permissions }) {
       <Head title={'Unit'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex w-full mb-4">
@@ -41,18 +41,6 @@ export default function List({ listData, permissions }) {
                   </div>
                 </div>
               </header>
-              {/*<header>*/}
-              {/*  <div className="flex inline-flex">*/}
-              {/*    <h2>{msg.get('status.title.list')}</h2>*/}
-              {/*    <div className="pl-5 mt-2">*/}
-              {/*      <PrimaryButton>*/}
-              {/*        <NavLink href={'/patient-status/create'}>*/}
-              {/*          {msg.get('status.create')}*/}
-              {/*        </NavLink>*/}
-              {/*      </PrimaryButton>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</header>*/}
             </section>
             <section className="table-card">
               <DataTable paginationType={PaginationType.PATIENTSTATUSES} sendRequest={sendRequest}>

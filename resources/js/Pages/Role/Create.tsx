@@ -67,7 +67,7 @@ export default function Create({ permissionData }) {
       <Head title="Roles" />
       <div className="py-0">
         <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">

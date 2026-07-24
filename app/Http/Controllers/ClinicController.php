@@ -199,7 +199,7 @@ class ClinicController extends Controller
                 $validated
             );
 
-            return Redirect::route('dashboard.index');
+            return Redirect::route('dashboard.filial');
         });
     }
 
@@ -268,7 +268,7 @@ class ClinicController extends Controller
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
 
-        return Redirect::route('dashboard.index');
+        return Redirect::route('dashboard.filial');
     }
 
     public function findProducer(Request $request) {

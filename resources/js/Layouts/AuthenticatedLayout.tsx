@@ -14,6 +14,7 @@ import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
 import { ToastContainer } from 'react-toastify';
+import Footer from '@/Components/Footer/Footer';
 
 export default function AuthenticatedLayout({ header, children }) {
   const appLang = useSelector(appLangSelector);
@@ -32,10 +33,10 @@ export default function AuthenticatedLayout({ header, children }) {
   };
 
   return (
-    <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'auto' }}>
+    <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'visible' }}>
       {header && (
         <header className="">
-          <div className="flex py-2 px-4 sm:px-10 top-header font-sans min-h-[50px] tracking-wide relative z-50 header-fixed">
+          <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
             <div className="relative flex w-full">
               <div>
                 <Link href="/">
@@ -78,6 +79,7 @@ export default function AuthenticatedLayout({ header, children }) {
       )}
 
       <main className="pt-[60px]">
+        {/*<div className="teaser-container">Управляйте клінікою легко та ефективно</div>*/}
         <div className="mx-auto w-full px-1">
           <div>{children}</div>
         </div>
@@ -92,6 +94,7 @@ export default function AuthenticatedLayout({ header, children }) {
         </div>
       )}
       <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
+      <Footer />
     </div>
   );
 }

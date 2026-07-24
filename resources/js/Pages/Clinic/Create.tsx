@@ -9,12 +9,8 @@ export default function Create({ clinicData, currencyData }) {
       <Head title={'Clinic Create'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
-            <ClinicForm
-              clinicData={clinicData}
-              currencyData={currencyData}
-              className="max-w-xl"
-            />
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+            <ClinicForm clinicData={clinicData} currencyData={currencyData} className="max-w-xl" />
           </div>
         </div>
       </div>

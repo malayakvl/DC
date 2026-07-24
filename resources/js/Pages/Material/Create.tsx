@@ -4,12 +4,7 @@ import Form from './Partials/Form';
 import { setPercentAction } from '../../Redux/Material';
 import { useAppDispatch } from '../../hooks';
 import React from 'react';
-export default function Create({
-  clinicData,
-  categoryData,
-  formData,
-  unitsData,
-}) {
+export default function Create({ clinicData, categoryData, formData, unitsData }) {
   const dispatch = useAppDispatch();
 
   dispatch(setPercentAction(0));
@@ -19,7 +14,7 @@ export default function Create({
       <Head title={'Materials Create'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
               clinicData={clinicData}
               formData={formData}

@@ -45,11 +45,14 @@ Route::get('/', function () {
 Route::get('/clinic-new', [ClinicController::class, 'create'])
     ->name('clinic.new');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard.index');
+//Route::get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->middleware(['auth', 'verified'])->name('dashboard.index');
 Route::get('/dashboard-select', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('dashboard.index');
+    ->middleware(['auth', 'verified'])->name('dashboard.select');
+
+Route::get('/dashboard', [DashboardController::class, 'indexFilial'])
+    ->middleware(['auth', 'verified'])->name('dashboard.filial');
 
 Route::get('/dashboard-select', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard.select');
@@ -250,6 +253,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/scheduler/findPatients', [SchedulerController::class, 'fetchPatients'])->name('scheduler.fetchPatients');
     Route::get('/scheduler/updatePeriod', [SchedulerController::class, 'updatePeriod'])->name('scheduler.updatePeriod');
     Route::post('/scheduler/update-event', [SchedulerController::class, 'updateEvent'])->name('scheduler.updateEvent');
+
+    Route::put('/scheduler/update-position/{id}', [SchedulerController::class, 'updatePosition'])->name('scheduler.update-position');
+
 
     Route::get('/currency', [CurrencyController::class, 'index'])->name('currency.index');
     Route::get('/currency/edit/{id}', [CurrencyController::class, 'edit'])->name('currency.edit');

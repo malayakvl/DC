@@ -32,26 +32,21 @@ export default function List({ listData, permissions }) {
       <Head title={'Invoice Change'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
               <header>
                 <div className="flex inline-flex">
                   <h2>{msg.get('invoice.change.title.list')}</h2>
                   <div className="pl-5 mt-2">
                     <PrimaryButton>
-                      <NavLink href={'/invoice-change/create'}>
-                        {msg.get('invoice.create')}
-                      </NavLink>
+                      <NavLink href={'/invoice-change/create'}>{msg.get('invoice.create')}</NavLink>
                     </PrimaryButton>
                   </div>
                 </div>
               </header>
             </section>
-            <DataTable
-              paginationType={PaginationType.CHANGEINVOICES}
-              sendRequest={sendRequest}
-            >
-              {listData?.map(item => (
+            <DataTable paginationType={PaginationType.CHANGEINVOICES} sendRequest={sendRequest}>
+              {listData?.map((item) => (
                 <tr className="" key={item.id}>
                   <td className="">{item.invoice_number}</td>
                   <td className="">{item.invoice_date}</td>

@@ -7,11 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFloppyDisk,
-  faPrint,
-  faUserDoctor,
-} from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faPrint, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import Perio from './Perio/index';
 import {
@@ -49,7 +45,7 @@ import {
   setPerioZ1828VestData,
   setPerioZ1828OralData,
   setPerioZ4838VestData,
-  setPerioZ4838OralData
+  setPerioZ4838OralData,
 } from '../../Redux/Formula';
 
 export default function index({ patientData, treatmentData, clinicData }) {
@@ -90,7 +86,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
   });
   const dispatch = useDispatch<any>();
 
-  const handleTabClick = tabName => {
+  const handleTabClick = (tabName) => {
     setTab(tabName);
   };
 
@@ -115,13 +111,13 @@ export default function index({ patientData, treatmentData, clinicData }) {
       dispatch(setPerioZ4838VestData(tValues.z1828Vest));
       dispatch(setPerioZ4838OralData(tValues.z1828Oral));
     }
-  }, [treatmentData.formula])
+  }, [treatmentData.formula]);
 
   // useEffect(() => {
   //   setEditPerio(true);
   // }, [treatmentData.perioValues])
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     values['treatmentData'] = teethDiagnozis;
@@ -134,7 +130,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
       z1828Oral: zond1828OralData,
       z4838Vest: zond4838VestData,
       z4838Oral: zond4838OralData,
-    }
+    };
     values['chartsData'] = {
       yasen1828VestChart: yasen1828VestChart,
       zond1828VestChart: zond1828VestChart,
@@ -150,8 +146,8 @@ export default function index({ patientData, treatmentData, clinicData }) {
 
       yasen4838OralChart: yasen4838OralChart,
       zond4838OralChart: zond4838OralChart,
-      bar4838OralChart: bar4838OralChart
-    }
+      bar4838OralChart: bar4838OralChart,
+    };
     values['teethType'] = '';
 
     dispatch(setClearPerio());
@@ -166,7 +162,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
       <Head title={'Patient Card'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Details patientData={patientData} clinicData={clinicData} />
 
             {tab === 'history' && (
@@ -174,42 +170,32 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 <li className="relative">
                   <Link href="/">
                     <i className="icon-plan-treatment" />
-                    <span className="inline-block ml-[35px]">
-                      Етап лікування
-                    </span>
+                    <span className="inline-block ml-[35px]">Етап лікування</span>
                   </Link>
                 </li>
                 <li className="relative">
                   <Link href="/">
                     <i className="icon-formula" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.formula')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.formula')}</span>
                   </Link>
                 </li>
                 <li className="relative">
                   <Link href="/">
                     <i className="icon-psr" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.test')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.test')}</span>
                   </Link>
                 </li>
                 <li className="relative">
                   <Link href="/">
                     <i className="icon-perio" />
-                    <span className="inline-block ml-[35px]">
-                      {msg.get('patient.tab.perio')}
-                    </span>
+                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.perio')}</span>
                   </Link>
                 </li>
               </ul>
             )}
             <div className="mt-2">
               <div className="inline w-full">
-                <h3 className="text-left inline-block w-[80%]">
-                  {treatmentData.stage_name}
-                </h3>
+                <h3 className="text-left inline-block w-[80%]">{treatmentData.stage_name}</h3>
                 <ul className="action-patient-icon inline-block w-[20%] text-right">
                   <li>
                     <Link href={`patient/edit/`}>
@@ -238,9 +224,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 >
                   {msg.get('patient.back')}
                 </Link>
-                <PrimaryButton onClick={e => submit(e)}>
-                  {msg.get('patient.save')}
-                </PrimaryButton>
+                <PrimaryButton onClick={(e) => submit(e)}>{msg.get('patient.save')}</PrimaryButton>
               </div>
             </div>
           </div>

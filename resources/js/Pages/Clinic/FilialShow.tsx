@@ -19,7 +19,7 @@ export default function Create({ filialData }) {
 
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <header>
               <h2>
                 <Link className="icon-back" href={'/filials'}>

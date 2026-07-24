@@ -16,7 +16,7 @@ export default function Create({
       <Head title="Money In" />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
               clinicData={clinicData}
               statusData={statusData}

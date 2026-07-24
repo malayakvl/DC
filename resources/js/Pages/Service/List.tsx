@@ -78,7 +78,7 @@ export default function List({ clinicData, tree, services, currency }) {
       <Head title={'Services'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-8 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <header>
               <div className="flex inline-flex w-full mb-4">
                 <h2 className="text-xl font-semibold leading-tight">

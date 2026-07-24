@@ -59,14 +59,16 @@ body {
 }
 
 .gradient-text-h {
-  background: linear-gradient(90deg, #00BFFF, #32CD32);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-  font-size: 3rem;
+  //background: linear-gradient(90deg, #3c4e63, #39d667);
+  color: #3c4e63;
+  font-weight: 700;
   /* регулируй по необходимости */
   font-family: 'Montserrat', sans-serif;
-  font-size: 20px !important;
+  font-size: 26px !important;
+}
+.gradient-text-h span {
+  color: #39d667;
+  font-weight: 600;
 }
 
 .mons-text {
@@ -77,7 +79,7 @@ body {
   @apply block md:inline-flex md:items-center;
   color: #475569;
   font-weight: 500;
-  margin-right: 10px;
+  margin-right: 20px;
 }
 
 .logo-title-new {
@@ -178,10 +180,13 @@ body {
 }
 
 .submenu {
-  @apply block px-4 py-2 text-sm text-[#0ea5a4] data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none text-sm;
-  //font-weight: normal;
-  font-weight: bold;
+  @apply px-4 py-2 text-sm text-[#000000] data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none;
+  font-weight: normal;
+  //font-weight: bold;
   border-radius: 0;
+  display: flex;
+  flex-direction: row;
+
 }
 
 .nav-content {
@@ -217,9 +222,9 @@ body {
 }
 
 .user-profile-role {
-  @apply block text-left normal-case font-bold text-[10px];
+  @apply block text-left normal-case font-bold text-[12px];
   color: #475569;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .lng-menu {
@@ -227,25 +232,32 @@ body {
 }
 
 .top-submenu {
-  background: #dff1f2;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, .8);
+
+  box-shadow:
+          0 20px 50px rgba(15, 23, 42, .08),
+          0 8px 20px rgba(15, 23, 42, .05),
+          0 2px 6px rgba(15, 23, 42, .03);
   //border: solid 1px #0ea5a4 !important;
+  padding: 10px 0px;
 }
 
 to-green-400 {
   --tw-gradient-to: #4ade80 var(--tw-gradient-to-position);
 }
 
-.neon-header {
+.welcome-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 50px;
   //   background: rgba(10, 15, 28, 0.6); /* напівпрозорий фон */
-  background: rgb(26 39 71 / 60%);
-  backdrop-filter: blur(12px);
+  //background: rgb(26 39 71 / 60%);
+  //backdrop-filter: blur(12px);
   /* ефект скла */
   border-bottom: 2px solid transparent;
-  border-image: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5) 1;
+  //border-image: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5) 1;
   box-shadow: 0 0 20px rgba(183, 75, 213, 0.25),
     0 0 40px rgba(0, 198, 255, 0.2);
   position: relative;
@@ -253,6 +265,13 @@ to-green-400 {
   //   position: relative;
   //   z-index: 100;
   //   box-shadow: 0 2px 20px rgba(183, 75, 213, 0.2);
+}
+.w-nav-link {
+  color: #000a22;
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif
+}
+.w-nav {
+  @apply hidden md:flex items-center gap-8 text-sm md:min-w-[300px];
 }
 
 .neon-header::before {
@@ -265,6 +284,12 @@ to-green-400 {
   background: linear-gradient(90deg, #b74bd5, #00c6ff, #ff3eb5);
   box-shadow: 0 0 15px rgba(183, 75, 213, 0.7),
     0 0 25px rgba(0, 198, 255, 0.6);
+}
+.clinic-name {
+  font-size: 13px;
+  color:#667186;
+  margin-top: 3px;
+  display: inline-block;
 }
 
 .neon-header nav ul {
@@ -309,8 +334,25 @@ to-green-400 {
 }
 
 .dropdown-menu {
-  background: #10172c;
-  color: #fff;
+  background: #fff;
+  color: #475569;
+  min-width: 320px;
+  margin-right: 20px;
+}
+.dropdown-span {
+  font-size: 13px;
+  margin: 10px 0 10px 16px;
+}
+.h-user-email, .h-user-name {
+  display: block;
+  margin-left: 26px;
+}
+.h-user-email {
+  font-size: 12px;
+}
+.h-user-block {
+  margin-left: 30px;
+  margin-bottom: 10px;
 }
 
 .selected-lang {
@@ -336,8 +378,30 @@ to-green-400 {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white font-bold;
 }
 
+
+
 .lang-block {
-  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[-8px] relative md:mr-[135px] pt-[10px];
+  @apply space-x-8 sm:-my-px sm:flex md:flex md:mt-[4px] relative md:mr-[200px] pt-[10px];
+}
+.w-lang .lang-block{
+  @apply md:mr-[30px] md:mt-[-10px];
+
+}
+
+.btn-login {
+  @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
+  color: #116aef;
+  border: solid 1px #116aef;
+  border-radius: 5px;
+}
+
+.btn-register {
+  @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
+  color: #fff;
+  border: solid 1px #116aef;
+  background: #116aef;
+  border-radius: 5px;
+  margin-left: 10px;
 }
 
 .body-main .lang-block {
@@ -352,13 +416,21 @@ to-green-400 {
 
 .clinic-role {
   text-transform: uppercase;
-  color: #f345b9;
+  color: #4f97f4;
+  font-weight: bold;
+  border: 1px solid #e2ecfc;
+  background: #eaf2fc;
+  padding: 2px 10px;
+  border-radius: 5px;
 }
 
 .header-filial-name {
   font-size: 13px;
-  color: #475569;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: #667186;
+  //font-weight: bolder;
+  margin-top:4px;
+  font-family: "Google Sans", sans-serif
+  //font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 .fio-user {
   color: #475569;
@@ -367,9 +439,9 @@ to-green-400 {
 
 .top-nav {
   @apply inline-flex items-center menu-main-btn text-sm font-bold;
-  font-family: "Inter", sans-serif;
-  font-size: 15px;
-  font-weight: 600;
+  font-family: "Sora", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   color: #475569;
 }
 .top-nav.active {
@@ -386,4 +458,80 @@ to-green-400 {
   height: 3px;
   background: #0EA5A4;
   border-radius: 999px;
+}
+.system-logo {
+  background: url(../../images/header/new-logo.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
+  width: 55px;
+  height: 55px;
+}
+.dropdown-span-header {
+  @apply block text-sm px-2 py-1.5 cursor-pointer;
+  font-weight: normal;
+  display: flex;
+  padding-left: 20px;
+}
+.dropdown-span-header:hover {
+  background-color: #01bff8;
+}
+.dropdown-span-separate {
+  border-bottom: solid 1px #e2ecfc;
+  padding: 5px;
+  width: 100%;
+  height: 1px;
+  display: inline-block;
+}
+.dropdown-logout {
+  color: red;
+  display: flex;
+  flex-direction: row;
+  margin-left: 10px;
+  margin-top: 3px;
+}
+.dh-profile {
+  font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 6px;
+}
+.hm-title {
+  font-size: 12px;
+  color: #a7a6ab;
+  font-weight: bold;
+}
+.h-import {
+  margin-bottom: 5px;
+}
+.dropdown-span-separator {
+  border-bottom: solid 1px #e2ecfc;
+  //padding: 5px;
+  width: 100%;
+  height: 1px;
+  display: block;
+}
+.d-clinic-dropdown {
+  font-weight: bold;
+  font-size: 13px;
+  margin-right: 10px;
+}
+.c-name-header {
+  justify-content: space-between;
+}
+.h-avatar-user {
+  float: left;
+  margin-right: 10px;
+}
+.h-avatar-user img {
+  margin-top: 7px;
+}
+.h-info-user {
+  float: left;
+}
+.slogan {
+  display: block;
+  color: gray !important;
+  font-size: 12px;
+  font-family: "Google Sans", sans-serif;
+  font-weight: normal !important;
 }

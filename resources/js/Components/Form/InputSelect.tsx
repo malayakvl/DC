@@ -26,10 +26,11 @@ export default function InputSelect({
     locale: appLang,
   });
   const displayError = error || pageErrors[name];
-  
+
   return (
     <div className={`relative`}>
-      {label && <InputLabel htmlFor={name} value={label} children={null} />}  
+      {/* eslint-disable-next-line react/no-children-prop */}
+      {label && <InputLabel htmlFor={name} value={label} children={null} />}
       {props.options.length > 0 && (
         <select
           id={`${elId || name}`}
