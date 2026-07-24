@@ -196,7 +196,7 @@ class SchedulerController extends Controller
                 ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
                 ->get();
 
-            return Inertia::render('Scheduler/Index', [
+            return Inertia::render('Scheduler/IndexSticky', [
                 'clinicData' => $clinicData,
                 'groupedOptions' => $groupedOptions,
                 'customerSelectData' => $customerSelectData,
@@ -854,7 +854,6 @@ class SchedulerController extends Controller
             // 2. Находим визит (ID берем либо из параметров метода Laravel, либо из запроса)
             $eventId = $id ?? $request->input('id');
             $scheduler = Scheduler::findOrFail($eventId);
-dd($scheduler);
 
             // 3. Обновляем поля модели значениями, прошедшими валидацию
             $scheduler->update([

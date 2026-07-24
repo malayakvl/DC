@@ -36,6 +36,8 @@ import Pricing from './Pricing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import SecondaryButton from '@/Components/Form/SecondaryButton';
+import SchedulerDayHeader from './components/SchedulerDayHeader';
+import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
@@ -71,6 +73,7 @@ export default function Index({
   services,
   serviceCategories,
 }) {
+  console.log('here');
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [view, setView] = useState<'day' | '3days'>('3days');
   const appLang = useSelector(appLangSelector);
@@ -134,6 +137,14 @@ export default function Index({
     }
   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
   const DOCTOR_WIDTH = 180;
+  const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
+  const headerTrackRef = useRef<HTMLDivElement>(null);
+
+  const syncHeaderScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    if (headerTrackRef.current) {
+      headerTrackRef.current.style.transform = `translateX(-${event.currentTarget.scrollLeft}px)`;
+    }
+  };
 
   const msg = new Lang({
     messages: lngScheduler,
@@ -584,17 +595,6 @@ export default function Index({
     });
   };
 
-  // Функция для создания инициалов (например, "Иван Иванов" -> "И. И.")
-  // Или если это один кусочек: "Victory" -> "Vi"
-  function getInitials(name: string) {
-    if (!name) return '';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length >= 2) {
-      return `${parts[0].charAt(0)}.${parts[1].charAt(0)}.`;
-    }
-    return name.slice(0, 2).toUpperCase();
-  }
-
   const PREVIEW_WIDTH = 340;
   const PREVIEW_HEIGHT = 280;
 
@@ -775,7 +775,7 @@ export default function Index({
             marginLeft: '20px',
             marginRight: '20px',
             flexDirection: 'column',
-            overflow: 'hidden',
+            overflow: 'visible',
             background: '#f1f5f9',
             marginBottom: '100px',
             borderBottom: 'solid 1px #d5d7d9',
@@ -841,11 +841,53 @@ export default function Index({
               flexDirection: 'column',
               // height: '1400px', // временно для проверки
               // overflow: 'hidden',
-              border: '2px solid red', // чтобы видеть контейнер
             }}
           >
             <div
+              className="calendar-header-viewport"
+              style={{
+                position: 'sticky',
+                top: 109,
+                zIndex: showEventPopup || editEventPopup ? 0 : 50,
+                overflow: 'hidden',
+                width: '100%',
+                background: '#fff',
+              }}
+            >
+              <div
+                ref={headerTrackRef}
+                style={{
+                  display: 'flex',
+                  width: 'max-content',
+                  minWidth: '100%',
+                  willChange: 'transform',
+                }}
+              >
+                {days.map((day, dayIdx) => (
+                  <div
+                    key={day.date}
+                    style={{
+                      flex: '0 0 auto',
+                      width: dayWidth,
+                      borderRight: dayIdx < days.length - 1 ? '1px solid #cbd5e1' : 'none',
+                    }}
+                  >
+                    <SchedulerDayHeader
+                      day={day}
+                      isToday={day.date === format(new Date(), 'yyyy-MM-dd')}
+                      cabinets={cabinetData}
+                      people={currentTabPeople}
+                      doctorWidth={DOCTOR_WIDTH}
+                      todayBg={TODAY_BG}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
               className="calendar"
+              onScroll={syncHeaderScroll}
               style={{
                 flex: 1,
                 display: 'flex',
@@ -857,8 +899,6 @@ export default function Index({
               }}
             >
               {days.map((day, dayIdx) => {
-                const isToday = day.date === format(new Date(), 'yyyy-MM-dd');
-
                 return (
                   <div
                     className={'calendar-day'}
@@ -866,207 +906,20 @@ export default function Index({
                     style={{
                       // minWidth: 900,
                       display: 'flex',
+                      flex: '0 0 auto',
+                      width: dayWidth,
+                      minWidth: dayWidth,
                       flexDirection: 'column',
                       background: '#fff',
-                      borderRight: dayIdx < days.length - 1 ? '2px solid #cbd5e1' : 'none',
+                      borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
                       // position: 'sticky',
                       // top: 0,
                       zIndex: showEventPopup || editEventPopup ? 0 : 40,
                     }}
                   >
-                    {/* FIXED HEADER AREA */}
-                    <div
-                      className={'calendar-header'}
-                      style={{
-                        flexShrink: 0,
-                        background: '#fff',
-                        zIndex: 100,
-                        // boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: 44,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: 14,
-                          letterSpacing: '0.05em',
-                          background: isToday ? TODAY_BG : '#f8fafc',
-                          boxShadow: 'inset 0 -2px 0 #e2e8f0',
-                        }}
-                      >
-                        {day.label.toUpperCase()}
-                      </div>
-
-                      <div style={{ display: 'flex' }}>
-                        <div
-                          style={{
-                            width: 70,
-                            flexShrink: 0,
-                            background: '#fff',
-                            borderRight: '2px solid #e2e8f0',
-                            height: '115px',
-                          }}
-                        />
-                        <div style={{ display: 'flex', flex: 1 }}>
-                          {cabinetData.map((cab, cabIdx) => (
-                            <div
-                              key={cab.id}
-                              style={{
-                                flex: 1,
-                                borderRight:
-                                  cabIdx < cabinetData.length - 1 ? '2px solid #94a3b8' : 'none',
-                              }}
-                            >
-                              <div
-                                style={{
-                                  height: 40,
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  fontWeight: 700,
-                                  background: '#f1f5f9',
-                                  color: '#334155',
-                                  boxShadow: 'inset 0 -1px 0 #cbd5e1',
-                                }}
-                              >
-                                {cab.cabinet_name}
-                              </div>
-                              <div style={{ display: 'flex', height: 34 }}>
-                                {currentTabPeople.map((doc, docIdx) => {
-                                  const fullName = doc.name || doc.label || '';
-                                  const initials = getInitials(fullName);
-                                  // Используем цвет из базы, либо генерируем дефолтный серый/синий для заглушки
-                                  const avatarBg = doc.color || '#94a3b8';
-
-                                  return (
-                                    <div
-                                      key={doc.id}
-                                      style={{
-                                        width: DOCTOR_WIDTH,
-                                        flexShrink: 0,
-                                        flex: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column', // Элементы друг под другом
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        height: '70px',
-                                        padding: '4px 2px',
-                                        background: '#fff',
-                                        borderRight:
-                                          docIdx < currentTabPeople.length - 1
-                                            ? '1px solid #e2e8f0'
-                                            : '1px solid #e2e8f0',
-                                        minWidth: 0, // Важно для работы text-overflow: ellipsis в flex-контейнерах
-                                      }}
-                                    >
-                                      {/* КРУГЛЫЙ АВАТАР */}
-                                      <div
-                                        style={{
-                                          width: 28,
-                                          height: 28,
-                                          borderRadius: '50%',
-                                          backgroundColor: avatarBg,
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          fontSize: 11,
-                                          fontWeight: 700,
-                                          color: '#fff',
-                                          overflow: 'hidden',
-                                          marginBottom: 2,
-                                          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                                        }}
-                                        title={fullName} // При наведении покажет полное имя
-                                      >
-                                        {doc.avatar ? (
-                                          <img
-                                            src={`/storage/${doc.avatar}`} // Корректируй путь в зависимости от твоего Laravel Storage
-                                            alt={fullName}
-                                            style={{
-                                              width: '100%',
-                                              height: '100%',
-                                              objectFit: 'cover',
-                                            }}
-                                            onError={(e) => {
-                                              // Если картинка не прогрузилась — покажем инициалы
-                                              (e.target as HTMLElement).style.display = 'none';
-                                            }}
-                                          />
-                                        ) : (
-                                          initials
-                                        )}
-                                      </div>
-
-                                      {/* ТЕКСТ ПОД АВАТАРОМ С АВТО-СОКРАЩЕНИЕМ */}
-                                      <div
-                                        style={{
-                                          fontSize: 10,
-                                          fontWeight: 600,
-                                          color: '#334155',
-                                          textAlign: 'center',
-                                          width: '100%',
-                                          whiteSpace: 'nowrap',
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis', // Добавит "..." если имя всё равно слишком длинное
-                                          padding: '0 2px',
-                                        }}
-                                        title={fullName} // При наведении покажет полное имя
-                                      >
-                                        {fullName}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
                     {/* SCROLLABLE BODY AREA */}
                     <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
-                      {/* TIME COLUMN */}
-                      <div
-                        style={{
-                          width: 70,
-                          flexShrink: 0,
-                          position: 'sticky',
-                          left: 0,
-                          top: 0,
-                          alignSelf: 'flex-start',
-                          zIndex: 30,
-                          background: '#fff',
-                        }}
-                      >
-                        {timeSlots.map((slot, index) => {
-                          const isHour = index % 4 === 0;
-                          return (
-                            <div
-                              key={slot.label}
-                              style={{
-                                height: SLOT_HEIGHT,
-                                fontSize: 13,
-                                paddingLeft: 8,
-                                display: 'flex',
-                                alignItems: 'center',
-                                boxShadow: isHour
-                                  ? 'inset 0 -1px 0 rgba(0,0,0,.15)'
-                                  : 'inset 0 -1px 0 rgba(0,0,0,.04)',
-                                background: isHour ? '#0ea5a4' : '#fff',
-                                fontWeight: isHour ? 600 : 400,
-                                color: isHour ? '#fff' : '#64748b',
-                                borderRight: '1px solid #e2e8f0',
-                              }}
-                            >
-                              {slot.label}
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
                       {/* GRID */}
                       <div style={{ display: 'flex', flex: 1, height: gridHeight }}>

@@ -1864,3 +1864,9 @@
 .edit-scheduler-popup {
     z-index: 9999;
 }
+.calendar-header {
+    position: sticky;
+    //top: 109px; /* высота основной шапки приложения */
+    z-index: 40;
+    background: #fff;
+}

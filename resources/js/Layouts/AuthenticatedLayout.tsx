@@ -33,7 +33,7 @@ export default function AuthenticatedLayout({ header, children }) {
   };
 
   return (
-    <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'auto' }}>
+    <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'visible' }}>
       {header && (
         <header className="">
           <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">

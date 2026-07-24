@@ -868,7 +868,7 @@ export default function Index({
                       display: 'flex',
                       flexDirection: 'column',
                       background: '#fff',
-                      borderRight: dayIdx < days.length - 1 ? '2px solid #cbd5e1' : 'none',
+                      borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
                       // position: 'sticky',
                       // top: 0,
                       zIndex: showEventPopup || editEventPopup ? 0 : 40,
@@ -881,7 +881,7 @@ export default function Index({
                         flexShrink: 0,
                         background: '#fff',
                         zIndex: 100,
-                        // boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
+                        boxShadow: '0 4px 6px -1px rgba(0,0,0,.05)',
                       }}
                     >
                       <div
