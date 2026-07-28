@@ -179,7 +179,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
               </div>
             </td>
             <td className="w-qty pb-2 px-2 mx-auto">
-              <div className="row flex justify-center">
+              <div className="row flex justify-end">
                 <input
                   className="input-text text-center service-price"
                   name="price"
