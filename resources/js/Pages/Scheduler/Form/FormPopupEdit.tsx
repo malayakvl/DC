@@ -92,7 +92,7 @@ export default function SchedulerFormEdit({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     serviceCategories.length ? serviceCategories[0].id : null
   );
-  console.log('popup services', popupServices);
+
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -208,8 +208,6 @@ export default function SchedulerFormEdit({
   };
 
   const renderService = (item) => {
-    console.log('renderService', item);
-
     return (
       <div className="selected-service selected-services-block">
         <div className="service-info">

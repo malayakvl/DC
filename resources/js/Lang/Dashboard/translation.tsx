@@ -23,6 +23,7 @@ const lngDashboard = {
     total_income: 'Дохід за сьогодні',
     patients: 'Пацієнтів',
     appointments: 'Найближчі прийоми',
+    visits: 'Прийомів сьогодні',
   },
 };
 export default lngDashboard;

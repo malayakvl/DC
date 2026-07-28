@@ -60,7 +60,7 @@ function getDays(baseDate: string, count: number, appLang: string) {
   });
 }
 
-export default function Index({
+export default function Index3Days({
   customerData,
   formData,
   clinicData,
@@ -72,10 +72,12 @@ export default function Index({
   tree,
   services,
   serviceCategories,
+  initialView = '3days',
+  allowViewSwitch = true,
 }) {
   console.log('here');
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  const [view, setView] = useState<'day' | '3days'>('3days');
+  const [view, setView] = useState<'day' | '3days'>(initialView);
   const appLang = useSelector(appLangSelector);
   const dispatch = useDispatch();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -816,21 +818,23 @@ export default function Index({
               </button>
             </div>
 
-            <div>
-              <button
-                onClick={() => setView('day')}
-                style={{ marginRight: 8, opacity: view === 'day' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.day')}
-              </button>
-              <button
-                className="btn-submit"
-                onClick={() => setView('3days')}
-                style={{ opacity: view === '3days' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.3days')}
-              </button>
-            </div>
+            {allowViewSwitch && (
+              <div>
+                <button
+                  onClick={() => setView('day')}
+                  style={{ marginRight: 8, opacity: view === 'day' ? 1 : 0.5 }}
+                >
+                  {msg.get('scheduler.day')}
+                </button>
+                <button
+                  className="btn-submit"
+                  onClick={() => setView('3days')}
+                  style={{ opacity: view === '3days' ? 1 : 0.5 }}
+                >
+                  {msg.get('scheduler.3days')}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* ================= MAIN HORIZONTAL SCROLL CONTAINER ================= */}

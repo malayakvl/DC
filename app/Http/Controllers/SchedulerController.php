@@ -196,7 +196,7 @@ class SchedulerController extends Controller
                 ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
                 ->get();
 
-            return Inertia::render('Scheduler/IndexSticky', [
+            return Inertia::render('Scheduler/Index', [
                 'clinicData' => $clinicData,
                 'groupedOptions' => $groupedOptions,
                 'customerSelectData' => $customerSelectData,

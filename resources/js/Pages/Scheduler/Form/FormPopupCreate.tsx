@@ -137,7 +137,6 @@ export default function SchedulerFormCreate({
   }, [timeStart]);
 
   useEffect(() => {
-    console.log('Setup cabinet', cabinetId);
     setValues((values) => ({
       ...values,
       ['event_date']: eventDate,

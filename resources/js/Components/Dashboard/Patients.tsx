@@ -1,16 +1,14 @@
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngHeader from '../../Lang/Header/translation';
-import { usePage } from '@inertiajs/react';
-import React, { useState } from 'react';
+import lngDashboard from '../../Lang/Dashboard/translation';
+import React from 'react';
 import { IconUserPlus } from '@tabler/icons-react';
 
 export default function Patients() {
-  const user = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
-    messages: lngHeader,
+    messages: lngDashboard,
     locale: appLang,
   });
 
