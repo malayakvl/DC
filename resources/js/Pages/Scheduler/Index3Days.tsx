@@ -6,7 +6,7 @@ import { getEventLayout } from './engine/eventLayout';
 import { router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import {
   pricePopupSelector,
@@ -14,25 +14,10 @@ import {
   showSchedulePopupSelector,
   viewScheduleSelector,
 } from '@/Redux/Scheduler/selectors';
-import moment from 'moment/moment';
-import {
-  setExistServicesAction,
-  setPopupCabinetAction,
-  setScheduleDateAction,
-  setScheduleTimeAction,
-  showSchedulePopupAction,
-  setSchedulePopupDoctorAction,
-  showScheduleEditPopupAction,
-  setScheduleEditEventAction,
-  initServicesAction,
-} from '@/Redux/Scheduler';
-import { showOverlayAction } from '@/Redux/Layout';
-import dayjs from 'dayjs';
 import SchedulerDayHeader from './components/SchedulerDayHeader';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 
-// ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
 const FREE_SLOT_BG = '#fbfdff';
 const TODAY_BG = '#eef6ff';
@@ -54,33 +39,25 @@ function getDays(baseDate: string, count: number, appLang: string) {
 }
 
 export default function Index3Days({
-  customerData,
-  formData,
-  clinicData,
   cabinetData,
   groupedOptions,
-  assistantData,
   eventsData,
-  currencyData,
-  tree,
-  services,
-  serviceCategories,
   initialView = '3days',
   allowViewSwitch = true,
 }) {
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [view, setView] = useState(initialView);
   const appLang = useSelector(appLangSelector);
-  const dispatch = useDispatch();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, setShowAlert] = useState(false);
   useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
-  // Рефы для блокировки кликов после перетаскивания / ресайза
+
+  // Рефы для блокировки кликов
   const isResizingRef = React.useRef(false);
   const isDraggingRef = React.useRef(false);
-  const blockClickRef = React.useRef(false); // <--- ДОБАВИТЬ СЮДА
+  const blockClickRef = React.useRef(false);
+
   const tab = useSelector(viewScheduleSelector);
   const msg = new Lang({
     messages: lngScheduler,
@@ -94,9 +71,15 @@ export default function Index3Days({
   } | null>(null);
 
   const hoverTimeout = useRef<number>();
-  const { handleEventClick, handleCellClick } = useSchedulerEvents(eventsData, msg);
 
-  // Динамическая фильтрация и группировка опций для вкладок
+  const { handleEventClick, handleCellClick } = useSchedulerEvents(
+    eventsData,
+    msg,
+    blockClickRef,
+    isResizingRef,
+    isDraggingRef
+  );
+
   const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
     let doctorsOptions: any[] = [];
     let assistantsOptions: any[] = [];
@@ -108,7 +91,6 @@ export default function Index3Days({
       } else if (group.label === 'roles.assistant') {
         assistantsOptions = [...assistantsOptions, ...(group.options || [])];
       } else {
-        // Все остальные роли (ceo, nurse, receptionist и т.д.) уходят во вкладку "Інші"
         othersOptions = [...othersOptions, ...(group.options || [])];
       }
     });
@@ -120,19 +102,19 @@ export default function Index3Days({
     };
   }, [groupedOptions]);
 
-  // Определяем, какой список людей рендерить в сетке в зависимости от активной вкладки
   const currentTabPeople = useMemo(() => {
     switch (tab) {
-      case 'patients': // Первая вкладка (по логике в коде она называется patients, но там врачи)
+      case 'patients':
         return doctorsTabOptions;
-      case 'visits': // Вкладка "Асистенти"
+      case 'visits':
         return assistantsTabOptions;
-      case 'plans': // Вкладка "Інші"
+      case 'plans':
         return othersTabOptions;
       default:
         return doctorsTabOptions;
     }
   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
+
   const DOCTOR_WIDTH = 180;
   const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
   const headerTrackRef = useRef<HTMLDivElement>(null);
@@ -151,7 +133,6 @@ export default function Index3Days({
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
 
-  // ================= INTERACTIVE EVENTS STATE =================
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     return eventsData.map((event) => ({
       id: String(event.id),
@@ -173,7 +154,6 @@ export default function Index3Days({
     }));
   });
 
-  // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ СЕТКИ ПРИ ИЗМЕНЕНИИ ДАННЫХ С СЕРВЕРА
   useEffect(() => {
     if (eventsData) {
       setLocalEvents(
@@ -197,11 +177,9 @@ export default function Index3Days({
         }))
       );
     }
-  }, [eventsData]); // Реагирует на любые изменения пропса eventsData
+  }, [eventsData]);
 
-  // ================= ================== =================
-  // ================= DRAG & DROP ENGINE =================
-  // ================= ================== =================
+  // ================= DRAG & DROP =================
   const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
     if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
 
@@ -216,7 +194,6 @@ export default function Index3Days({
 
     let hasMovedEnough = false;
 
-    // СЮДА выносим переменные, которые будут общими для MouseMove и MouseUp:
     let finalDate = event.event_date;
     let finalCabinetId = event.cabinet_id;
     let finalDoctorId = event.doctor_id;
@@ -234,7 +211,7 @@ export default function Index3Days({
       if (!hasMovedEnough) {
         hasMovedEnough = true;
         isDraggingRef.current = true;
-        blockClickRef.current = true; // <--- ВЗВОДИМ БЛОКИРОВКУ КЛИКА ПРИ СДВИГЕ
+        blockClickRef.current = true;
       }
 
       const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
@@ -275,13 +252,11 @@ export default function Index3Days({
       document.removeEventListener('mouseup', handleMouseUp);
 
       if (!hasMovedEnough) {
-        // Если реального движения не было — сбрасываем всё сразу, клик сработает штатно
         isDraggingRef.current = false;
         blockClickRef.current = false;
         return;
       }
 
-      // --- ПРОВЕРКА НА ПЕРЕСЕЧЕНИЯ ---
       const hasIntersection = localEvents.some((ev) => {
         if (ev.id === event.id) return false;
         if (ev.event_date !== finalDate) return false;
@@ -293,15 +268,12 @@ export default function Index3Days({
 
         const evStart = parseISO(ev.start);
         const evEnd = parseISO(ev.end);
-        const isTimeOverlapping = finalStartDate < evEnd && finalEndDate > evStart;
-
-        return isTimeOverlapping;
+        return finalStartDate < evEnd && finalEndDate > evStart;
       });
 
       if (hasIntersection) {
         alert('Ошибка: Данное время уже занято этим врачом или кабинетом!');
 
-        // ОТКАТ: возвращаем ивент в исходное состояние
         setLocalEvents((prev) =>
           prev.map((ev) => {
             if (ev.id !== event.id) return ev;
@@ -318,26 +290,13 @@ export default function Index3Days({
           })
         );
 
-        // ИСПРАВЛЕНИЕ: Гасим флаги строго с задержкой, чтобы уберечь от фантомных кликов
         setTimeout(() => {
           isDraggingRef.current = false;
           blockClickRef.current = false;
-        }, 100);
+        }, 300);
 
         return;
       }
-
-      // ========================================================
-      // ЕСЛИ ПРОВЕРКА ПРОЙДЕНА — ОТПРАВЛЯЕМ НА БЭКЕНД
-      // ========================================================
-      console.log('Отправляем перемещение на бэк:', {
-        id: event.id,
-        event_date: finalDate,
-        cabinet_id: finalCabinetId,
-        doctor_id: finalDoctorId,
-        event_time_from: format(finalStartDate, 'HH:mm'),
-        event_time_to: format(finalEndDate, 'HH:mm'),
-      });
 
       router.put(
         route('scheduler.update-position', event.id),
@@ -350,19 +309,11 @@ export default function Index3Days({
         },
         {
           preserveScroll: true,
-          onSuccess: () => {
-            // После успешного сохранения тушим флаги с задержкой
+          onFinish: () => {
             setTimeout(() => {
               isDraggingRef.current = false;
               blockClickRef.current = false;
-            }, 100);
-          },
-          onError: () => {
-            // В случае ошибки бэка тоже делаем откат и тушим
-            setTimeout(() => {
-              isDraggingRef.current = false;
-              blockClickRef.current = false;
-            }, 100);
+            }, 300);
           },
         }
       );
@@ -372,24 +323,33 @@ export default function Index3Days({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // ================= ============= =================
-  // ================= RESIZE ENGINE =================
-  // ================= ============= =================
+  // ================= RESIZE =================
   const handleResizeStart = (e: React.MouseEvent, eventId: string, currentEndISO: string) => {
     e.stopPropagation();
     e.preventDefault();
 
     const startY = e.clientY;
     const baseEnd = parseISO(currentEndISO);
-    isResizingRef.current = true;
+    let hasResizedEnough = false;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const deltaY = moveEvent.clientY - startY;
+
+      if (!hasResizedEnough && Math.abs(deltaY) < 3) {
+        return;
+      }
+
+      if (!hasResizedEnough) {
+        hasResizedEnough = true;
+        isResizingRef.current = true;
+        blockClickRef.current = true;
+      }
+
       const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
 
       if (minutesDelta !== 0) {
         const newEndDate = new Date(baseEnd.getTime() + minutesDelta * 60000);
-        const newEndISO = `${format(newEndDate, "yyyy-MM-dd'T'HH:mm:ss")}`;
+        const newEndISO = format(newEndDate, "yyyy-MM-dd'T'HH:mm:ss");
         const newEndTimeHuman = format(newEndDate, 'HH:mm');
 
         setLocalEvents((prevEvents) =>
@@ -412,108 +372,21 @@ export default function Index3Days({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
 
+      if (!hasResizedEnough) {
+        isResizingRef.current = false;
+        blockClickRef.current = false;
+        return;
+      }
+
+      // Удерживаем блокировку 400мс — это полностью перекрывает цикл синтетических кликов
       setTimeout(() => {
         isResizingRef.current = false;
-      }, 50);
-      console.log('✅ Ресайз закончен, стейт зафиксирован!');
+        blockClickRef.current = false;
+      }, 400);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // ================= ============= =================
-  // ================= CELLCLICK ENGINE ==============
-  // ================= ============= =================
-  // const handleCellClick = (
-  //   e: React.MouseEvent<HTMLDivElement>,
-  //   date: string,
-  //   cabinet: (typeof cabinets)[0],
-  //   doctor: (typeof doctors)[0]
-  // ) => {
-  //   if (isResizingRef.current || isDraggingRef.current) return;
-  //   const rect = e.currentTarget.getBoundingClientRect();
-  //   const clickY = e.clientY - rect.top;
-  //   const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
-  //
-  //   if (slotIndex >= 0 && slotIndex < timeSlots.length) {
-  //     const clickedSlot = timeSlots[slotIndex];
-  //     const now = moment();
-  //     dispatch(setExistServicesAction([]));
-  //     // Создаем полную дату и время из выбранной даты и временного слота
-  //     const selectedDateTime = moment(`${date} ${clickedSlot.label}`, 'YYYY-MM-DD HH:mm');
-  //
-  //     // Проверка: нельзя планировать на прошедшее время
-  //     if (selectedDateTime.isBefore(now)) {
-  //       alert(msg.get('scheduler.error.pastTime'));
-  //       setShowAlert(true); // Показать алерт
-  //       return;
-  //     }
-  //
-  //     dispatch(showSchedulePopupAction(true));
-  //     dispatch(setPopupCabinetAction(cabinet.id));
-  //     dispatch(setSchedulePopupDoctorAction(doctor.id));
-  //     dispatch(showOverlayAction(true));
-  //     dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
-  //     dispatch(setScheduleTimeAction(clickedSlot.label)); // Сохраняем как HH:mm
-  //   }
-  // };
-
-  // const handleEventClick = (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
-  //   // ЖЕЛЕЗОБЕТОННО останавливаем всплытие, чтобы клик по ивенту НЕ вызывал клик по ячейке!
-  //   e.stopPropagation();
-  //
-  //   // Если ивент только что перетаскивали, ресайзили или сработал блок клика — полностью блокируем
-  //   if (isDraggingRef.current || isResizingRef.current || blockClickRef.current) {
-  //     e.preventDefault();
-  //     return;
-  //   }
-  //
-  //   dispatch(setScheduleEditEventAction(cellEvent));
-  //   dispatch(setScheduleDateAction(cellEvent.event_date));
-  //   dispatch(initServicesAction(JSON.parse(cellEvent.services || '[]')));
-  //   dispatch(setScheduleTimeAction(cellEvent.event_time_from));
-  //   dispatch(showOverlayAction(true));
-  //   dispatch(showScheduleEditPopupAction(true));
-  // };
-
-  // Функция для добавления или обновления ивента в реальном времени
-  const handleSaveLocalEvent = (rawEvent: any) => {
-    const formattedEvent = {
-      id: String(rawEvent.id),
-      title: rawEvent.title,
-      doctor_id: Number(rawEvent.doctor_id),
-      patient_id: Number(rawEvent.patient_id),
-      cabinet_id: Number(rawEvent.cabinet_id),
-      event_date: rawEvent.event_date,
-      event_time_from: rawEvent.event_time_from.slice(0, 5),
-      event_time_to: rawEvent.event_time_to.slice(0, 5),
-      start: `${rawEvent.event_date}T${rawEvent.event_time_from}`,
-      end: `${rawEvent.event_date}T${rawEvent.event_time_to}`,
-      status_color: rawEvent.status_color || '#0ea5a4',
-      status_name: rawEvent.status_name,
-      patient_name: rawEvent.last_name
-        ? `${rawEvent.last_name} ${rawEvent.first_name}`
-        : rawEvent.patient_name,
-      services:
-        typeof rawEvent.services === 'string'
-          ? rawEvent.services
-          : JSON.stringify(rawEvent.services || []),
-      cabinet_name: rawEvent.cabinet_name,
-      doctor_name: rawEvent.doctor_first_name
-        ? `${rawEvent.doctor_first_name} ${rawEvent.doctor_last_name}`
-        : rawEvent.doctor_name,
-    };
-
-    setLocalEvents((prev) => {
-      const exists = prev.some((ev) => ev.id === formattedEvent.id);
-      if (exists) {
-        // Если редактировали — обновляем старый
-        return prev.map((ev) => (ev.id === formattedEvent.id ? formattedEvent : ev));
-      }
-      // Если новый — добавляем в массив
-      return [...prev, formattedEvent];
-    });
   };
 
   const PREVIEW_WIDTH = 340;
@@ -526,22 +399,18 @@ export default function Index3Days({
     let x = rect.right + margin;
     let y = rect.top;
 
-    // ---------- справа не помещается ----------
     if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
       x = rect.left - PREVIEW_WIDTH - margin;
     }
 
-    // ---------- если и слева мало места ----------
     if (x < margin) {
       x = margin;
     }
 
-    // ---------- снизу не помещается ----------
     if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
       y = window.innerHeight - PREVIEW_HEIGHT - margin;
     }
 
-    // ---------- сверху ----------
     if (y < margin) {
       y = margin;
     }
@@ -578,13 +447,6 @@ export default function Index3Days({
     return `${hours} год ${mins} хв`;
   };
 
-  const getDuration = (from: string, to: string) => {
-    const [fh, fm] = from.split(':').map(Number);
-    const [th, tm] = to.split(':').map(Number);
-
-    return th * 60 + tm - (fh * 60 + fm);
-  };
-
   return (
     <div>
       <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
@@ -619,7 +481,7 @@ export default function Index3Days({
           borderBottom: 'solid 1px #d5d7d9',
         }}
       >
-        {/* ================= NAV ================= */}
+        {/* NAV */}
         <div
           style={{
             paddingTop: '0px',
@@ -673,14 +535,12 @@ export default function Index3Days({
           )}
         </div>
 
-        {/* ================= MAIN HORIZONTAL SCROLL CONTAINER ================= */}
+        {/* CONTAINER */}
         <div
           className="calendar-container"
           style={{
             display: 'flex',
             flexDirection: 'column',
-            // height: '1400px', // временно для проверки
-            // overflow: 'hidden',
           }}
         >
           <div
@@ -744,7 +604,6 @@ export default function Index3Days({
                   className={'calendar-day'}
                   key={day.date}
                   style={{
-                    // minWidth: 900,
                     display: 'flex',
                     flex: '0 0 auto',
                     width: dayWidth,
@@ -752,16 +611,12 @@ export default function Index3Days({
                     flexDirection: 'column',
                     background: '#fff',
                     borderRight: dayIdx < days.length - 1 ? '4px solid #cbd5e1' : 'none',
-                    // position: 'sticky',
-                    // top: 0,
                     zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
-                  {/* SCROLLABLE BODY AREA */}
                   <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
-                    {/* GRID */}
                     <div style={{ display: 'flex', flex: 1, height: gridHeight }}>
                       {cabinets.map((cab, cabIdx) => (
                         <div
@@ -786,7 +641,6 @@ export default function Index3Days({
                               <div
                                 key={doc.id}
                                 onClick={(e) => handleCellClick(e, day.date, cab, doc, timeSlots)}
-                                // Важнейшие data-атрибуты для определения ячейки при Dnd:
                                 data-column-type="doctor-cell"
                                 data-date={day.date}
                                 data-cabinet-id={cab.id}
@@ -812,15 +666,6 @@ export default function Index3Days({
                                   const compact = layout.height < 70;
                                   const medium = layout.height >= 70 && layout.height < 110;
                                   const large = layout.height >= 110;
-                                  const previewTotal = hoverPreview
-                                    ? hoverPreview.services.reduce(
-                                        (sum, service) =>
-                                          sum +
-                                          Number(service.total_price ?? service.price) *
-                                            Number(service.qty ?? 1),
-                                        0
-                                      )
-                                    : 0;
 
                                   const services = (() => {
                                     try {
@@ -852,15 +697,11 @@ export default function Index3Days({
                                       }}
                                     >
                                       <div className="calendar-event-body">
-                                        {/* ---------- HEADER ---------- */}
-
                                         <div className="calendar-event-header">
                                           <div className="calendar-event-patient">
                                             {event.patient_name}
                                           </div>
                                         </div>
-
-                                        {/* ---------- SERVICES ---------- */}
 
                                         <div className="calendar-event-services">
                                           {servicesCount === 0 && (
@@ -901,8 +742,6 @@ export default function Index3Days({
                                           )}
                                         </div>
 
-                                        {/* ---------- FOOTER ---------- */}
-
                                         {!compact && (
                                           <div
                                             className="calendar-event-footer"
@@ -915,7 +754,7 @@ export default function Index3Days({
                                               width: '100%',
                                               overflow: 'hidden',
                                               paddingTop: '4px',
-                                              borderTop: '1px dashed rgba(0,0,0,0.08)', // Легкое визуальное отделение футера
+                                              borderTop: '1px dashed rgba(0,0,0,0.08)',
                                             }}
                                           >
                                             <div
@@ -925,7 +764,7 @@ export default function Index3Days({
                                                 alignItems: 'center',
                                                 gap: '3px',
                                                 whiteSpace: 'nowrap',
-                                                fontSize: '10px', // Слегка уменьшим до 10px для запаса места
+                                                fontSize: '10px',
                                                 flexShrink: 1,
                                                 minWidth: 0,
                                                 color: '#475569',
@@ -957,7 +796,6 @@ export default function Index3Days({
                                               </span>
                                             </div>
 
-                                            {/* БЛОК С ДЛИТЕЛЬНОСТЬЮ И КНОПКОЙ АКТА */}
                                             <div
                                               style={{
                                                 display: 'flex',
@@ -980,16 +818,13 @@ export default function Index3Days({
                                                 )}
                                               </span>
 
-                                              {/* КНОПКА "СТВОРИТИ АКТ" */}
                                               <button
+                                                type="button"
                                                 onClick={(e) => {
-                                                  e.stopPropagation(); // ЖЕЛЕЗОБЕТОННО блокируем открытие редактирования визита!
+                                                  e.stopPropagation();
                                                   e.preventDefault();
 
-                                                  // Твоя логика создания акта. Например:
-                                                  console.log('Создаем акт для визита:', event.id);
-                                                  // router.visit(route('acts.create', { event_id: event.id }));
-                                                  alert(`Создаем акт для: ${event.patient_name}`);
+                                                  router.visit(`/act/create?visit_id=${event.id}`);
                                                 }}
                                                 title="Створити акт"
                                                 style={{
@@ -999,7 +834,7 @@ export default function Index3Days({
                                                   width: '20px',
                                                   height: '20px',
                                                   borderRadius: '4px',
-                                                  background: '#0ea5a4', // Твой фирменный бирюзовый цвет
+                                                  background: '#0ea5a4',
                                                   color: '#fff',
                                                   border: 'none',
                                                   cursor: 'pointer',
@@ -1008,13 +843,12 @@ export default function Index3Days({
                                                   boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                  e.currentTarget.style.background = '#0d9488'; // Эффект наведения
+                                                  e.currentTarget.style.background = '#0d9488';
                                                 }}
                                                 onMouseLeave={(e) => {
                                                   e.currentTarget.style.background = '#0ea5a4';
                                                 }}
                                               >
-                                                {/* Аккуратная SVG иконка документа с плюсиком внутри кнопки */}
                                                 <svg
                                                   width="11"
                                                   height="11"
@@ -1080,14 +914,16 @@ export default function Index3Days({
                 <div className="calendar-preview-subtitle">Послуги</div>
                 <div className="calendar-preview-list">
                   <table className="preview-table">
-                    {hoverPreview.services.map((service) => (
-                      <tr key={service.id} style={{ width: '100%' }}>
-                        <td className="service-pr-name">{service.name}</td>
-                        <td className="service-pr-price">
-                          <strong>{service.total_price} ₴</strong>
-                        </td>
-                      </tr>
-                    ))}
+                    <tbody>
+                      {hoverPreview.services.map((service) => (
+                        <tr key={service.id} style={{ width: '100%' }}>
+                          <td className="service-pr-name">{service.name}</td>
+                          <td className="service-pr-price">
+                            <strong>{service.total_price} ₴</strong>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
                   </table>
                 </div>
 

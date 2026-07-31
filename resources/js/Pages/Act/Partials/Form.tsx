@@ -1,313 +1,138 @@
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
-import { Link, router, useForm } from '@inertiajs/react';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useAppDispatch } from '../../../hooks';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
-import Lang from 'lang.js';
-import lngAct from '../../../Lang/Act/translation';
-import InputText from '../../../Components/Form/InputText';
-import InputSelect from '../../../Components/Form/InputSelect';
-import AddDynamicInputFields from './Row';
-import InputCalendar from '../../../Components/Form/InputCalendar';
-import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
-import {
-  actItemsSelector,
-  invoiceTaxSelector,
-  tableErrorSelector,
-} from '../../../Redux/Act/selectors';
-import { getSearchResultServicesElementsByRow } from '../../../Redux/Service/selectors';
-import {
-  setInvoiceTax,
-  setShowTableError,
-} from '../../../Redux/Incominginvoice';
-import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
+import { Link, router } from '@inertiajs/react';
+import React, { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import AddDynamicInputFields, { emptyRow } from './Row';
 
-export default function Form({
-  clinicData,
-  statusData,
-  typeData,
-  patientsData,
-  customerData,
-  formData,
-  formRowData = null,
-  currencyData,
-  unitsData,
-  className = '',
-}) {
-  const appLang = useSelector(appLangSelector);
-  const msg = new Lang({
-    messages: lngAct,
-    locale: appLang,
-  });
-  const dispatch = useAppDispatch();
-  const actItems = useSelector(actItemsSelector);
-  const documentTax = useSelector(invoiceTaxSelector);
-  const showTableError = useSelector(tableErrorSelector);
-  const actRows = useSelector(actItemsSelector);
+const normaliseRow = (row) => {
+  const quantity = Number(row.quantity ?? row.qty ?? 1);
+  return {
+    product_id: row.product_id || row.service_id || '',
+    product: row.product || '',
+    quantity,
+    price: Number(row.price || 0),
+    total: Number(row.total || 0),
+    // Values saved in an existing act are totals. Convert them to a norm for
+    // one service so changing the service quantity remains reversible.
+    components: (Array.isArray(row.components) ? row.components : []).map((component) => ({
+      ...component,
+      base_quantity: Number(component.base_quantity ?? (Number(component.quantity || 0) / Math.max(quantity, 1))),
+    })),
+  };
+};
 
+const withBaseQuantities = (components) => (components || []).map((component) => ({
+  ...component,
+  base_quantity: Number(component.quantity || 0),
+}));
+
+export default function Form({ clinicData, statusData = [], patientsData = [], customerData = [], visitsData = [], formData, formRowData = [] }) {
   const [values, setValues] = useState({
-    act_number: formData.act_number ? formData.act_number : '',
-    act_date: formData.act_date,
-    clinic_id: clinicData.id,
-    patient_id: formData.patient_id,
-    doctor_id: formData.doctor_id,
-    status: formData.status,
-    status_id: formData.status,
-    visit_id: formData.visit_id,
-    comment: formData.comment,
+    act_number: formData.act_number || '', act_date: formData.act_date || '', clinic_id: clinicData.id,
+    patient_id: formData.patient_id || '', doctor_id: formData.doctor_id || '', status: formData.status || 'draft', visit_id: formData.visit_id || '',
   });
-  const { processing, recentlySuccessful } = useForm();
+  const [rows, setRows] = useState((formRowData || []).length ? formRowData.map(normaliseRow) : [emptyRow()]);
+  const [loadingVisit, setLoadingVisit] = useState(false);
+  const [fifo, setFifo] = useState({});
+  const [fifoError, setFifoError] = useState('');
+  const fifoRequestId = useRef(0);
 
-  const handleChangeSelect = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
+  const changeValue = (event) => setValues((current) => ({ ...current, [event.target.name]: event.target.value }));
+
+  const makeRowsFromVisit = async (visit) => {
+    const services = Array.isArray(visit.services) ? visit.services : [];
+    const serviceRows = await Promise.all(services.map(async (service) => {
+      const id = service.id || service.service_id;
+      if (!id) return null;
+      const response = await axios.post('/service/findServiceItems', { serviceId: id });
+      const quantity = Number(service.qty ?? service.quantity ?? 1);
+      const price = Number(service.price ?? 0);
+      return { product_id: id, product: service.name || '', quantity, price, total: Number((quantity * price).toFixed(2)), components: withBaseQuantities(response.data.items) };
     }));
-    if (key === 'tax_id') {
-      dispatch(setInvoiceTax(e.target.value));
+    return serviceRows.filter(Boolean);
+  };
+
+  const chooseVisit = async (event) => {
+    const visitId = event.target.value;
+    setValues((current) => ({ ...current, visit_id: visitId }));
+    if (!visitId) return;
+    const visit = visitsData.find((item) => String(item.id) === String(visitId));
+    if (!visit) return;
+    setLoadingVisit(true);
+    try {
+      const visitRows = await makeRowsFromVisit(visit);
+      setRows(visitRows.length ? visitRows : [emptyRow()]);
+      setValues((current) => ({ ...current, visit_id: visitId, patient_id: visit.patient_id || '', doctor_id: visit.doctor_id || '', act_date: `${visit.event_date || ''} ${visit.event_time_from || ''}`.trim() }));
+    } finally {
+      setLoadingVisit(false);
     }
   };
 
-  const handleChangeCalendar = data => {
-    const key = 'act_date';
-    const value = data;
-    setValues(values => ({
-      ...values,
-      [key]: data,
-    }));
-  };
+  useEffect(() => {
+    if (formData.visit_id && !formRowData.length) {
+      const visit = visitsData.find((item) => String(item.id) === String(formData.visit_id));
+      if (visit) makeRowsFromVisit(visit).then((visitRows) => setRows(visitRows.length ? visitRows : [emptyRow()]));
+    }
+  }, []);
 
-  const handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
-  };
-
-  const buildPayloadRows = () => {
-    return actItems.map(row => ({
-      service_id: row.product_id,
-      quantity: Number(row.quantity),
-      price: Number(row.price),
-      total: Number(row.total),
-      components: (row.components || []).map(component => ({
-        material_id: component.material_id || component.product_id,
-        quantity: Number(component.quantity),
-        unit_id: component.unit_id,
+  useEffect(() => {
+    const materials = rows.flatMap((row, rowIndex) => (row.components || [])
+      .filter((component) => component.material_id || component.product_id)
+      .map((component, componentIndex) => ({
+        key: `${rowIndex}:${componentIndex}`,
+        material_id: Number(component.material_id || component.product_id),
+        // The component quantity is the norm for one service; the act quantity
+        // changes the FIFO demand and its cost proportionally.
+        fact_qty: Number(component.base_quantity || 0) * Number(row.quantity || 0),
       }))
-    }));
-  };
+    ).filter((item) => item.material_id && item.fact_qty > 0);
 
-
-  const submit = e => {
-    e.preventDefault();
-
-    const rows = buildPayloadRows();
-    // Проверка на пустые строки
-    const haveErrorInRow = rows.some(row => !row.service_id);
-    if (haveErrorInRow) {
-      dispatch(setShowTableError(true));
+    if (!materials.length) {
+      setFifo({});
+      setFifoError('');
       return;
     }
-    const payload = {
-      act_number: values.act_number,
-      act_date: values.act_date,
-      clinic_id: values.clinic_id,
-      patient_id: values.patient_id,
-      doctor_id: values.doctor_id,
-      status: values.status,
-      visit_id: values.visit_id,
-      rows,
-    };
 
-    if (formData.id) {
-      router.post(`/act/update?id=${formData.id}`, payload);
-    } else {
-      router.post('/act/update', payload);
-    }
+    const request = window.setTimeout(async () => {
+      const currentRequestId = ++fifoRequestId.current;
+      try {
+        const response = await axios.post('/act/fifo-preview', { materials });
+        if (currentRequestId !== fifoRequestId.current) return;
+        setFifo(Object.fromEntries((response.data.items || []).map((item) => [item.key, item])));
+        setFifoError('');
+      } catch (error) {
+        if (currentRequestId !== fifoRequestId.current) return;
+        setFifo({});
+        setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
+      }
+    }, 250);
+
+    return () => window.clearTimeout(request);
+  }, [rows]);
+
+  const submit = (event) => {
+    event.preventDefault();
+    const validRows = rows.filter((row) => row.product_id);
+    if (!values.patient_id || !validRows.length) return;
+    const payload = { ...values, rows: validRows.map((row) => ({ ...row, quantity: Number(row.quantity), price: Number(row.price), total: Number(row.total), components: (row.components || []).map((component) => ({ material_id: component.material_id || component.product_id, unit_id: component.unit_id, quantity: Number(component.base_quantity || 0) * Number(row.quantity || 0) })) })) };
+    router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
   };
 
-  return (
-    <section className={className}>
-      <header>
-        <h2>
-          <Link className="icon-back" href={'/acts'}>
-            &nbsp;
-          </Link>
-          {formData?.id
-            ? msg.get('act.title.edit')
-            : msg.get('act.title.create')}
-        </h2>
-      </header>
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
-        <div className="flex flex-col md:flex-row w-full">
-          <div className="flex flex-col md:flex-row w-full">
-            <div className="w-full md:w-1/2">
-              <div className="mb-2 flex gap-2">
-                <div className="w-1/4">
-                  <InputText
-                    name={'act_number'}
-                    values={values}
-                    dataValue={values.act_number}
-                    value={values.act_number}
-                    onChange={handleChange}
-                    required
-                    label={msg.get('act.number')}
-                  />
-                </div>
-                <div className="w-1/4">
-                  <InputCalendar
-                    name={'act_date'}
-                    values={values}
-                    dataValue={values.act_date}
-                    value={values.act_date}
-                    onChange={handleChangeCalendar}
-                    required
-                    label={msg.get('act.date')}
-                  />
-                </div>
-                <div className={`w-1/4`}>
-                  <InputSelect
-                    translatable={true}
-                    name={'status'}
-                    className={'mb-1'}
-                    values={values}
-                    value={values.status_id}
-                    options={statusData}
-                    onChange={handleChangeSelect}
-                    required
-                    label={msg.get('act.status')}
-                  />
-                </div>
-                <div className="w-1/4">
-                  <InputCustomerSelect
-                    name={'doctor_id'}
-                    values={values}
-                    value={values.doctor_id}
-                    options={customerData}
-                    onChange={handleChangeSelect}
-                    required
-                    label={msg.get('act.doctor')}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="w-full md:w-1/2 px-2">
-              <div className="mb-2">
-                <div className="flex gap-2">
-                  <div className="w-1/4">
-                    <InputCustomerSelect
-                      name={'patient_id'}
-                      values={values}
-                      value={values.patient_id}
-                      options={patientsData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('act.patient')}
-                    />
-                  </div>
-                  <div className={`w-1/4`}>
-                    <InputSelect
-                      translatable={true}
-                      name={'visit_id'}
-                      className={'mb-1'}
-                      values={values}
-                      value={values.visit_id}
-                      options={statusData}
-                      onChange={handleChangeSelect}
-                      required
-                      label={msg.get('act.visits')}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative">
-          <table className="w-full invoice-table act-table">
-            <thead>
-              <tr>
-                <th className="pb-3">{msg.get('act.product')}</th>
-                <th className="pb-3 w-qty">{msg.get('act.qty')}</th>
-                <th className="pb-3 w-price">{msg.get('act.price')}</th>
-                <th className="pb-3 w-price">{msg.get('act.total')}</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
-                <th className="pb-3 w-btn">&nbsp;</th>
-              </tr>
-            </thead>
-            <tbody>
-              {formRowData?.length > 0 ? (
-                <AddDynamicInputFields formRowData={formRowData} unitsData={unitsData} />
-              ) : (
-                <AddDynamicInputFields
-                  unitsData={unitsData}
-                  formRowData={[
-                    {
-                      product_id: '',
-                      product: '',
-                      unit_id: '',
-                      quantity: '',
-                      price: '',
-                      total: '',
-                    },
-                  ]}
-                />
-              )}
-            </tbody>
-          </table>
-        </div>
-        <div className="bg-blue-100 align-items-end">
-          <div style={{ clear: 'both' }}></div>
-          <div
-            className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}
-          >
-            {msg.get('invoice.rows.error')}
-          </div>
-          <hr />
-          <div className="float-right pt-3">
-            <Link
-              className="btn-back"
-              title={msg.get('invoice.back')}
-              href={`/acts`}
-            >
-              {msg.get('act.back')}
-            </Link>
-            {formData.status_id != 2 && (
-              <PrimaryButton
-                disabled={processing}
-                onClick={e => submit(e)}
-              >
-                {msg.get('act.save')}
-              </PrimaryButton>
-            )}
-
-            <Transition
-              show={recentlySuccessful}
-              enter="transition ease-in-out"
-              enterFrom="opacity-0"
-              leave="transition ease-in-out"
-              leaveTo="opacity-0"
-            >
-              <p className="text-sm text-gray-600">
-                {msg.get('act.saved')}
-              </p>
-            </Transition>
-          </div>
-        </div>
-      </form>
-    </section>
-  );
+  return <section className="w-full">
+    <header><h2><Link className="icon-back" href="/acts">&nbsp;</Link>{formData.id ? 'Редагування акта' : 'Новий акт'}</h2></header>
+    <form onSubmit={submit} className="mt-0 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <label>Номер акта<input required name="act_number" className="input-text" value={values.act_number} onChange={changeValue} /></label>
+        <label>Дата<input required name="act_date" className="input-text" type="datetime-local" value={(values.act_date || '').replace(' ', 'T').slice(0, 16)} onChange={changeValue} /></label>
+        <label>Статус<select required name="status" className="input-text" value={values.status} onChange={changeValue}>{statusData.map((item) => <option key={item.id || item.name} value={item.id || item.name}>{item.name}</option>)}</select></label>
+        <label>Візит <span className="text-xs text-gray-500">(необов'язково)</span><select name="visit_id" className="input-text" value={values.visit_id} onChange={chooseVisit}><option value="">Створити вручну</option>{visitsData.map((visit) => <option key={visit.id} value={visit.id}>{visit.name}</option>)}</select></label>
+        <label>Пацієнт<select required name="patient_id" className="input-text" value={values.patient_id} onChange={changeValue}><option value="">Оберіть пацієнта</option>{patientsData.map((patient) => <option key={patient.id} value={patient.id}>{patient.last_name} {patient.first_name}</option>)}</select></label>
+        <label>Лікар<select name="doctor_id" className="input-text" value={values.doctor_id} onChange={changeValue}><option value="">Оберіть лікаря</option>{customerData.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.last_name} {doctor.first_name}</option>)}</select></label>
+      </div>
+      {loadingVisit && <div className="text-sm text-gray-500">Завантажуємо матеріали процедур…</div>}
+      {fifoError && <div className="text-sm text-red-600">{fifoError}</div>}
+      <div className="relative"><table className="w-full invoice-table act-table"><thead><tr><th className="pb-3">Послуга</th><th className="pb-3 w-qty">К-сть</th><th className="pb-3 w-price">Ціна</th><th className="pb-3 w-price">Сума</th><th className="pb-3 w-btn" /><th className="pb-3 w-btn" /></tr></thead><tbody><AddDynamicInputFields rows={rows} onChange={setRows} fifo={fifo} /></tbody></table></div>
+      <div className="text-right"><Link className="btn-back" href="/acts">Назад</Link><PrimaryButton disabled={loadingVisit}>Зберегти</PrimaryButton></div>
+    </form>
+  </section>;
 }

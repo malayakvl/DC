@@ -164,10 +164,10 @@ class ServiceController extends Controller
     public function findService(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $name = $request->searchName;
-            dd($name);exit;
-            
-            $resData = DB::table('pricings')->select('*')
+            $resData = DB::table('pricings')->select('id', 'name', 'price')
                 ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->orderBy('name')
+                ->limit(20)
                 ->get();
             return response()->json([
                 'items' => $resData
@@ -179,8 +179,10 @@ class ServiceController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $serviceId = $request->serviceId;
             
-            $resData = DB::table('pricing_items')->select('pricing_items.*','materials.name AS product')
+            $resData = DB::table('pricing_items')
+                ->select('pricing_items.*', 'materials.name AS product', 'units.name AS unit_name')
                 ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                ->leftJoin('units', 'units.id', '=', 'pricing_items.unit_id')
                 ->where('pricing_id', '=', $serviceId)
                 ->get();
             return response()->json([

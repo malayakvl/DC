@@ -207,24 +207,32 @@ export default function SchedulerFormCreate({
         <div className="service-info">
           <div className="service-title">{item.name}</div>
           <div className="service-price-selected">
-            {item.price} {currency}
+            {item.total_price} {currency}
           </div>
         </div>
 
         <div className="service-actions">
-          <button className="qty-btn" onClick={() => dispatch(minusServiceAction(item))}>
+          <button
+            type="button"
+            className="qty-btn"
+            onClick={() => dispatch(minusServiceAction(item))}
+          >
             −
           </button>
 
           <span className="qty-value">{item.qty ?? 1}</span>
 
-          <button className="qty-btn" onClick={() => dispatch(plusServiceAction(item))}>
+          <button
+            type="button"
+            className="qty-btn"
+            onClick={() => dispatch(plusServiceAction(item))}
+          >
             +
           </button>
         </div>
 
         <div className="service-total">
-          {item.price * item.qty} {currency}
+          {item.total_price * item.qty} {currency}
         </div>
 
         <button className="delete-btn" onClick={() => dispatch(setServicesAction(item))}>
@@ -413,7 +421,7 @@ export default function SchedulerFormCreate({
 
                       <div className="service-duration">{service.duration ?? 30} хв</div>
 
-                      <div className="service-price">{service.price} ₴</div>
+                      <div className="service-price">{service.total_price} ₴</div>
 
                       <button type="button" className="service-add-btn">
                         +

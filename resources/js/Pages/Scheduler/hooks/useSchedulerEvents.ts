@@ -24,7 +24,6 @@ const SLOT_HEIGHT = 30;
 export function useSchedulerEvents(eventsData: any[], msg: any) {
   const dispatch = useDispatch();
 
-  // 1. Единый стейт локальных событий
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     if (!eventsData) return [];
     return eventsData.map((event) => ({
@@ -52,12 +51,32 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
     }));
   });
 
-  // 2. Рефы блокировок (чтобы DND/Resize не вызывали клик)
   const isResizingRef = useRef(false);
   const isDraggingRef = useRef(false);
   const blockClickRef = useRef(false);
 
-  // Синхронизация с сервером
+  // 💡 ФУНКЦИЯ-ГЛУШИТЕЛЬ ФАНТОМНЫХ КЛИКОВ
+  const suppressNextClick = useCallback(() => {
+    blockClickRef.current = true;
+
+    const captureClick = (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      window.removeEventListener('click', captureClick, true);
+    };
+
+    // Перехватываем следующий клик на самом раннем этапе (capture phase)
+    window.addEventListener('click', captureClick, true);
+
+    // Страховочный сброс флагов через 200мс
+    setTimeout(() => {
+      window.removeEventListener('click', captureClick, true);
+      isResizingRef.current = false;
+      isDraggingRef.current = false;
+      blockClickRef.current = false;
+    }, 200);
+  }, []);
+
   useEffect(() => {
     if (eventsData) {
       setLocalEvents(
@@ -90,7 +109,6 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
     }
   }, [eventsData]);
 
-  // --- HANDLER 1: Сохранение / Создание ---
   const handleSaveLocalEvent = useCallback((rawEvent: any) => {
     const formattedEvent: SchedulerEvent = {
       id: String(rawEvent.id),
@@ -121,7 +139,6 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
     });
   }, []);
 
-  // --- HANDLER 2: Клик по сетке (Создание визита) ---
   const handleCellClick = useCallback(
     (
       e: React.MouseEvent<HTMLDivElement>,
@@ -130,7 +147,13 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
       doctorId: number,
       timeSlots: any[]
     ) => {
-      if (isResizingRef.current || isDraggingRef.current) return;
+      // ⛔️ ЕСЛИ ТОЛЬКО ЧТО БЫЛ РЕСАЙЗ ИЛИ ДРЭГ — ИГНОРИРУЕМ КЛИК ПО ЯЧЕЙКЕ!
+      if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
+        console.log('🚫 Клик по ячейке заблокирован после ресайза');
+        e.stopPropagation();
+        return;
+      }
+      if (isResizingRef.current || isDraggingRef.current || blockClickRef.current) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickY = e.clientY - rect.top;
       const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
@@ -156,21 +179,24 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
     [dispatch, msg]
   );
 
-  // --- HANDLER 3: Клик по карточке события (Редактирование) ---
   const handleEventClick = useCallback(
     (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
+      // 1. Мгновенно глушим всплытие, чтобы событие НЕ долетело до ячейки календаря под ивентом!
       e.stopPropagation();
 
-      if (isDraggingRef.current || isResizingRef.current || blockClickRef.current) {
-        e.preventDefault();
+      // 2. Если во время отпускания кнопки мыши еще висит флаг Drag/Resize — отменяем действие
+      if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
+        console.log('🚫 Клик по ивенту заблокирован после resize/drag');
         return;
       }
 
+      // 3. Логика распарсивания услуг
       const servicesArray =
         typeof cellEvent.services === 'string'
           ? JSON.parse(cellEvent.services)
           : cellEvent.services || [];
 
+      // 4. Диспатчим данные в стор
       dispatch(setScheduleEditEventAction(cellEvent));
       dispatch(setScheduleDateAction(cellEvent.event_date));
       dispatch(initServicesAction(servicesArray));
@@ -182,101 +208,97 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
   );
 
   // --- HANDLER 4: Drag & Drop ---
-  const handleDragStart = useCallback((e: React.MouseEvent, event: SchedulerEvent) => {
-    if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
-    e.stopPropagation();
-    e.preventDefault();
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent, event: SchedulerEvent) => {
+      if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
+      e.stopPropagation();
+      e.preventDefault();
 
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const baseStart = parseISO(event.start);
-    const baseEnd = parseISO(event.end);
-    const durationMin = differenceInMinutes(baseEnd, baseStart);
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const baseStart = parseISO(event.start);
+      const baseEnd = parseISO(event.end);
+      const durationMin = differenceInMinutes(baseEnd, baseStart);
 
-    let hasMovedEnough = false;
-    let finalDate = event.event_date;
-    let finalCabinetId = event.cabinet_id;
-    let finalDoctorId = event.doctor_id;
-    let finalStartDate = baseStart;
-    let finalEndDate = baseEnd;
+      let hasMovedEnough = false;
+      let finalDate = event.event_date;
+      let finalCabinetId = event.cabinet_id;
+      let finalDoctorId = event.doctor_id;
+      let finalStartDate = baseStart;
+      let finalEndDate = baseEnd;
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const deltaX = moveEvent.clientX - startX;
+        const deltaY = moveEvent.clientY - startY;
 
-      if (!hasMovedEnough && Math.sqrt(deltaX * deltaX + deltaY * deltaY) < 5) return;
+        if (!hasMovedEnough && Math.sqrt(deltaX * deltaX + deltaY * deltaY) < 5) return;
 
-      if (!hasMovedEnough) {
-        hasMovedEnough = true;
-        isDraggingRef.current = true;
-        blockClickRef.current = true;
-      }
+        if (!hasMovedEnough) {
+          hasMovedEnough = true;
+          isDraggingRef.current = true;
+          blockClickRef.current = true;
+        }
 
-      const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
-      const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
-      const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
+        const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+        const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+        const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
 
-      if (columnEl) {
-        finalDate = columnEl.getAttribute('data-date') || finalDate;
-        finalCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || finalCabinetId;
-        finalDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || finalDoctorId;
-      }
+        if (columnEl) {
+          finalDate = columnEl.getAttribute('data-date') || finalDate;
+          finalCabinetId = Number(columnEl.getAttribute('data-cabinet-id')) || finalCabinetId;
+          finalDoctorId = Number(columnEl.getAttribute('data-doctor-id')) || finalDoctorId;
+        }
 
-      finalStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
-      finalEndDate = new Date(finalStartDate.getTime() + durationMin * 60000);
+        finalStartDate = new Date(baseStart.getTime() + minutesDelta * 60000);
+        finalEndDate = new Date(finalStartDate.getTime() + durationMin * 60000);
 
-      setLocalEvents((prev) =>
-        prev.map((ev) => {
-          if (ev.id !== event.id) return ev;
-          return {
-            ...ev,
+        setLocalEvents((prev) =>
+          prev.map((ev) => {
+            if (ev.id !== event.id) return ev;
+            return {
+              ...ev,
+              event_date: finalDate,
+              cabinet_id: finalCabinetId,
+              doctor_id: finalDoctorId,
+              start: `${finalDate}T${format(finalStartDate, 'HH:mm:ss')}`,
+              end: `${finalDate}T${format(finalEndDate, 'HH:mm:ss')}`,
+              event_time_from: format(finalStartDate, 'HH:mm'),
+              event_time_to: format(finalEndDate, 'HH:mm'),
+            };
+          })
+        );
+      };
+
+      const handleMouseUp = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+
+        if (!hasMovedEnough) {
+          isDraggingRef.current = false;
+          blockClickRef.current = false;
+          return;
+        }
+
+        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
+
+        router.put(
+          route('scheduler.update-position', event.id),
+          {
             event_date: finalDate,
             cabinet_id: finalCabinetId,
             doctor_id: finalDoctorId,
-            start: `${finalDate}T${format(finalStartDate, 'HH:mm:ss')}`,
-            end: `${finalDate}T${format(finalEndDate, 'HH:mm:ss')}`,
             event_time_from: format(finalStartDate, 'HH:mm'),
             event_time_to: format(finalEndDate, 'HH:mm'),
-          };
-        })
-      );
-    };
-
-    const handleMouseUp = () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-
-      if (!hasMovedEnough) {
-        isDraggingRef.current = false;
-        blockClickRef.current = false;
-        return;
-      }
-
-      // Проверка перекрытий и сохранение на бэк
-      router.put(
-        route('scheduler.update-position', event.id),
-        {
-          event_date: finalDate,
-          cabinet_id: finalCabinetId,
-          doctor_id: finalDoctorId,
-          event_time_from: format(finalStartDate, 'HH:mm'),
-          event_time_to: format(finalEndDate, 'HH:mm'),
-        },
-        {
-          preserveScroll: true,
-          onFinish: () => {
-            setTimeout(() => {
-              isDraggingRef.current = false;
-              blockClickRef.current = false;
-            }, 100);
           },
-        }
-      );
-    };
+          { preserveScroll: true }
+        );
+      };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, []);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [suppressNextClick]
+  );
 
   // --- HANDLER 5: Resize ---
   const handleResizeStart = useCallback(
@@ -286,10 +308,19 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
 
       const startY = e.clientY;
       const baseEnd = parseISO(currentEndISO);
-      isResizingRef.current = true;
+      let hasResizedEnough = false;
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
         const deltaY = moveEvent.clientY - startY;
+
+        if (!hasResizedEnough && Math.abs(deltaY) < 3) return;
+
+        if (!hasResizedEnough) {
+          hasResizedEnough = true;
+          isResizingRef.current = true;
+          blockClickRef.current = true;
+        }
+
         const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
 
         if (minutesDelta !== 0) {
@@ -315,15 +346,20 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
       const handleMouseUp = () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
-        setTimeout(() => {
+
+        if (!hasResizedEnough) {
           isResizingRef.current = false;
-        }, 50);
+          blockClickRef.current = false;
+          return;
+        }
+
+        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
       };
 
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    []
+    [suppressNextClick]
   );
 
   return {

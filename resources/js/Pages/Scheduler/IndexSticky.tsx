@@ -1150,13 +1150,7 @@ export default function Index3Days({
                                                     e.stopPropagation(); // ЖЕЛЕЗОБЕТОННО блокируем открытие редактирования визита!
                                                     e.preventDefault();
 
-                                                    // Твоя логика создания акта. Например:
-                                                    console.log(
-                                                      'Создаем акт для визита:',
-                                                      event.id
-                                                    );
-                                                    // router.visit(route('acts.create', { event_id: event.id }));
-                                                    alert(`Создаем акт для: ${event.patient_name}`);
+                                                    router.visit(`/act/create?visit_id=${event.id}`);
                                                   }}
                                                   title="Створити акт"
                                                   style={{

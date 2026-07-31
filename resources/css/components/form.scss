@@ -480,15 +480,16 @@ label.float-label {
 
 .service-item {
     text-align: left;
-    color: #fff;
+    color: #0F172A;;
     font-family: 'Roboto', Courier, monospace;
     font-size: 14px;
-    ;
+    min-width: 350px;
 }
 
 .services-block {
-    border: solid 1px #35466d;
-    background-color: #0f1525;
+    //color: black;
+    //border: solid 1px #35466d;
+    //background-color: #0f1525;
 }
 
 .title-service {
@@ -590,4 +591,17 @@ label.float-label {
     height: 3px;
     background: #0EA5A4;
     border-radius: 16px 16px 0 0;
+}
+.act-service {
+    margin-right: 10px;
+    height: 45px !important;
+    min-height: 45px !important;
+    border-color: #d8dee8 !important;
+}
+.qty-act {
+    border: solid 1px #d8dee8 !important;
+    margin-left: 10px;
+}
+.text-main {
+    color: #0F172A !important;
 }

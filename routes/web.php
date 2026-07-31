@@ -232,6 +232,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/service/update', [ServiceController::class, 'update'])->name('service.categories.update');
     Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
     Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
+    Route::post('/act/fifo-preview', [ActController::class, 'fifoPreview'])->name('act.fifo-preview');
 
     // REPORTS ROUTES
     Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');

@@ -328,3 +328,8 @@
     border-color: #181610;
     background: #d3d3d2;
 }
+.pay-btn {
+    @apply px-1.5 py-0.5 text-[12px] rounded-xl transition-colors duration-200 shadow-sm;
+    background: #f5cbe6;
+    color: #b9117e;
+}

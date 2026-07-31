@@ -39,6 +39,15 @@ class ActController extends Controller
         $this->auditLogService = $auditLogService;
     }
 
+    private function actStatuses(): array
+    {
+        return [
+            ['id' => 'draft', 'name' => 'Чернетка'],
+            ['id' => 'posted', 'name' => 'Проведений'],
+            ['id' => 'cancelled', 'name' => 'Скасований'],
+        ];
+    }
+
 
     /**
      * Helper для работы с текущей схемой клиники
@@ -59,6 +68,91 @@ class ActController extends Controller
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
+    }
+
+    /**
+     * Read-only FIFO calculation for the act form.
+     * It deliberately does not reserve or change batches: the form can be edited
+     * freely and the actual write-off will happen only when the act is posted.
+     */
+    public function fifoPreview(Request $request)
+    {
+        return $this->withClinicSchema($request, function () use ($request) {
+            $data = $request->validate([
+                'materials' => ['required', 'array'],
+                'materials.*.key' => ['required', 'string'],
+                'materials.*.material_id' => ['required', 'integer'],
+                'materials.*.fact_qty' => ['required', 'numeric', 'min:0'],
+            ]);
+
+            $filialId = $request->session()->get('filial_id');
+            $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
+
+            if (!$storeId) {
+                return response()->json(['items' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
+            }
+
+            $items = [];
+            $availableByMaterial = [];
+            foreach ($data['materials'] as $need) {
+                $materialId = (int) $need['material_id'];
+                $requiredQty = round((float) $need['fact_qty'], 4);
+                $remainingQty = $requiredQty;
+                $cost = 0.0;
+                $batches = [];
+
+                if (!isset($availableByMaterial[$materialId])) {
+                    $availableByMaterial[$materialId] = DB::table('store_batches')
+                        ->where('store_id', $storeId)
+                        ->where('material_id', $materialId)
+                        ->where('fact_qty_left', '>', 0)
+                        ->orderBy('arrived_at')
+                        ->orderBy('id')
+                        ->get(['id', 'arrived_at', 'fact_qty_left', 'price_per_unit'])
+                        ->map(fn ($batch) => [
+                            'id' => $batch->id,
+                            'arrived_at' => $batch->arrived_at,
+                            'fact_qty_left' => (float) $batch->fact_qty_left,
+                            'price_per_unit' => (float) $batch->price_per_unit,
+                        ])
+                        ->all();
+                }
+
+                foreach ($availableByMaterial[$materialId] as &$batch) {
+                    if ($remainingQty <= 0) {
+                        break;
+                    }
+
+                    $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                    $unitCost = $batch['price_per_unit'];
+                    $lineCost = round($usedQty * $unitCost, 4);
+
+                    $batches[] = [
+                        'batch_id' => $batch['id'],
+                        'arrived_at' => $batch['arrived_at'],
+                        'quantity' => $usedQty,
+                        'price_per_unit' => $unitCost,
+                        'total' => $lineCost,
+                    ];
+                    $cost += $lineCost;
+                    $remainingQty = round($remainingQty - $usedQty, 4);
+                    $batch['fact_qty_left'] = round($batch['fact_qty_left'] - $usedQty, 4);
+                }
+                unset($batch);
+
+                $items[] = [
+                    'key' => $need['key'],
+                    'material_id' => (int) $materialId,
+                    'required_qty' => $requiredQty,
+                    'available_qty' => round($requiredQty - $remainingQty, 4),
+                    'shortage_qty' => max(0, $remainingQty),
+                    'cost' => round($cost, 4),
+                    'batches' => $batches,
+                ];
+            }
+
+            return response()->json(['items' => $items]);
+        });
     }
     
 
@@ -182,6 +276,8 @@ class ActController extends Controller
             $typeData = array();
 
             $formData = new Act();
+            $formData->act_date = now()->format('Y-m-d H:i:s');
+            $formData->status = 'draft';
             $lastInvoiceNum = DB::table('acts')
                 ->max('act_number');
             if (!$lastInvoiceNum) {
@@ -195,7 +291,11 @@ class ActController extends Controller
             }
             $formData->act_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);
             
-            $producerData = Supplier::all();
+            $patientsData = DB::table('patients')
+                ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                ->select('patients.id', 'users.first_name', 'users.last_name', 'users.email')
+                ->orderBy('users.last_name')
+                ->get();
             $customerData = DB::table('core.clinic_user')
                     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
                     ->select(
@@ -208,12 +308,42 @@ class ActController extends Controller
                     ->orderBy('users.last_name')
                     ->get();
 
+            $visitsData = DB::table('schedulers as schedulers')
+                ->leftJoin('patients as patients', 'patients.id', '=', 'schedulers.patient_id')
+                ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patients.user_id')
+                ->select(
+                    'schedulers.id', 'schedulers.patient_id', 'schedulers.doctor_id',
+                    'schedulers.event_date', 'schedulers.event_time_from', 'schedulers.services',
+                    DB::raw("CONCAT(schedulers.event_date, ' — ', COALESCE(patient_user.last_name, ''), ' ', COALESCE(patient_user.first_name, '')) as name")
+                )
+                ->where('schedulers.clinic_id', $clinicId)
+                ->orderByDesc('schedulers.event_date')
+                ->orderByDesc('schedulers.event_time_from')
+                ->limit(100)
+                ->get()
+                ->map(function ($visit) {
+                    $visit->services = json_decode($visit->services ?? '[]', true) ?: [];
+                    return $visit;
+                });
+
+            if ($request->filled('visit_id')) {
+                $visit = $visitsData->firstWhere('id', (int) $request->visit_id);
+                if ($visit) {
+                    $formData->visit_id = $visit->id;
+                    $formData->patient_id = $visit->patient_id;
+                    $formData->doctor_id = $visit->doctor_id;
+                    $formData->act_date = trim($visit->event_date . ' ' . $visit->event_time_from);
+                }
+            }
+
             return Inertia::render('Act/Create', [
                 'clinicData' => $clinicData,
                 'formData' => $formData,
+                'patientsData' => $patientsData,
                 'customerData' => $customerData,
-                'producerData' => $producerData,
-                'statusData' => Invoices::INVOICE_STATUSES,
+                'visitsData' => $visitsData,
+                'unitsData' => Unit::orderBy('name')->get(),
+                'statusData' => $this->actStatuses(),
                 'typeData' => $typeData,
             ]);
         });
@@ -302,7 +432,7 @@ class ActController extends Controller
                     'patientsData'=> $patientsData,
                     'formRowData' => $rowData,
                     'customerData' => $customerData,
-                    'statusData' => Invoices::INVOICE_STATUSES,
+                    'statusData' => $this->actStatuses(),
                     'typeData' => $typeData,
                 ]);
             } else {
@@ -471,7 +601,7 @@ class ActController extends Controller
             try {
                 // Создаем или обновляем акт
                 $act = $request->id ? Act::find($request->id) : new Act();
-                $act->fill($request->only(['filial_id', 'patient_id', 'doctor_id', 'act_date', 'status']));
+                $act->fill($request->only(['filial_id', 'patient_id', 'doctor_id', 'visit_id', 'act_date', 'status']));
                 $act->act_number = $request->act_number;
                 $act->total_amount = 0; // пока 0, потом суммируем
                 $act->filial_id = 1; // изменить на реальный филиал

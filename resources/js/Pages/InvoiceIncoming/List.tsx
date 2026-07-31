@@ -192,7 +192,7 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                             setPaymentAmountError(false);
                             setShowModal(true);
                           }}
-                          className="pay-btn text-blue-100 hover:text-blue-200 bg-[#aa53d8] px-1.5 py-0.5 text-[12px] rounded-xl transition-colors duration-200 shadow-sm"
+                          className="pay-btn "
                           data-id={item.id}
                         >
                           {msg.get('invoice_incoming.unpaid')}

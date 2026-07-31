@@ -142,7 +142,6 @@ export default function SchedulerFormEdit({
   }, [timeStart]);
 
   useEffect(() => {
-    console.log('Setup cabinet', cabinetId);
     setValues((values) => ({
       ...values,
       ['event_date']: eventDate,
@@ -151,25 +150,6 @@ export default function SchedulerFormEdit({
       ['cabinet_id']: cabinetId,
     }));
   }, [eventDate, doctorId, eventStatus, cabinetId]);
-
-  const submitOld = (e) => {
-    e.preventDefault();
-    values['newPatientData'] = newPatientData;
-    // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
-    const [day, month, year] = eventDate.split('.'); // Split the input string
-    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    values['event_date'] = formattedDate;
-    values['services'] = popupServices;
-    if (patientId) {
-      values['patientId'] = patientId;
-    }
-    if (formData.id) {
-      router.post(`/scheduler/update?id=${formData.id}`, values);
-    } else {
-      router.post('/scheduler/update', values);
-    }
-    dispatch(showOverlayAction(false));
-  };
 
   const submit = (e) => {
     e.preventDefault();
