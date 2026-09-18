@@ -17,36 +17,63 @@ export default function InputSelect({
   translatable = false,
   defaultValue = null,
   error = null,
+  options = [],
   ...props
-}) {
-  const { errors: pageErrors } = usePage().props;
+}: any) {
+  const { errors: pageErrors } = usePage().props as any;
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngDropdown,
     locale: appLang,
   });
+
   const displayError = error || pageErrors[name];
 
+  // 1. Витягуємо ID з values або defaultValue
+  const rawValue = defaultValue ?? values?.[name];
+  let targetId = rawValue;
+
+  if (rawValue && typeof rawValue === 'object') {
+    targetId = rawValue.id !== undefined ? rawValue.id : rawValue.name;
+  }
+
+  // Завжди перетворюємо шукане значення в рядок
+  const stringSelectedValue = targetId !== null && targetId !== undefined ? String(targetId) : '';
+
+  // Перевірка на випадок, якщо options загорнуті в data (Laravel Resource)
+  const normalizedOptions = Array.isArray(options) ? options : (options as any)?.data || [];
+
   return (
-    <div className={`relative`}>
-      {/* eslint-disable-next-line react/no-children-prop */}
-      {label && <InputLabel htmlFor={name} value={label} children={null} />}
-      {props.options.length > 0 && (
-        <select
-          id={`${elId || name}`}
-          name={name}
-          className={`input-text ${className}`}
-          defaultValue={`${defaultValue ? defaultValue : values[name]}`}
-          onChange={onChange}
-        >
-          <option value="">{msg.get('dropdown.select')}</option>
-          {props.options.map((option: any) => (
-            <option key={option.id} value={option.id} selected={option.id === defaultValue}>
-              {translatable ? msg.get('dropdown.' + option.name) : option.name}
+    <div className="relative">
+      {label && <InputLabel htmlFor={name} value={label} />}
+
+      <select
+        id={elId || name}
+        name={name}
+        className={`input-text ${className}`}
+        value={stringSelectedValue}
+        onChange={onChange}
+        {...props}
+      >
+        <option value="">{msg.get('dropdown.select')}</option>
+        {normalizedOptions.map((option: any, index: number) => {
+          // Динамічно шукаємо ID опції (чи це id, value, code чи сам елемент)
+          const rawOptId =
+            typeof option === 'object' && option !== null
+              ? (option.id ?? option.value ?? option.code)
+              : option;
+
+          const optValue = String(rawOptId);
+          const optLabel = typeof option === 'object' ? (option.name ?? option.label) : option;
+
+          return (
+            <option key={option.id || index} value={optValue}>
+              {translatable ? msg.get('dropdown.' + optLabel) : optLabel}
             </option>
-          ))}
-        </select>
-      )}
+          );
+        })}
+      </select>
+
       {displayError && <div className="form-error">{displayError}</div>}
     </div>
   );

@@ -282,10 +282,12 @@ export default function Form({
                   ref={rowRef}
                   formRowData={formRowData}
                   unitsData={unitsData}
+                  msg={msg}
                 />
               ) : (
                 <AddDynamicInputFields
                   ref={rowRef}
+                  msg={msg}
                   unitsData={unitsData}
                   formRowData={[
                     {

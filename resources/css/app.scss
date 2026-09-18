@@ -30,7 +30,7 @@
 @use "components/dashboardselect";
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 //@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300..800;1,300..800&display=swap');
 //@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 //@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
@@ -43,7 +43,8 @@
 body {
     // background: #000;
     //font-family: "Manrope", sans-serif;
-    font-family: 'Manrope', sans-serif;
+    //font-family: 'Manrope', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     background: #fcfcfd;
 
     color:#000;
@@ -278,4 +279,17 @@ hr {
     font-family: "Fondamento", cursive;
     font-size: 80px;
     color: #830505;
+}
+.pageNotFound {
+    margin: 0 auto;
+    max-height: 400px;
+    width: auto;
+}
+.list-total {
+    @apply px-2.5 py-0.5 rounded-full font-bold;
+    background: #89f5e7;
+    color: #0a0f1c;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-left: 10px;
 }

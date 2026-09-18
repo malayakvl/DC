@@ -34,6 +34,7 @@ export default function List({ listData }) {
                 <div className="flex inline-flex w-full mb-4">
                   <h2 className="text-xl font-semibold leading-tight">
                     {msg.get('material.title.list')}
+                    <small className="list-total">{listData.length} позицій</small>
                   </h2>
                   <div className="flex-1 text-right mt-[5px]">
                     <PrimaryButton>
@@ -54,7 +55,7 @@ export default function List({ listData }) {
                             ? `/storage/materials/${item.id}/${item.image}`
                             : '/images/no-photo.png'
                         }
-                        width={40}
+                        width={65}
                         className="float-left rounded"
                         height="auto"
                         onError={(e) => {

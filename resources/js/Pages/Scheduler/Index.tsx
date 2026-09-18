@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { cabinets, doctors, SchedulerEvent } from './mock/data';
+import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
 import Index3Days from './Index3Days';

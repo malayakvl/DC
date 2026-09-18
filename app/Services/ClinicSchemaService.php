@@ -548,6 +548,8 @@ class ClinicSchemaService
                 retail_price NUMERIC(12,2) DEFAULT 0,
                 percent NUMERIC(6,2) DEFAULT 0,
                 price_per_unit NUMERIC(12,4) DEFAULT 0,
+                expected_uses INTEGER DEFAULT NULL,
+                is_instrument BOOLEAN NOT NULL DEFAULT FALSE,
 
                 articul VARCHAR(255) DEFAULT 0,
                 image VARCHAR(255) DEFAULT 0,

@@ -15,6 +15,7 @@ import {
   plusServiceAction,
   setServicesAction,
   showScheduleEditPopupAction,
+  showSchedulePopupAction,
 } from '@/Redux/Scheduler';
 import 'rc-time-picker/assets/index.css';
 import InputMask from 'react-input-mask';
@@ -32,6 +33,7 @@ import {
   popupTimeSelector,
   servicesSelector,
   showEditPopupSelector,
+  popupAssistantSelector,
 } from '@/Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
@@ -66,7 +68,7 @@ export default function SchedulerFormEdit({
     clinic_id: clinicData.id,
     cabinet_id: currentEventData.cabinet_id,
     doctor_id: currentEventData.doctor_id,
-    assistent: currentEventData.assistent_id,
+    assistent_id: currentEventData.assistent_id,
     comment: currentEventData.comment,
     status_id: currentEventData.status_id,
     event_date: formatDate(currentEventData.event_date),
@@ -77,6 +79,7 @@ export default function SchedulerFormEdit({
   });
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
+  const assistent = useSelector(popupAssistantSelector);
   const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = currentEventData.event_time_to;
@@ -146,6 +149,7 @@ export default function SchedulerFormEdit({
       ...values,
       ['event_date']: eventDate,
       ['doctor_id']: doctorId,
+      ['assistent_id']: assistent,
       ['status_id']: eventStatus,
       ['cabinet_id']: cabinetId,
     }));
@@ -173,13 +177,12 @@ export default function SchedulerFormEdit({
         // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
         // Нам нужно просто закрыть модалку
         dispatch(showOverlayAction(false));
-        dispatch(showSchedulePopupAction(false));
         dispatch(showOverlayAction(false));
         dispatch(setPopupAction(false));
 
         // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
-        // dispatch(showSchedulePopupAction(false));
-        // dispatch(showScheduleEditPopupAction(false));
+        dispatch(showSchedulePopupAction(false));
+        dispatch(showScheduleEditPopupAction(false));
       },
       onError: (errors) => {
         console.error('Ошибки при сохранении:', errors);

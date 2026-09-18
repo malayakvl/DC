@@ -15,17 +15,25 @@ import {
   setScheduleEditEventAction,
   initServicesAction,
   showScheduleEditPopupAction,
+  setScheduleDoctorIdAction,
 } from '@/Redux/Scheduler';
 import { showOverlayAction } from '@/Redux/Layout';
-import { SchedulerEvent } from '../mock/data';
+import { SchedulerEvent } from '../_mock/data';
 
 const SLOT_HEIGHT = 30;
 
-export function useSchedulerEvents(eventsData: any[], msg: any) {
+export function useSchedulerEvents(
+  eventsData: any[],
+  msg: any,
+  blockClickRef: React.MutableRefObject<boolean>,
+  isResizingRef: React.MutableRefObject<boolean>,
+  isDraggingRef: React.MutableRefObject<boolean>
+) {
   const dispatch = useDispatch();
 
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     if (!eventsData) return [];
+
     return eventsData.map((event) => ({
       id: String(event.id),
       title: event.title,
@@ -51,9 +59,9 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
     }));
   });
 
-  const isResizingRef = useRef(false);
-  const isDraggingRef = useRef(false);
-  const blockClickRef = useRef(false);
+  // const isResizingRef = useRef(false);
+  // const isDraggingRef = useRef(false);
+  // const blockClickRef = useRef(false);
 
   // 💡 ФУНКЦИЯ-ГЛУШИТЕЛЬ ФАНТОМНЫХ КЛИКОВ
   const suppressNextClick = useCallback(() => {
@@ -201,6 +209,7 @@ export function useSchedulerEvents(eventsData: any[], msg: any) {
       dispatch(setScheduleDateAction(cellEvent.event_date));
       dispatch(initServicesAction(servicesArray));
       dispatch(setScheduleTimeAction(cellEvent.event_time_from));
+      dispatch(setScheduleDoctorIdAction(cellEvent.doctor_id));
       dispatch(showOverlayAction(true));
       dispatch(showScheduleEditPopupAction(true));
     },

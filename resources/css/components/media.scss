@@ -30,9 +30,17 @@
 .icon-lang,
 .icon-user {
     position: absolute;
-    top: 14px !important;
+    top: 7px !important;
     left: 20px;
     z-index: 999;
+}
+.icon-lang {
+    top: 5px !important;
+    left: 8px;
+}
+.icon-notice {
+    top: 5px !important;
+    left: 8px;
 }
 
 .icon-user {
@@ -47,4 +55,19 @@
     right: 10px;
     top: 4px;
     //border: solid 1px red;
+}
+.notice-block {
+    position: fixed;
+    right: 250px;
+    top: 7px;
+}
+.lang-block {
+    position: fixed;
+    right: 310px;
+    top: 13px;
+    min-height: 28px;
+    background: #f5f7ff;
+}
+.context-menu {
+    margin-right: 350px;
 }

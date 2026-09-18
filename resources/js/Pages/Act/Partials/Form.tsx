@@ -144,6 +144,7 @@ export default function Form({
           (response.data.items || []).map((item) => [item.key, item])
         );
         setFifo(fifoByComponent);
+        console.log('TUT');
         setRows((currentRows) => {
           let changed = false;
           const nextRows = currentRows.map((row, rowIndex) => {

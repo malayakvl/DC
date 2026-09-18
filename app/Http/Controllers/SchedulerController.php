@@ -47,8 +47,10 @@ class SchedulerController extends Controller
         $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
 
         try {
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
             DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
-            return $callback($clinicId);
+//            return $callback($clinicId);
+            return call_user_func($callback, $clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
         }
@@ -63,7 +65,6 @@ class SchedulerController extends Controller
             $clinicData = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
             $formData = new Scheduler();
-
             $startDate = $request->start_date
                 ? Carbon::parse($request->start_date)
                 : Carbon::today();
@@ -94,7 +95,6 @@ class SchedulerController extends Controller
                 )
                 ->orderBy('u.last_name')
                 ->get();
-
             $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
@@ -102,7 +102,6 @@ class SchedulerController extends Controller
             }
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
-
 
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
@@ -158,7 +157,6 @@ class SchedulerController extends Controller
                     })->values()->toArray()
                 ];
             })->values()->toArray();
-
             $listCabinets = DB::table('cabinets')
                 ->select(
                     'cabinets.id',
@@ -813,22 +811,20 @@ class SchedulerController extends Controller
                 } else {
                     $patientId = $request->patientId;
                 }
-
                 $scheduler = new Scheduler();
                 $scheduler->title = $request->title;
                 $scheduler->event_date = $request->event_date;
                 $scheduler->event_time_from = $request->event_time_from;
                 $scheduler->event_time_to = $request->event_time_to;
                 $scheduler->clinic_id = $clinic->id;
-                $scheduler->cabinet_id = $request->cabinet_id;
-                $scheduler->doctor_id = $request->doctor_id;
+                $scheduler->cabinet_id = $request->cabinet_id["id"];
+                $scheduler->doctor_id = $request->doctor_id["id"];
                 $scheduler->patient_id = $patientId;
                 $scheduler->description = $request->comment ? $request->comment : '';
                 $scheduler->status_name = $request->status_id["name"];
                 $scheduler->status_color = $request->status_id["color"];
                 $scheduler->services = json_encode($request->services);
                 $scheduler->save();
-
                 // МЕНЯЕМ ТУТ: Обычный редирект Inertia
                 return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
             }

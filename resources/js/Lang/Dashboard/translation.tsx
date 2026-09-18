@@ -24,6 +24,7 @@ const lngDashboard = {
     patients: 'Пацієнтів',
     appointments: 'Найближчі прийоми',
     visits: 'Прийомів сьогодні',
+    pageNotFound: 'Сторінку не знайдено'
   },
 };
 export default lngDashboard;

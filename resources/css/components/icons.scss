@@ -10,12 +10,22 @@
     width: 16px;
     height: 16px;
 }
+.icon-notice {
+    background-image: url("../../images/header/lang.svg");
+    background-size: contain;
+    width: 16px;
+    height: 16px;
+}
 .icon-arrow-down {
     background-image: url("../../images/header/dropdown.svg");
     background-repeat: no-repeat;
     background-size: contain;
 
     @apply -me-0.5 ms-2 h-4 w-4;
+}
+.arrow-lang {
+    margin-top: 5px;
+    margin-left: -5px;
 }
 .icon-back {
     background-image: url("../../images/action-icons/back.svg");

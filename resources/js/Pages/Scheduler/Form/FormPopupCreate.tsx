@@ -87,6 +87,7 @@ export default function SchedulerFormCreate({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     serviceCategories.length ? serviceCategories[0].id : null
   );
+
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -245,7 +246,7 @@ export default function SchedulerFormCreate({
   const addService = (_item) => {
     dispatch(setServicesAction(_item));
   };
-
+  console.log(values);
   return (
     <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
@@ -282,10 +283,8 @@ export default function SchedulerFormCreate({
               name={'cabinet_id'}
               className={'w-1/2'}
               values={values}
-              value={values.cabinet_id}
               options={cabinetData}
               onChange={handleChangeSelect}
-              defaultValue={cabinetId}
               required
               label={msg.get('scheduler.form.cabinet')}
             />
@@ -297,9 +296,7 @@ export default function SchedulerFormCreate({
             <InputSelect
               name={'doctor_id'}
               values={values}
-              value={values.doctor_id}
               options={customerData}
-              defaultValue={doctorId}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.doctor')}
@@ -309,9 +306,7 @@ export default function SchedulerFormCreate({
             <InputSelect
               name={'assistent_id'}
               values={values}
-              value={values.assistent}
               options={assistantData}
-              defaultValue={doctorId}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.assistent')}

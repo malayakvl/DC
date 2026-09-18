@@ -57,6 +57,7 @@ const lngInvoiceIncoming = {
     amount: 'Сума',
     payment_method: 'Спосіб оплати',
     payment: 'Оплата накладної',
+    provider: 'виробник',
   },
 };
 export default lngInvoiceIncoming;

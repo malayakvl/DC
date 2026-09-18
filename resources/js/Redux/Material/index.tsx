@@ -12,6 +12,7 @@ import {
   emptyMaterialsAutocompleteAction,
   emptyMaterialsQtyAutocompleteAction,
   emptyStoreReportAction,
+  findServiceMaterialCalcAction
 } from './actions';
 import { emptyUserAutocompleteAction } from '../Clinic';
 
@@ -89,6 +90,12 @@ const ACTION_HANDLERS = {
       searchResultMaterials: action.payload,
     }),
   },
+  [findServiceMaterialCalcAction]: {
+      next: (state, action) => ({
+        ...state,
+        searchResultMaterials: action.payload,
+      }),
+    },
   [emptyMaterialsAutocompleteAction]: {
     next: (state, action) => ({
       ...state,
@@ -115,6 +122,7 @@ export {
   findMaterialAction,
   emptyMaterialsAutocompleteAction,
   emptyStoreReportAction,
+  findServiceMaterialCalcAction
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

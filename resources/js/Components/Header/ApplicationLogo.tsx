@@ -8,8 +8,8 @@ export default function ApplicationLogo() {
           {/*<img src="../../images/header/logo.png" className="h-[65px]" />*/}
         </div>
         <div className="text-md font-bold leading-tight gradient-text-h">
-          Dental<span>Care</span>
-          <span className="slogan">Все для сучасної стоматології</span>
+          D<span>C</span>
+          {/*<span className="slogan">Все для сучасної стоматології</span>*/}
         </div>
       </div>
     </div>

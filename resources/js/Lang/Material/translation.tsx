@@ -46,6 +46,8 @@ const lngMaterial = {
     'price.per.unit': 'Ціна за одиницю',
     articul: 'Артикул',
     image: 'Зображення',
+    is_instrument: 'Інструмент',
+    expected_uses: 'Кількість використань',
   },
 };
 export default lngMaterial;

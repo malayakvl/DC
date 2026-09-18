@@ -440,8 +440,32 @@ class MaterialController extends Controller
     public function findMaterial(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $name = $request->searchName;
-            $resData = DB::table('materials')->select('*')
-                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+            $resData = DB::table('materials')->select('materials.*', 'material_categories.percent as category_percent', 'producers.name as producer_name')
+                ->leftJoin('material_categories', 'materials.category_id', '=', 'material_categories.id')
+                ->leftJoin('producers', 'materials.producer_id', '=', 'producers.id')
+                ->whereRaw('LOWER(materials.name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->groupBy('materials.name', 'materials.id', 'material_categories.percent', 'producers.name')
+                ->get();
+
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findMaterialCalc(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+
+            $resData = DB::table('materials')
+                ->select(
+                    DB::raw('MIN(materials.id) as id'), // Берём ID для связи
+                    'materials.name',
+                    'material_categories.percent as category_percent'
+                )
+                ->leftJoin('material_categories', 'materials.category_id', '=', 'material_categories.id')
+                ->whereRaw('LOWER(materials.name) LIKE ?', ['%' . mb_strtolower($name) . '%'])
+                ->groupBy('materials.name', 'material_categories.percent')
                 ->get();
             return response()->json([
                 'items' => $resData
