@@ -53,7 +53,7 @@ export default function List({ clinicData, tree, services, currency }) {
 
                 <div className="service-meta">
                   <span className="service-price">
-                    {_item.total_price} {currency}
+                    {_item.total_price ? _item.total_price + ' ' + currency : 'Розрахувати '}
                   </span>
 
                   <span className="service-arrow">→</span>

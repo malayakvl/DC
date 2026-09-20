@@ -31,7 +31,6 @@ export default function NavInvoices() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuInvoice) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <ReceiptText className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.invoices')}</span>
           </MenuButton>
           {/*<MenuButton className="top-nav">{lng.get('menu.invoices')}</MenuButton>*/}

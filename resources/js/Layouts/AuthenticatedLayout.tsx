@@ -24,11 +24,11 @@ export default function AuthenticatedLayout({ header, children }) {
     messages: lngHeader,
     locale: appLang,
   });
-  useSelector(appFilialSelector);
+  const filialData = useSelector(appFilialSelector);
   const showOverlay = useSelector(isShowOverlaySelector);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  usePage().props.auth.user;
+  const user = usePage().props.auth.user;
   const handleNavCollapse = () => {
     setIsNavCollapsed(!isNavCollapsed);
   };
@@ -72,6 +72,9 @@ export default function AuthenticatedLayout({ header, children }) {
                   <div className="flex items-center gap-4">
                     <LangMenu />
                     <NoticeMenu />
+                    <div
+                      className={`separate-m-header ${user?.current_filial ? 'filial-sep' : ''}`}
+                    ></div>
                     <ProfileMenu />
                   </div>
                 </header>

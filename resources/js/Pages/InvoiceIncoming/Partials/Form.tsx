@@ -311,7 +311,7 @@ export default function Form({
                       className="btn-add-row pl-[10px] font-bold"
                       onClick={() => rowRef.current?.addRow()}
                     >
-                      + Додати матеріал
+                      + {msg.get('invoice.add_position')}
                     </button>
                   </td>
                 </tr>
@@ -320,12 +320,10 @@ export default function Form({
           </table>
         </div>
         <div className="bg-blue-100 align-items-end">
-          <div style={{ clear: 'both' }}></div>
           <div className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}>
             {msg.get('invoice.rows.error')}
           </div>
-          <hr />
-          <div className="float-right pt-3">
+          <div className="flex justify-end pt-1">
             <Link
               className="btn-back"
               title={msg.get('invoice_incoming.back')}

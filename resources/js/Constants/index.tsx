@@ -69,7 +69,6 @@ export const TableHeaders = {
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.price', className: '' },
     { titleKey: 'datatable.retailprice', className: '' },
-    { titleKey: 'datatable.percent', className: '' },
     { titleKey: 'datatable.category', className: '' },
     { titleKey: 'datatable.producer', className: '' },
     { titleKey: 'datatable.unit', className: '' },

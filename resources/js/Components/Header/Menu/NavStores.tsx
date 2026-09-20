@@ -21,7 +21,6 @@ export default function NavStores() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['store-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <Package className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.materials')}</span>
           </MenuButton>
           {/*<MenuButton className="top-nav">{lng.get('menu.materials')}</MenuButton>*/}

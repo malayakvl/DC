@@ -29,10 +29,9 @@ export default function NavMenu() {
     <>
       <div className="">
         {usePage().props.auth.role.length > 0 && (
-          <div className="md:mt-[12px] md:mr-[20px]">
+          <div className="md:mt-[-5px] md:mr-[20px]">
             <Menu as="div" className="relative top-menu-nav">
               <MenuButton className="top-nav flex flex-col items-center">
-                <Gauge className={'w-[24px] h-[24px] block'} />
                 <NavLink href={'/dashboard'}>{lng.get('menu.dashboard')}</NavLink>
               </MenuButton>
             </Menu>

@@ -181,40 +181,6 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 />
               </div>
             </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
-              <div className="row flex justify-end">
-                <input
-                  className="input-text text-center service-price"
-                  name="price"
-                  type="text"
-                  value={item.price}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
-              <div className="row flex justify-center">
-                <input
-                  className="input-text text-center service-mark-up"
-                  name="mark_up"
-                  type="text"
-                  value={item.mark_up}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
-
-            <td className="w-qty pb-2 px-2 mx-auto border-r-1">
-              <div className="row flex ml-[10px]">
-                <input
-                  className="input-text w-full text-center"
-                  name="total"
-                  type="text"
-                  value={item.total}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
             <td className="w-btn pb-2 px-2">
               {inputs.length > 1 && (
                 <button onClick={() => handleDeleteInput(index)} className="btn-delete" />

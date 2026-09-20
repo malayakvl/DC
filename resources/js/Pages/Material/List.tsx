@@ -10,6 +10,9 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
+// import { MaterialMetrics } from './Partials/Metrics';
+import { ClinicInventoryStats } from './Partials/ClinicInventoryStats';
+import { InventoryControlPanel } from './Partials/InventoryControlPanel';
 
 export default function List({ listData }) {
   const dispatch = useDispatch();
@@ -45,31 +48,43 @@ export default function List({ listData }) {
               </header>
             </section>
             <section className="table-card">
+              <InventoryControlPanel />
+
+              <ClinicInventoryStats title={msg.get('material.title.list')} />
+
               <DataTable paginationType={PaginationType.MATERIALS} sendRequest={sendRequest}>
                 {listData?.map((item) => (
                   <tr className="" key={item.id}>
-                    <td style={{ width: '100px' }}>
-                      <img
-                        src={
-                          item.image
-                            ? `/storage/materials/${item.id}/${item.image}`
-                            : '/images/no-photo.png'
-                        }
-                        width={65}
-                        className="float-left rounded"
-                        height="auto"
-                        onError={(e) => {
-                          e.currentTarget.src = '/images/no-photo.png';
-                        }}
-                      />
+                    <td>
+                      <div className="w-12 h-12 rounded-lg bg-[#f2f3ff] flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
+                        <img
+                          src={
+                            item.image
+                              ? `/storage/materials/${item.id}/${item.image}`
+                              : '/images/no-photo.png'
+                          }
+                          width={65}
+                          className="w-full h-full object-contain"
+                          height="auto"
+                          onError={(e) => {
+                            e.currentTarget.src = '/images/no-photo.png';
+                          }}
+                        />
+                      </div>
                     </td>
                     <td className="">{item.name}</td>
                     <td className="">{item.price}</td>
-                    <td className="">{item.retail_price}</td>
-                    <td className="">
-                      {item.percent ? <span className="percent-tbl">{item.percent}%</span> : ''}
+                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                      <span className="font-metric-tabular text-metric-tabular font-bold">
+                        {item.retail_price} ₴
+                      </span>
+                      <span className="px-1.5 py-0.5 rounded bg-[#82f5c1] text-[#00714e] font-label-sm text-label-sm font-bold">
+                        {item.percent ? <span className="percent-tbl">{item.percent}%</span> : ''}
+                      </span>
                     </td>
-                    <td className="">{item.categoryName}</td>
+                    <td>
+                      <span className="material-categories">{item.categoryName}</span>
+                    </td>
                     <td className="">{item.producerName}</td>
                     <td className="text-left">{item.unitName}</td>
                     <td className="text-left">{item.weight}</td>

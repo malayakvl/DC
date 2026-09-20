@@ -192,10 +192,74 @@ class ServiceController extends Controller
     }
 
 
+    public function update(PricingUpdateRequest $request)
+    {
+        return $this->withClinicSchema($request, function ($clinicId) use ($request) {
+
+            try {
+                \Log::info('=== PRICING UPDATE START ===');
+                \Log::info('Request data:', $request->all());
+
+                if (!$request->user()->can('service-edit')) {
+                    abort(403, 'Немає прав service-edit');
+                }
+
+                DB::beginTransaction();
+
+                if ($request->id) {
+                    $pricing = Pricing::find($request->id);
+                    if (!$pricing) {
+                        throw new \Exception('Pricing not found with id: ' . $request->id);
+                    }
+                    DB::table('pricing_items')->where('pricing_id', $pricing->id)->delete();
+                } else {
+                    $pricing = new Pricing();
+                }
+
+                $pricing->name = $request->name;
+                $pricing->category_id = $request->category_id;
+                $pricing->price = $request->price;
+                $pricing->save();
+
+                \Log::info('Pricing saved, id = ' . $pricing->id);
+
+                foreach ($request->rows as $index => $row) {
+                    \Log::info("Row {$index}:", $row);
+
+                    if (empty($row['product_id'])) {
+                        continue;
+                    }
+
+                    $item = new PricingItems();
+                    $item->pricing_id = $pricing->id;
+                    $item->material_id = $row['product_id'];
+                    $item->unit_id = $row['unit_id'] ?? null;
+                    $item->quantity = str_replace(',', '.', $row['quantity'] ?? 0);
+                    $item->save();
+                }
+
+                DB::commit();
+                \Log::info('=== PRICING UPDATE SUCCESS ===');
+
+                return Redirect::route('service.index');
+
+            } catch (\Throwable $e) {
+                DB::rollBack();
+
+                \Log::error('PRICING UPDATE ERROR: ' . $e->getMessage());
+                \Log::error($e->getTraceAsString());
+
+                // Тимчасово повертаємо текст помилки прямо в браузер
+                return response('<h1>Помилка</h1><pre>' . $e->getMessage() . "\n\n" . $e->getTraceAsString() . '</pre>', 500);
+            }
+        });
+    }
+
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(PricingUpdateRequest $request) {
+    public function updateOld(PricingUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
 
             if ($request->user()->can('service-edit')) {
@@ -213,7 +277,7 @@ class ServiceController extends Controller
                 $pricingId = $pricing->id;
 
                 $total = 0;
-                dd($request->rows);exit;
+                dd($request);exit;
                 foreach ($request->rows as $row) {
                     if ($row["product_id"]) {
                         $pricingItem = new PricingItems();

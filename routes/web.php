@@ -227,10 +227,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/invoice-outgoing/update', [OutgoingInvoiceController::class, 'update'])->name('invoice.updated');
 
     Route::post('/service-category/update', [ServiceController::class, 'updateServiceCategory'])->name('service.categories.parent.update');
-    Route::get('/services', [ServiceController::class, 'index'])->name('service.categories.index');
+    Route::get('/services', [ServiceController::class, 'index'])->name('service.index');
     Route::get('/service/create', [ServiceController::class, 'create'])->name('service.categories.create');
     Route::get('/service/edit/{id}', [ServiceController::class, 'edit'])->name('service.categories.edit');
-    Route::post('/service/update', [ServiceController::class, 'update'])->name('service.categories.update');
+    Route::post('/service/update', [ServiceController::class, 'update'])->name('service.update');
     Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
     Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
     Route::post('/act/fifo-preview', [ActController::class, 'fifoPreview'])->name('act.fifo-preview');

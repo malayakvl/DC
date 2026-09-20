@@ -106,6 +106,7 @@ const lngHeader = {
     'finanses.report': 'Звіт по фінансах',
     'visit.schedule.statuses': 'Статуси візитів',
     'user.hprofile': 'Профіль користувача',
+    h_slogan: 'Медична інформаційна система',
   },
 };
 export default lngHeader;

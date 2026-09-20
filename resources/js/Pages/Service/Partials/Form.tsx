@@ -104,16 +104,7 @@ export default function Form({
           required
           label={msg.get('service.category')}
         />
-        <InputText
-          name={'price'}
-          values={values}
-          dataValue={values.price}
-          value={values.price}
-          onChange={handleChange}
-          // className={'max-w-[200px]'}
-          required
-          label={msg.get('service.price')}
-        />
+
         <div className="relative">
           <table className="w-full invoice-table">
             <thead>
@@ -125,9 +116,6 @@ export default function Form({
                   {msg.get('service.unit')}
                 </th>
                 <th className="pb-3 w-qty text-white w-[8%]">{msg.get('service.qty')}</th>
-                <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.price')}</th>
-                <th className="pb-3 w-btn text-white w-[12%]">{msg.get('service.mark_up')}</th>
-                <th className="pb-3 w-btn text-white w-[14%]">{msg.get('service.total')}</th>
                 <th className="pb-3 w-btn">&nbsp;</th>
               </tr>
             </thead>

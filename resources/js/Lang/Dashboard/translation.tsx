@@ -24,7 +24,11 @@ const lngDashboard = {
     patients: 'Пацієнтів',
     appointments: 'Найближчі прийоми',
     visits: 'Прийомів сьогодні',
-    pageNotFound: 'Сторінку не знайдено'
+    pageNotFound: 'Сторінку не знайдено',
+    enter_clinic: 'Увійти в кабінет',
+    select_filial: 'Оберіть філію для входу',
+    available_filials: 'Доступні філії',
+    select_role: 'Оберіть роль для входу',
   },
 };
 export default lngDashboard;

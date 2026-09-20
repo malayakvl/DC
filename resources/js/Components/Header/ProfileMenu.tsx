@@ -38,9 +38,9 @@ export default function ProfileMenu() {
             <Dropdown.Trigger>
               <div className="relative">
                 <button type="button" className="profile-top-btn">
-                  <div className="mt-0 relative text-white">
+                  <div className="mt-0 relative">
                     {/*<div className="icon-user"></div>*/}
-                    <div>
+                    <div className="flex items-center pl-1 pr-3 py-1 cursor-pointer smooth-transition">
                       <div className="h-avatar-user">
                         <img
                           src={
@@ -51,11 +51,11 @@ export default function ProfileMenu() {
                           alt={user.name}
                           className="w-[32px] h-[32px] rounded-full ring-2"
                         />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
                       </div>
-                      <div className="h-info-user">
-                        <span className="fio-user">
-                          {fioResult}{' '}
-                          <span className="clinic-role">{usePage().props.auth.role}</span>
+                      <div className="text-left leading-tight mr-2 hidden sm:block">
+                        <span className="user-profile-name">
+                          {fioResult} <span className="">{usePage().props.auth.role}</span>
                         </span>
                         <small className="user-profile-role">
                           {usePage().props.auth.role.length > 0 ? (
