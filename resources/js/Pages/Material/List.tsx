@@ -28,22 +28,37 @@ export default function List({ listData }) {
 
   return (
     <AuthenticatedLayout header={<Head />}>
-      <Head title={'Producers'} />
+      <Head title={msg.get('material.title.list')} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('material.title.list')}
-                    <small className="list-total">{listData.length} позицій</small>
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/material/create'}>{msg.get('material.create')}</NavLink>
-                    </PrimaryButton>
+              <header className="mb-6 mt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                        {msg.get('material.title.list')}
+                      </h1>
+
+                      {/* Бейдж кількості прив'язаний чітко до заголовка */}
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                        {listData?.length || 0} {msg.get('material.title.total')}
+                      </span>
+                    </div>
+
+                    {/* Підзаголовок винесено окремо під заголовок */}
+                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+                      {msg.get('material.title.description')}
+                    </p>
                   </div>
+
+                  {/* Правий блок: Кнопка дії */}
+                  <PrimaryButton>
+                    <NavLink href={'/material/create'}>+ {msg.get('material.create')}</NavLink>
+                  </PrimaryButton>
                 </div>
               </header>
             </section>
@@ -78,7 +93,7 @@ export default function List({ listData }) {
                       <span className="font-metric-tabular text-metric-tabular font-bold">
                         {item.retail_price} ₴
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-[#82f5c1] text-[#00714e] font-label-sm text-label-sm font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-[#dbfcf8] text-[#0000000] font-label-sm text-label-sm font-bold">
                         {item.percent ? <span className="percent-tbl">{item.percent}%</span> : ''}
                       </span>
                     </td>

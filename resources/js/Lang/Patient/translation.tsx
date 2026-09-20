@@ -20,6 +20,7 @@ const lngPatient = {
   },
   'uk.patient': {
     'title.list': 'База пацієнтів',
+    'title.total': 'пацієнтів',
     'title.view': 'Перегляд',
     'title.create': 'Створити пацієнта',
     'title.edit': 'Редагувати пацієнта',

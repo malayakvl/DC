@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProducerUpdateRequest;
+use App\Http\Requests\SupplierUpdateRequest;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -104,7 +105,7 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProducerUpdateRequest $request)
+    public function update(SupplierUpdateRequest $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
 
@@ -118,16 +119,18 @@ class SupplierController extends Controller
                 ]);
             }
 
+
             // Получаем или создаём запись
             if ($request->id)
-                $producer = Supplier::find($request->id);
+                $supplier = Supplier::find($request->id);
             else {
-                $producer = new Supplier();
+                $supplier = new Supplier();
             }
-            $producer->fill($request->validated());
-            $producer->save();
 
-            $this->auditLogService->log($request->user(), 'supplier.updated', $producer, null, $producer->toArray());
+            $supplier->fill($request->validated());
+            $supplier->save();
+
+            $this->auditLogService->log($request->user(), 'supplier.updated', $supplier, null, $supplier->toArray());
 
 
             return Redirect::route('supplier.index');

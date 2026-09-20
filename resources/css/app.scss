@@ -286,10 +286,12 @@ hr {
     width: auto;
 }
 .list-total {
-    @apply px-2.5 py-0.5 rounded-full font-bold;
-    background: #89f5e7;
-    color: #0a0f1c;
-    border-radius: 8px;
-    font-size: 12px;
-    margin-left: 10px;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold;
+    //background: #f0fdfa;
+    //border-color: #c4f9ef;
+    //color: #43958e;
+    //border-radius: 8px;
+    //font-size: 12px;
+    //margin-left: 10px;
+    //border: solid 1px #c4f9ef;
 }

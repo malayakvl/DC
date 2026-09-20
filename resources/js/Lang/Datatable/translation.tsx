@@ -50,7 +50,7 @@ const lngHeaders = {
     symbol: 'Позначення',
     discount: 'Знижка',
     role: 'Роль',
-    first_name: 'Ім\'я',
+    first_name: "Ім'я",
     last_name: 'Прізвище',
     patient: 'Пацієнт',
     doctor: 'Лікар',
@@ -62,6 +62,12 @@ const lngHeaders = {
     currency: 'Валюта',
     color: 'Колір',
     placecount: 'Кількість місць',
+    unit_qty: 'Фактична кількість',
+    stortname: 'Скорочення',
+    code: 'Код ДПС / ISO',
+    classification: 'Класифікація',
+    contactname: 'Ім`я контакту',
+    contacts: 'Контакти',
   },
 };
 export default lngHeaders;

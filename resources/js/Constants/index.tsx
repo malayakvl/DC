@@ -20,6 +20,7 @@ export enum PaginationType {
   OPENINGBALANCE = 'openingbalance',
   PAYMENTMETHODS = 'paymentmethods',
   MONEYIN = 'moneyin',
+  SUPPLIERS = 'suppliers',
 }
 export const TableHeaders = {
   [PaginationType.FILIALS]: [
@@ -52,6 +53,12 @@ export const TableHeaders = {
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.producer', className: '' },
     { titleKey: 'datatable.percent', className: '' },
+    { titleKey: 'datatable.actions', className: 'text-right' },
+  ],
+  [PaginationType.SUPPLIERS]: [
+    { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.contactname', className: '' },
+    { titleKey: 'datatable.contacts', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.PRODUCERS]: [
@@ -153,6 +160,10 @@ export const TableHeaders = {
   ],
   [PaginationType.UNITS]: [
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.stortname', className: '' },
+    { titleKey: 'datatable.code', className: '' },
+    { titleKey: 'datatable.classification', className: '' },
+    { titleKey: 'datatable.unit_qty', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.PAYMENTMETHODS]: [

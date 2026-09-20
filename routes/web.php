@@ -142,6 +142,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/unit/create', [UnitController::class, 'create'])->name('unit.create');
     Route::get('/unit/edit/{id}', [UnitController::class, 'edit'])->name('unit.edit');
     Route::get('/unit/delete/{id}', [UnitController::class, 'delete'])->name('unit.delete');
+    Route::put('/unit/update/{id}', [UnitController::class, 'update'])->name('unit.update');
     Route::post('/unit/update', [UnitController::class, 'update'])->name('unit.update');
 
 
@@ -154,11 +155,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/producers', [ProducerController::class, 'index'])->name('producer.index');
     Route::get('/producer/create', [ProducerController::class, 'create'])->name('producer.create');
     Route::get('/producer/edit/{id}', [ProducerController::class, 'edit'])->name('producer.edit');
+    Route::put('/producer/update/{id}', [ProducerController::class, 'update'])->name('producer.update');
     Route::post('/producer/update', [ProducerController::class, 'update'])->name('producer.update');
 
     Route::get('/suppliers', [SupplierController::class, 'index'])->name('supplier.index');
     Route::get('/supplier/create', [SupplierController::class, 'create'])->name('supplier.create');
     Route::get('/supplier/edit/{id}', [SupplierController::class, 'edit'])->name('supplier.edit');
+    Route::put('/supplier/update/{id}', [SupplierController::class, 'update'])->name('supplier.update.id');
     Route::post('/supplier/update', [SupplierController::class, 'update'])->name('supplier.update');
 
     Route::get('/sizes', [SizeController::class, 'index'])->name('size.index');

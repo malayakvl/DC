@@ -1,107 +1,108 @@
 // import { handleActions } from 'redux-actions';
 import { Action, handleActions } from 'redux-actions';
 import {
-    changeLangAction,
-    setPaginationAction,
-    setSwitchToggleAction,
-    setPopupAction,
-    showOverlayAction,
-    setDataLoadingAction
+  changeLangAction,
+  setPaginationAction,
+  setSwitchToggleAction,
+  setPopupAction,
+  showOverlayAction,
+  setDataLoadingAction,
 } from './actions';
 import { PaginationType } from '../../Constants';
 const initPagination = { limit: 25, offset: 0, sort: 'DESC', column: 'created_at', query: '' };
 
+// @ts-ignore
 const initialState: State.Layouts = {
-    pagination: {
-        [PaginationType.FILIALS]: { ...initPagination },
-        [PaginationType.ROLES]: { ...initPagination },
-        [PaginationType.CUSTOMERS]: { ...initPagination },
-        [PaginationType.MCATEGORIES]: { ...initPagination },
-        [PaginationType.PRODUCERS]: { ...initPagination },
-        [PaginationType.CABINETS]: { ...initPagination },
-        [PaginationType.MATERIALS]: { ...initPagination },
-        [PaginationType.INCOMINGINVOICES]: { ...initPagination },
-        [PaginationType.OUTGOINGINVOICES]: { ...initPagination },
-        [PaginationType.CHANGEINVOICES]: { ...initPagination },
-        [PaginationType.ACTS]: { ...initPagination },
-        [PaginationType.CURRENCY]: { ...initPagination },
-        [PaginationType.SERVCATEGORIES]: { ...initPagination },
-        [PaginationType.UNITS]: { ...initPagination },
-        [PaginationType.STORES]: { ...initPagination },
-        [PaginationType.PATIENTSTATUSES]: { ...initPagination },
-        [PaginationType.OPENINGBALANCE]: { ...initPagination },
-        [PaginationType.PAYMENTMETHODS]: { ...initPagination },
-        [PaginationType.MONEYIN]: { ...initPagination },
-        [PaginationType.VISITSCHEDULESTATUSES]: { ...initPagination },
-    },
-    isSidebarOpen: false,
-    isMobileDevice: false,
-    isDataLoading: false,
-    isPopupActive: false,
-    showOverlay: false,
-    toasts: [],
-    checkedIds: [],
-    switchHeader: false,
-    switchToggled: false,
-    modalConfirmationMeta: null,
-    modalVariantMeta: null,
-    modalConfirmationDeletePeriodMeta: null,
-    modalConfirmationSetupPeriodMeta: null,
-    deletePeriodHidePopup: false,
-    deletePeriod: null,
-    setupPeriod: null,
-    modalCalendlyMeta: null,
-    activeTab: {
-        inventory: { tab: 'products' }
-    },
-    showTextingMenu: false,
-    showProfileMenu: false,
-    selectedLng: 'uk',
-    appLang: 'uk',
-    showEmailNotification: false,
-    nativeBrowser: false,
-    openRealBrowser: false,
-    filialName: ''
+  pagination: {
+    [PaginationType.FILIALS]: { ...initPagination },
+    [PaginationType.ROLES]: { ...initPagination },
+    [PaginationType.CUSTOMERS]: { ...initPagination },
+    [PaginationType.MCATEGORIES]: { ...initPagination },
+    [PaginationType.PRODUCERS]: { ...initPagination },
+    [PaginationType.CABINETS]: { ...initPagination },
+    [PaginationType.MATERIALS]: { ...initPagination },
+    [PaginationType.INCOMINGINVOICES]: { ...initPagination },
+    [PaginationType.OUTGOINGINVOICES]: { ...initPagination },
+    [PaginationType.CHANGEINVOICES]: { ...initPagination },
+    [PaginationType.ACTS]: { ...initPagination },
+    [PaginationType.CURRENCY]: { ...initPagination },
+    [PaginationType.SERVCATEGORIES]: { ...initPagination },
+    [PaginationType.UNITS]: { ...initPagination },
+    [PaginationType.STORES]: { ...initPagination },
+    [PaginationType.PATIENTSTATUSES]: { ...initPagination },
+    [PaginationType.OPENINGBALANCE]: { ...initPagination },
+    [PaginationType.PAYMENTMETHODS]: { ...initPagination },
+    [PaginationType.MONEYIN]: { ...initPagination },
+    [PaginationType.VISITSCHEDULESTATUSES]: { ...initPagination },
+    [PaginationType.SUPPLIERS]: { ...initPagination },
+  },
+  isSidebarOpen: false,
+  isMobileDevice: false,
+  isDataLoading: false,
+  isPopupActive: false,
+  showOverlay: false,
+  toasts: [],
+  checkedIds: [],
+  switchHeader: false,
+  switchToggled: false,
+  modalConfirmationMeta: null,
+  modalVariantMeta: null,
+  modalConfirmationDeletePeriodMeta: null,
+  modalConfirmationSetupPeriodMeta: null,
+  deletePeriodHidePopup: false,
+  deletePeriod: null,
+  setupPeriod: null,
+  modalCalendlyMeta: null,
+  activeTab: {
+    inventory: { tab: 'products' },
+  },
+  showTextingMenu: false,
+  showProfileMenu: false,
+  selectedLng: 'uk',
+  appLang: 'uk',
+  showEmailNotification: false,
+  nativeBrowser: false,
+  openRealBrowser: false,
+  filialName: '',
 };
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS: any = {
-    [changeLangAction]: {
-        next: (state: State.Layouts, action: Action<string>): State.Layouts => ({
-            ...state,
-            appLang: action.payload
-        })
-    },
-    [setPopupAction]: {
-        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
-            ...state,
-            isPopupActive: action.payload
-        })
-    },
-    [showOverlayAction]: {
-        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
-            ...state,
-            showOverlay: action.payload
-        })
-    },
-    [setDataLoadingAction]: {
-        next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
-            ...state,
-            isDataLoading: action.payload
-        })
-    },
-
-}
+  [changeLangAction]: {
+    next: (state: State.Layouts, action: Action<string>): State.Layouts => ({
+      ...state,
+      appLang: action.payload,
+    }),
+  },
+  [setPopupAction]: {
+    next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
+      ...state,
+      isPopupActive: action.payload,
+    }),
+  },
+  [showOverlayAction]: {
+    next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
+      ...state,
+      showOverlay: action.payload,
+    }),
+  },
+  [setDataLoadingAction]: {
+    next: (state: State.Layouts, action: Action<boolean>): State.Layouts => ({
+      ...state,
+      isDataLoading: action.payload,
+    }),
+  },
+};
 
 export {
-    changeLangAction,
-    setPaginationAction,
-    setSwitchToggleAction,
-    setPopupAction,
-    showOverlayAction,
-    setDataLoadingAction
-}
+  changeLangAction,
+  setPaginationAction,
+  setSwitchToggleAction,
+  setPopupAction,
+  showOverlayAction,
+  setDataLoadingAction,
+};
 
 export default handleActions(ACTION_HANDLERS, initialState);

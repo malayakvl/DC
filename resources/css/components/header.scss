@@ -502,15 +502,16 @@ to-green-400 {
 .top-nav {
   @apply px-1.5 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
+  font-size: 13px;
+  font-weight: 700;
   color: #475569;
 }
 .top-nav.active {
-  background-color: #0EA5A4;
-  color: #fff;
-
+  background-color: #f0fdfa;
+  color: #28857d;
+  border: solid 1px #99f6e4;
   position: relative;
+  font-weight: 700;
 }
 
 .top-nav.active::after {
@@ -520,7 +521,7 @@ to-green-400 {
   left: 0;
   right: 0;
   height: 3px;
-  background: #0EA5A4;
+  background: #0d9488;
   border-radius: 999px;
 }
 .system-logo {

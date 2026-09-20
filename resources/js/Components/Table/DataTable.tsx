@@ -85,7 +85,6 @@ export default function DataTable({
         rowSpan={isTwoRowsHeader && !item.subTitles?.length ? 2 : 1}
         colSpan={item.subTitles?.length || 1}
         key={item.titleKey ? item.titleKey : Math.random().toString(16).slice(2)}
-        className={`${item.className}`}
       >
         {item.className === 'option-switcher' && (
           <label htmlFor="switchAll" className="flex items-center cursor-pointer relative">
@@ -164,9 +163,9 @@ export default function DataTable({
   };
 
   return (
-    <div className="hscroll">
-      <table className="data-table mt-5">
-        <thead className="text-zinc-500 dark:text-zinc-400">{renderTableHeader()}</thead>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <table className="data-table">
+        <thead>{renderTableHeader()}</thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
     </div>
