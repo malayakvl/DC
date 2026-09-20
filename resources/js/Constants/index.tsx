@@ -51,7 +51,6 @@ export const TableHeaders = {
   ],
   [PaginationType.MCATEGORIES]: [
     { titleKey: 'datatable.name', className: '' },
-    { titleKey: 'datatable.producer', className: '' },
     { titleKey: 'datatable.percent', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
