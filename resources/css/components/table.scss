@@ -1,26 +1,29 @@
 .data-table {
-    @apply min-w-full text-left text-sm/6;
+    @apply min-w-full text-left text-sm/6 w-full text-left border-collapse;
 }
-.data-table thead {
-    @apply text-white;
-}
+//.data-table thead {
+//    @apply text-white;
+//}
 .data-table th {
-    @apply border-b border-b-zinc-950/10 px-4 py-3 font-medium
-        first:pl-[var(--gutter,theme(spacing.2))]
-        last:pr-[var(--gutter,theme(spacing.2))]
-        dark:border-b-white/10 sm:first:pl-1 sm:last:pr-1;
-    font-size: 14px;
-    background-color: #f9fafb;
-    color: #5c687a;
-    font-weight: bold;
-    font-family: "Manrope", sans-serif;
+    @apply py-3 px-4;
+    //font-size: 12px;
+    ////background-color: #f6f7ff;
+    //color: #5c687a;
+    //font-weight: bold;
+    //font-family: "Plus Jakarta Sans", sans-serif;
+    //text-transform: uppercase;
+    //white-space: nowrap;
+    //border-top: solid 2px #d9d8dc;
+}
+.data-table thead tr {
+    @apply bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider;
 }
 
 .data-table td {
     @apply relative px-4 first:pl-[var(--gutter,theme(spacing.2))]
         last:pr-[var(--gutter,theme(spacing.2))] border-b
         dark:border-white/5 py-2 sm:first:pl-1 sm:last:pr-1;
-    color: #475569;
+    color: #434f4d;
     border-color: #e3e3e4;
 }
 .data-table tbody tr:hover {
@@ -37,9 +40,10 @@
     overflow-x: auto; /* Horizontal */
 }
 .percent-tbl {
-    color: green;
+    color: #000;
     font-weight: bold;
     font-size: 14px;
+    background: #dbfcf8;
 }
 
 .table{
@@ -150,7 +154,7 @@
     @apply text-sm text-white font-medium;
 }
 .act-table {
-    width: auto !important;
+    //width: 100% !important;
 }
 .table-card {
     background: #FFFFFF;
@@ -167,7 +171,7 @@
     right: 0;
 
     height: 3px;
-    background: #0EA5A4;
+    //background: #f3f1f8;
 
     border-radius: 16px 16px 0 0;
 }
@@ -241,4 +245,12 @@
 
 .status-paid .status-dot {
     background: #16a34a;
+}
+.material-categories {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full;
+    font-size: 12px;
+    background:  #eaedff;
+    color: black;
+    line-height: 12px;
+    font-weight: 500;
 }

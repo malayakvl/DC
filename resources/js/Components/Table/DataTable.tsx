@@ -4,22 +4,18 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeaders from '../../Lang/Datatable/translation';
 import EmptyTable from '../../Components/Table/EmptyTable';
-import { TableHeaders, PaginationType } from '../../Constants';
+import { TableHeaders } from '../../Constants';
 import { setPaginationAction, setSwitchToggleAction } from '../../Redux/Layout';
-import {
-  checkedIdsSelector,
-  paginationSelectorFactory,
-  switchHeaderSelector,
-} from '../../Redux/Layout/selectors';
+import { paginationSelectorFactory } from '../../Redux/Layout/selectors';
 
 export default function DataTable({
   paginationType,
   children,
   totalAmount = 0,
-  sendRequest = () => { },
+  sendRequest = () => {},
   switcherOnClick = null,
-  sendDeleteRequest = () => { },
-  sendCopyRequest = () => { },
+  sendDeleteRequest = () => {},
+  sendCopyRequest = () => {},
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -27,16 +23,17 @@ export default function DataTable({
     locale: appLang,
   });
   // const { PRODUCTS } = PaginationType;
-  let dropdownOptions = ['copy', 'delete'];
+  const dropdownOptions = ['copy', 'delete'];
   const [loading, setLoading] = useState(false);
   const switchAllHeader = false;
   const [allChecked, setAllChecked] = useState(false);
   const headers = TableHeaders[paginationType];
   const dispatch = useDispatch();
   const { includes } = [paginationType];
-  const { limit, sort, column, offset, query, filters }: Layouts.Pagination =
-    useSelector(paginationSelectorFactory(paginationType));
-  let showIds: boolean = false;
+  const { limit, sort, column, offset, query, filters }: Layouts.Pagination = useSelector(
+    paginationSelectorFactory(paginationType)
+  );
+  const showIds: boolean = false;
   // showIds = includes(paginationType);
 
   const length = useMemo(
@@ -47,10 +44,7 @@ export default function DataTable({
       }, headers.length),
     [headers]
   );
-  const isTwoRowsHeader = useMemo(
-    () => headers.some(i => i.subTitles?.length),
-    [headers]
-  );
+  const isTwoRowsHeader = useMemo(() => headers.some((i) => i.subTitles?.length), [headers]);
 
   const handleSwitchAction = (checked: boolean) => {
     // dispatch(setSwitchToggleAction(true));
@@ -86,26 +80,20 @@ export default function DataTable({
   );
 
   const renderTableHeader = () => {
-    const getTh = item => (
+    const getTh = (item) => (
       <th
         rowSpan={isTwoRowsHeader && !item.subTitles?.length ? 2 : 1}
         colSpan={item.subTitles?.length || 1}
-        key={
-          item.titleKey ? item.titleKey : Math.random().toString(16).slice(2)
-        }
-        className={`${item.className}`}
+        key={item.titleKey ? item.titleKey : Math.random().toString(16).slice(2)}
       >
         {item.className === 'option-switcher' && (
-          <label
-            htmlFor="switchAll"
-            className="flex items-center cursor-pointer relative"
-          >
+          <label htmlFor="switchAll" className="flex items-center cursor-pointer relative">
             <input
               type="checkbox"
               id="switchAll"
               className="sr-only"
               checked={switchAllHeader}
-              onChange={e => {
+              onChange={(e) => {
                 handleSwitchAction(e.target.checked);
 
                 if (switcherOnClick) {
@@ -135,10 +123,7 @@ export default function DataTable({
               />
             </div>
           )}
-          <div
-            className="inline-block"
-            style={{ marginLeft: item.sortKey ? '30px' : '0' }}
-          >
+          <div className="inline-block" style={{ marginLeft: item.sortKey ? '30px' : '0' }}>
             {item.iconClass && (
               <div className="inline-block">
                 <i className={`tbl-icon ${item.iconClass}`} />
@@ -159,7 +144,7 @@ export default function DataTable({
         <tr role="row">{headers.map(getTh)}</tr>
         {isTwoRowsHeader && (
           <tr role="row">
-            {headers.map(item => {
+            {headers.map((item) => {
               if (!item.subTitles?.length) return null;
               return item.subTitles.map(getTh);
             })}
@@ -171,26 +156,16 @@ export default function DataTable({
 
   const renderTableBody = () => {
     if (loading) {
-      return (
-        <EmptyTable colSpan={length}>
-          No record with selected criteria
-        </EmptyTable>
-      );
+      return <EmptyTable colSpan={length}>No record with selected criteria</EmptyTable>;
     }
     if (children?.length) return children;
-    return (
-      <EmptyTable colSpan={length}>
-        {msg.get('datatable.emptyTable')}
-      </EmptyTable>
-    );
+    return <EmptyTable colSpan={length}>{msg.get('datatable.emptyTable')}</EmptyTable>;
   };
 
   return (
-    <div className="hscroll">
-      <table className="data-table mt-5">
-        <thead className="text-zinc-500 dark:text-zinc-400">
-          {renderTableHeader()}
-        </thead>
+    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <table className="data-table">
+        <thead>{renderTableHeader()}</thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
     </div>

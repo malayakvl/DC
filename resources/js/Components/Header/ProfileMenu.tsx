@@ -38,9 +38,9 @@ export default function ProfileMenu() {
             <Dropdown.Trigger>
               <div className="relative">
                 <button type="button" className="profile-top-btn">
-                  <div className="mt-0 relative text-white">
+                  <div className="mt-0 relative">
                     {/*<div className="icon-user"></div>*/}
-                    <div>
+                    <div className="flex items-center pl-1 pr-3 py-1 cursor-pointer smooth-transition">
                       <div className="h-avatar-user">
                         <img
                           src={
@@ -49,20 +49,27 @@ export default function ProfileMenu() {
                               : ''
                           }
                           alt={user.name}
-                          className="w-[40px] h-[40px] rounded-full"
+                          className="w-[32px] h-[32px] rounded-full ring-2"
                         />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
                       </div>
-                      <div className="h-info-user">
-                        <span className="fio-user">{fioResult}</span>
+                      <div className="text-left leading-tight mr-2 hidden sm:block">
+                        <span className="user-profile-name">
+                          {fioResult} <span className="">{usePage().props.auth.role}</span>
+                        </span>
                         <small className="user-profile-role">
                           {usePage().props.auth.role.length > 0 ? (
                             <>
-                              <span className="clinic-name">{user?.current_clinic?.name}</span>
-                              <span className="flex gap-[12px]">
-                                <small className="header-filial-name">{user?.current_filial}</small>
+                              <span className="header-filial-name">{user?.current_filial}</span>
+                              <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <span className="clinic-name">• {user?.current_clinic?.name}</span>
+                              </div>
+                              <span className="flex gap-[12px] hidden">
+                                <span className="header-filial-name">{user?.current_filial}</span>
+                                <span className="clinic-role"> • {usePage().props.auth.role}</span>
                                 <span>{' \u00B7'}</span>
                                 {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-                                <span className="clinic-role">{usePage().props.auth.role}</span>
+                                {/*<span className="clinic-role">{usePage().props.auth.role}</span>*/}
                               </span>
                             </>
                           ) : (
@@ -87,7 +94,7 @@ export default function ProfileMenu() {
                   <img
                     src={user.clinic_user.avatar ? '/storage/users/' + user.clinic_user.avatar : ''}
                     alt={user.name}
-                    className="w-[40px] h-[40px] rounded-full"
+                    className="w-[36px] h-[36px] rounded-full"
                   />
                 </div>
                 <div>

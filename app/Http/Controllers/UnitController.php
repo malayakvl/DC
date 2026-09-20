@@ -110,6 +110,7 @@ class UnitController extends Controller
             else {
                 $unit = new Unit();
             }
+
             $unit->fill($request->validated());
             // $unit->clinic_id = $clinicData->id;
             $unit->unit_qty = $request->unit_qty;

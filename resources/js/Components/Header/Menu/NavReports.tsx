@@ -20,7 +20,6 @@ export default function NavReports() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <ChartColumn className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.reports')}</span>
           </MenuButton>
           <MenuItems

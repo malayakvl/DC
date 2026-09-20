@@ -5,7 +5,10 @@ import {
   searchResultServicesSelector,
   searchResultServicesElementsSelector,
 } from '@/Redux/Service/selectors';
-import { emptyServicesAutocompleteAction, findServiceAction } from '@/Redux/Service';
+import {
+  emptyServicesAutocompleteAction,
+  findServiceMaterialAction,
+} from '@/Redux/Service/actions';
 import { setPriceItems, setShowTableError, setTotalPrice } from '@/Redux/Service';
 import InputSelect from '../../../Components/Form/InputSelect';
 
@@ -55,7 +58,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
 
       if (name === 'product') {
         if (value.length > 3) {
-          dispatch(findServiceAction(value));
+          dispatch(findServiceMaterialAction(value));
         } else {
           dispatch(emptyServicesAutocompleteAction());
           setHideFields(false);
@@ -174,40 +177,6 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                   name="quantity"
                   type="text"
                   value={item.quantity}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
-              <div className="row flex justify-center">
-                <input
-                  className="input-text text-center service-price"
-                  name="price"
-                  type="text"
-                  value={item.price}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
-              <div className="row flex justify-center">
-                <input
-                  className="input-text text-center service-mark-up"
-                  name="mark_up"
-                  type="text"
-                  value={item.mark_up}
-                  onChange={(event) => handleChange(event, index)}
-                />
-              </div>
-            </td>
-
-            <td className="w-qty pb-2 px-2 mx-auto border-r-1">
-              <div className="row flex ml-[10px]">
-                <input
-                  className="input-text w-full text-center"
-                  name="total"
-                  type="text"
-                  value={item.total}
                   onChange={(event) => handleChange(event, index)}
                 />
               </div>

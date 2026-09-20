@@ -16,22 +16,22 @@ return new class extends Migration
 CREATE OR REPLACE FUNCTION core.get_store_movements_by_material(
     p_schema text,
     p_store_id bigint,
-    p_date_from timestamp,
-    p_date_to timestamp
+    p_date_from timestamp without time zone,
+    p_date_to timestamp without time zone
 )
 RETURNS TABLE(
     material_id bigint,
     material_name text,
     row_type text,
-    created_at timestamp,
-    document_date timestamp,
+    created_at timestamp without time zone,
+    document_date timestamp without time zone,
     document_type text,
     document_id bigint,
     qty numeric,
     running_balance numeric
 )
 LANGUAGE plpgsql
-AS $$
+AS $function$
 DECLARE
     sql text;
 BEGIN
@@ -74,14 +74,15 @@ running_movements AS (
         pm.created_at,
         pm.document_date,
         pm.qty,
-        COALESCE(ob.qty,0) +
-        SUM(pm.qty) OVER (
+        COALESCE(ob.qty,0)
+        + SUM(pm.qty) OVER (
             PARTITION BY pm.material_id
             ORDER BY pm.document_date, pm.document_id
             ROWS UNBOUNDED PRECEDING
         ) AS running_balance
     FROM period_movements pm
-    LEFT JOIN opening_balance ob ON ob.material_id = pm.material_id
+    LEFT JOIN opening_balance ob
+        ON ob.material_id = pm.material_id
 ),
 
 closing_balance AS (
@@ -113,7 +114,7 @@ SELECT
     t.running_balance
 FROM (
 
-    -- opening balance
+    -- Opening balance
     SELECT
         m.material_id,
         'opening_balance'::text AS row_type,
@@ -124,11 +125,12 @@ FROM (
         COALESCE(ob.qty,0) AS qty,
         COALESCE(ob.qty,0) AS running_balance
     FROM materials m
-    LEFT JOIN opening_balance ob ON ob.material_id = m.material_id
+    LEFT JOIN opening_balance ob
+        ON ob.material_id = m.material_id
 
     UNION ALL
 
-    -- movements
+    -- Movements
     SELECT
         rm.material_id,
         'movement'::text AS row_type,
@@ -142,7 +144,7 @@ FROM (
 
     UNION ALL
 
-    -- closing balance (только если были движения)
+    -- Closing balance
     SELECT
         cb.material_id,
         'closing_balance'::text AS row_type,
@@ -153,14 +155,10 @@ FROM (
         cb.qty AS qty,
         cb.qty AS running_balance
     FROM closing_balance cb
-    WHERE EXISTS (
-        SELECT 1
-        FROM period_movements pm
-        WHERE pm.material_id = cb.material_id
-    )
 
 ) t
-JOIN %I.materials mat ON mat.id = t.material_id
+JOIN %I.materials mat
+    ON mat.id = t.material_id
 
 ORDER BY
     t.material_id,
@@ -174,10 +172,11 @@ ORDER BY
 
 $f$, p_schema, p_schema);
 
-RETURN QUERY EXECUTE sql USING p_store_id, p_date_from, p_date_to;
+RETURN QUERY EXECUTE sql
+USING p_store_id, p_date_from, p_date_to;
 
 END;
-$$;
+$function$;
 SQL;
 
         DB::statement($sqlFunction);

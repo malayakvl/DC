@@ -25,11 +25,16 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    border: solid 1px #f0fdfa;
+    background-color: #f0fdfa;
     padding: 5px;
     background-size: 50%;
     background-position: center;
+
+    &:hover {
+        border: solid 1px #ccfbf1;
+        background-color: #ccfbf1;
+    }
 }
 
 .btn-delete {
@@ -42,12 +47,18 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #fce4ea;
+    border: solid 1px #fdf5f6;
     padding: 5px;
     background-color: #fdf5f6;
     background-size: 50%;
     background-position: center;
+
+    &:hover {
+        border: solid 1px #fce4ea;
+        background-color: #fce4ea;
+    }
 }
+
 
 .btn-store {
     background-image: url('../../images/action-icons/store.svg');
@@ -92,10 +103,8 @@
     color: white;
     padding: 10px 25px;
     border-radius: 5px;
-    text-transform: uppercase;
     cursor: pointer;
     font-weight: bold;
-    //@apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
     margin: 5px;
 }
 .btn-prev, btn-next {
@@ -143,12 +152,12 @@
     color: white;
     // padding: 7px 20px;
     border-radius: 5px;
-    text-transform: uppercase;
     cursor: pointer;
     //margin-left: 10px;
-    font-weight: bold;
-    font-size: 12px !important;
-    @apply bg-gradient-to-r bg-[#0EA5A4] hover:bg-[#0F8C8B] text-white;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    @apply text-white;
+    background: #0d9488;
 }
 
 .main-submit {
@@ -327,4 +336,9 @@
 .f-gray {
     border-color: #181610;
     background: #d3d3d2;
+}
+.pay-btn {
+    @apply px-1.5 py-0.5 text-[12px] rounded-xl transition-colors duration-200 shadow-sm;
+    background: #f5cbe6;
+    color: #b9117e;
 }

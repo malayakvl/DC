@@ -45,6 +45,7 @@ const lngInvoice = {
     unit: 'Од. вим.',
     rate: 'Курс',
     'row.error': 'Заповніть табличну частину',
+    add_position: 'Додати позицію',
   },
 };
 export default lngInvoice;

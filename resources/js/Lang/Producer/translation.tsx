@@ -15,6 +15,7 @@ const lngProducer = {
     'title.list': 'Виробники',
     'title.edit': 'Редагувати Виробника',
     'title.view': 'Переглянути Виробника',
+    'title.total': 'Загалом',
     create: 'Створити виробника',
     name: 'Назва',
     save: 'Зберегти',
@@ -25,6 +26,9 @@ const lngProducer = {
     actions: 'Дії',
     back: 'Повернутись',
     ceo: 'Відповідальна особа',
+    update: 'Оновити',
+    'title.description':
+      'Бренди та виробники медичних препаратів, обладнання й витратних матеріалів клініки.',
   },
 };
 export default lngProducer;

@@ -46,16 +46,6 @@ export default function List({ listData, currency }) {
                   </div>
                 </div>
               </header>
-              {/*<header>*/}
-              {/*  <div className="inline-flex">*/}
-              {/*    <h2>{msg.get('patient.title.list')}</h2>*/}
-              {/*    <div className="pl-5 mt-2">*/}
-              {/*      <PrimaryButton>*/}
-              {/*        <NavLink href={'/patient/create'}>{msg.get('patient.title.create')}</NavLink>*/}
-              {/*      </PrimaryButton>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</header>*/}
             </section>
 
             {/*Filters*/}

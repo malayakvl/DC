@@ -20,7 +20,6 @@ export default function NavPatients() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['patient-edit']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <LucideContactRound className={'w-[24px] h-[24px] block'} />
             <span className="hidden md:block">{lng.get('menu.patients')}</span>
           </MenuButton>
           {/*<MenuButton className="top-nav">{lng.get('menu.patients')}</MenuButton>*/}

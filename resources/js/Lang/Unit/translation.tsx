@@ -1,52 +1,59 @@
 const lngUnit = {
   'en.unit': {
-    'title.create': 'New store',
-    'title.list': 'Store',
-    'title.edit': 'New store',
-    'title.view': 'View store',
-    create: 'Create Store',
-    name: 'Name',
-    filial: 'Filial',
-    address: 'Address',
-    uraddress: 'Legal Address',
-    save: 'Save',
-    saved: 'Saved.',
-    back: 'Back',
-    phone: 'Phone',
-    manager: 'CEO',
-    stamp: 'Stamp',
-    'store.create': 'Create store',
-    'store.edit': 'Edit',
-    'store.view': 'View',
+    'title.list': 'Units of Measurement',
+    'title.create': 'New Unit',
+    'title.edit': 'Edit Unit',
+    'title.description':
+      'System and custom measurement units for automated write-offs, warehouse inventory, and clinical tracking.',
+    'title.total': 'Total',
+
+    // Form & Table fields
+    create: 'Create Unit',
+    name: 'Full Name',
+    short_name: 'Abbreviation',
+    code: 'ISO / Tax Code',
+    classification: {
+      piece: 'Pieces & Packaging',
+      volume: 'Volume & Liquids',
+      weight: 'Mass & Weight',
+    },
+
+    // Actions & Common
     actions: 'Actions',
-    'drop.title': 'Drop the files here ...',
-    'drop.title1': "Drag 'n' drop some files here, or click to select files",
-    ceo: 'CEO',
+    save: 'Save',
+    update: 'Update',
+    saved: 'Saved.',
+    cancel: 'Cancel',
+    back: 'Back',
   },
+
   'uk.unit': {
-    'title.create': 'Нова Одиниця Виміру',
     'title.list': 'Одиниці виміру',
-    'title.edit': 'Редагувати Одиницю Виміру',
-    'title.view': 'Переглянути Склад',
-    create: 'Створити одиницю виміру',
-    name: 'Назва',
-    filial: 'Філіал',
-    address: 'Адреса',
-    uraddress: 'Юридична Адреса',
-    save: 'Зберегти',
-    saved: 'Збережено.',
-    phone: 'Телефон',
-    manager: 'Керівник',
-    stamp: 'Печатка',
-    'store.create': 'Створити Склад',
-    'store.edit': 'Редагувати',
-    'store.view': 'Дивитись',
+    'title.create': 'Нова одиниця виміру',
+    'title.edit': 'Редагувати одиницю',
+    'title.description':
+      'Системні та користувацькі величини вимірювання для автоматичного списання, складського прибуткування та клінічного обліку.',
+    'title.total': 'загалом',
+
+    // Form & Table fields
+    create: 'Створити одиницю',
+    name: 'Повна назва',
+    short_name: 'Скорочення',
+    code: 'Код ДПС / ISO',
+    classification: {
+      piece: 'Штучні вироби',
+      volume: "Об'єм та розчини",
+      weight: 'Маса та вага',
+    },
+
+    // Actions & Common
     actions: 'Дії',
-    'drop.title': 'Перетягніть файли сюди ...',
-    'drop.title1': 'Перетягніть файли або клікніть сюди для вибору',
-    back: 'Повернутись',
-    ceo: 'Відповідальна особа',
-    fact_qty: 'Фактична кількість'
+    save: 'Зберегти',
+    update: 'Оновити',
+    saved: 'Збережено.',
+    cancel: 'Скасувати',
+    back: 'Повернутися',
   },
 };
+
 export default lngUnit;

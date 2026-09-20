@@ -13,6 +13,7 @@ class Act extends Model
         'clinic_id',
         'patient_id',
         'doctor_id',
+        'visit_id',
         'total_amount'
     ];
 

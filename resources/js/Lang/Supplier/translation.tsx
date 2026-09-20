@@ -23,12 +23,17 @@ const lngSupplier = {
     phone: 'Телефон',
     address: 'Адреса',
     saved: 'Збережено.',
+    update: 'Оновити',
+    cancel: 'Скасувати',
     'store.create': 'Створити Склад',
     'store.edit': 'Редагувати',
     'store.view': 'Дивитись',
     actions: 'Дії',
     back: 'Повернутись',
     ceo: 'Відповідальна особа',
+    'title.description':
+      'Керування постачальниками матеріалів та препаратів для складського обліку й закупівель',
+    'title.total': 'загалом',
   },
 };
 export default lngSupplier;

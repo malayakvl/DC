@@ -166,19 +166,74 @@ class ReportController extends Controller
 
     public function generateStoreReport(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            $clinic = $request->user()->clinicByFilial($clinicId);
             $params = $request->get('values');
-            $filialId = $params['filial_id'];
             $dateFrom = $params['dateFrom'];
             $dateTo = $params['dateTo'];
-            $storeId = $params['store_id'] ?? NULL;
+            $storeId = (int) ($params['store_id'] ?? 0);
 
-            $sid = $storeId ?? 'NULL';
-            $fid = $filialId ?? 'NULL';
+            if (!$storeId) {
+                return response()->json(['message' => 'Оберіть склад'], 422);
+            }
 
-            $query = "SELECT * FROM core.get_store_movements_by_material('clinic_{$clinicId}', {$storeId}, '{$dateFrom} 00:00:00', '{$dateTo} 23:59:59');";
-            $result = DB::select($query);
-            return response()->json($result);
+            $movements = DB::select(
+                "SELECT * FROM core.get_store_movements_by_material(?, ?, ?, ?)",
+                [
+                    "clinic_{$clinicId}",
+                    $storeId,
+                    "{$dateFrom} 00:00:00",
+                    "{$dateTo} 23:59:59",
+                ]
+            );
+
+            // These are display-only current batch balances. They let a user
+            // expand a material in the report and see exactly which FIFO lots
+            // form its available balance; no stock data is changed here.
+//            $batches = DB::table('store_batches as batch')
+//                ->join('materials as material', 'material.id', '=', 'batch.material_id')
+//                ->where('batch.store_id', $storeId)
+//                ->where('batch.qty_left', '>', 0)
+//                ->orderBy('batch.material_id')
+//                ->orderBy('batch.arrived_at')
+//                ->orderBy('batch.id')
+//                ->get([
+//                    'batch.id as batch_id',
+//                    'batch.material_id',
+//                    'material.name as material_name',
+//                    'batch.arrived_at',
+//                    'batch.qty',
+//                    'batch.qty_left',
+//                    'batch.fact_qty',
+//                    'batch.fact_qty_left',
+//                    'batch.price_per_unit',
+//                ]);
+            $batches = DB::table('store_batches as batch')
+                ->join('materials as material', 'material.id', '=', 'batch.material_id')
+                ->where('batch.store_id', $storeId)
+                ->where('batch.qty_left', '>', 0)
+                ->orderBy('batch.material_id')
+                ->orderBy('batch.arrived_at')
+                ->orderBy('batch.id')
+                ->get([
+                    'batch.id as batch_id',
+                    'batch.material_id',
+                    'material.name as material_name',
+                    'batch.arrived_at',
+                    'batch.qty',
+                    'batch.qty_left',
+                    'batch.fact_qty',
+                    'batch.fact_qty_left',
+                    'batch.price_per_unit',
+
+                    // 👇 добавить
+                    'batch.source_type',
+                    'batch.source_id',
+                    'batch.source_item_id',
+                ]);
+
+            return response()->json([
+                'movements' => $movements,
+                'batches' => $batches,
+            ]);
         });
     }
 

@@ -21,7 +21,6 @@ export default function NavServices() {
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['service-all']) && (
         <Menu as="div" className="relative top-menu-nav">
           <MenuButton className="top-nav flex flex-col items-center">
-            <BriefcaseMedical className={'w-[24px] h-[24px] block'} />
             <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>
           </MenuButton>
         </Menu>

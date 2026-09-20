@@ -548,6 +548,8 @@ class ClinicSchemaService
                 retail_price NUMERIC(12,2) DEFAULT 0,
                 percent NUMERIC(6,2) DEFAULT 0,
                 price_per_unit NUMERIC(12,4) DEFAULT 0,
+                expected_uses INTEGER DEFAULT NULL,
+                is_instrument BOOLEAN NOT NULL DEFAULT FALSE,
 
                 articul VARCHAR(255) DEFAULT 0,
                 image VARCHAR(255) DEFAULT 0,
@@ -802,28 +804,28 @@ class ClinicSchemaService
     {
         $units = [
             // Базові одиниці
-            ['name' => 'шт', 'unit_qty' => 1],          // штука
-            ['name' => 'мл', 'unit_qty' => 1],          // мілілітр
-            ['name' => 'г', 'unit_qty' => 1],           // грам
-            ['name' => 'мг', 'unit_qty' => 1],          // міліграм
-            ['name' => 'доза', 'unit_qty' => 1],       // доза
-            
-            // Медичні одиниці
-            ['name' => 'ампула', 'unit_qty' => 1],     // ампула
-            ['name' => 'карпула', 'unit_qty' => 1],    // карпула
-            ['name' => 'шприц', 'unit_qty' => 1],      // шприц
-            ['name' => 'капсула', 'unit_qty' => 1],    // капсула
-            
-            // Упаковки
-            ['name' => 'упаковка', 'unit_qty' => 1],   // упаковка (без деталізації)
-            ['name' => 'коробка', 'unit_qty' => 10],
-            
-            // Інші одиниці
-            ['name' => 'набір', 'unit_qty' => 1],      // набір
-            ['name' => 'комплект', 'unit_qty' => 1],   // комплект
-            ['name' => 'тюбикг', 'unit_qty' => 1],
-            ['name' => 'флакон', 'unit_qty' => 5],    // 5 мл
-            ['name' => 'рулон', 'unit_qty' => 1],      // рулон (коффердам і т.д.)
+            ['name' => 'Штука',      'short_name' => 'шт',     'code' => 'PCE', 'unit_qty' => 1],
+            ['name' => 'Мілілітр',   'short_name' => 'мл',     'code' => 'MLT', 'unit_qty' => 1],
+            ['name' => 'Грам',       'short_name' => 'г',      'code' => 'GRM', 'unit_qty' => 1],
+            ['name' => 'Міліграм',   'short_name' => 'мг',     'code' => 'MGM', 'unit_qty' => 1],
+            ['name' => 'Доза',       'short_name' => 'доз.',   'code' => 'DOS', 'unit_qty' => 1],
+
+            // Медичні / Стоматологічні одиниці
+            ['name' => 'Ампула',     'short_name' => 'амп.',   'code' => 'AMP', 'unit_qty' => 1],
+            ['name' => 'Карпула',    'short_name' => 'карп.',  'code' => 'KRP', 'unit_qty' => 1],
+            ['name' => 'Шприц',      'short_name' => 'шпр.',   'code' => 'SYR', 'unit_qty' => 1],
+            ['name' => 'Капсула',    'short_name' => 'капс.',  'code' => 'CPS', 'unit_qty' => 1],
+            ['name' => 'Флакон',     'short_name' => 'фл.',    'code' => 'VI',  'unit_qty' => 1],
+            ['name' => 'Тюбик',      'short_name' => 'туба',   'code' => 'TUB', 'unit_qty' => 1],
+            ['name' => 'Картридж',   'short_name' => 'картр.', 'code' => 'CT',  'unit_qty' => 1],
+
+            // Упаковки та набори
+            ['name' => 'Упаковка',   'short_name' => 'уп.',    'code' => 'NMP', 'unit_qty' => 1],
+            ['name' => 'Коробка',    'short_name' => 'кор.',   'code' => 'BX',  'unit_qty' => 1],
+            ['name' => 'Набір',      'short_name' => 'наб.',   'code' => 'SET', 'unit_qty' => 1],
+            ['name' => 'Комплект',   'short_name' => 'компл.', 'code' => 'KPL', 'unit_qty' => 1],
+            ['name' => 'Рулон',      'short_name' => 'рул.',   'code' => 'RO',  'unit_qty' => 1],
+            ['name' => 'Блістер',    'short_name' => 'бліст.', 'code' => 'BL',  'unit_qty' => 1],
         ];
 
 

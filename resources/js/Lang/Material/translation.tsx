@@ -46,6 +46,11 @@ const lngMaterial = {
     'price.per.unit': 'Ціна за одиницю',
     articul: 'Артикул',
     image: 'Зображення',
+    is_instrument: 'Інструмент',
+    expected_uses: 'Кількість використань',
+    'title.total': 'Загалом',
+    'title.description':
+      'Каталог стоматологічних матеріалів, медичних препаратів та витратників з обліком залишкових норм і нормативів списання.',
   },
 };
 export default lngMaterial;

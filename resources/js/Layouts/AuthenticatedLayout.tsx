@@ -13,6 +13,7 @@ import {
 import NavMenu from '../Components/Header/NavMenu';
 import ProfileMenu from '../Components/Header/ProfileMenu';
 import LangMenu from '../Components/Header/LangMenu';
+import NoticeMenu from '../Components/Header/NoticeMenu';
 import { ToastContainer } from 'react-toastify';
 import Footer from '@/Components/Footer/Footer';
 
@@ -23,11 +24,11 @@ export default function AuthenticatedLayout({ header, children }) {
     messages: lngHeader,
     locale: appLang,
   });
-  useSelector(appFilialSelector);
+  const filialData = useSelector(appFilialSelector);
   const showOverlay = useSelector(isShowOverlaySelector);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  usePage().props.auth.user;
+  const user = usePage().props.auth.user;
   const handleNavCollapse = () => {
     setIsNavCollapsed(!isNavCollapsed);
   };
@@ -61,17 +62,22 @@ export default function AuthenticatedLayout({ header, children }) {
                 className={`nav-content ${isNavCollapsed ? 'left-side-close' : 'left-side-open'}`}
                 id="navbarsExample09"
               >
-                <div className="flex collapsed-content">
-                  <div className="flex grow">
+                <header className="flex items-center justify-between w-full px-4 py-2">
+                  {/* Левая часть: Лого/Навигация */}
+                  <div className="flex items-center context-menu">
                     <NavMenu />
                   </div>
-                  <div className="flex grow">
+
+                  {/* Правая часть: Язык, Уведомления, Профиль */}
+                  <div className="flex items-center gap-4">
                     <LangMenu />
-                  </div>
-                  <div className="flex grow">
+                    <NoticeMenu />
+                    <div
+                      className={`separate-m-header ${user?.current_filial ? 'filial-sep' : ''}`}
+                    ></div>
                     <ProfileMenu />
                   </div>
-                </div>
+                </header>
               </div>
             </div>
           </div>
@@ -84,6 +90,7 @@ export default function AuthenticatedLayout({ header, children }) {
           <div>{children}</div>
         </div>
       </main>
+      <div className="clearfix"></div>
       <ToastContainer />
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -93,8 +100,8 @@ export default function AuthenticatedLayout({ header, children }) {
           </div>
         </div>
       )}
-      <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
       <Footer />
+      <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
     </div>
   );
 }
