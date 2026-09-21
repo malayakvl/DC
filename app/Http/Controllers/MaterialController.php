@@ -8,6 +8,7 @@ use App\Models\Material;
 use App\Models\MaterialCategories;
 use App\Models\Producer;
 use App\Models\Store;
+use App\Models\Supplier;
 use App\Models\Unit;
 use App\Models\Size;
 use Illuminate\Http\Request;
@@ -71,10 +72,21 @@ class MaterialController extends Controller
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
                 ->orderBy('name')->get();
+            $categories = MaterialCategories::where('parent_id', null)
+                ->orWhere('special', true)
+                ->get();
+            $arrCat = array();
+            $tree = $this->generateCategories($categories, $arrCat, 0);
+
+            //suppliers
+            $suppliers = Supplier::all();
 
             return Inertia::render('Material/List', [
                 'clinicData' => $clinic,
-                'listData' => $listData
+                'listData' => $listData,
+                'categoryData' => $tree,
+                'supplierData' => $suppliers,
+                'currency' => $clinic->currency()->get()[0]->symbol,
             ]);
         });
     }
@@ -160,6 +172,7 @@ class MaterialController extends Controller
             }
             return Inertia::render('Material/Edit', [
                 'clinicData' => $clinicData,
+                'currency' => $clinicData->currency()->get()[0]->name,
                 'categoryData' => $tree,
                 'formData' => $formData,
                 'percent' => $formData->percent,

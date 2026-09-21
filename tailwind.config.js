@@ -16,6 +16,9 @@ export default {
         sans: ['Manrope', 'Sora', ...defaultTheme.fontFamily.sans],
         monospace: ['monospace'],
       },
+      boxShadow: {
+        xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', // укажите здесь нужные вам параметры тени
+      },
       // Кастомная палитра цветов должна быть внутри theme.extend.colors
       colors: {
         brand: {

@@ -447,7 +447,7 @@ label.float-label {
 .input-label {
     @apply block text-sm font-medium;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 13px;
     color:#475569;
 }
 
@@ -604,4 +604,19 @@ label.float-label {
 }
 .text-main {
     color: #0F172A !important;
+}
+.filter-tree {
+    background: #f8faff !important;
+    color: #000 !important;
+    border: none !important;
+    max-height: 34px !important;
+}
+.filter-label-selected {
+    @apply w-full text-xs font-medium  text-slate-700 cursor-pointer transition-all
+}
+.filter-select {
+    background: #f8faff !important;
+    color: #000 !important;
+    border: none !important;
+    max-height: 34px !important;
 }

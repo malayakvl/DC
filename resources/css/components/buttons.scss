@@ -117,27 +117,17 @@
 
 
 .btn-back {
-    // background: #343335;
-    //background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
-    // background-image: linear-gradient(to left top, #3a3f56, #7dcad4) !important;
-    background-image: linear-gradient(to left top, #457972, #3a3f56) !important;
-    display: inline-block;
-    color: white;
-    padding: 10px 25px;
+    @apply px-5 py-1.5 font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition duration-150 inline-flex items-center gap-1.5;
     border-radius: 5px;
-    cursor: pointer;
-    font-weight: medium;
-    font-size: 14px;
-    margin: 5px;
-    // text-transform: uppercase;
+    font-size: 0.75rem;
 }
 
 .btn-back:hover {
-    background-image: linear-gradient(to left top, rgb(166, 120, 153), rgb(137, 108, 122)) !important;
+    background: #b6b4b5 !important;
 }
 
 .btn-invite {
-    background: #663399;
+    background: #e2e5e8;
     display: inline-block;
     color: white;
     padding: 10px 20px;

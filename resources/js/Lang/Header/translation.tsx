@@ -107,6 +107,15 @@ const lngHeader = {
     'visit.schedule.statuses': 'Статуси візитів',
     'user.hprofile': 'Профіль користувача',
     h_slogan: 'Медична інформаційна система',
+    tipStore: {
+      units: 'Штуки, карпули, мілілітри, грами, набори',
+      brands: 'Бренди: 3M, Dentsply Sirona, GC, Septodont',
+      suppliers: 'Дистриб`ютори, умови оплат, договори',
+      directories_and_partners: 'Довідники та Контрагенти',
+      categories_and_markup: 'Класифікація, націнки та правила списання',
+      stock_details: 'Всі залишки, партії, терміни та собівартість',
+      catalog_descounts: 'Каталог та залишки',
+    },
   },
 };
 export default lngHeader;

@@ -10,11 +10,9 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
-// import { MaterialMetrics } from './Partials/Metrics';
-import { ClinicInventoryStats } from './Partials/ClinicInventoryStats';
 import { InventoryControlPanel } from './Partials/InventoryControlPanel';
 
-export default function List({ listData }) {
+export default function List({ listData, clinicData, categoryData, supplierData, currency }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -63,9 +61,13 @@ export default function List({ listData }) {
               </header>
             </section>
             <section className="table-card">
-              <InventoryControlPanel />
-
-              <ClinicInventoryStats title={msg.get('material.title.list')} />
+              <InventoryControlPanel
+                categories={categoryData}
+                clinicData={clinicData}
+                supplierData={supplierData}
+                msg={msg}
+                totalItems={listData.length}
+              />
 
               <DataTable paginationType={PaginationType.MATERIALS} sendRequest={sendRequest}>
                 {listData?.map((item) => (
@@ -88,10 +90,12 @@ export default function List({ listData }) {
                       </div>
                     </td>
                     <td className="">{item.name}</td>
-                    <td className="">{item.price}</td>
+                    <td className="">
+                      {item.price} {currency}
+                    </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <span className="font-metric-tabular text-metric-tabular font-bold">
-                        {item.retail_price} ₴
+                        {item.retail_price} {currency}
                       </span>
                       <span className="px-1.5 py-0.5 rounded bg-[#dbfcf8] text-[#0000000] font-label-sm text-label-sm font-bold">
                         {item.percent ? <span className="percent-tbl">{item.percent}%</span> : ''}
