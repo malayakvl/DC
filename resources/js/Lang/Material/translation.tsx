@@ -39,7 +39,7 @@ const lngMaterial = {
     percent: '+Ціна',
     provider: 'Виробник',
     save: 'Зберегти',
-    back: 'Назад',
+    back: 'Повернутись',
     saved: 'Збережено.',
     'report.generate': 'Згенерити',
     'report.error.store': 'Оберіть склад',
