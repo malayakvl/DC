@@ -11,6 +11,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import { InventoryControlPanel } from './Partials/InventoryControlPanel';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, clinicData, categoryData, supplierData, currency }) {
   const dispatch = useDispatch();
@@ -30,36 +31,14 @@ export default function List({ listData, clinicData, categoryData, supplierData,
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header className="mb-6 mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                        {msg.get('material.title.list')}
-                      </h1>
-
-                      {/* Бейдж кількості прив'язаний чітко до заголовка */}
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                        {listData?.length || 0} {msg.get('material.title.total')}
-                      </span>
-                    </div>
-
-                    {/* Підзаголовок винесено окремо під заголовок */}
-                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      {msg.get('material.title.description')}
-                    </p>
-                  </div>
-
-                  {/* Правий блок: Кнопка дії */}
-                  <PrimaryButton>
-                    <NavLink href={'/material/create'}>{msg.get('material.create')}</NavLink>
-                  </PrimaryButton>
-                </div>
-              </header>
-            </section>
+            <ListHeader
+              title={msg.get('material.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('material.title.total')}
+              description={msg.get('material.title.description')}
+              createHref="material/create"
+              createLabel={msg.get('material.title.create')}
+            />
             <section className="table-card">
               <InventoryControlPanel
                 categories={categoryData}

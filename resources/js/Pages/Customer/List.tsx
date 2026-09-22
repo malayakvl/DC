@@ -4,12 +4,12 @@ import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ clinicData, customerData }) {
   const dispatch = useDispatch();
@@ -30,36 +30,14 @@ export default function List({ clinicData, customerData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header className="mb-6 mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                        {msg.get('customer.title.list')}
-                      </h1>
-
-                      {/* Бейдж кількості прив'язаний чітко до заголовка */}
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                        {customerData?.length || 0} {msg.get('customer.title.total')}
-                      </span>
-                    </div>
-
-                    {/* Підзаголовок винесено окремо під заголовок */}
-                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      {msg.get('customer.title.description')}
-                    </p>
-                  </div>
-
-                  {/* Правий блок: Кнопка дії */}
-                  <PrimaryButton>
-                    <NavLink href={'customer/create'}>{msg.get('customer.title.create')}</NavLink>
-                  </PrimaryButton>
-                </div>
-              </header>
-            </section>
+            <ListHeader
+              title={msg.get('customer.title.list')}
+              count={customerData?.length || 0}
+              totalLabel={msg.get('customer.title.total')}
+              description={msg.get('customer.title.description')}
+              createHref="customer/create"
+              createLabel={msg.get('customer.title.create')}
+            />
             <section className="table-card">
               <DataTable paginationType={PaginationType.CUSTOMERS} sendRequest={sendRequest}>
                 {customerData?.map((item) => (

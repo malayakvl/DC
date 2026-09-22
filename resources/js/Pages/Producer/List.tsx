@@ -8,6 +8,7 @@ import lngProducer from '../../Lang/Producer/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, clinicData }) {
   const dispatch = useDispatch();
@@ -16,7 +17,6 @@ export default function List({ listData, clinicData }) {
     messages: lngProducer,
     locale: appLang,
   });
-  console.log(clinicData);
 
   // Стан для форми: null — закрита, 'create' — створення, або ID елемента — редагування
   const [editingId, setEditingId] = useState(null);
@@ -86,6 +86,15 @@ export default function List({ listData, clinicData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+            <ListHeader
+              title={msg.get('producer.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('producer.title.total')}
+              description={msg.get('producer.title.description')}
+              onCreateClick={handleOpenCreate}
+              createLabel={msg.get('producer.create')}
+              isCreateDisabled={Boolean(editingItem?.id)}
+            />
             <section className="mb-6">
               <header className="mt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">

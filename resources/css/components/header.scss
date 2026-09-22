@@ -479,8 +479,11 @@ to-green-400 {
   }
 }
 .role-tips {
-  @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold;
+  @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold;
   background-color: #fff;
+  border-color: #f97615;
+  border: solid 1px;
+  color: #f97615;
 }
 
 .clinic-role {

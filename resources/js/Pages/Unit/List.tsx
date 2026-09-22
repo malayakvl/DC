@@ -8,6 +8,7 @@ import lngUnit from '../../Lang/Unit/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData }) {
   const dispatch = useDispatch();
@@ -19,6 +20,8 @@ export default function List({ listData }) {
 
   // Стан для форми: null — закрита, 'create' — створення, або ID елемента — редагування
   const [editingId, setEditingId] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+
   const formRef = useRef(null);
 
   // Inertia useForm
@@ -93,44 +96,15 @@ export default function List({ listData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section className="mb-6">
-              <header className="mb-6 mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                        {msg.get('unit.title.list')}
-                      </h1>
-
-                      {/* Бейдж кількості прив'язаний чітко до заголовка */}
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                        {listData?.length || 0} {msg.get('unit.title.total')}
-                      </span>
-                    </div>
-
-                    {/* Підзаголовок винесено окремо під заголовок */}
-                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      {msg.get('unit.title.description')}
-                    </p>
-                  </div>
-
-                  {/* Правий блок: Кнопка дії */}
-                  <div className="flex items-center shrink-0">
-                    <PrimaryButton
-                      type="button"
-                      onClick={handleOpenCreate}
-                      disabled={Boolean(editingId)} // заблокована, якщо є активний editingId
-                      className={editingId ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                      {msg.get('unit.create')}
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-
+            <ListHeader
+              title={msg.get('unit.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('unit.title.total')}
+              description={msg.get('unit.title.description')}
+              onCreateClick={handleOpenCreate}
+              createLabel={msg.get('unit.create')}
+              isCreateDisabled={Boolean(editingItem?.id)}
+            />
             {/* Єдина інлайн-форма для Створення та Редагування */}
             {editingId && (
               <section
