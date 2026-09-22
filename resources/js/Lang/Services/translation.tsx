@@ -33,6 +33,7 @@ const lngServiceCategories = {
     'title.view': 'Переглянути Категорія',
     'pricing.edit': 'Редагувати послугу',
     'title.total': 'Загалом',
+    'title.description': 'Управління специфікацією, облік витрат та контроль залишків матеріалів',
     create: 'Створити розділ',
     name: 'Назва',
     category: 'Категорія',

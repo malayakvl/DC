@@ -118,7 +118,7 @@ export default function List({ listData, clinicData }) {
                       disabled={Boolean(editingId)} // заблокована, якщо є активний editingId
                       className={editingId ? 'opacity-50 cursor-not-allowed' : ''}
                     >
-                      + {msg.get('supplier.create')}
+                      {msg.get('supplier.create')}
                     </PrimaryButton>
                   </div>
                 </div>

@@ -55,7 +55,7 @@ export default function List({ listData, clinicData, categoryData, supplierData,
 
                   {/* Правий блок: Кнопка дії */}
                   <PrimaryButton>
-                    <NavLink href={'/material/create'}>+ {msg.get('material.create')}</NavLink>
+                    <NavLink href={'/material/create'}>{msg.get('material.create')}</NavLink>
                   </PrimaryButton>
                 </div>
               </header>
@@ -73,7 +73,7 @@ export default function List({ listData, clinicData, categoryData, supplierData,
                 {listData?.map((item) => (
                   <tr className="" key={item.id}>
                     <td>
-                      <div className="w-12 h-12 rounded-lg bg-[#f2f3ff] flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
+                      <div className="w-12 h-12 rounded-lg ml-3 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
                         <img
                           src={
                             item.image
@@ -90,7 +90,7 @@ export default function List({ listData, clinicData, categoryData, supplierData,
                       </div>
                     </td>
                     <td className="">{item.name}</td>
-                    <td className="">
+                    <td className="whitespace-nowrap">
                       {item.price} {currency}
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
