@@ -10,34 +10,39 @@ export const findServiceAction: any = createAction(
   async (data: any) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
       const state = getState();
+      return axios.post(`/material/findMaterial`, { searchName: data }, {}).then(async (res) => {
+        return res.data.items;
+      });
+    }
+);
+export const findServiceMaterialAction: any = createAction(
+  'clinic/FIND_SERVICE_EXIST',
+  async (data: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
+      const state = getState();
       return axios
-        .post(`/material/findMaterial`, { searchName: data }, {})
-        .then(async res => {
+        .post(`/material/findMaterialCalc`, { searchName: data }, {})
+        .then(async (res) => {
           return res.data.items;
         });
     }
 );
+
 export const findServiceItemsAction: any = createAction(
   'clinic/FIND_SERVICE_COMPONENTS',
   async (data: any, rowIndex: number) =>
     (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
       const state = getState();
-      return axios
-        .post(`/service/findServiceItems`, { serviceId: data }, {})
-        .then(async res => {
-          return {
-            items: res.data.items,
-            rowIndex: rowIndex
-          };
-        });
+      return axios.post(`/service/findServiceItems`, { serviceId: data }, {}).then(async (res) => {
+        return {
+          items: res.data.items,
+          rowIndex: rowIndex,
+        };
+      });
     }
 );
-export const emptyServicesAutocompleteAction = createAction(
-  'service/EMPTY_AUTOCOMPLETE'
-);
-export const emptyServicesQtyAutocompleteAction = createAction(
-  'service/REMOVE_AUTOCOMPLETE_QTY'
-);
+export const emptyServicesAutocompleteAction = createAction('service/EMPTY_AUTOCOMPLETE');
+export const emptyServicesQtyAutocompleteAction = createAction('service/REMOVE_AUTOCOMPLETE_QTY');
 
 export const updateServiceItemQtyAction = createAction(
   'service/UPDATE_SERVICE_ITEM_QTY',

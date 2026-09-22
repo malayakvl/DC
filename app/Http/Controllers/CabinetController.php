@@ -45,7 +45,7 @@ class CabinetController extends Controller
 
         try {
             DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
-            return $callback($clinicId);
+            return call_user_func($callback, $clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
         }

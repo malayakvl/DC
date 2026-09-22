@@ -127,8 +127,32 @@
 }
 
 .upload-product-btn-block .btn-2 {
-  left: -5px;
-  width: 250px;
+  left: 25%;
+  width: 100%;
   height: 250px;
   top: -250px;
+}
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // Выравнивание по центру по горизонтали
+  justify-content: center; // Центрирование по вертикали (или space-between, если нужно разнести)
+  text-align: center;
+  border-radius: 8px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 220px; // Задайте минимальную высоту зоны, чтобы было пространство
+
+  // Иконка через псевдоэлемент (теперь участвует в потоке Flexbox)
+  &:before {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 48px;
+    background-image: url("./../images/dropzone.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    margin-bottom: 12px; // Отступ от иконки до вашего текста
+  }
 }

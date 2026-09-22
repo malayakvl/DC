@@ -1,12 +1,10 @@
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { appLangSelector } from '../../../Redux/Layout/selectors';
+import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngStore from '../../../Lang/MaterialCategories/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import lngMaterialCategories from '../../../Lang/MaterialCategories/translation';
@@ -31,35 +29,35 @@ export default function Form({
     parent_id: formData.parent_id,
     percent: formData.percent,
   });
-  const { processing, recentlySuccessful, errors } = useForm();
+  const { processing, recentlySuccessful } = useForm();
 
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChangeFile = e => {
+  const handleChangeFile = (e) => {
     const key = e.target.id;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: e.target.files[0],
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     if (formData.id) {
@@ -76,17 +74,11 @@ export default function Form({
           <Link className="icon-back" href={'/material-categories'}>
             &nbsp;
           </Link>
-          {formData?.id
-            ? msg.get('mCategories.title.edit')
-            : msg.get('mCategories.title.create')}
+          {formData?.id ? msg.get('mCategories.title.edit') : msg.get('mCategories.title.create')}
         </h2>
       </header>
 
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <InputTreeSelect
           name={'parent_id'}
           values={values}
@@ -118,7 +110,7 @@ export default function Form({
           name={'percent'}
           values={values}
           dataValue={values.percent}
-          value={values.name}
+          value={values.percent}
           onChange={handleChange}
           required
           label={msg.get('mCategories.percent')}
@@ -131,9 +123,7 @@ export default function Form({
           >
             {msg.get('mCategories.back')}
           </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('mCategories.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('mCategories.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}
@@ -142,9 +132,7 @@ export default function Form({
             leave="transition ease-in-out"
             leaveTo="opacity-0"
           >
-            <p className="text-sm text-gray-600">
-              {msg.get('mCategories.saved')}
-            </p>
+            <p className="text-sm text-gray-600">{msg.get('mCategories.saved')}</p>
           </Transition>
         </div>
       </form>

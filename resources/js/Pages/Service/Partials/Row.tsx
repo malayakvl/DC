@@ -5,9 +5,11 @@ import {
   searchResultServicesSelector,
   searchResultServicesElementsSelector,
 } from '@/Redux/Service/selectors';
-import { emptyServicesAutocompleteAction, findServiceAction } from '@/Redux/Service';
+import {
+  emptyServicesAutocompleteAction,
+  findServiceMaterialAction,
+} from '@/Redux/Service/actions';
 import { setPriceItems, setShowTableError, setTotalPrice } from '@/Redux/Service';
-import InputSelect from '../../../Components/Form/InputSelect';
 
 export interface AddDynamicInputFieldsRef {
   addRow: () => void;
@@ -16,14 +18,11 @@ export interface AddDynamicInputFieldsRef {
 // eslint-disable-next-line react/display-name
 const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
   ({ formRowData = null, unitData }, ref) => {
-    const [inputs, setInputs] = useState(formRowData);
+    const [inputs, setInputs] = useState(formRowData || []);
     const dispatch = useAppDispatch();
-    const [, setHideFields] = useState(false);
+    const [numRow, setNumRow] = useState(0);
     const serchResults = useSelector(searchResultServicesSelector);
     useSelector(searchResultServicesElementsSelector);
-    const [numRow, setNumRow] = useState(0);
-    const [, setWeightIntutId] = useState(null);
-    const [, setAvailableWeights] = useState(null);
 
     const handleAddInput = () => {
       setInputs([
@@ -32,12 +31,14 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           product_id: '',
           unit_id: '',
           product: '',
-          quantity: '',
+          quantity: '1.00',
           maxQty: '',
           mark_up: '',
-          price: '',
-          total: '',
-          base_price: '',
+          price: 0,
+          total: 0,
+          base_price: 0,
+          stock: 0,
+          category: 'Витратні матеріали',
         },
       ]);
     };
@@ -46,51 +47,59 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       addRow: handleAddInput,
     }));
 
-    const handleChange = (event, index) => {
+    const handleChange = (event, index, customName = null, customValue = null) => {
       dispatch(setShowTableError(false));
-      const { name, value } = event.target;
+      const name = customName || event.target.name;
+      const value = customValue !== null ? customValue : event.target.value;
+
       const onChangeValue = [...inputs];
       onChangeValue[index][name] = value;
       setNumRow(index);
 
       if (name === 'product') {
-        if (value.length > 3) {
-          dispatch(findServiceAction(value));
+        if (value.length > 2) {
+          dispatch(findServiceMaterialAction(value));
         } else {
           dispatch(emptyServicesAutocompleteAction());
-          setHideFields(false);
         }
-      } else if (name === 'mark_up') {
-        const markupValue = parseFloat(event.target.value) || 0;
-
-        // сохраняем исходную цену один раз
-        if (!inputs[index].base_price) {
-          inputs[index].base_price = parseFloat(inputs[index].price) || 0;
-        }
-        const basePrice = inputs[index].base_price;
-        const newPrice = basePrice + (basePrice * markupValue) / 100;
-        inputs[index].price = parseFloat(newPrice.toFixed(2));
-        inputs[index].total = parseFloat((inputs[index].price * inputs[index].quantity).toFixed(2));
-      } else {
-        // inputs[index].quantity = event.target.value;
-        inputs[index].total = event.target.value
-          ? parseFloat((parseFloat(event.target.value) * inputs[index].price).toFixed(2))
-          : 0;
       }
+
+      // Перерахунок суми рядка
+      const qty = parseFloat(onChangeValue[index].quantity) || 0;
+      const price = parseFloat(onChangeValue[index].price) || 0;
+      onChangeValue[index].total = parseFloat((qty * price).toFixed(2));
+
       setInputs(onChangeValue);
+    };
+
+    const handleQuantityChange = (index, delta) => {
+      const onChangeValue = [...inputs];
+      const currentQty = parseFloat(onChangeValue[index].quantity) || 0;
+      const newQty = Math.max(0.01, currentQty + delta);
+      onChangeValue[index].quantity = newQty.toFixed(2);
+
+      const price = parseFloat(onChangeValue[index].price) || 0;
+      onChangeValue[index].total = parseFloat((newQty * price).toFixed(2));
+      setInputs(onChangeValue);
+    };
+
+    const handleDuplicate = (index) => {
+      const itemToCopy = { ...inputs[index] };
+      const newArray = [...inputs];
+      newArray.splice(index + 1, 0, itemToCopy);
+      setInputs(newArray);
     };
 
     const handleDeleteInput = (index) => {
       const newArray = [...inputs];
       newArray.splice(index, 1);
       setInputs(newArray);
-      return;
     };
 
     useEffect(() => {
       dispatch(setPriceItems(inputs));
       let totalItemPrice = 0;
-      inputs.map((_input) => {
+      inputs.forEach((_input) => {
         totalItemPrice += Number(_input.total ? _input.total : 0);
       });
       dispatch(setTotalPrice(totalItemPrice));
@@ -99,86 +108,116 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     const renderSearchProducerResult = (index) => {
       if (serchResults.length > 0) {
         return (
-          <div
-            className="absolute autocomplete"
-            style={{ top: index * 50 + 75 + 'px', width: '500px' }}
-          >
-            <ul>
-              {serchResults.map((_res) => (
+          <div className="absolute z-50 bg-white shadow-xl rounded-xl border border-slate-200 mt-1 max-h-60 overflow-y-auto left-0 right-0">
+            <ul className="divide-y divide-slate-100">
+              {serchResults.map((_res, rIndex) => (
                 <li
-                  key={index}
-                  className="cursor-pointer py-1"
+                  key={rIndex}
+                  className="cursor-pointer px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm flex items-center justify-between"
                   onClick={() => {
-                    setHideFields(true);
-                    setWeightIntutId(_res.id);
-                    const tmpWeight = [];
-                    tmpWeight.push(_res.weightunit_id);
-                    tmpWeight.push(_res.weightunit_id);
-                    setAvailableWeights(tmpWeight);
                     dispatch(emptyServicesAutocompleteAction());
-                    inputs[index].product = _res.name;
-                    inputs[index].product_id = _res.id;
-                    inputs[index].quantity = 1;
-                    inputs[index].unit_id = _res.unit_id;
-                    inputs[index].mark_up = 0;
-                    inputs[index].price = _res.price_per_unit;
-                    inputs[index].total = (
-                      1 * (_res.price_per_unit > 0 ? _res.price_per_unit : _res.retail_price)
-                    ).toFixed(2);
+                    const onChangeValue = [...inputs];
+                    onChangeValue[index].product = _res.name;
+                    onChangeValue[index].product_id = _res.id;
+                    onChangeValue[index].quantity = '1.00';
+                    onChangeValue[index].unit_id = _res.unit_id;
+                    onChangeValue[index].price = _res.price_per_unit || _res.retail_price || 0;
+                    onChangeValue[index].total = parseFloat(
+                      (1 * onChangeValue[index].price).toFixed(2)
+                    );
+                    onChangeValue[index].stock = _res.stock || 0;
+                    setInputs(onChangeValue);
                   }}
                 >
-                  {_res.name} {_res.producerName}
+                  <span className="font-semibold text-slate-800">{_res.name}</span>
+                  <span className="text-xs font-bold text-teal-700">
+                    {_res.price_per_unit || _res.retail_price || 0} ₴
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
         );
-      } else {
-        return <></>;
       }
+      return null;
     };
+
     return (
       <>
         {inputs.map((item, index) => (
-          <tr key={index}>
-            <td className="w-product-service px-2 pb-2">
-              <div className="relative">
+          <tr
+            key={index}
+            className="hover:bg-slate-50/80 transition-colors border-b border-slate-100 last:border-none"
+          >
+            {/* Пошук / Назва матеріалу */}
+            <td className="py-3 px-3 relative">
+              <div className="flex flex-col gap-1">
                 <input
                   name="product"
-                  className="input-text"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all"
                   type="text"
-                  value={item.product}
+                  placeholder="Почніть введення матеріалу..."
+                  value={item.product || ''}
                   onChange={(event) => handleChange(event, index)}
                 />
+                <div className="flex items-center gap-2 px-1">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    {item.category || 'Категорія матеріалу'}
+                  </span>
+                  <span className="text-slate-300">•</span>
+                </div>
+                {numRow === index && renderSearchProducerResult(index)}
               </div>
             </td>
-            <td className="w-qty pb-2 px-2 mx-auto " data-id={`el-${item.product_id}`}>
-              <InputSelect
-                elId={item.product_id}
-                translatable={false}
-                name={'unit_id'}
-                className={'mb-1'}
-                values={inputs}
-                value={item.unit_id}
-                defaultValue={item.unit_id}
-                options={unitData}
+
+            {/* Одиниця виміру */}
+            <td className="py-3 px-3 whitespace-nowrap align-top">
+              <select
+                name="unit_id"
+                value={item.unit_id || ''}
                 onChange={(event) => handleChange(event, index)}
-                required
-                label={null}
-              />
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+              >
+                <option value="">Одиниця...</option>
+                {unitData?.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.name}
+                  </option>
+                ))}
+              </select>
             </td>
-            <td className="w-qty pb-2 px-2 mx-auto border-r-1">
-              <div className="row flex justify-center ">
-                <input
-                  className="input-text text-center service-qty"
-                  name="quantity"
-                  type="text"
-                  value={item.quantity}
-                  onChange={(event) => handleChange(event, index)}
-                />
+
+            {/* Норма витрати (кнопки плюс/мінус + інпут) */}
+            <td className="py-3 px-3 align-top">
+              <div className="flex items-center justify-center">
+                <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => handleQuantityChange(index, -0.1)}
+                    className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
+                  >
+                    -
+                  </button>
+                  <input
+                    name="quantity"
+                    className="w-14 text-center no-border bg-transparent font-bold text-slate-900 text-xs focus:outline-none"
+                    type="text"
+                    value={item.quantity || ''}
+                    onChange={(event) => handleChange(event, index)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleQuantityChange(index, 0.1)}
+                    className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
+
+            {/* Ціна за одиницю */}
+            <td className="py-3 px-3 text-right align-top text-xs font-semibold text-slate-600 tabular-nums pt-4">
               <div className="row flex justify-center">
                 <input
                   className="input-text text-center service-price"
@@ -189,7 +228,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 />
               </div>
             </td>
-            <td className="w-qty pb-2 px-2 mx-auto">
+            <td className="py-3 px-3 text-right align-top text-xs font-semibold text-slate-600 tabular-nums pt-4">
               <div className="row flex justify-center">
                 <input
                   className="input-text text-center service-mark-up"
@@ -201,10 +240,11 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
               </div>
             </td>
 
-            <td className="w-qty pb-2 px-2 mx-auto border-r-1">
+            {/* Собівартість рядка */}
+            <td className="py-3 px-3 text-right align-top text-xs font-bold text-teal-800 tabular-nums pt-4">
               <div className="row flex ml-[10px]">
                 <input
-                  className="input-text w-full text-center"
+                  className="input-text w-full text-center price-row-total"
                   name="total"
                   type="text"
                   value={item.total}
@@ -212,22 +252,27 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 />
               </div>
             </td>
-            <td className="w-btn pb-2 px-2">
-              {inputs.length > 1 && (
-                <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
-              )}
+
+            {/* Дії (Дублювати / Видалити) */}
+            <td className="py-3 px-3 text-center align-top pt-3">
+              <div className="flex items-center justify-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteInput(index)}
+                  className="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 transition-colors"
+                  title="Видалити"
+                >
+                  ✕
+                </button>
+              </div>
             </td>
           </tr>
         ))}
-        <tr>
-          <td colSpan={7}>
-            <div className="body hidden"> {JSON.stringify(inputs)} </div>
-            <div className="text-left">{renderSearchProducerResult(numRow)}</div>
-          </td>
-        </tr>
       </>
     );
   }
 );
+
+AddDynamicInputFields.displayName = 'AddDynamicInputFields';
 
 export default AddDynamicInputFields;

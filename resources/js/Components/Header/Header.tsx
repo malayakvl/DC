@@ -63,10 +63,10 @@ export default function Header({ auth }) {
                 </Link>
               ) : (
                 <>
-                  <Link href="/login" className="btn-login">
-                    {lng.get('menu.login')} <span aria-hidden="true">&rarr;</span>
+                  <Link href="/login" className="btn-login-new">
+                    {lng.get('menu.login')}
                   </Link>
-                  <Link href="/register" className="btn-register">
+                  <Link href="/register" className="btn-register-new">
                     {lng.get('menu.register')}
                   </Link>
                 </>

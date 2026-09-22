@@ -7,6 +7,8 @@ export default function Create({
   statusData,
   typeData,
   customerData,
+  patientsData,
+  visitsData,
   producerData,
   storeData,
   formData,
@@ -25,6 +27,8 @@ export default function Create({
               statusData={statusData}
               typeData={typeData}
               customerData={customerData}
+              patientsData={patientsData}
+              visitsData={visitsData}
               producerData={producerData}
               storeData={storeData}
               formData={formData}

@@ -25,11 +25,16 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    border: solid 1px #f0fdfa;
+    background-color: #f0fdfa;
     padding: 5px;
     background-size: 50%;
     background-position: center;
+
+    &:hover {
+        border: solid 1px #ccfbf1;
+        background-color: #ccfbf1;
+    }
 }
 
 .btn-delete {
@@ -42,12 +47,18 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #fce4ea;
+    border: solid 1px #fdf5f6;
     padding: 5px;
     background-color: #fdf5f6;
     background-size: 50%;
     background-position: center;
+
+    &:hover {
+        border: solid 1px #fce4ea;
+        background-color: #fce4ea;
+    }
 }
+
 
 .btn-store {
     background-image: url('../../images/action-icons/store.svg');
@@ -92,10 +103,8 @@
     color: white;
     padding: 10px 25px;
     border-radius: 5px;
-    text-transform: uppercase;
     cursor: pointer;
     font-weight: bold;
-    //@apply bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white;
     margin: 5px;
 }
 .btn-prev, btn-next {
@@ -108,27 +117,17 @@
 
 
 .btn-back {
-    // background: #343335;
-    //background-image: linear-gradient(to left top, rgb(215, 190, 209), rgb(167, 153, 160)) !important;
-    // background-image: linear-gradient(to left top, #3a3f56, #7dcad4) !important;
-    background-image: linear-gradient(to left top, #457972, #3a3f56) !important;
-    display: inline-block;
-    color: white;
-    padding: 10px 25px;
+    @apply px-5 py-1.5 font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300/80 transition duration-150 inline-flex items-center gap-1.5;
     border-radius: 5px;
-    cursor: pointer;
-    font-weight: medium;
-    font-size: 14px;
-    margin: 5px;
-    // text-transform: uppercase;
+    font-size: 0.75rem;
 }
 
 .btn-back:hover {
-    background-image: linear-gradient(to left top, rgb(166, 120, 153), rgb(137, 108, 122)) !important;
+    background: #b6b4b5 !important;
 }
 
 .btn-invite {
-    background: #663399;
+    background: #e2e5e8;
     display: inline-block;
     color: white;
     padding: 10px 20px;
@@ -143,12 +142,12 @@
     color: white;
     // padding: 7px 20px;
     border-radius: 5px;
-    text-transform: uppercase;
     cursor: pointer;
     //margin-left: 10px;
-    font-weight: bold;
-    font-size: 12px !important;
-    @apply bg-gradient-to-r bg-[#0EA5A4] hover:bg-[#0F8C8B] text-white;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    @apply text-white;
+    background: #0d9488;
 }
 
 .main-submit {
@@ -327,4 +326,9 @@
 .f-gray {
     border-color: #181610;
     background: #d3d3d2;
+}
+.pay-btn {
+    @apply px-1.5 py-0.5 text-[12px] rounded-xl transition-colors duration-200 shadow-sm;
+    background: #f5cbe6;
+    color: #b9117e;
 }

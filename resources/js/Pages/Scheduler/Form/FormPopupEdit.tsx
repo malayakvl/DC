@@ -15,6 +15,7 @@ import {
   plusServiceAction,
   setServicesAction,
   showScheduleEditPopupAction,
+  showSchedulePopupAction,
 } from '@/Redux/Scheduler';
 import 'rc-time-picker/assets/index.css';
 import InputMask from 'react-input-mask';
@@ -32,6 +33,7 @@ import {
   popupTimeSelector,
   servicesSelector,
   showEditPopupSelector,
+  popupAssistantSelector,
 } from '@/Redux/Scheduler/selectors';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
@@ -66,7 +68,7 @@ export default function SchedulerFormEdit({
     clinic_id: clinicData.id,
     cabinet_id: currentEventData.cabinet_id,
     doctor_id: currentEventData.doctor_id,
-    assistent: currentEventData.assistent_id,
+    assistent_id: currentEventData.assistent_id,
     comment: currentEventData.comment,
     status_id: currentEventData.status_id,
     event_date: formatDate(currentEventData.event_date),
@@ -77,6 +79,7 @@ export default function SchedulerFormEdit({
   });
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
+  const assistent = useSelector(popupAssistantSelector);
   const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = currentEventData.event_time_to;
@@ -92,7 +95,7 @@ export default function SchedulerFormEdit({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     serviceCategories.length ? serviceCategories[0].id : null
   );
-  console.log('popup services', popupServices);
+
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -142,34 +145,15 @@ export default function SchedulerFormEdit({
   }, [timeStart]);
 
   useEffect(() => {
-    console.log('Setup cabinet', cabinetId);
     setValues((values) => ({
       ...values,
       ['event_date']: eventDate,
       ['doctor_id']: doctorId,
+      ['assistent_id']: assistent,
       ['status_id']: eventStatus,
       ['cabinet_id']: cabinetId,
     }));
   }, [eventDate, doctorId, eventStatus, cabinetId]);
-
-  const submitOld = (e) => {
-    e.preventDefault();
-    values['newPatientData'] = newPatientData;
-    // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
-    const [day, month, year] = eventDate.split('.'); // Split the input string
-    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    values['event_date'] = formattedDate;
-    values['services'] = popupServices;
-    if (patientId) {
-      values['patientId'] = patientId;
-    }
-    if (formData.id) {
-      router.post(`/scheduler/update?id=${formData.id}`, values);
-    } else {
-      router.post('/scheduler/update', values);
-    }
-    dispatch(showOverlayAction(false));
-  };
 
   const submit = (e) => {
     e.preventDefault();
@@ -193,13 +177,12 @@ export default function SchedulerFormEdit({
         // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
         // Нам нужно просто закрыть модалку
         dispatch(showOverlayAction(false));
-        dispatch(showSchedulePopupAction(false));
         dispatch(showOverlayAction(false));
         dispatch(setPopupAction(false));
 
         // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
-        // dispatch(showSchedulePopupAction(false));
-        // dispatch(showScheduleEditPopupAction(false));
+        dispatch(showSchedulePopupAction(false));
+        dispatch(showScheduleEditPopupAction(false));
       },
       onError: (errors) => {
         console.error('Ошибки при сохранении:', errors);
@@ -208,8 +191,6 @@ export default function SchedulerFormEdit({
   };
 
   const renderService = (item) => {
-    console.log('renderService', item);
-
     return (
       <div className="selected-service selected-services-block">
         <div className="service-info">

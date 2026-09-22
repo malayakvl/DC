@@ -447,7 +447,7 @@ label.float-label {
 .input-label {
     @apply block text-sm font-medium;
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 13px;
     color:#475569;
 }
 
@@ -480,15 +480,16 @@ label.float-label {
 
 .service-item {
     text-align: left;
-    color: #fff;
+    color: #0F172A;;
     font-family: 'Roboto', Courier, monospace;
     font-size: 14px;
-    ;
+    min-width: 350px;
 }
 
 .services-block {
-    border: solid 1px #35466d;
-    background-color: #0f1525;
+    //color: black;
+    //border: solid 1px #35466d;
+    //background-color: #0f1525;
 }
 
 .title-service {
@@ -507,23 +508,36 @@ label.float-label {
     height: 255px;
     background-size: cover !important;
     background-position: center !important;
-    border: solid 3px #ab7ac1;
     background-repeat: no-repeat;
 }
 
 .service-qty {
     width: 100px !important;
     text-align: right !important;
+    margin-top: -5px;
 }
 
 .service-price {
     width: 115px !important;
     text-align: right !important;
+    margin-left: 5px !important;
+    border: none;
+    background: #f1f5f9;
+    margin-top: -5px;
 }
 
 .service-mark-up {
-    width: 115px !important;
+    width: 95px !important;
     text-align: right !important;
+    margin-top: -5px;
+    border: none;
+    background: #f1f5f9;
+
+}
+.price-row-total {
+    border: none;
+    background: #cdfbe6;
+    margin-top: -5px;
 }
 
 .devider-table-custom {
@@ -590,4 +604,32 @@ label.float-label {
     height: 3px;
     background: #0EA5A4;
     border-radius: 16px 16px 0 0;
+}
+.act-service {
+    margin-right: 10px;
+    height: 45px !important;
+    min-height: 45px !important;
+    border-color: #d8dee8 !important;
+}
+.qty-act {
+    border: solid 1px #d8dee8 !important;
+    margin-left: 10px;
+}
+.text-main {
+    color: #0F172A !important;
+}
+.filter-tree {
+    background: #f8faff !important;
+    color: #000 !important;
+    border: none !important;
+    max-height: 34px !important;
+}
+.filter-label-selected {
+    @apply w-full text-xs font-medium  text-slate-700 cursor-pointer transition-all
+}
+.filter-select {
+    background: #f8faff !important;
+    color: #000 !important;
+    border: none !important;
+    max-height: 34px !important;
 }

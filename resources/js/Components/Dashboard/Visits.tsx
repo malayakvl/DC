@@ -1,16 +1,14 @@
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngHeader from '../../Lang/Header/translation';
-import { usePage } from '@inertiajs/react';
+import lngDashboard from '../../Lang/Dashboard/translation';
 import React from 'react';
 import { IconCalendarCog } from '@tabler/icons-react';
 
 export default function Visits({ type = 'relative' }) {
-  const user = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
-    messages: lngHeader,
+    messages: lngDashboard,
     locale: appLang,
   });
 
@@ -26,7 +24,7 @@ export default function Visits({ type = 'relative' }) {
           <div className="flex-none w-2/3 max-w-full px-3">
             <div>
               <p className="mb-0 font-sans font-semibold leading-normal text-sm">
-                Прийомів сьогодні
+                {lng.get('dashboard.visits')}
               </p>
               <h5 className="mb-0 font-bold">12</h5>
             </div>

@@ -24,33 +24,16 @@ export default function Form({ clinicData, formData, className = '' }) {
 
   const { processing, recentlySuccessful, errors } = useForm();
 
-  const handleChangeSelect = e => {
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setValues(values => ({
-      ...values,
-      [key]: value,
-    }));
-  };
-
-  const handleChangeFile = e => {
-    const key = e.target.id;
-    setValues(values => ({
-      ...values,
-      [key]: e.target.files[0],
-    }));
-  };
-
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     if (formData.id) {
       router.post(`/producer/update?id=${formData.id}`, values);
@@ -66,17 +49,11 @@ export default function Form({ clinicData, formData, className = '' }) {
           <Link className="icon-back" href={'/producers'}>
             &nbsp;
           </Link>
-          {formData?.id
-            ? msg.get('producer.title.edit')
-            : msg.get('producer.title.create')}
+          {formData?.id ? msg.get('producer.title.edit') : msg.get('producer.title.create')}
         </h2>
       </header>
 
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <InputText
           name={'name'}
           values={values}
@@ -87,16 +64,10 @@ export default function Form({ clinicData, formData, className = '' }) {
           label={msg.get('producer.name')}
         />
         <div className="flex items-center">
-          <Link
-            className="btn-back"
-            title={msg.get('producer.back')}
-            href={`/producers`}
-          >
+          <Link className="btn-back" title={msg.get('producer.back')} href={`/producers`}>
             {msg.get('producer.back')}
           </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('producer.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('producer.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}

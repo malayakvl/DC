@@ -87,6 +87,7 @@ export default function SchedulerFormCreate({
   const [selectedCategory, setSelectedCategory] = useState<number | null>(
     serviceCategories.length ? serviceCategories[0].id : null
   );
+
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
@@ -137,7 +138,6 @@ export default function SchedulerFormCreate({
   }, [timeStart]);
 
   useEffect(() => {
-    console.log('Setup cabinet', cabinetId);
     setValues((values) => ({
       ...values,
       ['event_date']: eventDate,
@@ -208,24 +208,32 @@ export default function SchedulerFormCreate({
         <div className="service-info">
           <div className="service-title">{item.name}</div>
           <div className="service-price-selected">
-            {item.price} {currency}
+            {item.total_price} {currency}
           </div>
         </div>
 
         <div className="service-actions">
-          <button className="qty-btn" onClick={() => dispatch(minusServiceAction(item))}>
+          <button
+            type="button"
+            className="qty-btn"
+            onClick={() => dispatch(minusServiceAction(item))}
+          >
             −
           </button>
 
           <span className="qty-value">{item.qty ?? 1}</span>
 
-          <button className="qty-btn" onClick={() => dispatch(plusServiceAction(item))}>
+          <button
+            type="button"
+            className="qty-btn"
+            onClick={() => dispatch(plusServiceAction(item))}
+          >
             +
           </button>
         </div>
 
         <div className="service-total">
-          {item.price * item.qty} {currency}
+          {item.total_price * item.qty} {currency}
         </div>
 
         <button className="delete-btn" onClick={() => dispatch(setServicesAction(item))}>
@@ -238,7 +246,7 @@ export default function SchedulerFormCreate({
   const addService = (_item) => {
     dispatch(setServicesAction(_item));
   };
-
+  console.log(values);
   return (
     <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
       <header>
@@ -275,10 +283,8 @@ export default function SchedulerFormCreate({
               name={'cabinet_id'}
               className={'w-1/2'}
               values={values}
-              value={values.cabinet_id}
               options={cabinetData}
               onChange={handleChangeSelect}
-              defaultValue={cabinetId}
               required
               label={msg.get('scheduler.form.cabinet')}
             />
@@ -290,9 +296,7 @@ export default function SchedulerFormCreate({
             <InputSelect
               name={'doctor_id'}
               values={values}
-              value={values.doctor_id}
               options={customerData}
-              defaultValue={doctorId}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.doctor')}
@@ -302,9 +306,7 @@ export default function SchedulerFormCreate({
             <InputSelect
               name={'assistent_id'}
               values={values}
-              value={values.assistent}
               options={assistantData}
-              defaultValue={doctorId}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.assistent')}
@@ -414,7 +416,7 @@ export default function SchedulerFormCreate({
 
                       <div className="service-duration">{service.duration ?? 30} хв</div>
 
-                      <div className="service-price">{service.price} ₴</div>
+                      <div className="service-price">{service.total_price} ₴</div>
 
                       <button type="button" className="service-add-btn">
                         +

@@ -39,7 +39,7 @@ class CurrencyController extends Controller
         try {
             // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
             DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
-            return $callback($clinicId);
+            return call_user_func($callback, $clinicId);
         } finally {
             DB::statement("SET search_path TO {$originalSearchPath}");
         }

@@ -244,6 +244,13 @@ class IncomingInvoiceController extends Controller
                 $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
                     ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
                     ->where('invoice_id', $id)->get();
+                if (count($rowData) == 0) {
+
+                    return Inertia::render('Exceptions/NoFound', [
+                        'message' => 'No data found'
+                    ]);
+                }
+
                 $producerData = Producer::all();
                 
                 $customerData = DB::table('core.clinic_user')
@@ -274,7 +281,8 @@ class IncomingInvoiceController extends Controller
                 ]);
 
             } else {
-
+                return Inertia::render('Layouts/NoPermission', [
+                ]);
             }
         });
     }

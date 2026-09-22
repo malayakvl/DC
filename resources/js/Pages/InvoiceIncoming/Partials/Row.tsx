@@ -1,6 +1,6 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import { emptyMaterialsAutocompleteAction, findMaterialAction } from '@/Redux/Material';
+import { emptyMaterialsAutocompleteAction, findMaterialAction, findServiceMaterialCalcAction } from '@/Redux/Material';
 import { setInvoiceItems, setShowTableError } from '@/Redux/Incominginvoice';
 import { invoiceTaxSelector } from '@/Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '@/Redux/Material/selectors';
@@ -13,7 +13,7 @@ export interface AddDynamicInputFieldsRef {
 // eslint-disable-next-line react/display-name
 const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ formRowData = null, lastRow = null, unitsData }, ref) => {
+  ({ formRowData = null, lastRow = null, unitsData, msg }, ref) => {
     const [inputs, setInputs] = useState(formRowData);
     const dispatch = useAppDispatch();
     const [, setHideFields] = useState(false);
@@ -21,6 +21,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     const [numRow, setNumRow] = useState(0);
     const documentTax = useAppSelector(invoiceTaxSelector);
     const [taxPercent, setTaxPercent] = useState(0);
+
 
     const handleAddInput = () => {
       dispatch(setShowTableError(false));
@@ -53,7 +54,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       if (name === 'product') {
         if (value.length > 3) {
           dispatch(emptyMaterialsAutocompleteAction());
-          dispatch(findMaterialAction(value));
+          dispatch(findServiceMaterialCalcAction(value));
         } else {
           dispatch(emptyMaterialsAutocompleteAction());
           setHideFields(false);
@@ -156,7 +157,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                     // console.log('ConnectedTvOutlined', parseFloat(String(inputs[index].price)));
                   }}
                 >
-                  {_res.name}
+                  {_res.name}&nbsp; {msg.get('invoice_incoming.provider')} {_res.producer_name}
                 </li>
               ))}
             </ul>
@@ -198,7 +199,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                   className="qty text-center"
                   name="qty"
                   type="text"
-                  value={item.quantity}
+                  value={item.quantity || item.qty}
                   onChange={(event) => handleChange(event, index)}
                 />
                 <button
@@ -261,11 +262,6 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
               )}
             </td>
-            {/*<td className="w-btn pb-2">*/}
-            {/*  {index === inputs.length - 1 && !lastRow && (*/}
-            {/*    <button onClick={() => handleAddInput()} className="btn-plus" />*/}
-            {/*  )}*/}
-            {/*</td>*/}
           </tr>
         ))}
         <tr>

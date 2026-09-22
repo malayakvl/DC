@@ -29,7 +29,7 @@ const lngMaterialCategories = {
   'uk.mCategories': {
     'title.create': 'Нова Категорія',
     'title.list': 'Категорії Материалів',
-    'title.edit': 'Редагувати Прайс',
+    'title.edit': 'Редагувати категорію',
     'title.view': 'Переглянути Категорія',
     create: 'Створити категорію',
     name: 'Назва',
@@ -53,6 +53,10 @@ const lngMaterialCategories = {
     unit: 'Одиниця',
     brand: 'Виробник',
     percent: 'Наценка',
+    'base.category': 'Коренева категорія',
+    'title.total': 'Загалом',
+    'title.description':
+      'Центральний каталог стоматологічних матеріалів, медикаментів та витратних матеріалів з автосписанням та нормами витрат.',
   },
 };
 export default lngMaterialCategories;

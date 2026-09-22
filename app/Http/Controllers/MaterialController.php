@@ -8,6 +8,7 @@ use App\Models\Material;
 use App\Models\MaterialCategories;
 use App\Models\Producer;
 use App\Models\Store;
+use App\Models\Supplier;
 use App\Models\Unit;
 use App\Models\Size;
 use Illuminate\Http\Request;
@@ -71,10 +72,21 @@ class MaterialController extends Controller
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
                 ->orderBy('name')->get();
+            $categories = MaterialCategories::where('parent_id', null)
+                ->orWhere('special', true)
+                ->get();
+            $arrCat = array();
+            $tree = $this->generateCategories($categories, $arrCat, 0);
+
+            //suppliers
+            $suppliers = Supplier::all();
 
             return Inertia::render('Material/List', [
                 'clinicData' => $clinic,
-                'listData' => $listData
+                'listData' => $listData,
+                'categoryData' => $tree,
+                'supplierData' => $suppliers,
+                'currency' => $clinic->currency()->get()[0]->symbol,
             ]);
         });
     }
@@ -160,6 +172,7 @@ class MaterialController extends Controller
             }
             return Inertia::render('Material/Edit', [
                 'clinicData' => $clinicData,
+                'currency' => $clinicData->currency()->get()[0]->name,
                 'categoryData' => $tree,
                 'formData' => $formData,
                 'percent' => $formData->percent,
@@ -440,8 +453,32 @@ class MaterialController extends Controller
     public function findMaterial(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $name = $request->searchName;
-            $resData = DB::table('materials')->select('*')
-                ->whereRaw('LOWER(name) LIKE ?', '%' .mb_strtolower($name). '%')
+            $resData = DB::table('materials')->select('materials.*', 'material_categories.percent as category_percent', 'producers.name as producer_name')
+                ->leftJoin('material_categories', 'materials.category_id', '=', 'material_categories.id')
+                ->leftJoin('producers', 'materials.producer_id', '=', 'producers.id')
+                ->whereRaw('LOWER(materials.name) LIKE ?', '%' .mb_strtolower($name). '%')
+                ->groupBy('materials.name', 'materials.id', 'material_categories.percent', 'producers.name')
+                ->get();
+
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findMaterialCalc(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+
+            $resData = DB::table('materials')
+                ->select(
+                    DB::raw('MIN(materials.id) as id'), // Берём ID для связи
+                    'materials.name',
+                    'material_categories.percent as category_percent'
+                )
+                ->leftJoin('material_categories', 'materials.category_id', '=', 'material_categories.id')
+                ->whereRaw('LOWER(materials.name) LIKE ?', ['%' . mb_strtolower($name) . '%'])
+                ->groupBy('materials.name', 'material_categories.percent')
                 ->get();
             return response()->json([
                 'items' => $resData
