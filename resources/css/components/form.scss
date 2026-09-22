@@ -508,23 +508,36 @@ label.float-label {
     height: 255px;
     background-size: cover !important;
     background-position: center !important;
-    border: solid 3px #ab7ac1;
     background-repeat: no-repeat;
 }
 
 .service-qty {
     width: 100px !important;
     text-align: right !important;
+    margin-top: -5px;
 }
 
 .service-price {
     width: 115px !important;
     text-align: right !important;
+    margin-left: 5px !important;
+    border: none;
+    background: #f1f5f9;
+    margin-top: -5px;
 }
 
 .service-mark-up {
-    width: 115px !important;
+    width: 95px !important;
     text-align: right !important;
+    margin-top: -5px;
+    border: none;
+    background: #f1f5f9;
+
+}
+.price-row-total {
+    border: none;
+    background: #cdfbe6;
+    margin-top: -5px;
 }
 
 .devider-table-custom {

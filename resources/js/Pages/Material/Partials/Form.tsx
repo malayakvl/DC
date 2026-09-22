@@ -23,6 +23,7 @@ import {
 } from '../../../Redux/Material';
 import InputSelect from '../../../Components/Form/InputSelect';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Form({
   clinicData,
@@ -255,41 +256,54 @@ export default function Form({
     return null;
   };
   return (
-    <section className={`min-h-full flex flex-col font-sans text-slate-800 ${className}`}>
+    <section className={`w-full px-4 sm:px-8 py-6 flex flex-col gap-6`}>
       {/* Шапка сторінки */}
-      <section className="bg-white border-b border-slate-200/80 py-4 shadow-xs">
-        <div className="max-w-[1780px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-3 mt-2">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+          <div className="flex items-start gap-2">
+            <Link
+              href="/materials"
+              className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
             <div>
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
-                <Link
-                  className="hover:text-brand-600 transition flex items-center gap-1"
-                  href={'/materials'}
-                >
-                  {msg.get('material.warehouse_managment')}
-                </Link>
-                <span>/</span>
-                <span className="text-brand-700 font-semibold">
-                  {formData?.id ? msg.get('material.title.edit') : msg.get('material.title.create')}
-                </span>
+              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    {formData?.id ? 'Редагування матеріалу' : 'Новий матеріал'}
+                  </h1>
+                  <p className="text-sm text-slate-500 mt-0.5">
+                    Управління специфікацією, облік витрат та контроль залишків матеріалів
+                  </p>
+                </div>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                {formData?.id ? msg.get('material.title.edit') : msg.get('material.title.create')}
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-2.5">
-              <Link className="btn-back" title={msg.get('material.back')} href={`/materials`}>
-                {msg.get('material.back')}
-              </Link>
-              <PrimaryButton disabled={processing}>{msg.get('material.save')}</PrimaryButton>
             </div>
           </div>
+          <button type="submit" disabled={processing} className="btn-submit">
+            <div className="flex items-center justify-center">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M5 13l4 4L19 7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                />
+              </svg>
+              {msg.get('material.save') || 'Зберегти зміни'}
+            </div>
+          </button>
         </div>
-      </section>
+      </div>
 
       {/* Основна форма */}
-      <main className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
+      <div className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
         <form onSubmit={submit} id="material-form" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
             {/* ЛІВА КОЛОНКА: Фото та Складські параметри */}
@@ -304,7 +318,7 @@ export default function Form({
                     {msg.get('material.optional')}
                   </span>
                 </div>
-                <div className="AAAAAAAAA">
+                <div className="photo-block">
                   <div className="flex flex-row relative input-bordered">
                     <div className="product-preview material-preview inline-block">
                       {!selectedFile && !photoPath && (
@@ -591,7 +605,7 @@ export default function Form({
             </div>
           </div>
         </form>
-      </main>
+      </div>
     </section>
   );
 }
