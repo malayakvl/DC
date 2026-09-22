@@ -236,7 +236,7 @@ export default function List({ tree }) {
                     disabled={Boolean(editingItem?.id)} // заблокована, якщо є активний editingId
                     className={editingItem?.id ? 'opacity-50 cursor-not-allowed' : ''}
                   >
-                    + {msg.get('mCategories.create')}
+                    {msg.get('mCategories.create')}
                   </PrimaryButton>
                 </div>
               </div>

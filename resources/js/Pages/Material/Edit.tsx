@@ -3,7 +3,15 @@ import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
 
-export default function Edit({ clinicData, categoryData, unitsData, formData, photoPath }) {
+export default function Edit({
+  clinicData,
+  categoryData,
+  unitsData,
+  formData,
+  photoPath,
+  currency,
+}) {
+  console.log(formData);
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Materials Edit'} />
@@ -12,6 +20,7 @@ export default function Edit({ clinicData, categoryData, unitsData, formData, ph
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
               clinicData={clinicData}
+              currency={currency}
               formData={formData}
               categoryData={categoryData}
               unitsData={unitsData}

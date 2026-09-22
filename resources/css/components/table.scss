@@ -42,7 +42,7 @@
 .percent-tbl {
     color: #000;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 11px;
     background: #dbfcf8;
 }
 
@@ -249,8 +249,12 @@
 .material-categories {
     @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full;
     font-size: 12px;
-    background:  #eaedff;
-    color: black;
-    line-height: 12px;
+    background: #eaedff;
+    color: #272a2a;
+    line-height: 1.3; // Безопасный межстрочный интервал для многострочного текста
     font-weight: 500;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+    max-width: 140px;
 }
