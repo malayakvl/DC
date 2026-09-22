@@ -29,6 +29,8 @@ const lngReport = {
     'title.report': 'Звіт по складу за період',
     generate: 'Згенерувати',
     category: 'Категорія',
+    to_date: 'Кінець періоду',
+    from_date: 'Початок періоду',
     store: 'Склад',
     name: 'Назва',
     price: 'Ціна',
@@ -42,22 +44,22 @@ const lngReport = {
     save: 'Зберегти',
     back: 'Назад',
     saved: 'Збережено.',
-    'balance': {
+    balance: {
       patient: 'Пацієнт',
       date: 'Дата',
       document: 'Документ',
-      amount: 'Сума'
+      amount: 'Сума',
     },
     document_type: {
-      'invoice': 'Рахунок',
-      'receipt': 'Квитанція',
-      'writeoff': 'Списання',
-      'transfer': 'Переміщення',
-      'opening_balance': 'Введення залишку',
-      'income': 'Прибуткова накладна',
-      'expense': 'Витратна накладна',
-      'closing_balance': 'Залишок',
-      'payment': 'Оплата',
+      invoice: 'Рахунок',
+      receipt: 'Квитанція',
+      writeoff: 'Списання',
+      transfer: 'Переміщення',
+      opening_balance: 'Введення залишку',
+      income: 'Прибуткова накладна',
+      expense: 'Витратна накладна',
+      closing_balance: 'Залишок',
+      payment: 'Оплата',
     },
     supplier: 'Постачальник',
     'title.suppliers.report': 'Звіт по постачальникам',
@@ -73,7 +75,6 @@ const lngReport = {
     'title.writeoff': 'Списання',
     'title.transfer': 'Переміщення',
     'title.closing.balance': 'Зал. на кінець',
-
-  }
+  },
 };
 export default lngReport;

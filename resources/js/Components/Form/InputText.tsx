@@ -16,10 +16,11 @@ export default function InputText({
 }) {
   const { errors: pageErrors } = usePage().props;
   const displayError = error || pageErrors[name];
-
+  if (type === ' date') {
+    console.log('I', value[name]);
+  }
   return (
-
-    <div className={`relative`}>
+    <div className={`relative w-full`}>
       {showLabel && <InputLabel htmlFor={name} value={label} children={null} />}
 
       <input

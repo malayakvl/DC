@@ -174,7 +174,6 @@ class ReportController extends Controller
             if (!$storeId) {
                 return response()->json(['message' => 'Оберіть склад'], 422);
             }
-
             $movements = DB::select(
                 "SELECT * FROM core.get_store_movements_by_material(?, ?, ?, ?)",
                 [
@@ -229,6 +228,7 @@ class ReportController extends Controller
                     'batch.source_id',
                     'batch.source_item_id',
                 ]);
+//            dd($movements);exit;
 
             return response()->json([
                 'movements' => $movements,

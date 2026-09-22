@@ -21,6 +21,7 @@
 
 .material-input {
     border-radius: 0;
+    background: #f8fafc;
 }
 
 .input-text:active,
@@ -632,4 +633,13 @@ label.float-label {
     color: #000 !important;
     border: none !important;
     max-height: 34px !important;
+}
+.filter-select-bordered {
+    background: #f8faff !important;
+    color: #000 !important;
+    border: solid 1px #e2e8f0;
+    max-height: 34px !important;
+}
+.tbl-amount-total {
+    background: #cdfbe6 !important;
 }

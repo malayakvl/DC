@@ -17,7 +17,9 @@ export default {
         monospace: ['monospace'],
       },
       fontSize: {
-        sm: '0.75rem',
+        xs: ['0.75rem', { lineHeight: '1rem' }], // 12px — для міток, підказок, бейджів
+        sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px — основний зручний розмір для інпутів і тексту
+        base: ['1rem', { lineHeight: '1.5rem' }], // 16px — для заголовків або важливих полів
       },
       boxShadow: {
         xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)', // укажите здесь нужные вам параметры тени

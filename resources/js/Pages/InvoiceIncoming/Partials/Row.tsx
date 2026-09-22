@@ -1,6 +1,10 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import { emptyMaterialsAutocompleteAction, findMaterialAction, findServiceMaterialCalcAction } from '@/Redux/Material';
+import {
+  emptyMaterialsAutocompleteAction,
+  findMaterialAction,
+  findServiceMaterialCalcAction,
+} from '@/Redux/Material';
 import { setInvoiceItems, setShowTableError } from '@/Redux/Incominginvoice';
 import { invoiceTaxSelector } from '@/Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '@/Redux/Material/selectors';
@@ -21,7 +25,6 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     const [numRow, setNumRow] = useState(0);
     const documentTax = useAppSelector(invoiceTaxSelector);
     const [taxPercent, setTaxPercent] = useState(0);
-
 
     const handleAddInput = () => {
       dispatch(setShowTableError(false));
@@ -183,56 +186,51 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 />
               </div>
             </td>
-            <td className="w-qty pb-2 mx-auto pl-[40px]">
-              <div className="row flex input-inv-group">
-                <button
-                  name="minusBtn"
-                  onClick={(event) => {
-                    handleChange(event, index, 'minus');
-                  }}
-                  className="btn-qty-minus"
-                  type="button"
-                >
-                  -
-                </button>
-                <input
-                  className="qty text-center"
-                  name="qty"
-                  type="text"
-                  value={item.quantity || item.qty}
-                  onChange={(event) => handleChange(event, index)}
-                />
-                <button
-                  name="plusBtn"
-                  onClick={(event) => {
-                    handleChange(event, index, 'plus');
-                  }}
-                  className="btn-qty-plus"
-                  type="button"
-                >
-                  +
-                </button>
+            <td className="py-3 px-3 align-top">
+              <div className="flex items-center justify-center">
+                <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => handleChange(event, index, 'minus')}
+                    className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
+                  >
+                    -
+                  </button>
+                  <input
+                    name="qty"
+                    className="w-14 text-center no-border bg-transparent font-bold text-slate-900 text-xs focus:outline-none"
+                    type="text"
+                    value={item.quantity || ''}
+                    onChange={(event) => handleChange(event, index)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleChange(event, index, 'plus')}
+                    className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </td>
-            <td className="w-unit text-center pb-2 min-w-[120px]">
-              <div className="mt-[-7px]">
-                <InputSelect
-                  translatable={false}
-                  name={'unit_id'}
-                  className={'w-unit'}
-                  values={item.unit_id}
-                  value={item.unit_id}
-                  defaultValue={item.unit_id}
-                  options={unitsData}
-                  required
-                  label={null}
-                  onChange={undefined}
-                />
-              </div>
+            <td className="py-3 px-1 whitespace-nowrap align-top">
+              <select
+                name="unit_id"
+                value={item.unit_id || ''}
+                onChange={(event) => handleChange(event, index)}
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+              >
+                <option value="">Одиниця...</option>
+                {unitsData?.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.name}
+                  </option>
+                ))}
+              </select>
             </td>
             <td className="w-price text-center pb-2">
               <input
-                className="input-text factqty text-center"
+                className="input-text text-center service-price"
                 name="fact_qty"
                 type="fact_qty"
                 value={item.fact_qty}
@@ -241,7 +239,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
             </td>
             <td className="w-price text-center pb-2">
               <input
-                className="input-text price input-invoice text-center"
+                className="input-text text-center service-price text-center"
                 name="price"
                 type="text"
                 value={item.price}
@@ -250,7 +248,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
             </td>
             <td className="w-price text-center pb-2">
               <input
-                className="input-text price input-invoice text-center"
+                className="input-text text-center service-price text-center tbl-amount-total"
                 name="total"
                 type="text"
                 value={item.total}
