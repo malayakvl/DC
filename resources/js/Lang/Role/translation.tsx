@@ -66,6 +66,9 @@ const lngRole = {
     'title.list': 'Менеджмент доступа',
     'title.create': 'Створити роль',
     'title.edit': 'Редагувати роль',
+    'title.total': 'Загалом',
+    'title.description':
+      'Конфігурація гранулярних прав доступу, операційних дозволів та обмежень для посади',
     name: 'Назва',
     permission: 'Доступ',
     actions: 'Дії',

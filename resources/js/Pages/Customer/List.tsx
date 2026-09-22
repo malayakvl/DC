@@ -31,40 +31,64 @@ export default function List({ clinicData, customerData }) {
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('customer.title.list')} «{clinicData.name}»
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/customer/create'}>
-                        {msg.get('customer.title.create')}
-                      </NavLink>
-                    </PrimaryButton>
+              <header className="mb-6 mt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+                        {msg.get('customer.title.list')}
+                      </h1>
+
+                      {/* Бейдж кількості прив'язаний чітко до заголовка */}
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                        {customerData?.length || 0} {msg.get('customer.title.total')}
+                      </span>
+                    </div>
+
+                    {/* Підзаголовок винесено окремо під заголовок */}
+                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
+                      {msg.get('customer.title.description')}
+                    </p>
                   </div>
+
+                  {/* Правий блок: Кнопка дії */}
+                  <PrimaryButton>
+                    <NavLink href={'customer/create'}>{msg.get('customer.title.create')}</NavLink>
+                  </PrimaryButton>
                 </div>
               </header>
             </section>
             <section className="table-card">
               <DataTable paginationType={PaginationType.CUSTOMERS} sendRequest={sendRequest}>
                 {customerData?.map((item) => (
-                  <tr className="" key={item.id}>
-                    <td style={{ width: '100px' }}>
-                      <img
-                        src={item.avatar ? `/storage/users/${item.avatar}` : '/images/no-photo.png'}
-                        width={40}
-                        className="float-left rounded"
-                        height="auto"
-                        onError={(e) => {
-                          e.currentTarget.src = '/images/no-image.png';
-                        }}
-                      />
+                  <tr
+                    className="hover:bg-surface-container-low/40 transition-colors group"
+                    key={item.id}
+                  >
+                    <td className="py-3 pl-6 pr-3" style={{ width: '100px' }}>
+                      <div className="flex items-center gap-space-md justify-center">
+                        <div className="relative shrink-0">
+                          <img
+                            src={
+                              item.avatar ? `/storage/users/${item.avatar}` : '/images/no-photo.png'
+                            }
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-primary/20"
+                            alt={`${item.first_name} ${item.last_name}`}
+                            onError={(e) => {
+                              e.currentTarget.src = '/images/no-image.png';
+                            }}
+                          />
+                        </div>
+                      </div>
                     </td>
-                    <td className="">{item.first_name}</td>
-                    <td className="">{item.last_name}</td>
-                    <td className="">{item.phone}</td>
-                    <td className="">{item.inn}</td>
+                    <td>{item.first_name}</td>
+                    <td>{item.last_name}</td>
+                    <td>{item.phone}</td>
+                    <td>{item.inn}</td>
                     <td className="text-right">
                       <Link
                         className="btn-edit"

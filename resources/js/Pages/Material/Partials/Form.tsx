@@ -31,7 +31,6 @@ export default function Form({
   categoryData,
   unitsData,
   photoPath = null,
-  className = '',
   currency,
 }) {
   const appLang = useSelector(appLangSelector);
@@ -274,7 +273,7 @@ export default function Form({
                     {formData?.id ? 'Редагування матеріалу' : 'Новий матеріал'}
                   </h1>
                   <p className="text-sm text-slate-500 mt-0.5">
-                    Управління специфікацією, облік витрат та контроль залишків матеріалів
+                    {msg.get('material.title.description')}
                   </p>
                 </div>
               </div>

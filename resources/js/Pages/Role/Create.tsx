@@ -9,6 +9,7 @@ import { Link } from '@inertiajs/react';
 import PrimaryButton from '@/Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
+import { ArrowLeft } from 'lucide-react';
 
 // Расширенный хелпер для иконок модулей (категорий)
 const getCategoryIcon = (colName) => {
@@ -183,87 +184,55 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
 
   return (
     <AuthenticatedLayout header={<Head title={titleText} />}>
-      <Head title={titleText} />
-
-      <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet"
-      />
-
+      <Head title={msg.get('role.title.create') || 'Створити роль'} />
       <div className="w-full bg-background font-body-md text-on-surface antialiased min-h-screen pb-12">
         <div className="max-w-[1520px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
           <form onSubmit={submit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2 font-label-md text-sm text-outline">
-                  <Link
-                    href="/roles"
-                    className="hover:text-primary transition-colors flex items-center gap-1"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">shield_person</span>
-                    <span>Налаштування доступу</span>
-                  </Link>
-                  <span className="text-outline-variant">/</span>
-                  <Link href="/roles" className="hover:text-primary transition-colors">
-                    Ролі та права
-                  </Link>
-                  <span className="text-outline-variant">/</span>
-                  <span className="text-on-surface font-bold">{titleText}</span>
-                </div>
-                <Link className="btn-back" title={msg.get('role.back')} href={`/roles`}>
-                  {msg.get('role.back')}
-                </Link>
-              </div>
-
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-700 shadow-sm">
-                    <span className="material-symbols-outlined text-[28px]">
-                      {isEditing ? 'admin_panel_settings' : 'add_moderator'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h1 className="text-2xl font-bold tracking-tight text-on-surface">
-                        {titleText}
-                      </h1>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-teal-50 text-teal-700 font-bold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
-                        {isEditing ? 'Системна роль' : 'Нова посада'}
-                      </span>
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                  <div className="flex items-start gap-2">
+                    <Link
+                      href="/roles"
+                      className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </Link>
+                    <div>
+                      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
+                        <div>
+                          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                            {msg.get('role.title.create') || 'Створити роль'}
+                          </h1>
+                          <p className="text-sm text-slate-500 mt-0.5">
+                            {msg.get('role.title.description') || 'Опис роль'}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      Конфігурація гранулярних прав доступу, операційних дозволів та обмежень для
-                      посади
-                    </p>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-3 self-start lg:self-auto flex-wrap">
-                  <PrimaryButton
-                    disabled={processing}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-700 text-white font-semibold shadow-md hover:bg-teal-800 transition-all"
-                  >
-                    <span>{msg.get('role.save')}</span>
-                  </PrimaryButton>
-
-                  <Transition
-                    show={recentlySuccessful}
-                    enter="transition ease-in-out"
-                    enterFrom="opacity-0"
-                    leave="transition ease-in-out"
-                    leaveTo="opacity-0"
-                  >
-                    <p className="text-sm text-teal-600 font-medium">{msg.get('role.saved')}</p>
-                  </Transition>
+                  <button type="submit" disabled={processing} className="btn-submit">
+                    <div className="flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M5 13l4 4L19 7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                        />
+                      </svg>
+                      {msg.get('role.save') || 'Зберегти зміни'}
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
-
             <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-6 border border-gray-100">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div className="lg:col-span-6 flex flex-col gap-1.5">
