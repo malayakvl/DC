@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
-import { cabinets, doctors, SchedulerEvent } from './mock/data';
+// import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
 import { router } from '@inertiajs/react';
@@ -17,6 +17,7 @@ import {
 import SchedulerDayHeader from './components/SchedulerDayHeader';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
+import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 
 const SLOT_HEIGHT = 30;
 const FREE_SLOT_BG = '#fbfdff';
@@ -41,15 +42,15 @@ function getDays(baseDate: string, count: number, appLang: string) {
 export default function Index3Days({
   cabinetData,
   groupedOptions,
+  customerData,
   eventsData,
   initialView = '3days',
   allowViewSwitch = true,
 }) {
+  useSelector(pricePopupSelector);
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [view, setView] = useState(initialView);
   const appLang = useSelector(appLangSelector);
-  const [, setShowAlert] = useState(false);
-  useSelector(pricePopupSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
 
@@ -70,7 +71,7 @@ export default function Index3Days({
     services: any[];
   } | null>(null);
 
-  const hoverTimeout = useRef<number>();
+  const hoverTimeout = useRef<number | undefined>(undefined);
 
   const { handleEventClick, handleCellClick } = useSchedulerEvents(
     eventsData,
@@ -117,7 +118,7 @@ export default function Index3Days({
 
   const DOCTOR_WIDTH = 180;
   const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
-  const headerTrackRef = useRef<HTMLDivElement>(null);
+  const headerTrackRef = useRef<HTMLDivElement | null>(null);
 
   const syncHeaderScroll = (event: React.UIEvent<HTMLDivElement>) => {
     if (headerTrackRef.current) {
@@ -447,6 +448,25 @@ export default function Index3Days({
     return `${hours} год ${mins} хв`;
   };
 
+  const formatPatientName = (name) => {
+    if (!name) return '';
+
+    const parts = name.trim().split(/\s+/);
+
+    if (parts.length === 1) {
+      return parts[0];
+    }
+
+    const surname = parts[0];
+
+    const initials = parts
+      .slice(1)
+      .map((part) => `${part.charAt(0)}.`)
+      .join(' ');
+
+    return `${surname} ${initials}`;
+  };
+
   return (
     <div>
       <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
@@ -618,7 +638,7 @@ export default function Index3Days({
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
                     <div style={{ display: 'flex', flex: 1, height: gridHeight }}>
-                      {cabinets.map((cab, cabIdx) => (
+                      {cabinetData.map((cab, cabIdx) => (
                         <div
                           key={cab.id}
                           style={{
@@ -626,7 +646,7 @@ export default function Index3Days({
                             display: 'flex',
                             height: '100%',
                             borderRight:
-                              cabIdx < cabinets.length - 1 ? '2px solid #94a3b8' : 'none',
+                              cabIdx < cabinetData.length - 1 ? '2px solid #94a3b8' : 'none',
                           }}
                         >
                           {currentTabPeople.map((doc, docIdx) => {
@@ -653,7 +673,7 @@ export default function Index3Days({
                                   backgroundColor: FREE_SLOT_BG,
                                   cursor: 'pointer',
                                   borderRight:
-                                    docIdx < doctors.length - 1
+                                    docIdx < customerData.length - 1
                                       ? '1px solid #e2e8f0'
                                       : '1px solid #e2e8f0',
                                   backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)`,
@@ -664,7 +684,7 @@ export default function Index3Days({
                                   const layout = getEventLayout(event);
 
                                   const compact = layout.height < 70;
-                                  const medium = layout.height >= 70 && layout.height < 110;
+                                  // const medium = layout.height >= 70 && layout.height < 110;
                                   const large = layout.height >= 110;
 
                                   const services = (() => {
@@ -699,7 +719,56 @@ export default function Index3Days({
                                       <div className="calendar-event-body">
                                         <div className="calendar-event-header">
                                           <div className="calendar-event-patient">
-                                            {event.patient_name}
+                                            {formatPatientName(event.patient_name)}
+                                            <span className="act-zone">
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  e.preventDefault();
+
+                                                  router.visit(`/act/create?visit_id=${event.id}`);
+                                                }}
+                                                title="Створити акт"
+                                                style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  width: '20px',
+                                                  height: '20px',
+                                                  borderRadius: '4px',
+                                                  background: '#0ea5a4',
+                                                  color: '#fff',
+                                                  border: 'none',
+                                                  cursor: 'pointer',
+                                                  transition: 'all 0.2s',
+                                                  flexShrink: 0,
+                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  e.currentTarget.style.background = '#0d9488';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.currentTarget.style.background = '#0ea5a4';
+                                                }}
+                                              >
+                                                <svg
+                                                  width="11"
+                                                  height="11"
+                                                  viewBox="0 0 24 24"
+                                                  fill="none"
+                                                  stroke="currentColor"
+                                                  strokeWidth="2.5"
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                >
+                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                  <polyline points="14 2 14 8 20 8"></polyline>
+                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                                                </svg>
+                                              </button>
+                                            </span>
                                           </div>
                                         </div>
 
@@ -818,53 +887,53 @@ export default function Index3Days({
                                                 )}
                                               </span>
 
-                                              <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  e.preventDefault();
+                                              {/*<button*/}
+                                              {/*  type="button"*/}
+                                              {/*  onClick={(e) => {*/}
+                                              {/*    e.stopPropagation();*/}
+                                              {/*    e.preventDefault();*/}
 
-                                                  router.visit(`/act/create?visit_id=${event.id}`);
-                                                }}
-                                                title="Створити акт"
-                                                style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  width: '20px',
-                                                  height: '20px',
-                                                  borderRadius: '4px',
-                                                  background: '#0ea5a4',
-                                                  color: '#fff',
-                                                  border: 'none',
-                                                  cursor: 'pointer',
-                                                  transition: 'all 0.2s',
-                                                  flexShrink: 0,
-                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                  e.currentTarget.style.background = '#0d9488';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                  e.currentTarget.style.background = '#0ea5a4';
-                                                }}
-                                              >
-                                                <svg
-                                                  width="11"
-                                                  height="11"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2.5"
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                >
-                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                                  <polyline points="14 2 14 8 20 8"></polyline>
-                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                                                </svg>
-                                              </button>
+                                              {/*    router.visit(`/act/create?visit_id=${event.id}`);*/}
+                                              {/*  }}*/}
+                                              {/*  title="Створити акт"*/}
+                                              {/*  style={{*/}
+                                              {/*    display: 'flex',*/}
+                                              {/*    alignItems: 'center',*/}
+                                              {/*    justifyContent: 'center',*/}
+                                              {/*    width: '20px',*/}
+                                              {/*    height: '20px',*/}
+                                              {/*    borderRadius: '4px',*/}
+                                              {/*    background: '#0ea5a4',*/}
+                                              {/*    color: '#fff',*/}
+                                              {/*    border: 'none',*/}
+                                              {/*    cursor: 'pointer',*/}
+                                              {/*    transition: 'all 0.2s',*/}
+                                              {/*    flexShrink: 0,*/}
+                                              {/*    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',*/}
+                                              {/*  }}*/}
+                                              {/*  onMouseEnter={(e) => {*/}
+                                              {/*    e.currentTarget.style.background = '#0d9488';*/}
+                                              {/*  }}*/}
+                                              {/*  onMouseLeave={(e) => {*/}
+                                              {/*    e.currentTarget.style.background = '#0ea5a4';*/}
+                                              {/*  }}*/}
+                                              {/*>*/}
+                                              {/*  <svg*/}
+                                              {/*    width="11"*/}
+                                              {/*    height="11"*/}
+                                              {/*    viewBox="0 0 24 24"*/}
+                                              {/*    fill="none"*/}
+                                              {/*    stroke="currentColor"*/}
+                                              {/*    strokeWidth="2.5"*/}
+                                              {/*    strokeLinecap="round"*/}
+                                              {/*    strokeLinejoin="round"*/}
+                                              {/*  >*/}
+                                              {/*    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>*/}
+                                              {/*    <polyline points="14 2 14 8 20 8"></polyline>*/}
+                                              {/*    <line x1="12" y1="18" x2="12" y2="12"></line>*/}
+                                              {/*    <line x1="9" y1="15" x2="15" y2="15"></line>*/}
+                                              {/*  </svg>*/}
+                                              {/*</button>*/}
                                             </div>
                                           </div>
                                         )}

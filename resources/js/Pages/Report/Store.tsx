@@ -204,7 +204,6 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
     // Group data by material
     const groups: any[] = [];
     let currentGroup: any = null;
-    console.log('reportResult!', reportResult);
     reportResult.forEach((item) => {
       if (item.row_type === 'opening_balance') {
         if (currentGroup) groups.push(currentGroup);
@@ -454,7 +453,7 @@ export default function Store({ filials, dateFrom, dateTo, stores }: BalanceProp
     // Group data by material
     const groups: any[] = [];
     let currentGroup: any = null;
-    console.log('reportResult!', reportResult);
+
     reportResult.forEach((item) => {
       if (item.row_type === 'opening_balance') {
         if (currentGroup) groups.push(currentGroup);

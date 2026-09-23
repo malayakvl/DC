@@ -17,6 +17,18 @@ export const findServiceAction: any = createAction(
         });
     }
 );
+export const findServiceMaterialAction: any = createAction(
+  'clinic/FIND_SERVICE_EXIST',
+  async (data: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
+      const state = getState();
+      return axios
+        .post(`/material/findMaterialCalc`, { searchName: data }, {})
+        .then(async res => {
+          return res.data.items;
+        });
+    }
+);
 export const findServiceItemsAction: any = createAction(
   'clinic/FIND_SERVICE_COMPONENTS',
   async (data: any, rowIndex: number) =>

@@ -198,7 +198,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                   className="qty text-center"
                   name="qty"
                   type="text"
-                  value={item.quantity}
+                  value={item.quantity || item.qty}
                   onChange={(event) => handleChange(event, index)}
                 />
                 <button
@@ -261,11 +261,6 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
               )}
             </td>
-            {/*<td className="w-btn pb-2">*/}
-            {/*  {index === inputs.length - 1 && !lastRow && (*/}
-            {/*    <button onClick={() => handleAddInput()} className="btn-plus" />*/}
-            {/*  )}*/}
-            {/*</td>*/}
           </tr>
         ))}
         <tr>

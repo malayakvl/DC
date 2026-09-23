@@ -13,6 +13,7 @@ export const editEventSelector = (state) => state.scheduler.editEvent;
 
 export const popupCabinetSelector = (state) => state.scheduler.cabinetId;
 export const popupDoctorSelector = (state) => state.scheduler.popupDoctorId;
+export const popupAssistantSelector = (state) => state.scheduler.popupAssistantId;
 export const pricePopupSelector = (state) => state.scheduler.showPricePopup;
 export const servicesSelector = (state) => state.scheduler.services;
 export const popupDateSelector = (state) => state.scheduler.dateStart;

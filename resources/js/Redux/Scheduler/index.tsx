@@ -22,6 +22,8 @@ import {
   setPopupCabinetAction,
   setScheduleEditEventAction,
   initServicesAction,
+  setScheduleDoctorIdAction,
+  setScheduleAssistantIdAction,
 } from './actions';
 
 const initialState = {
@@ -106,6 +108,18 @@ const ACTION_HANDLERS = {
     next: (state, action) => ({
       ...state,
       patientId: action.payload,
+    }),
+  },
+  [setScheduleDoctorIdAction]: {
+    next: (state, action) => ({
+      ...state,
+      popupDoctorId: action.payload,
+    }),
+  },
+  [setScheduleAssistantIdAction]: {
+    next: (state, action) => ({
+      ...state,
+      popupAssistantId: action.payload,
     }),
   },
   [setScheduleStatusAction]: {
@@ -228,6 +242,8 @@ export {
   setPopupCabinetAction,
   setScheduleEditEventAction,
   initServicesAction,
+  setScheduleDoctorIdAction,
+  setScheduleAssistantIdAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

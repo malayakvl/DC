@@ -197,6 +197,7 @@ class ServiceController extends Controller
      */
     public function update(PricingUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+
             if ($request->user()->can('service-edit')) {
                 if ($request->id) {
                     $pricing = Pricing::find($request->id);
@@ -205,7 +206,6 @@ class ServiceController extends Controller
                 else {
                     $pricing = new Pricing();
                 }
-                // dd($request->rows);exit;
                 $pricing->fill($request->validated());
                 $pricing->category_id = $request->category_id;
                 $pricing->price = $request->price;
@@ -213,6 +213,7 @@ class ServiceController extends Controller
                 $pricingId = $pricing->id;
 
                 $total = 0;
+                dd($request->rows);exit;
                 foreach ($request->rows as $row) {
                     if ($row["product_id"]) {
                         $pricingItem = new PricingItems();
@@ -223,19 +224,19 @@ class ServiceController extends Controller
                         $pricingItem->price = $row["price"];
                         $pricingItem->total = $row["total"];
                         $pricingItem->mark_up = $row["mark_up"];
-                        $pricingItem->base_price = $row["base_price"] || $row["basePrice"];
+                        $pricingItem->base_price = $row["base_price"] || 0;
                         $total += $row["total"];
                         $pricingItem->save();
                     }
 
                 }
                 $pricing->total_price = $total + $request->price;
+                dd($pricing->total_price);
                 $pricing->save();
-            }
 
-            return Redirect::route('service.categories.index');
+                return Redirect::route('service.index');
+            }
         });
-        
     }
 
     /**

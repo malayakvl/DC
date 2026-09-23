@@ -5,7 +5,7 @@ import {
   searchResultServicesSelector,
   searchResultServicesElementsSelector,
 } from '@/Redux/Service/selectors';
-import { emptyServicesAutocompleteAction, findServiceAction } from '@/Redux/Service';
+import { emptyServicesAutocompleteAction, findServiceMaterialAction } from '@/Redux/Service';
 import { setPriceItems, setShowTableError, setTotalPrice } from '@/Redux/Service';
 import InputSelect from '../../../Components/Form/InputSelect';
 
@@ -55,7 +55,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
 
       if (name === 'product') {
         if (value.length > 3) {
-          dispatch(findServiceAction(value));
+          dispatch(findServiceMaterialAction(value));
         } else {
           dispatch(emptyServicesAutocompleteAction());
           setHideFields(false);

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { cabinets, doctors, SchedulerEvent } from './mock/data';
+import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
 import { Head, router } from '@inertiajs/react';
@@ -1150,7 +1150,9 @@ export default function Index3Days({
                                                     e.stopPropagation(); // ЖЕЛЕЗОБЕТОННО блокируем открытие редактирования визита!
                                                     e.preventDefault();
 
-                                                    router.visit(`/act/create?visit_id=${event.id}`);
+                                                    router.visit(
+                                                      `/act/create?visit_id=${event.id}`
+                                                    );
                                                   }}
                                                   title="Створити акт"
                                                   style={{

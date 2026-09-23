@@ -185,6 +185,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/material/findBySize', [MaterialController::class, 'findSize'])->name('material.findSize');
     Route::post('/material/findPercent', [MaterialController::class, 'findPercent'])->name('material.findPercent');
     Route::post('/material/findMaterial', [MaterialController::class, 'findMaterial'])->name('material.findMaterial');
+    Route::post('/material/findMaterialCalc', [MaterialController::class, 'findMaterial'])->name('material.findMaterial');
     Route::post('/material/findStoreMaterial', [MaterialController::class, 'findStoreMaterial'])->name('material.findStoreMaterial');
 
 

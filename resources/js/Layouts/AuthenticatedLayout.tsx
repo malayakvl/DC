@@ -84,6 +84,7 @@ export default function AuthenticatedLayout({ header, children }) {
           <div>{children}</div>
         </div>
       </main>
+      <div className="clearfix"></div>
       <ToastContainer />
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -93,8 +94,8 @@ export default function AuthenticatedLayout({ header, children }) {
           </div>
         </div>
       )}
-      <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
       <Footer />
+      <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
     </div>
   );
 }

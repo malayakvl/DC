@@ -54,7 +54,7 @@ export default function List({ listData }) {
                             ? `/storage/materials/${item.id}/${item.image}`
                             : '/images/no-photo.png'
                         }
-                        width={40}
+                        width={65}
                         className="float-left rounded"
                         height="auto"
                         onError={(e) => {
