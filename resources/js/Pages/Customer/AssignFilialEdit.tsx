@@ -6,8 +6,6 @@ import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
-import { Transition } from '@headlessui/react';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
 import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 
 export default function AssignFilialEdit({
@@ -287,7 +285,6 @@ export default function AssignFilialEdit({
               </div>
 
               {/* Master Action Footer Bar */}
-              {/* Наш новый аккуратный компонент */}
               <StickyFormFooter
                 backUrl="/customers"
                 backLabel={msg.get('customer.back') || 'Повернутись'}

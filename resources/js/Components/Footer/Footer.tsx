@@ -34,10 +34,6 @@ export default function Footer({ type = 'relative' }) {
           </div>
 
           <span className="hidden md:inline text-slate-300">|</span>
-
-          <span className="text-slate-500 font-medium flex items-center gap-1">
-            🛡️ Сертифікація МОЗ України
-          </span>
         </div>
       </div>
     </footer>

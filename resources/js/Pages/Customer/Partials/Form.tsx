@@ -11,6 +11,7 @@ import { findUserByEmailAction, emptyUserAutocompleteAction } from '@/Redux/Clin
 import { userSearchResultsSelector } from '@/Redux/Clinic/selectors';
 import { paletterDataSelector } from '@/Redux/Staff/selectors';
 import { ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 
 interface Props {
   formData: any;
@@ -202,7 +203,11 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
         </div>
       </div>
       <div className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
-        <form onSubmit={submit} className="mt-0 w-full bg-white p-4" encType="multipart/form-data">
+        <form
+          onSubmit={submit}
+          className="mt-0 w-full bg-white p-4 mb-[30px]"
+          encType="multipart/form-data"
+        >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
             <div className="lg:col-span-4 space-y-6">
               {/* Блок завантаження фото */}
@@ -343,44 +348,16 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-2">
-            <Link className="btn-back" title={msg.get('customer.back')} href={`/customer`}>
-              {msg.get('customer.back')}
-            </Link>
-            <div className="flex items-center gap-3">
-              <Transition
-                show={recentlySuccessful}
-                enter="transition ease-in-out"
-                enterFrom="opacity-0"
-                leave="transition ease-in-out"
-                leaveTo="opacity-0"
-              >
-                <p className="text-sm text-teal-600 font-semibold">
-                  {msg.get('customer.saved') || 'Збережено!'}
-                </p>
-              </Transition>
-
-              <button type="submit" disabled={processing} className="btn-submit">
-                <div className="flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M5 13l4 4L19 7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                    />
-                  </svg>
-                  {msg.get('customer.save') || 'Зберегти зміни'}
-                </div>
-              </button>
-            </div>
-          </div>
+          {/* Master Action Footer Bar */}
+          <StickyFormFooter
+            backUrl="/customers"
+            backLabel={msg.get('customer.back') || 'Повернутись'}
+            saveLabel={msg.get('customer.save') || 'Зберегти'}
+            processingLabel="Збереження..."
+            successMessage={msg.get('customer.saved') || 'Збережено успішно!'}
+            processing={processing}
+            recentlySuccessful={recentlySuccessful}
+          />
         </form>
       </div>
     </section>

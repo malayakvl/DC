@@ -9,6 +9,7 @@ import { Link } from '@inertiajs/react';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
 import { ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 
 export default function Edit({ roleData, permissionData, rolePermissions }) {
   useDispatch();
@@ -368,30 +369,16 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
             </div>
 
             {/* Нижній блок збереження */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
-              <div className="flex items-center gap-2 text-gray-500 text-sm">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span>
-                  Власник акаунта:{' '}
-                  <strong className="text-gray-800">{authUser?.name || 'Адміністратор'}</strong>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <Link
-                  href={`/roles`}
-                  className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-semibold transition-colors text-center"
-                >
-                  {msg.get('role.back') || 'Скасувати'}
-                </Link>
-                <PrimaryButton
-                  disabled={processing}
-                  className="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <span>{msg.get('role.save')}</span>
-                </PrimaryButton>
-              </div>
-            </div>
+            {/* Master Action Footer Bar */}
+            <StickyFormFooter
+              backUrl="/roles"
+              backLabel={msg.get('role.back') || 'Повернутись'}
+              saveLabel={msg.get('role.save') || 'Зберегти'}
+              processingLabel="Збереження..."
+              successMessage={msg.get('role.saved') || 'Збережено успішно!'}
+              processing={processing}
+              recentlySuccessful={recentlySuccessful}
+            />
           </form>
         </div>
       </div>

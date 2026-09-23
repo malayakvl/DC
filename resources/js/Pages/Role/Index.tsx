@@ -42,8 +42,10 @@ export default function Index({ roleData }) {
               <DataTable paginationType={PaginationType.ROLES} sendRequest={sendRequest}>
                 {roleData?.map((item) => (
                   <tr className="" key={item.id}>
-                    <td className="">
-                      {item.clinic_id ? item.name : msg.get(`role.${item.name}`)}
+                    <td className="text-left">
+                      <span className="whitespace-nowrap pl-3">
+                        {item.clinic_id ? item.name : msg.get(`role.${item.name}`)}
+                      </span>
                     </td>
                     <td className="text-right">
                       <Link
