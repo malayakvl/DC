@@ -146,8 +146,11 @@
     //margin-left: 10px;
     font-size: 0.75rem;
     line-height: 1rem;
-    @apply text-white;
-    background: #0d9488;
+    @apply relative inline-flex items-center justify-center gap-1.5 px-2 py-2 rounded-md bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-[13px];
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+.btn-new-back {
+    @apply w-full sm:w-auto px-5 py-2.5 rounded-lg bg-slate-600 text-white hover:bg-slate-700 transition-all text-xs font-semibold  tracking-wider flex items-center justify-center gap-2 shadow-xs;
 }
 
 .main-submit {
@@ -158,9 +161,6 @@
     background-image: linear-gradient(to left top, #0e3446, #4c8ea6) !important;
 }
 
-.btn-submit:hover {
-    background-image: linear-gradient(to left top, #abb6e1, #4a588e) !important;
-}
 
 .btn-plus {
     background-image: url('../../images/action-icons/plus.svg');

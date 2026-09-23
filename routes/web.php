@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
     Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
     Route::get('/patient-status/edit/{id}', [PatientStatusController::class, 'edit'])->name('patient-status.edit');
-    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient-status.update');
+    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient.status.update');
 
     Route::get('/visit-schedule-statuses', [VisitScheduleStatusController::class, 'index'])->name('visit-schedule-status.index');
     Route::get('/visit-schedule-status/create', [VisitScheduleStatusController::class, 'create'])->name('visit-schedule-status.create');

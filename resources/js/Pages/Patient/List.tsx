@@ -18,6 +18,7 @@ import {
   faTooth,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from '@inertiajs/react';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, currency }) {
   const appLang = useSelector(appLangSelector);
@@ -33,25 +34,17 @@ export default function List({ listData, currency }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('patient.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/patient/create'}>{msg.get('patient.title.create')}</NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
+            <ListHeader
+              title={msg.get('patient.title.list')}
+              count={listData.data.length || 0}
+              totalLabel={msg.get('patient.title.total')}
+              description={msg.get('patient.title.description')}
+              createHref="patient/create"
+              createLabel={msg.get('patient.title.create')}
+            />
 
-            {/*Filters*/}
             <Filters />
 
-            {/*Pagination*/}
             <Pagination listData={listData} />
 
             <ul className="patient-list mt-5">

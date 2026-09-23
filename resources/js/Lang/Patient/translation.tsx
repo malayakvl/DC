@@ -24,6 +24,7 @@ const lngPatient = {
     'title.view': 'Перегляд',
     'title.create': 'Створити пацієнта',
     'title.edit': 'Редагувати пацієнта',
+    'title.total': 'Загалом',
     'first.name': "Ім'я",
     'last.name': 'Прізвище',
     phone: 'Телефон',
@@ -91,6 +92,7 @@ const lngPatient = {
     'primary.phone': 'Основний телефон',
     'registered.at': 'Зареєстровано',
     print: 'Друк',
+    'title.description': 'База пацієнтів, діагнози, зубна карта, періодонтальна карта',
   },
 };
 export default lngPatient;

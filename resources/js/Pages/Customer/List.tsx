@@ -11,7 +11,7 @@ import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ clinicData, customerData }) {
+export default function List({ customerData }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({

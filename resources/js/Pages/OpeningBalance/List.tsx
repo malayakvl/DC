@@ -13,6 +13,7 @@ import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import InputText from '@/Components/Form/InputText';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, filters }) {
   const dispatch = useDispatch();
@@ -49,27 +50,19 @@ export default function List({ listData, filters }) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Opening Balance'} />
-      <div className="">
+      <div className="py-0">
         <div>
-          <div className="p-3.5 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+            <ListHeader
+              title={msg.get('opening_balance.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('opening_balance.title.total')}
+              description={msg.get('opening_balance.title.description')}
+              createHref="/opening-balance/create"
+              createLabel={msg.get('opening_balance.title.create')}
+            />
             <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('opening_balance.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/opening-balance/create'}>
-                        {msg.get('opening_balance.title.create')}
-                      </NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-            <section>
-              <div className="flex flex-wrap gap-4 mb-6 p-4 transparent rounded-lg border border-[#D8DEE8] bg-white items-end">
+              <div className="flex flex-wrap gap-4 mb-6 p-4 transparent rounded-lg border bg-white items-end">
                 <InputText
                   type="date"
                   name="date_from"

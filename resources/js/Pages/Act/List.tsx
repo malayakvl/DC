@@ -14,6 +14,7 @@ import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import Pagination from './Partials/Pagination';
 import Filters from './Partials/Filters';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData }) {
   const dispatch = useDispatch();
@@ -33,23 +34,17 @@ export default function List({ listData }) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Act'} />
-      <div className="">
+      <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('act.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/act/create'}>{msg.get('act.title.create')}</NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
+            <ListHeader
+              title={msg.get('act.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('act.title.total')}
+              description={msg.get('act.title.description')}
+              createHref="/act/create"
+              createLabel={msg.get('act.title.create')}
+            />
 
             <Filters />
 
