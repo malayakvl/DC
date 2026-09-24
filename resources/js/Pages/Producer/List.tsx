@@ -20,6 +20,7 @@ export default function List({ listData, clinicData }) {
 
   // Стан для форми: null — закрита, 'create' — створення, або ID елемента — редагування
   const [editingId, setEditingId] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
   const formRef = useRef(null);
 
   // Inertia useForm для Producer (тільки назва)
@@ -95,44 +96,6 @@ export default function List({ listData, clinicData }) {
               createLabel={msg.get('producer.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
             />
-            <section className="mb-6">
-              <header className="mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                  {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                        {msg.get('producer.title.list')}
-                      </h1>
-
-                      {/* Бейдж кількості */}
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                        {listData?.length || 0} {msg.get('producer.title.total')}
-                      </span>
-                    </div>
-
-                    {/* Підзаголовок */}
-                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      {msg.get('producer.title.description')}
-                    </p>
-                  </div>
-
-                  {/* Правий блок: Перемикач кнопки */}
-                  <div className="flex items-center shrink-0">
-                    <PrimaryButton
-                      type="button"
-                      onClick={handleOpenCreate}
-                      disabled={Boolean(editingId)} // заблокована, якщо є активний editingId
-                      className={editingId ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                      {msg.get('producer.create')}
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-
             {/* Інлайн-форма створення / редагування */}
             {editingId && (
               <section
@@ -203,18 +166,19 @@ export default function List({ listData, clinicData }) {
                     <td className="text-right">
                       <button
                         type="button"
-                        className="btn-edit mr-2"
+                        className="actn-btns"
                         title={msg.get('producer.edit')}
                         onClick={() => handleOpenEdit(item)}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </button>
                       <Link
-                        className="btn-delete"
-                        title={msg.get('producer.delete')}
+                        className="actn-btns"
+                        title={msg.get('producer.delete') || 'Видалити'}
                         href={`/producer/delete/${item.id}`}
-                        method="delete"
-                        as="button"
-                        preserveScroll
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

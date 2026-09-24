@@ -239,18 +239,19 @@ export default function List({ listData, clinicData }) {
                     <td className="text-right">
                       <button
                         type="button"
-                        className="btn-edit mr-2"
+                        className="actn-btns"
                         title={msg.get('supplier.edit')}
                         onClick={() => handleOpenEdit(item)}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </button>
                       <Link
-                        className="btn-delete"
-                        title={msg.get('supplier.delete')}
+                        className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                        title={msg.get('supplier.delete') || 'Видалити'}
                         href={`/supplier/delete/${item.id}`}
-                        method="delete"
-                        as="button"
-                        preserveScroll
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

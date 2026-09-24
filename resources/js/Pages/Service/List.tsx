@@ -74,10 +74,10 @@ export default function List({ clinicData, tree, services, currency }) {
     return (
       <div
         key={item.id}
-        className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col transition-all duration-200 mb-6 border border-slate-100"
+        className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col transition-all duration-200 mb-6 border border-slate-200/80"
       >
         {/* Accordion Header */}
-        <div className="flex items-center justify-between p-6 bg-slate-50/70 cursor-pointer hover:bg-slate-50 transition-colors select-none border-b border-slate-100">
+        <div className="flex items-center justify-between p-6 bg-slate-100/80 cursor-pointer hover:bg-slate-100 transition-colors select-none border-b border-slate-200/80">
           <div className="flex items-center gap-3">
             <div>
               <div className="flex items-center gap-2.5">
@@ -121,7 +121,7 @@ export default function List({ clinicData, tree, services, currency }) {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/30 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+              <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200/60">
                 <th className="py-3 px-4 font-bold">Код / Назва послуги</th>
                 <th className="py-3 px-4 font-bold text-center">Тривалість</th>
                 <th className="py-3 px-4 font-bold text-right">Собівартість</th>
@@ -217,7 +217,7 @@ export default function List({ clinicData, tree, services, currency }) {
         </div>
 
         {/* Футер карточки с добавлением услуги */}
-        <div className="p-4 bg-slate-50/50 border-t border-slate-100">
+        <div className="p-4 bg-slate-50/80 border-t border-slate-200/80">
           <NavLink
             href="/service/create"
             className="text-teal-700 text-sm font-semibold hover:underline inline-flex items-center gap-1"

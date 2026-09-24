@@ -233,18 +233,22 @@ export default function List({ listData }) {
                       {/* Кнопка редагування тепер відкриває інлайн-форму замість переходу за посиланням */}
                       <button
                         type="button"
-                        className="btn-edit mr-2"
+                        className="actn-btns"
                         title={msg.get('unit.edit')}
                         onClick={() => handleOpenEdit(item)}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </button>
                       <Link
-                        className="btn-delete"
+                        className="actn-btns"
                         title={msg.get('unit.delete')}
                         href={`unit/delete/${item.id}`}
                         method="delete"
                         as="button"
                         preserveScroll
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}
