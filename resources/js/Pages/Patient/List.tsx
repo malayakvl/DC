@@ -5,18 +5,8 @@ import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
-import NavLink from '../../Components/Links/NavLink';
 import Filters from './Partials/Filters';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from './Partials/Pagination';
-import {
-  faPersonWalking,
-  faEdit,
-  faEuro,
-  faList,
-  faTooth,
-} from '@fortawesome/free-solid-svg-icons';
 import { Link } from '@inertiajs/react';
 import ListHeader from '../../Components/Common/ListHeader';
 
@@ -27,7 +17,6 @@ export default function List({ listData, currency }) {
     locale: appLang,
   });
 
-  console.log('List data', listData.data.length);
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('patient.title.list')} />
@@ -51,15 +40,17 @@ export default function List({ listData, currency }) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-[11px] font-bold uppercase tracking-wider">
-                    <th className="py-3 px-4">Пацієнт</th>
-                    <th className="py-3 px-4">Контакти</th>
-                    <th className="py-3 px-4">Фінанси (Баланс)</th>
-                    <th className="py-3 px-4">Останній / Наступний візит</th>
-                    <th className="py-3 px-4">Лікуючий лікар</th>
-                    <th className="py-3 px-4 text-center min-w-[200px]">Швидкі дії</th>
+                    <th className="py-3 px-4">{msg.get('patient.patient')}</th>
+                    <th className="py-3 px-4">{msg.get('patient.contacts')}</th>
+                    <th className="py-3 px-4">{msg.get('patient.finance.balance')}</th>
+                    <th className="py-3 px-4">{msg.get('patient.visit.lastNext')}</th>
+                    <th className="py-3 px-4">{msg.get('patient.doctor')}</th>
+                    <th className="py-3 px-4 text-center min-w-[200px]">
+                      {msg.get('patient.action')}
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-800 text-xs">
+                <tbody className="divide-y divide-slate-100 text-slate-800 text-sm">
                   {listData.data?.map((item) => {
                     const debt = item.sum_acts - item.sum_payments;
                     const hasDebt = debt > 0;
@@ -67,7 +58,7 @@ export default function List({ listData, currency }) {
                     return (
                       <tr
                         key={item.id}
-                        className={`hover:bg-slate-50/80 transition group ${hasDebt ? 'bg-rose-50/20' : ''}`}
+                        className={`hover:bg-slate-50/80 transition group ${hasDebt ? 'bg-rose-300/20' : ''}`}
                       >
                         {/* Пацієнт */}
                         <td className="py-3.5 px-4 align-middle">
@@ -87,26 +78,38 @@ export default function List({ listData, currency }) {
                                   .join('')}
                               </div>
                             )}
-                            <div>
-                              <div className="flex items-center gap-2">
+                            <div className="min-w-0 flex-1">
+                              {/* Первая строка: ФИО и бейджи (ID, Скидка) */}
+                              <div className="flex items-center flex-wrap gap-2">
                                 <Link
                                   href={`/patient/view/${item.id}`}
-                                  className="text-sm font-bold text-slate-900 hover:text-teal-600 transition"
+                                  className="text-sm font-bold text-slate-900 hover:text-teal-600 transition truncate h-[24px]"
                                 >
                                   {item.patient_name}
                                 </Link>
                                 <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                                   #D-{item.id}
                                 </span>
-                                {item.discount && (
+                                {item.discount > 0 && (
                                   <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                     -{item.discount}%
                                   </span>
                                 )}
                               </div>
-                              {/* Додаткові мітки (наприклад, вік/стать, якщо є в базі, або можна вивести інші дані) */}
-                              <div className="flex items-center gap-2 text-slate-500 text-xs mt-0.5">
-                                <span>{item.gender === 'female' ? 'Жін.' : 'Чол.'}</span>
+
+                              {/* Нижняя строка: Пол, номер карты или другие данные */}
+                              <div className="flex items-center gap-3 text-slate-505 text-xs mt-0.5">
+                                {item.medical_card_no && (
+                                  <>
+                                    <span className="material-symbols-outlined text-[16px] text-slate-400 block">
+                                      badge
+                                    </span>
+
+                                    <span className="text-slate-500">
+                                      {msg.get('patient.card')}: {item.medical_card_no}
+                                    </span>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -141,27 +144,27 @@ export default function List({ listData, currency }) {
                                   <span className="material-symbols-outlined text-[13px]">
                                     warning
                                   </span>
-                                  ⚠️ Борг: {debt} {currency}
+                                  ⚠️ {msg.get('patient.dept.at')}: {debt} {currency}
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
                                   <span className="material-symbols-outlined text-[13px]">
                                     check_circle
                                   </span>
-                                  Розраховано повністю
+                                  {msg.get('patient.payed.all')}
                                 </span>
                               )}
                             </div>
                             <div className="text-slate-500 text-[11px] flex items-center gap-2">
                               <span>
-                                Виконано:{' '}
+                                {msg.get('patient.worked.at')}:{' '}
                                 <strong className="text-slate-800">
                                   {item.sum_acts} {currency}
                                 </strong>
                               </span>
                               <span>•</span>
                               <span>
-                                Сплачено:{' '}
+                                {msg.get('patient.payed.at')}:{' '}
                                 <strong className="text-emerald-700 font-semibold">
                                   {item.sum_payments} {currency}
                                 </strong>
@@ -177,13 +180,13 @@ export default function List({ listData, currency }) {
                               <span className="material-symbols-outlined text-[15px] text-slate-400">
                                 event_available
                               </span>
-                              {item.last_visit || 'Немає даних'}
+                              {item.visits_count || 'Немає даних'}
                             </div>
                             <div className="text-teal-600 font-semibold flex items-center gap-1">
                               <span className="material-symbols-outlined text-[15px]">
                                 upcoming
                               </span>
-                              Наст: {item.next_visit || 'Не призначено'}
+                              {msg.get('patient.next')}: {item.last_visit || 'Не призначено'}
                             </div>
                           </div>
                         </td>
@@ -199,26 +202,61 @@ export default function List({ listData, currency }) {
                         </td>
 
                         {/* Швидкі дії */}
-                        <td className="py-3.5 px-4 align-middle text-center">
-                          <div className="flex items-center justify-center gap-1">
-                            <Link href="/patient/visits" className="action-btn">
-                              <FontAwesomeIcon icon={faPersonWalking} />
+                        <td className="py-3.5 px-4 align-middle text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            {/* Візити */}
+                            <Link
+                              href={`/patient/visits/${item.id}`}
+                              className="actn-btns"
+                              title="Візити"
+                            >
+                              <span className="material-symbols-outlined text-[18px] block">
+                                schedule
+                              </span>
                             </Link>
 
-                            <Link href="/patient/plans" className="action-btn">
-                              <FontAwesomeIcon icon={faList} />
+                            {/* Плани лікування */}
+                            <Link
+                              href={`/patient/plans/${item.id}`}
+                              className="actn-btns"
+                              title="Плани лікування"
+                            >
+                              <span className="material-symbols-outlined text-[18px] block">
+                                assignment
+                              </span>
                             </Link>
 
-                            <Link href={`/patient/view/${item.id}`} className="action-btn">
-                              <FontAwesomeIcon icon={faTooth} />
+                            {/* Зубна карта / Перегляд */}
+                            <Link
+                              href={`/patient/view/${item.id}`}
+                              className="actn-btns"
+                              title="Зубна карта"
+                            >
+                              <span className="material-symbols-outlined text-[18px] block">
+                                medical_services
+                              </span>
                             </Link>
 
-                            <Link href={`/patient/finances/${item.id}`} className="action-btn">
-                              <FontAwesomeIcon icon={faEuro} />
+                            {/* Фінанси */}
+                            <Link
+                              href={`/patient/finances/${item.id}`}
+                              className="actn-btns"
+                              title="Фінанси"
+                            >
+                              <span className="material-symbols-outlined text-[18px] block">
+                                payments
+                              </span>
                             </Link>
 
-                            <Link href={`/patient/edit/${item.id}`} className="action-btn">
-                              <FontAwesomeIcon icon={faEdit} />
+                            {/* Редагування */}
+                            <Link
+                              href={`/patient/edit/${item.id}`}
+                              className="actn-btns"
+                              title="Редагувати"
+                            >
+                              <span className="material-symbols-outlined text-[18px] block">
+                                edit
+                              </span>
                             </Link>
                           </div>
                         </td>

@@ -18,7 +18,6 @@ export default function List({ customerData }) {
     messages: lngCustomer,
     locale: appLang,
   });
-  console.log(customerData);
 
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
@@ -54,7 +53,7 @@ export default function List({ customerData }) {
                             }
                             width={40}
                             height={40}
-                            className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-primary/20"
+                            className="w-15 h-15 rounded object-cover shadow-sm"
                             alt={`${item.first_name} ${item.last_name}`}
                             onError={(e) => {
                               e.currentTarget.src = '/images/no-image.png';
@@ -69,25 +68,30 @@ export default function List({ customerData }) {
                     <td>{item.inn}</td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
+                        className="actn-btns"
                         title={msg.get('customer.edit')}
                         href={`customer/edit/${item.id}`}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
                       <Link
-                        className="btn-assign"
+                        className="actn-btns"
                         title={msg.get('customer.attach')}
                         href={`customer/assign/${item.id}`}
-                      />
-                      {/*<NavLink*/}
-                      {/*  className="btn-view"*/}
-                      {/*  title={msg.get('customer.view')}*/}
-                      {/*  href={`customer/show/${item.id}`}*/}
-                      {/*/>*/}
-                      <NavLink
-                        className="btn-delete"
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">
+                          person_shield
+                        </span>
+                      </Link>
+                      <Link
+                        className="actn-btns"
                         title={msg.get('customer.delete')}
                         href={`customer/delete/${item.id}`}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">
+                          delete
+                        </span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

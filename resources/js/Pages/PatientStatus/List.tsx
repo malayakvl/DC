@@ -189,16 +189,20 @@ export default function List({ listData }) {
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          className="btn-edit mr-2"
+                          className="actn-btns"
                           title={msg.get('status.title.edit')}
                           onClick={() => handleOpenEdit(item)}
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </button>
                         <button
                           type="button"
-                          className="btn-delete"
+                          className="actn-btns"
                           title={msg.get('status.title.delete')}
                           onClick={() => handleDelete(item.id)}
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">delete</span>
+                        </button>
                       </div>
                     </td>
                   </tr>

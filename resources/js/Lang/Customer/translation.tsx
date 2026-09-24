@@ -54,6 +54,9 @@ const lngCustomer = {
     optional: 'Опционально',
     photo_tips: 'Перетягніть фото матеріалу сюди',
     photo_tips1: 'або виберіть файл з комп’ютера',
+    dragdrop_files: 'Перетягніть фото матеріалу сюди',
+    or_select_file_type: 'або виберіть файл з комп’ютера',
+    file_sizes: 'PNG, JPG, WebP до 5 МБ',
   },
 };
 export default lngCustomer;

@@ -10,14 +10,32 @@
     margin: 0 8px;
     padding: 5px;
     border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    background-color: #e7e7f8;
     background-size: 50%;
     background-position: center;
 }
+.actn-btns {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 3px;
+    border: solid 1px #e4e5e5;
+    background-color: #faeedd;
+    color: #757070;
+    padding: 8px;
+    background-size: 50%;
+    background-position: center;
 
+    &:hover {
+        border: solid 1px #ccfbf1;
+        background-color: #ccfbf1;
+    }
+}
 .btn-edit {
-    background-image: url('../../images/action-icons/edit.svg');
-    background-repeat: no-repeat;
+    //background-image: url('../../images/action-icons/edit.svg');
+    //background-repeat: no-repeat;
     //background-size: contain;
     width: 36px;
     height: 36px;
@@ -25,8 +43,8 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #f0fdfa;
-    background-color: #f0fdfa;
+    border: solid 1px #e9fffa;
+    background-color: #e9fffa;
     padding: 5px;
     background-size: 50%;
     background-position: center;
@@ -82,8 +100,8 @@
     display: inline-block;
     margin: 0 8px;
     padding: 5px;
-    border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    border: solid 1px #e7e5e4;
+    background-color: #e7e5e4;
     background-size: 50%;
     background-position: center;
 }

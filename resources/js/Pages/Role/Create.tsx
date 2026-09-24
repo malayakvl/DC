@@ -5,11 +5,9 @@ import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngRole from '../../Lang/Role/translation';
-import { Link } from '@inertiajs/react';
-import PrimaryButton from '@/Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
 import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
-import { ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../Components/Common/StickyFormFooter';
+import FormHeader from '../../Components/Common/FormHeader';
 
 // Расширенный хелпер для иконок модулей (категорий)
 const getCategoryIcon = (colName) => {
@@ -188,51 +186,13 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
       <div className="w-full bg-background font-body-md text-on-surface antialiased min-h-screen pb-12">
         <div className="max-w-[1520px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
           <form onSubmit={submit} className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                  <div className="flex items-start gap-2">
-                    <Link
-                      href="/roles"
-                      className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
-                    >
-                      <ArrowLeft className="w-5 h-5" />
-                    </Link>
-                    <div>
-                      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
-                        <div>
-                          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                            {msg.get('role.title.create') || 'Створити роль'}
-                          </h1>
-                          <p className="text-sm text-slate-500 mt-0.5">
-                            {msg.get('role.title.description') || 'Опис роль'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <button type="submit" disabled={processing} className="btn-submit">
-                    <div className="flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M5 13l4 4L19 7"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                        />
-                      </svg>
-                      {msg.get('role.save') || 'Зберегти зміни'}
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <FormHeader
+              title={roleData?.id ? msg.get('role.title.edit') : msg.get('role.title.create')}
+              description={msg.get('role.title.description')}
+              backUrl="/roles"
+              processing={processing}
+              saveText={msg.get('role.save') || 'Зберегти зміни'}
+            />
             <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-6 border border-gray-100">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 <div className="lg:col-span-6 flex flex-col gap-1.5">
@@ -397,27 +357,15 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
               })}
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
-              <div className="flex items-center gap-2 text-gray-500 text-sm">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span>
-                  Користувач:{' '}
-                  <strong className="text-gray-800">{authUser?.name || 'Адміністратор'}</strong>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <Link className="btn-back" title={msg.get('role.back')} href={`/roles`}>
-                  {msg.get('role.back')}
-                </Link>
-                <PrimaryButton
-                  disabled={processing}
-                  className="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <span>{msg.get('role.save')}</span>
-                </PrimaryButton>
-              </div>
-            </div>
+            <StickyFormFooter
+              backUrl="/roles"
+              backLabel={msg.get('role.back') || 'Повернутись'}
+              saveLabel={msg.get('role.save') || 'Зберегти'}
+              processingLabel="Збереження..."
+              successMessage={msg.get('role.saved') || 'Збережено успішно!'}
+              processing={processing}
+              recentlySuccessful={recentlySuccessful}
+            />
           </form>
         </div>
       </div>

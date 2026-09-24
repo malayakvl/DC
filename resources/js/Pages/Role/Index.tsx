@@ -38,7 +38,7 @@ export default function Index({ roleData }) {
               createHref="role/create"
               createLabel={msg.get('role.title.create')}
             />
-            <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <section className="table-card">
               <DataTable paginationType={PaginationType.ROLES} sendRequest={sendRequest}>
                 {roleData?.map((item) => (
                   <tr className="" key={item.id}>
@@ -49,10 +49,12 @@ export default function Index({ roleData }) {
                     </td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
+                        className="actn-btns"
                         title={msg.get('filial.filial.edit')}
                         href={`/role/edit/${item.id}`}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

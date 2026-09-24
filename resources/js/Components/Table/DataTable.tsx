@@ -162,7 +162,9 @@ export default function DataTable({ paginationType, children, switcherOnClick = 
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <table className="data-table">
         <thead>{renderTableHeader()}</thead>
-        <tbody>{renderTableBody()}</tbody>
+        <tbody className="divide-y divide-slate-100 text-slate-800 text-sm">
+          {renderTableBody()}
+        </tbody>
       </table>
     </div>
   );
