@@ -37,8 +37,7 @@ import Pricing from './Pricing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import SecondaryButton from '@/Components/Form/SecondaryButton';
-import SchedulerDayHeader from './components/SchedulerDayHeader';
-import SchedulerTimeColumn from './components/SchedulerTimeColumn';
+import { SchedulerToolbar } from './components/SchedulerToolbar';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
@@ -420,47 +419,47 @@ export default function Index({
       <Head title="Scheduler Management" />
       <div>
         <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
-          <div className="pv-shell">
-            <div className="pv-top">
-              <div className="pv-user">
-                <div className="pv-info">
-                  <section>
-                    <header>
-                      <div className="flex inline-flex w-full mb-0">
-                        <h2 className="text-xl font-semibold leading-tight">
-                          {msg.get('scheduler.title.list')}
-                        </h2>
-                      </div>
-                    </header>
-                  </section>
-                </div>
-              </div>
-            </div>
-            <div className="pv-shell">
-              <div className="pv-tabs">
-                <button
-                  className={tab === 'patients' ? 'pv-tab active' : 'pv-tab'}
-                  onClick={() => handleTabClick('patients')}
-                >
-                  {msg.get('scheduler.tab.patients')}
-                </button>
+          <div className="mb-4">
+            <div className="inline-flex bg-slate-100 p-1 rounded-xl gap-1 border border-slate-200/80">
+              <button
+                type="button"
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  tab === 'patients'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                }`}
+                onClick={() => handleTabClick('patients')}
+              >
+                {msg.get('scheduler.tab.patients')}
+              </button>
 
-                <button
-                  className={tab === 'visits' ? 'pv-tab active' : 'pv-tab'}
-                  onClick={() => handleTabClick('visits')}
-                >
-                  Асистенти
-                </button>
+              <button
+                type="button"
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  tab === 'visits'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                }`}
+                onClick={() => handleTabClick('visits')}
+              >
+                Асистенти
+              </button>
 
-                <button
-                  className={tab === 'plans' ? 'pv-tab active' : 'pv-tab'}
-                  onClick={() => handleTabClick('plans')}
-                >
-                  Інші
-                </button>
-              </div>
+              <button
+                type="button"
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  tab === 'plans'
+                    ? 'bg-white text-primary shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                }`}
+                onClick={() => handleTabClick('plans')}
+              >
+                Інші
+              </button>
             </div>
           </div>
+
+          <SchedulerToolbar />
         </div>
         {showEventPopup && (
           <SchedulerFormCreate
@@ -586,7 +585,7 @@ export default function Index({
                   setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
                 }
               >
-                {msg.get('scheduler.next')}
+                !!!{msg.get('scheduler.next')}
               </button>
             </div>
 
