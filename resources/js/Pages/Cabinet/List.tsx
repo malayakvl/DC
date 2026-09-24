@@ -206,16 +206,24 @@ export default function List({ listData, filials = [] }) {
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          className="btn-edit mr-2"
+                          className="actn-btns"
                           title={msg.get('cabinet.edit')}
                           onClick={() => handleOpenEdit(item)}
-                        />
-                        <button
-                          type="button"
-                          className="btn-delete"
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </button>
+                        <Link
+                          className="actn-btns actn-delete"
                           title={msg.get('cabinet.delete')}
-                          onClick={() => handleDelete(item.id)}
-                        />
+                          href={`/cabinet/delete/${item.id}`}
+                          method="delete"
+                          as="button"
+                          preserveScroll
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">
+                            delete
+                          </span>
+                        </Link>
                       </div>
                     </td>
                   </tr>

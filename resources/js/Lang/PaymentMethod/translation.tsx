@@ -20,6 +20,7 @@ const lngPaymentMethod = {
     'title.edit': 'Редагувати метод оплати',
     'title.view': 'Переглянути метод оплати',
     create: 'Створити метод оплати',
+    'title.description': 'Платіжні системи клініки',
     name: 'Назва',
     save: 'Зберегти',
     saved: 'Збережено.',

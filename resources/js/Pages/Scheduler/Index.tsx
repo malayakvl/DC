@@ -44,7 +44,7 @@ import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 const SLOT_HEIGHT = 30;
 const FREE_SLOT_BG = '#fbfdff';
 const TODAY_BG = '#eef6ff';
-
+console.log(1)
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
 

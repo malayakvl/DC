@@ -22,8 +22,9 @@ import {
   setPercentAction,
 } from '../../../Redux/Material';
 import InputSelect from '../../../Components/Form/InputSelect';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
+
 
 export default function Form({
   clinicData,
@@ -256,52 +257,16 @@ export default function Form({
   };
 
   return (
-    <section className={`w-full px-4 sm:px-8 py-6 flex flex-col gap-6`}>
-      {/* Шапка сторінки */}
+    <section>
       <div className="flex flex-col gap-3 mt-2">
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-          <div className="flex items-start gap-2">
-            <Link
-              href="/materials"
-              className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    {formData?.id ? 'Редагування матеріалу' : 'Новий матеріал'}
-                  </h1>
-                  <p className="text-sm text-slate-500 mt-0.5">
-                    {msg.get('material.title.description')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button type="submit" disabled={processing} className="btn-submit">
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M5 13l4 4L19 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-              {msg.get('material.save') || 'Зберегти зміни'}
-            </div>
-          </button>
-        </div>
+        <FormHeader
+          title={formData?.id ? msg.get('material.title.edit') : msg.get('material.title.create')}
+          description={msg.get('material.title.description')}
+          backUrl="/materials"
+          processing={processing}
+          saveText={msg.get('material.save') || 'Зберегти зміни'}
+        />
       </div>
-
       {/* Основна форма */}
       <div className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
         <form onSubmit={submit} id="material-form" className="space-y-6">
@@ -585,25 +550,16 @@ export default function Form({
           </div>
 
           {/* Нижня панель дій */}
-          <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-            <Link className="btn-back" title={msg.get('material.back')} href={`/materials`}>
-              {msg.get('material.back')}
-            </Link>
-
-            <div className="flex items-center gap-3">
-              <Transition
-                show={recentlySuccessful}
-                enter="transition ease-in-out"
-                enterFrom="opacity-0"
-                leave="transition ease-in-out"
-                leaveTo="opacity-0"
-              >
-                <p className="text-sm text-emerald-600 font-medium">{msg.get('producer.saved')}</p>
-              </Transition>
-
-              <PrimaryButton disabled={processing}>{msg.get('material.save')}</PrimaryButton>
-            </div>
-          </div>
+          {/* Master Action Footer Bar */}
+          <StickyFormFooter
+            backUrl="/materials"
+            backLabel={msg.get('material.back') || 'Повернутись'}
+            saveLabel={msg.get('material.save') || 'Зберегти'}
+            processingLabel="Збереження..."
+            successMessage={msg.get('material.saved') || 'Збережено успішно!'}
+            processing={processing}
+            recentlySuccessful={recentlySuccessful}
+          />
         </form>
       </div>
     </section>

@@ -19,6 +19,8 @@ import {
 import { setInvoiceTax, setShowTableError } from '@/Redux/Incominginvoice';
 import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
 import { ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
 
 export default function Form({
   clinicData,
@@ -143,54 +145,21 @@ export default function Form({
   };
 
   return (
-    <section className={`w-full px-4 sm:px-8 py-6 flex flex-col gap-6`}>
-      {/* Шапка сторінки */}
+    <section>
       <div className="flex flex-col gap-3 mt-2">
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-          <div className="flex items-start gap-2">
-            <Link
-              href="/materials"
-              className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    {formData?.id
-                      ? msg.get('invoice_incoming.title.edit')
-                      : msg.get('invoice_incoming.title.create')}
-                  </h1>
-                  <p className="text-sm text-slate-500 mt-0.5">
-                    Управління специфікацією, облік витрат та контроль залишків матеріалів
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button type="submit" disabled={processing} className="btn-submit">
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M5 13l4 4L19 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-              {msg.get('invoice_incoming.save') || 'Зберегти зміни'}
-            </div>
-          </button>
-        </div>
+        <FormHeader
+          title={
+            formData?.id
+              ? msg.get('invoice_incoming.title.edit')
+              : msg.get('invoice_incoming.title.create')
+          }
+          description={msg.get('invoice_incoming.title.description')}
+          backUrl="/invoice-incoming"
+          processing={processing}
+          saveText={msg.get('invoice_incoming.save') || 'Зберегти зміни'}
+        />
       </div>
-      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
+      <form onSubmit={submit} className="space-y-4 py-6" encType="multipart/form-data">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
           {/* Заголовок карточки */}
           <div className="flex items-center justify-between">
@@ -206,23 +175,7 @@ export default function Form({
 
           {/* Сетка полей (4 колонки, 2 ряда) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* 1. Номер накладной */}
-            <div className="flex flex-col gap-1.5">
-              <div className="w-full flex items-center justify-between">
-                <InputText
-                  name={'invoice_number'}
-                  values={values}
-                  dataValue={values.invoice_number}
-                  value={values.invoice_number}
-                  onChange={handleChange}
-                  required
-                  label={msg.get('invoice_incoming.number')}
-                  className="filter-select-bordered-bordered w-full"
-                />
-              </div>
-            </div>
-
-            {/* 2. Дата */}
+            {/* 1. Дата */}
             <div className="flex flex-col gap-1.5">
               <div className="w-full flex items-center justify-between">
                 <InputCalendar
@@ -234,6 +187,21 @@ export default function Form({
                   required
                   label={msg.get('invoice_incoming.date')}
                   className="filter-select-bordered w-full"
+                />
+              </div>
+            </div>
+            {/* 2. Номер накладной */}
+            <div className="flex flex-col gap-1.5">
+              <div className="w-full flex items-center justify-between">
+                <InputText
+                  name={'invoice_number'}
+                  values={values}
+                  dataValue={values.invoice_number}
+                  value={values.invoice_number}
+                  onChange={handleChange}
+                  required
+                  label={msg.get('invoice_incoming.number')}
+                  className="filter-select-bordered-bordered w-full"
                 />
               </div>
             </div>
@@ -416,49 +384,16 @@ export default function Form({
             {msg.get('invoice_incoming.rows.error')}
           </div>
         </div>
-        <div className="flex items-center justify-between pt-2">
-          <Link
-            className="btn-back"
-            title={msg.get('invoice_incoming.back')}
-            href={`/invoice-incoming`}
-          >
-            {msg.get('invoice_incoming.back')}
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Transition
-              show={recentlySuccessful}
-              enter="transition ease-in-out"
-              enterFrom="opacity-0"
-              leave="transition ease-in-out"
-              leaveTo="opacity-0"
-            >
-              <p className="text-sm text-teal-600 font-semibold">
-                {msg.get('invoice_incoming.saved') || 'Збережено!'}
-              </p>
-            </Transition>
-
-            <button type="submit" disabled={processing} className="btn-submit">
-              <div className="flex items-center justify-center">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M5 13l4 4L19 7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                  />
-                </svg>
-                {msg.get('invoice_incoming.save') || 'Зберегти зміни'}
-              </div>
-            </button>
-          </div>
-        </div>
+        {/* Master Action Footer Bar */}
+        <StickyFormFooter
+          backUrl="/invoice-incoming"
+          backLabel={msg.get('invoice_incoming.back') || 'Повернутись'}
+          saveLabel={msg.get('invoice_incoming.save') || 'Зберегти'}
+          processingLabel="Збереження..."
+          successMessage={msg.get('material.saved') || 'Збережено успішно!'}
+          processing={processing}
+          recentlySuccessful={recentlySuccessful}
+        />
       </form>
     </section>
   );

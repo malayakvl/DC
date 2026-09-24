@@ -6,15 +6,14 @@ import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngMoneyIn from '../../Lang/MoneyIn/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
 import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
-import InputText from '../../Components/Form/InputText';
-import InputSelect from '../../Components/Form/InputSelect';
 import ListHeader from '../../Components/Common/ListHeader';
+import Filters from './Partials/Filters';
+import Pagination from './Partials/Pagination';
 
 export default function List({ listData, filters, paymentsMethods }) {
   const dispatch = useDispatch();
@@ -63,48 +62,11 @@ export default function List({ listData, filters, paymentsMethods }) {
               createHref="/money-in/create"
               createLabel={msg.get('money_in.title.create')}
             />
-            <section>
-              <div className="flex flex-wrap gap-4 mb-6 p-4 transparent rounded-lg border border-[#D8DEE8] bg-white items-end">
-                <InputText
-                  type="date"
-                  name="date_from"
-                  label={msg.get('money_in.date_from')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <InputText
-                  type="date"
-                  name="date_to"
-                  label={msg.get('money_in.date_to')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <InputSelect
-                  name="account_id"
-                  label={msg.get('money_in.account_id')}
-                  values={values}
-                  onChange={handleChange}
-                  options={paymentsMethods}
-                  className="mt-1 block w-full min-w-[200px]"
-                />
-                <div className="flex mb-1">
-                  <PrimaryButton onClick={handleFilter}>{msg.get('money_in.filter')}</PrimaryButton>
-                  <button
-                    onClick={() => {
-                      const reset = { date_from: '', date_to: '', account_id: '' };
-                      setValues(reset);
-                      router.get('/money-in', reset);
-                    }}
-                    className="btn-submit !bg-none !bg-gray-200 !text-gray-700 hover:!bg-gray-300 transition-colors duration-200"
-                  >
-                    {msg.get('money_in.reset')}
-                  </button>
-                </div>
-              </div>
-            </section>
-            <section className="table-card">
+            <Filters />
+
+            <Pagination listData={listData} />
+
+            <section className="table-card mt-4">
               <DataTable paginationType={PaginationType.MONEYIN} sendRequest={sendRequest}>
                 {listData?.map((item) => (
                   <tr className="" key={item.id}>

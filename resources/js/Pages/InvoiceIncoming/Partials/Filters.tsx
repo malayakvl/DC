@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import lngPatient from '../../../Lang/Patient/translation';
+import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import lngAct from '../../../Lang/Act/translation';
 import InputText from '../../../Components/Form/InputText';
+import InputSelect from '../../../Components/Form/InputText';
 import { router, useForm } from '@inertiajs/react';
 import { actFiltersSelector, actClearFiltersSelector } from '@/Redux/Act/selectors';
 import { setFilters, clearFilters } from '@/Redux/Act';
 import PrimaryButton from '@/Components/Form/PrimaryButton';
 
-export default function Filters() {
+export default function Filters({ suppliersData }) {
   const appLang = useSelector(appLangSelector);
   const isClear = useSelector(actClearFiltersSelector);
   const ref = React.useRef(null);
@@ -19,8 +20,13 @@ export default function Filters() {
   const filtersData = useSelector(actFiltersSelector);
   const { data, setData, post } = useForm(filtersData);
   const msg = new Lang({
-    messages: { ...lngPatient, ...lngAct },
+    messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
+  });
+  const [values, setValues] = useState({
+    date_from: filtersData?.date_from || '',
+    date_to: filtersData?.date_to || '',
+    supplier_id: filtersData?.supplier_id || '',
   });
 
   const handleChange = (e) => {
@@ -63,7 +69,7 @@ export default function Filters() {
       post(route('act.index'));
     }
   }, [isClear]);
-
+console.log(suppliersData)
   return (
     <form ref={ref} className="w-full mb-6">
       <div className="">
@@ -93,6 +99,7 @@ export default function Filters() {
                 className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
               />
             </div>
+
 
             {/* Сумма */}
             <div className="md:col-span-4">

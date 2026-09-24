@@ -133,7 +133,7 @@ console.log(listData);
                         >
                           <span className="material-symbols-outlined text-[18px] block">edit</span>
                         </Link>
-                        <NavLink
+                        <Link
                           className="actn-btns hover:bg-rose-50 hover:text-rose-600"
                           title={msg.get('filial.filial.delete') || 'Видалити'}
                           href={`material/delete/${item.id}`}
@@ -141,7 +141,7 @@ console.log(listData);
                           <span className="material-symbols-outlined text-[18px] block">
                             delete
                           </span>
-                        </NavLink>
+                        </Link>
                       </div>
                     </td>
                   </tr>
