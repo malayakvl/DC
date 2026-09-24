@@ -29,8 +29,8 @@ const lngPatient = {
     patient: 'Пацієнт',
     'visit.lastNext': 'Кількість/Наступний візит',
     'finance.balance': 'Баланс',
-    'contacts':'Контакти',
-    'doctor':'Лікуючий лікар',
+    contacts: 'Контакти',
+    doctor: 'Лікуючий лікар',
     'last.name': 'Прізвище',
     phone: 'Телефон',
     discount: 'Знижка',
@@ -101,6 +101,9 @@ const lngPatient = {
     'registered.at': 'Зареєстровано',
     print: 'Друк',
     'title.description': 'База пацієнтів, діагнози, зубна карта, періодонтальна карта',
+    dragdrop_files: 'Перетягніть фото матеріалу сюди',
+    or_select_file_type: 'або виберіть файл з комп’ютера',
+    file_sizes: 'PNG, JPG, WebP до 5 МБ',
   },
 };
 export default lngPatient;

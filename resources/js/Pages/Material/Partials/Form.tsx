@@ -254,6 +254,7 @@ export default function Form({
     }
     return null;
   };
+
   return (
     <section className={`w-full px-4 sm:px-8 py-6 flex flex-col gap-6`}>
       {/* Шапка сторінки */}

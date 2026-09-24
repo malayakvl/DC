@@ -1,4 +1,4 @@
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import {  router, useForm } from '@inertiajs/react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -44,16 +44,6 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-image.png');
   const serchResults = useAppSelector(userSearchResultsSelector);
-//   const { processing, recentlySuccessful, progress } = useForm({
-//     id: formData.id,
-//     file: null,
-//     name: formData.name,
-//     first_name: formData.first_name,
-//     last_name: formData.last_name,
-//     phone: formData.phone,
-//     email: formData.email,
-//     inn: formData.inn,
-//   });
   const { data, setData, processing, post, recentlySuccessful, progress, errors } = useForm({
     id: formData.id,
     name: formData.name,
