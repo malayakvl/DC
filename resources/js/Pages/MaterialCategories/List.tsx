@@ -340,18 +340,22 @@ export default function List({ tree }) {
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          className="btn-edit mr-2"
+                          className="actn-btns"
                           title={msg.get('producer.edit')}
                           onClick={() => handleOpenEdit(item)}
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </button>
                         <Link
-                          className="btn-delete"
+                          className="actn-btns actn-delete"
                           title={msg.get('producer.delete')}
                           href={`/producer/delete/${item.id}`}
                           method="delete"
                           as="button"
                           preserveScroll
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">delete</span>
+                        </Link>
                       </div>
                     )}
                   </td>

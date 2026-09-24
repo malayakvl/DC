@@ -64,22 +64,6 @@ export default function Filters() {
         </div>
 
         {/* Filter Dropdown 2: Філія */}
-        <div className="lg:col-span-2">
-          <div className="relative">
-            <select
-              value={filtersData.branch || 'sunshine'}
-              onChange={(e) => handleFieldChange('branch', e.target.value)}
-              className="w-full appearance-none py-2 pl-3 pr-8 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
-            >
-              <option value="sunshine">Філія: Sunshine Dental</option>
-              <option value="podil">Філія: Sunshine Поділ</option>
-              <option value="all">Усі філії</option>
-            </select>
-            <span className="material-symbols-outlined text-[18px] text-slate-400 absolute right-2.5 top-2.5 pointer-events-none">
-              expand_more
-            </span>
-          </div>
-        </div>
 
         {/* Filter Dropdown 3: Період */}
         <div className="lg:col-span-2">
@@ -99,6 +83,8 @@ export default function Filters() {
             </span>
           </div>
         </div>
+        {/* Кнопка Скинути фільтри */}
+
       </div>
 
       {/* Quick Segmentation Pills & Reset Action */}

@@ -67,10 +67,11 @@ class MaterialController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = DB::table('materials')
                 ->select('materials.*', 'material_categories.name AS categoryName', 'producers.name AS producerName',
-                    'material_categories.percent', 'units.name AS unitName')
+                    'material_categories.percent', 'units.name AS unitName', 'weight_units.name AS weightUnitName')
                 ->leftJoin('material_categories', 'material_categories.id', '=', 'materials.category_id')
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
+                ->leftJoin('units AS weight_units', 'weight_units.id', '=', 'materials.weightunit_id') // Приєднуємо таблицю одиниць для ваги
                 ->orderBy('name')->get();
             $categories = MaterialCategories::where('parent_id', null)
                 ->orWhere('special', true)

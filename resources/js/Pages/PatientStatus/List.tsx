@@ -175,7 +175,9 @@ export default function List({ listData }) {
               <DataTable paginationType={PaginationType.PATIENTSTATUSES} sendRequest={sendRequest}>
                 {listData?.map((item) => (
                   <tr className="hover:bg-slate-50/80 transition-colors" key={item.id}>
-                    <td className="py-3 pl-4 font-medium text-slate-900">{item.name}</td>
+                    <td className="py-3 pl-4 font-medium text-slate-900">
+                      <span className="whitespace-nowrap pl-3">{item.name}</span>
+                    </td>
                     <td className="py-3">
                       {item.discount ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
@@ -201,7 +203,9 @@ export default function List({ listData }) {
                           title={msg.get('status.title.delete')}
                           onClick={() => handleDelete(item.id)}
                         >
-                          <span className="material-symbols-outlined text-[18px] block">delete</span>
+                          <span className="material-symbols-outlined text-[18px] block">
+                            delete
+                          </span>
                         </button>
                       </div>
                     </td>

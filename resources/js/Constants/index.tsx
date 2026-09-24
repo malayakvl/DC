@@ -71,13 +71,9 @@ export const TableHeaders = {
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.MATERIALS]: [
-    { titleKey: 'datatable.photo', className: '' },
     { titleKey: 'datatable.name', className: '' },
     { titleKey: 'datatable.price', className: '' },
     { titleKey: 'datatable.retailprice', className: '' },
-    { titleKey: 'datatable.category', className: '' },
-    { titleKey: 'datatable.producer', className: '' },
-    { titleKey: 'datatable.unit', className: '' },
     { titleKey: 'datatable.size', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
