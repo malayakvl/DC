@@ -69,7 +69,7 @@ export default function Filters({ suppliersData }) {
       post(route('act.index'));
     }
   }, [isClear]);
-console.log(suppliersData)
+
   return (
     <form ref={ref} className="w-full mb-6">
       <div className="">
