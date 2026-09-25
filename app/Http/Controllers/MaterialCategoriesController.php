@@ -16,7 +16,7 @@ use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
 
-class MaterialCategoresController extends Controller
+class MaterialCategoriesController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;

@@ -53,7 +53,9 @@ export default function ListHeader({
                   type="button"
                   onClick={onCreateClick}
                   disabled={isCreateDisabled}
-                  icon={<span className="material-symbols-outlined text-[18px]">add</span>}
+                  icon={
+                    <span className="material-symbols-outlined text-[18px] mt-[-5px]">add</span>
+                  }
                 >
                   <span className="text-[13px]">{createLabel}</span>
                 </ActionButton>
