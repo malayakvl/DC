@@ -26,7 +26,6 @@ export default {
       },
       // Кастомная палитра цветов должна быть внутри theme.extend.colors
       colors: {
-
         brand: {
           50: '#f0fdfa',
           100: '#ccfbf1',
@@ -45,6 +44,7 @@ export default {
         },
         gray: {
           100: '#f6f8fa',
+          200: '#dadbdc',
         },
         blue: {
           100: '#3ce4f0',

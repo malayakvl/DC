@@ -11,6 +11,8 @@ import Lang from 'lang.js';
 import lngStore from '../../../Lang/Store/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
 
 export default function Form({
   clinicData,
@@ -70,22 +72,16 @@ export default function Form({
 
   return (
     <section className={className}>
-      <header>
-        <h2>
-          <Link className="icon-back" href={'/stores'}>
-            &nbsp;
-          </Link>
-          {formData?.id
-            ? msg.get('store.title.edit')
-            : msg.get('store.title.create')}
-        </h2>
-      </header>
-
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
+      <div className="flex flex-col gap-3 mt-2">
+        <FormHeader
+          title={formData?.id ? msg.get('store.title.edit') : msg.get('store.title.create')}
+          description={msg.get('store.title.description')}
+          backUrl="/stores"
+          processing={processing}
+          saveText={msg.get('store.save') || 'Зберегти зміни'}
+        />
+      </div>
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <div className="flex mt-[50px] px-[0px] mb-[50px]">
           <div className="md:w-1/2">
             <InputSelect
@@ -139,44 +135,16 @@ export default function Form({
           </div>
         </div>
 
-        {/* <>
-          <InputLabel htmlFor="file" value={msg.get('store.stamp')} children={null} />
-          <div className="input_container">
-            <input
-              type="file"
-              id="file"
-              className="w-full px-4 py-0"
-              name="file"
-              onChange={handleChangeFile}
-            />
-            <InputError className="mt-2" message={errors.file} />
-          </div>
-          <div className="mt-4">
-            {stampPath && <img src={stampPath} alt="Store Stamp" width={150} className="border p-2 rounded shadow-sm" />}
-          </div>
-        </> */}
-        <div className="flex items-center">
-          <Link
-            className="btn-back"
-            title={msg.get('store.back')}
-            href={`/stores`}
-          >
-            {msg.get('store.back')}
-          </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('store.save')}
-          </PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
-          >
-            <p className="text-sm text-gray-600">{msg.get('store.saved')}</p>
-          </Transition>
-        </div>
+        {/* Master Action Footer Bar */}
+        <StickyFormFooter
+          backUrl="/stores"
+          backLabel={msg.get('store.back') || 'Повернутись'}
+          saveLabel={msg.get('store.save') || 'Зберегти'}
+          processingLabel="Збереження..."
+          successMessage={msg.get('store.saved') || 'Збережено успішно!'}
+          processing={processing}
+          recentlySuccessful={recentlySuccessful}
+        />
       </form>
     </section>
   );

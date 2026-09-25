@@ -1,9 +1,5 @@
-import InputError from '../../../Components/Form/InputError';
-import InputLabel from '../../../Components/Form/InputLabel';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
-import React, { useState } from 'react';
+import { useForm, usePage } from '@inertiajs/react';
+import React, { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -26,6 +22,8 @@ export default function FilialForm({
     locale: appLang,
   });
   const { errors } = usePage().props;
+  const fileInputRef = useRef(null);
+  const [previewUrl, setPreviewUrl] = useState(filialData?.stamp || null);
 
   const [values, setValues] = useState({
     name: filialData.name,
@@ -62,12 +60,16 @@ export default function FilialForm({
     }));
   };
 
-  const handleChangeFile = e => {
-    const key = e.target.id;
-    setValues(values => ({
-      ...values,
-      [key]: e.target.files[0],
-    }));
+  const handleChangeFile = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setValues((values) => ({
+        ...values,
+        file: file,
+      }));
+      // Створюємо тимчасове посилання для перегляду картинки в браузері
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   const handleToggleSameAddress = (e) => {
@@ -129,7 +131,7 @@ export default function FilialForm({
                 label={msg.get('filial.name')}
               />
               {errors.name && <p className="text-tertiary text-xs mt-1">{errors.name}</p>}
-              <p className="font-label-sm text-sm text-outline">
+              <p className="text-xs text-gray-500">
                 Відображається в картках записів, чеках та актах пацієнтів
               </p>
             </div>
@@ -146,7 +148,7 @@ export default function FilialForm({
                 label={msg.get('filial.ceo')}
               />
               {errors.ceo_id && <p className="text-tertiary text-xs mt-1">{errors.ceo_id}</p>}
-              <p className="font-label-sm text-sm text-outline">
+              <p className="text-xs text-gray-500">
                 Лікар або менеджер з повними правами затвердження актів
               </p>
             </div>
@@ -168,7 +170,7 @@ export default function FilialForm({
                 />
               </div>
               {errors.phone && <p className="text-tertiary text-xs mt-1">{errors.phone}</p>}
-              <p className="font-label-sm text-sm text-outline">
+              <p className="text-xs text-gray-500">
                 Прямий номер рецепції для запису пацієнтів та SMS-сповіщень
               </p>
             </div>
@@ -187,7 +189,7 @@ export default function FilialForm({
                 />
               </div>
               {errors.store_id && <p className="text-tertiary text-xs mt-1">{errors.store_id}</p>}
-              <p className="font-label-sm text-sm text-outline">
+              <p className="text-xs text-gray-500">
                 Матеріали прийому списуватимуться з балансу обраного складу
               </p>
             </div>
@@ -202,7 +204,7 @@ export default function FilialForm({
               </div>
               <div>
                 <h2 className="text-lg font-bold text-gray-900">2. Адреса та геолокація</h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs text-gray-500">
                   Фактичне місцезнаходження кабінетів та юридична адреса підрозділу
                 </p>
               </div>
@@ -237,9 +239,9 @@ export default function FilialForm({
                   onChange={handleChange}
                   placeholder="Місто, вулиця, номер будинку, корпус / офіс"
                   required
-                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 text-gray-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 shadow-sm transition-all"
+                  className="w-full input-text"
                 />
-                <span className="material-symbols-outlined absolute right-3 top-3 text-gray-400 text-[18px]">
+                <span className="material-symbols-outlined absolute right-3 top-3 text-gray-500 text-[18px]">
                   pin_drop
                 </span>
               </div>
@@ -263,7 +265,7 @@ export default function FilialForm({
                   Юридична адреса повністю збігається з фактичною
                 </label>
               </div>
-              <span className="px-2 py-0.5 rounded bg-gray-200 text-gray-600 text-xs">
+              <span className="px-2 py-0.5 rounded bg-gray-200 text-gray-500 text-xs">
                 Автосинхронізація
               </span>
             </div>
@@ -277,7 +279,7 @@ export default function FilialForm({
                 htmlFor="uraddress"
               >
                 {msg.get('filial.uraddress') || 'Юридична адреса'}
-                <span className="text-gray-400 font-normal">
+                <span className="text-gray-500 font-normal">
                   (для договорів та рахунків-фактур)
                 </span>
               </label>
@@ -290,14 +292,14 @@ export default function FilialForm({
                   readOnly={isSameAddress}
                   onChange={handleChange}
                   placeholder="Юридична адреса за реєстраційними документами"
-                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 text-gray-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 shadow-sm transition-all"
+                  className="w-full input-text"
                 />
-                <span className="material-symbols-outlined absolute right-3 top-3 text-gray-400 text-[18px]">
+                <span className="material-symbols-outlined absolute right-3 top-3 text-gray-500 text-[18px]">
                   apartment
                 </span>
               </div>
               {errors.uraddress && <p className="text-red-500 text-xs mt-1">{errors.uraddress}</p>}
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-500">
                 Використовується в офіційних фіскальних чеках та договорах надання медичних послуг
               </p>
             </div>
@@ -320,9 +322,6 @@ export default function FilialForm({
                 </p>
               </div>
             </div>
-            <span className="px-2 py-0.5 rounded text-teal-700 bg-teal-50 text-xs font-bold">
-              Крок 3 з 3
-            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -344,14 +343,14 @@ export default function FilialForm({
                   onChange={handleChange}
                   placeholder="12345678"
                   required
-                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 text-gray-900 text-sm font-mono tracking-wider focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 shadow-sm transition-all"
+                  className="w-full input-text"
                 />
                 <span className="material-symbols-outlined absolute right-3 top-3 text-emerald-600 text-[18px]">
                   check_circle
                 </span>
               </div>
               {errors.edrpou && <p className="text-red-500 text-xs mt-1">{errors.edrpou}</p>}
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-500">
                 8-значний ідентифікаційний код юридичної особи
               </p>
             </div>
@@ -375,14 +374,14 @@ export default function FilialForm({
                   onChange={handleChange}
                   placeholder="787878787878"
                   required
-                  className="w-full h-11 px-3.5 rounded-lg bg-gray-50 text-gray-900 text-sm font-mono tracking-wider focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600 shadow-sm transition-all"
+                  className="w-full input-text"
                 />
                 <span className="material-symbols-outlined absolute right-3 top-3 text-emerald-600 text-[18px]">
                   check_circle
                 </span>
               </div>
               {errors.inn && <p className="text-red-500 text-xs mt-1">{errors.inn}</p>}
-              <p className="text-xs text-gray-400">10 або 12 цифр платника ПДВ або ФОП</p>
+              <p className="text-xs text-gray-500">10 або 12 цифр платника ПДВ або ФОП</p>
             </div>
           </div>
 
@@ -393,40 +392,46 @@ export default function FilialForm({
               htmlFor="file"
             >
               <span>{msg.get('filial.stamp') || 'Відбиток офіційної печатки філії'}</span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-500">
                 Формати: PNG, SVG, PDF до 5 МБ з прозорим фоном
               </span>
             </label>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
               {/* Upload Box */}
-              <div className="md:col-span-8 p-6 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col items-center justify-center text-center cursor-pointer group relative border border-dashed border-gray-200">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="md:col-span-8 p-6 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors flex flex-col items-center justify-center text-center cursor-pointer group relative border border-dashed border-gray-200"
+              >
                 <input
                   type="file"
                   id="file"
                   name="file"
+                  ref={fileInputRef}
                   onChange={handleChangeFile}
-                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  className="hidden"
                 />
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-teal-700 mb-3 shadow-sm group-hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-[26px]">cloud_upload</span>
+                <div className="flex flex-col items-center justify-center pointer-events-none">
+                  <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-teal-700 mb-3 shadow-sm group-hover:scale-105 transition-transform">
+                    <span className="material-symbols-outlined text-[26px]">cloud_upload</span>
+                  </div>
+                  <p className="text-sm text-gray-900 font-semibold">
+                    {values.file
+                      ? values.file.name
+                      : 'Натисніть для завантаження або перетягніть файл сюди'}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Рекомендовано: квадратне зображення 800×800 px у форматі PNG (300 DPI)
+                  </p>
+                  {errors.file && <p className="text-red-500 text-xs mt-2">{errors.file}</p>}
                 </div>
-                <p className="text-sm text-gray-900 font-semibold">
-                  {values.file
-                    ? values.file.name
-                    : 'Натисніть для завантаження або перетягніть файл сюди'}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Рекомендовано: квадратне зображення 800×800 px у форматі PNG (300 DPI)
-                </p>
-                {errors.file && <p className="text-red-500 text-xs mt-2">{errors.file}</p>}
               </div>
 
               {/* Current Seal Status & Preview Card */}
               <div className="md:col-span-4 p-4 rounded-xl bg-gray-50 flex flex-col items-center justify-center gap-3 border border-gray-200">
                 <div className="relative w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-inner overflow-hidden border border-gray-100">
-                  {filialData?.stamp ? (
+                  {previewUrl ? (
                     <img
-                      src={filialData.stamp}
+                      src={previewUrl}
                       alt="Seal Preview"
                       className="w-full h-full object-cover"
                     />
@@ -446,9 +451,9 @@ export default function FilialForm({
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <span className="text-sm font-semibold text-gray-900">
-                    {filialData?.stamp ? 'Поточна печатка' : 'Печатка не завантажена'}
+                    {previewUrl ? 'Поточна печатка' : 'Печатка не завантажена'}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-500">
                     {filialData?.id ? `ID філії: ${filialData.id}` : 'Нова філія'}
                   </span>
                 </div>
@@ -456,58 +461,6 @@ export default function FilialForm({
             </div>
           </div>
         </section>
-
-        <InputText
-          name={'address'}
-          values={values}
-          dataValue={values.address}
-          value={values.address}
-          onChange={handleChange}
-          required
-          label={msg.get('filial.address')}
-        />
-        <InputText
-          name={'uraddress'}
-          values={values}
-          dataValue={values.uraddress}
-          value={values.uraddress}
-          onChange={handleChange}
-          required
-          label={msg.get('filial.uraddress')}
-        />
-        <InputText
-          name={'inn'}
-          values={values}
-          dataValue={values.inn}
-          value={values.inn}
-          onChange={handleChange}
-          required
-          label={msg.get('filial.inn')}
-        />
-        <InputText
-          name={'edrpou'}
-          values={values}
-          dataValue={values.edrpou}
-          value={values.edrpou}
-          onChange={handleChange}
-          required
-          label={msg.get('filial.edrpou')}
-        />
-
-        <InputLabel htmlFor="name" value={msg.get('filial.stamp')} />
-        <div className="input_container">
-          <input
-            type="file"
-            id="file"
-            className="w-full px-4 py-0"
-            name="file"
-            onChange={handleChangeFile}
-          />
-          <InputError className="mt-2" message={errors.file} />
-        </div>
-        <div>
-          <img src={filialData.stamp} width={100} />
-        </div>
         {/* Master Action Footer Bar */}
         <StickyFormFooter
           backUrl="/filials"
