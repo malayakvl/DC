@@ -224,12 +224,14 @@ body {
   @apply block text-left normal-case font-bold text-[12px];
   color: #000;
   font-weight: 700;
+  padding-top: 11px;
 }
 .user-profile-role {
   @apply block text-left normal-case font-bold text-[12px];
   color: rgb(13, 148, 136);
   font-weight: 700;
   white-space: nowrap;
+  margin-top: 0px;
 }
 
 .lng-menu {

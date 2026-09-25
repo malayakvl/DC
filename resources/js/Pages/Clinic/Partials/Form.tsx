@@ -6,41 +6,40 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngClinic from '../../../Lang/Clinic/translation';
 import InputText from '../../../Components/Form/InputText';
-import React, { useState } from 'react';
+import React from 'react';
 import InputSelect from '../../../Components/Form/InputSelect';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
 
-export default function ClinicForm({
-  clinicData,
-  currencyData,
-  className = '',
-}) {
+export default function ClinicForm({ clinicData, currencyData }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngClinic,
     locale: appLang,
   });
 
-  const { data, setData, post, processing, recentlySuccessful, errors, setError, clearErrors } = useForm({
-    name: clinicData.name || '',
-    address: clinicData.address || '',
-    uraddress: clinicData.uraddress || '',
-    inn: clinicData.inn || '',
-    edrpou: clinicData.edrpou || '',
-    phone: clinicData.phone || '',
-    file: null,
-    currency_id: clinicData.currency_id || '',
-    form: '',
-  });
+  const { data, setData, post, processing, recentlySuccessful, errors, setError, clearErrors } =
+    useForm({
+      name: clinicData.name || '',
+      address: clinicData.address || '',
+      uraddress: clinicData.uraddress || '',
+      inn: clinicData.inn || '',
+      edrpou: clinicData.edrpou || '',
+      phone: clinicData.phone || '',
+      file: null,
+      currency_id: clinicData.currency_id || '',
+      form: '',
+    });
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setData(e.target.id, e.target.value);
   };
 
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e) => {
     setData(e.target.id, e.target.value);
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
 
     // Clear previous errors
@@ -51,11 +50,23 @@ export default function ClinicForm({
       post(`/clinic/update?id=${clinicData.id}`);
     } else {
       // If for some reason clinicData.id is not set, show an error
-      setError('form', 'Clinic data is not properly initialized. Please refresh the page and try again.');
+      setError(
+        'form',
+        'Clinic data is not properly initialized. Please refresh the page and try again.'
+      );
     }
   };
   return (
-    <section className={className}>
+    <section>
+      <div className="flex flex-col gap-3 mt-2">
+        <FormHeader
+          title={formData?.id ? msg.get('clinic.title.edit') : msg.get('clinic.title.create')}
+          description={msg.get('clinic.title.description')}
+          backUrl="/dashboard"
+          processing={processing}
+          saveText={msg.get('customer.save') || 'Зберегти зміни'}
+        />
+      </div>
       <header>
         <h2>{msg.get('clinic.title.create')}</h2>
       </header>
@@ -122,22 +133,16 @@ export default function ClinicForm({
           label={msg.get('clinic.currency')}
           error={errors.currency_id}
         />
-
-        <div className="flex items-center gap-4">
-          <PrimaryButton disabled={processing}>
-            {msg.get('clinic.save')}
-          </PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
-          >
-            <p className="text-sm text-gray-600">{msg.get('clinic.saved')}</p>
-          </Transition>
-        </div>
+        {/* Master Action Footer Bar */}
+        <StickyFormFooter
+          backUrl="/"
+          backLabel={msg.get('clinic.back') || 'Повернутись'}
+          saveLabel={msg.get('clinic.save') || 'Зберегти'}
+          processingLabel="Збереження..."
+          successMessage={msg.get('clinic.saved') || 'Збережено успішно!'}
+          processing={processing}
+          recentlySuccessful={recentlySuccessful}
+        />
       </form>
     </section>
   );
