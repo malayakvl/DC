@@ -26,6 +26,8 @@ const lngCabinet = {
     'title.list': 'Кабінети клініки',
     'title.edit': 'Редагувати кабінет',
     'title.roles': 'Ролі',
+    'title.total': 'Загалом',
+    'title.description': 'Керуйте списком кабінетів, розподілом за філіями та кількістю місць',
     name: 'Назва',
     'place.count': 'Кількість місць',
     back: 'Назад',
@@ -34,6 +36,7 @@ const lngCabinet = {
     edit: 'Редагувати',
     delete: 'Видалити',
     placecount: 'Кількість місць',
+    place_count: 'Кількість місць',
   },
 };
 export default lngCabinet;

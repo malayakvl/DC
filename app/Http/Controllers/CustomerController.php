@@ -234,9 +234,6 @@ class CustomerController extends Controller
         $user = User::find($request->id);
         
 
-        // if (!$request->user()->canClinic('customer-edit', $clinicId)) {
-        //     abort(403);
-        // }
         return $this->withClinicSchema($request, function () use (
             $service, $request, $user, $clinicId, $filialId
         ) {

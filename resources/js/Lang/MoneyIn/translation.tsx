@@ -22,6 +22,8 @@ const lngMoneyIn = {
     'change.title.list': 'Накладні переміщення',
     'title.edit': 'Редагувати платіж',
     'title.view': 'Переглянути накладну',
+    'title.total': 'Загалом',
+    'title.description': 'Реєстр документів надходження грошей по касі, банку',
     create: 'Створити накладну',
     name: 'Назва',
     save: 'Зберегти',

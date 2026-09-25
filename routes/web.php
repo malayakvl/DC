@@ -11,13 +11,14 @@ use App\Http\Controllers\DisplacementInvoiceController;
 use App\Http\Controllers\OutgoingInvoiceController;
 use App\Http\Controllers\SchedulerController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\MaterialCategoresController;
+use App\Http\Controllers\MaterialCategoriesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\ProducerController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ImportController;
@@ -117,7 +118,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
     Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
     Route::get('/patient-status/edit/{id}', [PatientStatusController::class, 'edit'])->name('patient-status.edit');
-    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient-status.update');
+    Route::post('/patient-status/update', [PatientStatusController::class, 'update'])->name('patient.status.update');
 
     Route::get('/visit-schedule-statuses', [VisitScheduleStatusController::class, 'index'])->name('visit-schedule-status.index');
     Route::get('/visit-schedule-status/create', [VisitScheduleStatusController::class, 'create'])->name('visit-schedule-status.create');
@@ -145,12 +146,17 @@ Route::middleware('auth')->group(function () {
     Route::put('/unit/update/{id}', [UnitController::class, 'update'])->name('unit.update');
     Route::post('/unit/update', [UnitController::class, 'update'])->name('unit.update');
 
+    Route::get('/taxes', [TaxController::class, 'index'])->name('tax.index');
+    Route::get('/tax/create', [TaxController::class, 'create'])->name('tax.create');
+    Route::get('/tax/edit/{id}', [TaxController::class, 'edit'])->name('tax.edit');
+    Route::get('/tax/delete/{id}', [TaxController::class, 'delete'])->name('tax.delete');
+    Route::post('/tax/update', [TaxController::class, 'update'])->name('tax.update');
 
-    Route::get('/material-categories', [MaterialCategoresController::class, 'index'])->name('material.categories.index');
-    Route::get('/material-category/create', [MaterialCategoresController::class, 'create'])->name('material.categories.create');
-    Route::get('/material-category/edit/{id}', [MaterialCategoresController::class, 'edit'])->name('material.categories.edit');
-    Route::get('/material-category/delete/{id}', [MaterialCategoresController::class, 'delete'])->name('material.categories.delete');
-    Route::post('/material-category/update', [MaterialCategoresController::class, 'update'])->name('material.categories.update');
+    Route::get('/material-categories', [MaterialCategoriesController::class, 'index'])->name('material.categories.index');
+    Route::get('/material-category/create', [MaterialCategoriesController::class, 'create'])->name('material.categories.create');
+    Route::get('/material-category/edit/{id}', [MaterialCategoriesController::class, 'edit'])->name('material.categories.edit');
+    Route::get('/material-category/delete/{id}', [MaterialCategoriesController::class, 'delete'])->name('material.categories.delete');
+    Route::post('/material-category/update', [MaterialCategoriesController::class, 'update'])->name('material.categories.update');
 
     Route::get('/producers', [ProducerController::class, 'index'])->name('producer.index');
     Route::get('/producer/create', [ProducerController::class, 'create'])->name('producer.create');

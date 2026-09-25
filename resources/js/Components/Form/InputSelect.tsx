@@ -86,7 +86,7 @@ export default function InputSelect({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef}>
       {label && <InputLabel htmlFor={name} value={label} />}
 
       {/* Кнопка-селект */}

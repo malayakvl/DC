@@ -29,12 +29,14 @@ const lngPatientStatus = {
     'title.edit': 'Редагувати Статус',
     'title.view': 'Переглянути Статус',
     'title.delete': 'Видалити Статус',
+    'title.total': 'Загалом',
     create: 'Створити статус',
     name: 'Назва',
     discount: 'Знижка',
     save: 'Зберегти',
     saved: 'Збережено.',
     back: 'Повернутись',
+    'title.description': 'Керуйте статусами пацієнтів, їхніми знижками та категоріями',
   },
 };
 export default lngPatientStatus;

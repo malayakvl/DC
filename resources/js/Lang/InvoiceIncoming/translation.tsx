@@ -20,6 +20,8 @@ const lngInvoiceIncoming = {
     'outgoing.title.list': 'Накладні прибудткові',
     'incoming.title.list': 'Приходні накладні',
     'change.title.list': 'Накладні переміщення',
+    'title.total': 'Загалом',
+    'title.description': 'Реєстр прибуткових накладних клініки, філіалів та салонів',
     'title.edit': 'Редагувати накладну',
     'title.view': 'Переглянути накладну',
     create: 'Створити накладну',
@@ -49,7 +51,7 @@ const lngInvoiceIncoming = {
     reset: 'Скинути',
     'rows.error': 'Заповніть табличну частину',
     cancelissue: 'Відмінити проведення',
-    factqty: 'Фактична кіл-ть',
+    factqty: 'Факт кіл-ть',
     unit: 'Од. вим.',
     rate: 'Курс',
     paid: 'Сплачено',
@@ -58,6 +60,7 @@ const lngInvoiceIncoming = {
     payment_method: 'Спосіб оплати',
     payment: 'Оплата накладної',
     provider: 'виробник',
+    add_position: 'Додати позицію',
   },
 };
 export default lngInvoiceIncoming;

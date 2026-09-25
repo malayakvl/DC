@@ -17,9 +17,9 @@ import {
   Box, // Розходники / Склад
   Folder, // Дефолтна для решти
   CornerDownRight,
-  Pencil,
-  Trash2,
 } from 'lucide-react';
+import ListHeader from '../../Components/Common/ListHeader';
+
 export default function List({ tree }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -205,44 +205,15 @@ export default function List({ tree }) {
       <Head title={'Material Categories'} />
       <div className="py-0">
         <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-          <section className="mb-6">
-            <header className="mt-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                {/* Лівий блок: Заголовок + Бейдж + Підзаголовок */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2.5">
-                    <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                      {msg.get('mCategories.title.list')}
-                    </h1>
-
-                    {/* Бейдж кількості */}
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                      {tree?.length || 0} {msg.get('mCategories.title.total')}
-                    </span>
-                  </div>
-
-                  {/* Підзаголовок */}
-                  <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                    {msg.get('mCategories.title.description')}
-                  </p>
-                </div>
-
-                {/* Правий блок: Перемикач кнопки */}
-                <div className="flex items-center shrink-0">
-                  <PrimaryButton
-                    type="button"
-                    onClick={handleOpenCreate}
-                    disabled={Boolean(editingItem?.id)} // заблокована, якщо є активний editingId
-                    className={editingItem?.id ? 'opacity-50 cursor-not-allowed' : ''}
-                  >
-                    {msg.get('mCategories.create')}
-                  </PrimaryButton>
-                </div>
-              </div>
-            </header>
-          </section>
-
+          <ListHeader
+            title={msg.get('mCategories.title.list')}
+            count={tree?.length || 0}
+            totalLabel={msg.get('mCategories.title.total')}
+            description={msg.get('mCategories.title.description')}
+            onCreateClick={handleOpenCreate}
+            createLabel={msg.get('mCategories.create')}
+            isCreateDisabled={Boolean(editingItem?.id)}
+          />
           {/* Инлайн-форма */}
           {isFormOpen && (
             <section className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition-all">
@@ -369,18 +340,22 @@ export default function List({ tree }) {
                       <div className="inline-flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          className="btn-edit mr-2"
+                          className="actn-btns"
                           title={msg.get('producer.edit')}
                           onClick={() => handleOpenEdit(item)}
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </button>
                         <Link
-                          className="btn-delete"
+                          className="actn-btns actn-delete"
                           title={msg.get('producer.delete')}
                           href={`/producer/delete/${item.id}`}
                           method="delete"
                           as="button"
                           preserveScroll
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">delete</span>
+                        </Link>
                       </div>
                     )}
                   </td>

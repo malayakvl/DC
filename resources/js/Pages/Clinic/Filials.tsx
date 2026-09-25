@@ -10,6 +10,7 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function Filials({ clinicData, filialData }) {
   const dispatch = useDispatch();
@@ -31,21 +32,15 @@ export default function Filials({ clinicData, filialData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('filial.title.filials')} «{clinicData.name}»
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/filial/create'}>{msg.get('filial.title.create')}</NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-            <section className="table-card">
+            <ListHeader
+              title={msg.get('filial.title.list')}
+              count={filialData?.length || 0}
+              totalLabel={msg.get('filial.title.total')}
+              description={msg.get('filial.title.description')}
+              createHref="/filial/create"
+              createLabel={msg.get('filial.title.create')}
+            />
+            <section className="table-card mt-4">
               <DataTable paginationType={PaginationType.FILIALS} sendRequest={sendRequest}>
                 {filialData?.map((item) => (
                   <tr className="" key={item.id}>
@@ -55,21 +50,27 @@ export default function Filials({ clinicData, filialData }) {
                     <td className="">{item.edrpou}</td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
+                        className="actn-btns"
                         title={msg.get('filial.filial.edit')}
                         href={`filial/edit/${item.id}`}
-                      />
-                      <NavLink
-                        className="btn-view"
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
+                      <Link
+                        className="actn-btns"
                         title={msg.get('filial.filial.view')}
                         href={`filial/show/${item.id}`}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">visibility</span>
+                      </Link>
                       {filialData.length > 1 && (
-                        <NavLink
-                          className="btn-delete"
+                        <Link
+                          className="actn-btns"
                           title={msg.get('filial.filial.delete')}
                           href={`filial/delete/${item.id}`}
-                        />
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">delete</span>
+                        </Link>
                       )}
                     </td>
                   </tr>

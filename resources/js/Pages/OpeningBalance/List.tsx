@@ -13,6 +13,7 @@ import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import InputText from '@/Components/Form/InputText';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, filters }) {
   const dispatch = useDispatch();
@@ -49,57 +50,86 @@ export default function List({ listData, filters }) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Opening Balance'} />
-      <div className="">
+      <div className="py-0">
         <div>
-          <div className="p-3.5 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+            <ListHeader
+              title={msg.get('opening_balance.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('opening_balance.title.total')}
+              description={msg.get('opening_balance.title.description')}
+              createHref="/opening-balance/create"
+              createLabel={msg.get('opening_balance.title.create')}
+            />
             <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('opening_balance.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/opening-balance/create'}>
-                        {msg.get('opening_balance.title.create')}
-                      </NavLink>
-                    </PrimaryButton>
+              <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                {/* Верхній рядок: Поле дат та випадаючі списки */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                  {/* Дата з */}
+                  <div className="md:col-span-3">
+                    <InputText
+                      type="date"
+                      name="date_from"
+                      label={msg.get('opening_balance.date_from')}
+                      values={values}
+                      onChange={handleChange}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
+                    />
+                  </div>
+
+                  {/* Дата по */}
+                  <div className="md:col-span-3">
+                    <InputText
+                      type="date"
+                      name="date_to"
+                      label={msg.get('opening_balance.date_to')}
+                      values={values}
+                      onChange={handleChange}
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
+                    />
                   </div>
                 </div>
-              </header>
-            </section>
-            <section>
-              <div className="flex flex-wrap gap-4 mb-6 p-4 transparent rounded-lg border border-[#D8DEE8] bg-white items-end">
-                <InputText
-                  type="date"
-                  name="date_from"
-                  label={msg.get('opening_balance.date_from')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <InputText
-                  type="date"
-                  name="date_to"
-                  label={msg.get('opening_balance.date_to')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <div className="flex gap-2 mb-1">
-                  <PrimaryButton onClick={handleFilter}>
-                    {msg.get('opening_balance.filter')}
-                  </PrimaryButton>
-                  <button
-                    onClick={() => {
-                      const reset = { date_from: '', date_to: '', supplier_id: '' };
-                      setValues(reset);
-                      router.get('/opening-balance', reset);
-                    }}
-                    className="btn-submit !bg-none !bg-gray-200 !text-gray-700 hover:!bg-gray-300 transition-colors duration-200"
-                  >
-                    {msg.get('opening_balance.reset')}
-                  </button>
+
+                {/* Нижній рядок: Таби швидкого фільтру + Лічильник і очищення праворуч */}
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                  {/* Таби швидкого перемикання */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-teal-600 text-white font-bold shadow-sm">
+                      <span>Всі накладні</span>
+                      <span className="px-1.5 py-0.2 rounded-full transition-colors text-white font-bold">
+                        {listData.length || 0}
+                      </span>
+                    </button>
+                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 font-semibold">
+                      <span>Проведені</span>
+                      <span className="px-1.5 py-0.2 rounded-full transition-colors text-slate-600">
+                        0
+                      </span>
+                    </button>
+                    <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 font-semibold">
+                      <span>Не проведені</span>
+                      <span className="px-1.5 py-0.2 rounded-full transition-colors text-slate-600">
+                        0
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Права частина: Знайдено + Очистити фільтри */}
+                  <div className="flex items-center gap-4 text-xs">
+                    <span className="text-slate-500 font-medium">
+                      Знайдено:{' '}
+                      <strong className="text-slate-800 font-bold">
+                        {listData.length || 0} накладних
+                      </strong>
+                    </span>
+                    <button
+                      type="button"
+                      className="flex items-center gap-1.5 text-teal-700 hover:text-teal-800 font-semibold transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">restart_alt</span>
+                      <span>Очистити фільтри</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </section>

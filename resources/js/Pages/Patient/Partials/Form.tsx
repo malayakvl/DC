@@ -1,7 +1,5 @@
 // import InputLabel from '../../../Components/Form/InputLabel';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
@@ -9,496 +7,459 @@ import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPercent,
-  faPhone,
-  faEnvelope,
-  faFemale,
-  faLocationDot,
-  faMale,
-} from '@fortawesome/free-solid-svg-icons';
 import InputTextarea from '../../../Components/Form/InputTextarea';
 import { InputMask } from '@react-input/mask';
 import moment from 'moment';
-// import axios from 'axios';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
 
 export default function Form({
   formData,
   customerData,
   contactData,
   statusesData,
-  className = '',
+  photoPath = null,
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
     locale: appLang,
   });
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
+  const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-image.png');
 
   const [uploadedFile, setUploadedFile] = useState();
 
-  const onDrop = useCallback(acceptedFiles => {
-    // Do something with the files
+  const onDrop = useCallback((acceptedFiles) => {
     setUploadedFile(acceptedFiles);
   }, []);
 
-  const { data, setData, processing, post, recentlySuccessful, progress } =
-    useForm({
-      id: formData.id,
-      file: null,
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      primary_phone: formData.primary_phone,
-      phone2: formData.phone2,
-      discount: formData.discount,
-      address: formData.address,
-      email: formData.email,
-      birthday: formData.birthday,
-      gender: formData.gender,
-      important_info: formData.important_info,
-      medical_card_no: formData.medical_card_no,
-      curator_id: formData.curator_id,
-      register_date: formData.register_date
-        ? formData.register_date
-        : new Date(),
-      contact: formData.contact,
-      payment: formData.payment,
-      status_id: formData.status_id,
-      notice: formData.notice,
-      patient_id: formData.patient_id,
-    });
+  const { data, setData, processing, post, recentlySuccessful, progress } = useForm({
+    id: formData.id,
+    file: null,
+    first_name: formData.first_name,
+    last_name: formData.last_name,
+    primary_phone: formData.primary_phone,
+    phone2: formData.phone2,
+    discount: formData.discount,
+    address: formData.address,
+    email: formData.email,
+    birthday: formData.birthday,
+    gender: formData.gender,
+    important_info: formData.important_info,
+    medical_card_no: formData.medical_card_no,
+    curator_id: formData.curator_id,
+    register_date: formData.register_date ? formData.register_date : new Date(),
+    contact: formData.contact,
+    payment: formData.payment,
+    status_id: formData.status_id,
+    notice: formData.notice,
+    patient_id: formData.patient_id,
+  });
   const { errors } = usePage().props;
-  const [selectedFile, setSelectedFile] = useState<File | undefined>();
-  const [preview, setPreview] = useState(formData.avatar ? `/images/patients/${formData.avatar}` : '/images/no-image.png');
 
-  const handleChange = e => {
+
+  const handleChange = (e) => {
     const key = e.target.id;
     const value = e.target.value;
-    setData(values => ({
+    setData((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     post(route('patient.update'));
   };
 
   useEffect(() => {
     if (!selectedFile) {
-      setPreview(undefined);
       return;
     }
-
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
-
-    // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
-  const onSelectFile = e => {
-    if (!e.target.files || e.target.files.length === 0) {
-      setSelectedFile(undefined);
-      return;
-    }
-
-    // I've kept this example simple by using the first image instead of multiple
-    setSelectedFile(e.target.files[0]);
-  };
-  console.log('Patient Data', data);
-
   return (
-    <section className={className}>
-      <header>
-        <h2>
-          <Link className="icon-back" href={'/patients'}>
-            &nbsp;
-          </Link>
-          {formData?.id
-            ? msg.get('patient.title.edit')
-            : msg.get('patient.title.create')}
-        </h2>
-      </header>
-
-      <form
-        onSubmit={submit}
-        className="mt-0 w-full"
-        encType="multipart/form-data"
-      >
-        <div className="flex mt-[50px] px-[100px] mb-[50px]">
-          <div className="w-1/3">
-            <div className="flex flex-row relative">
-              <div className="file-preview inline-block">
-                {(!selectedFile && !formData.avatar) && (
-                  <img src="/images/nf.png" width={300} height={300} />
+    <section>
+      <div className="flex flex-col gap-3 mt-2">
+        <FormHeader
+          title={formData?.id ? msg.get('patient.title.edit') : msg.get('patient.title.create')}
+          description={msg.get('patient.title.description')}
+          backUrl="/patients"
+          processing={processing}
+          saveText={msg.get('patient.save') || 'Зберегти зміни'}
+        />
+      </div>
+      {/* Шапка */}
+      <div className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
+        <form onSubmit={submit} className="w-full" encType="multipart/form-data">
+          {/* Верхний блок: Аватар + основные данные (ФИО, Телефон) */}
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 mb-6">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              {/* Блок аватарки */}
+              <div className="photo-block">
+                <div className="flex flex-row relative input-bordered">
+                  <div className="product-preview material-preview inline-block">
+                    {!selectedFile && !photoPath && (
+                      <div className="upload-zone">
+                        <p className="mt-3 text-sm font-semibold text-slate-700 group-hover:text-brand-700">
+                          {msg.get('patient.dragdrop_files')}
+                        </p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {msg.get('patient.or_select_file_type')}
+                        </p>
+                        <span className="inline-block mt-3 px-2 py-0.5 text-[11px] font-medium bg-slate-200/60 text-slate-600 rounded">
+                          {msg.get('patient.file_sizes')}
+                        </span>
+                      </div>
+                    )}
+                    {!selectedFile && photoPath && (
+                      <div
+                        className={'product-photo'}
+                        style={{
+                          backgroundImage: `url(${photoPath})`,
+                        }}
+                      ></div>
+                    )}
+                    {selectedFile && (
+                      <div
+                        className="preview-photo"
+                        style={{ backgroundImage: `url(${preview})` }}
+                      ></div>
+                    )}
+                    <div className="btn-upload-photo-patient"></div>
+                  </div>
+                </div>
+                <div className="upload-product-btn-block ml-[5px] relative">
+                  <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    onChange={(e) => {
+                      if (!e.target.files || e.target.files.length === 0) {
+                        setSelectedFile(undefined);
+                        setData('file', null);
+                        return;
+                      }
+                      setData('file', e.target.files[0]);
+                      setSelectedFile(e.target.files[0]);
+                    }}
+                  />
+                  <label htmlFor="file" className="btn-2" />
+                </div>
+                <span className="text-red-600">{errors.file}</span>
+                {progress && (
+                  <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+                    <div
+                      className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                      style={{ width: `${progress.percentage}%` }}
+                    >
+                      {progress.percentage}%
+                    </div>
+                  </div>
                 )}
-                {(!selectedFile && formData.avatar) && (
-                  <div className={'patient-avatar'} style={{
-                    background: `url(/uploads/patients/${formData.avatar})`
-                  }}></div>
-                  // <img src={`/uploads/patients/${formData.avatar}`} width={197} height={244} />
-                )}
-                {selectedFile && (
-                  <div
-                    className="preview-photo"
-                    style={{ backgroundImage: `url(${preview})` }}
-                  ></div>
-                )}
-                <div className="btn-upload-photo-patient"></div>
               </div>
-              <div className="upload-patient-btn-block ml-[5px] relative">
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  onChange={e => {
-                    setData('file', e.target.files[0]);
-                    if (!e.target.files || e.target.files.length === 0) {
-                      setSelectedFile(undefined);
-                      return;
-                    }
 
-                    // I've kept this example simple by using the first image instead of multiple
-                    setSelectedFile(e.target.files?.[0] || undefined);
-                  }}
-                />
-                <label htmlFor="file" className="btn-2" />
+              {/* Поля ФИО и Основной телефон */}
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    {msg.get('patient.last.name')} <span className="text-red-500">*</span>
+                  </label>
+                  <InputText
+                    name={'last_name'}
+                    values={data}
+                    dataValue={data.last_name}
+                    value={data.last_name}
+                    className={
+                      'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-slate-800 transition'
+                    }
+                    onChange={handleChange}
+                    showLabel={false}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    {msg.get('patient.first.name')} <span className="text-red-500">*</span>
+                  </label>
+                  <InputText
+                    name={'first_name'}
+                    values={data}
+                    dataValue={data.first_name}
+                    value={data.first_name}
+                    className={
+                      'w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-slate-800 transition'
+                    }
+                    onChange={handleChange}
+                    showLabel={false}
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    {msg.get('patient.primary.phone')}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 z-10">
+                      <span className="material-symbols-outlined text-[18px]">call</span>
+                    </span>
+                    <InputText
+                      name={'primary_phone'}
+                      values={data}
+                      dataValue={data.primary_phone}
+                      value={data.primary_phone}
+                      style={{ paddingLeft: '2.75rem' }} // Принудительный отступ слева для текста
+                      className={
+                        'w-full pr-4 py-3 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-slate-800 transition'
+                      }
+                      onChange={handleChange}
+                      showLabel={false}
+                    />
+                  </div>
+                </div>
+                {/* Номер карты */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    {msg.get('patient.card')}
+                  </label>
+                  <InputText
+                    name={'medical_card_no'}
+                    values={data}
+                    dataValue={data.medical_card_no}
+                    value={data.medical_card_no}
+                    className={'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm'}
+                    onChange={handleChange}
+                    showLabel={false}
+                  />
+                </div>
+                {/* Скидка */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    {msg.get('patient.discount')}
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 z-10">
+                      <span className="material-symbols-outlined text-[18px]">percent</span>
+                    </span>
+                    <InputText
+                      name={'discount'}
+                      values={data}
+                      dataValue={data.discount}
+                      value={data.discount}
+                      style={{ paddingLeft: '2.75rem' }}
+                      className={
+                        'w-full pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-slate-800 text-sm transition'
+                      }
+                      onChange={handleChange}
+                      showLabel={false}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <span className="text-red-600">{errors.file}</span>
+
             {progress && (
-              <div className="w-full bg-gray-200 rounded-full dark:bg-gray-700">
+              <div className="w-full bg-slate-100 rounded-full h-2 mt-6 overflow-hidden">
                 <div
-                  className="bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
+                  className="bg-teal-500 h-2 transition-all duration-300 rounded-full"
                   style={{ width: `${progress.percentage}%` }}
-                >
-                  {progress.percentage}%
-                </div>
+                />
               </div>
             )}
           </div>
-          <div className="w-2/3">
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/3">
-                <label className="inline-label">
-                  {msg.get('patient.last.name')}
-                  <span className="asterisk">*</span>
-                </label>
-              </div>
-              <div className="md:w-2/3">
-                <InputText
-                  name={'last_name'}
-                  values={data}
-                  dataValue={data.last_name}
-                  value={data.last_name}
-                  className={'input-text-noborder f-24'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  required
-                  label={msg.get('patient.first.name')}
-                />
-              </div>
-            </div>
 
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/3">
-                <label className="inline-label">
-                  {msg.get('patient.first.name')}
-                  <span className="asterisk">*</span>
-                </label>
-              </div>
-              <div className="md:w-2/3">
-                <InputText
-                  name={'first_name'}
-                  values={data}
-                  dataValue={data.first_name}
-                  value={data.first_name}
-                  className={'input-text-noborder f-24'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  required
-                  label={msg.get('patient.first.name')}
-                />
-              </div>
-            </div>
-
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/3">
-                <label className="inline-label">
-                  {msg.get('patient.primary.phone')}
-                </label>
-              </div>
-              <div className="md:w-2/3">
-                <InputText
-                  name={'primary_phone'}
-                  values={data}
-                  dataValue={data.primary_phone}
-                  value={data.primary_phone}
-                  className={'input-text-noborder f-24'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={msg.get('patient.primary.phone')}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-rows-1 grid-flow-col gap-4">
-          <div className="row-span">
-            {/* Phone */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+          {/* Двухколоночный блок с остальными полями */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Левая колонка */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-5">
+              {/* Дополнительный телефон */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.phone')}
                 </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 z-10">
+                    <span className="material-symbols-outlined text-[18px]">phone_iphone</span>
+                  </span>
+                  <InputText
+                    name={'phone2'}
+                    values={data}
+                    dataValue={data.phone2}
+                    value={data.phone2}
+                    style={{ paddingLeft: '2.75rem' }}
+                    className={
+                      'w-full pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 text-slate-800 text-sm transition'
+                    }
+                    onChange={handleChange}
+                    showLabel={false}
+                  />
+                </div>
               </div>
-              <div className="md:w-4/5 relative">
-                <small className="form-awasom-icons">
-                  <FontAwesomeIcon icon={faPhone} className="mr-5" />
-                </small>
-                <InputText
-                  name={'phone2'}
-                  values={data}
-                  dataValue={data.phone2}
-                  value={data.phone2}
-                  className={'input-text-noborder icon-input'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={null}
-                />
-              </div>
-            </div>
-            {/* Discount */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
-                  {msg.get('patient.discount')}
-                </label>
-              </div>
-              <div className="md:w-4/5 relative">
-                <small className="form-awasom-icons">
-                  <FontAwesomeIcon icon={faPercent} className="mr-5" />
-                </small>
-                <InputText
-                  name={'discount'}
-                  values={data}
-                  dataValue={data.discount}
-                  value={data.discount}
-                  className={'input-text-noborder icon-input'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={null}
-                />
-              </div>
-            </div>
-            {/* Statuses */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Статус */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.status')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputSelect
                   name={'status_id'}
                   values={data}
                   value={data.status_id}
                   options={statusesData}
                   onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
                   label={null}
                 />
               </div>
-            </div>
-            {/* Address */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Адрес */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.address')}
                 </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined text-[18px]">location_on</span>
+                  </span>
+                  <InputText
+                    name={'address'}
+                    values={data}
+                    dataValue={data.address}
+                    value={data.address}
+                    className={
+                      'w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm'
+                    }
+                    onChange={handleChange}
+                    showLabel={false}
+                  />
+                </div>
               </div>
-              <div className="md:w-4/5 relative">
-                <small className="form-awasom-icons">
-                  <FontAwesomeIcon icon={faLocationDot} className="mr-5" />
-                </small>
-                <InputText
-                  name={'address'}
-                  values={data}
-                  dataValue={data.address}
-                  value={data.address}
-                  className={'input-text-noborder icon-input'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={null}
-                />
-              </div>
-            </div>
-            {/* Email */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Email */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.email')}
                 </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined text-[18px]">mail</span>
+                  </span>
+                  <InputText
+                    name={'email'}
+                    values={data}
+                    dataValue={data.email}
+                    value={data.email}
+                    className={
+                      'w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm'
+                    }
+                    onChange={handleChange}
+                    showLabel={false}
+                  />
+                </div>
               </div>
-              <div className="md:w-4/5 relative">
-                <small className="form-awasom-icons">
-                  <FontAwesomeIcon icon={faEnvelope} className="mr-5" />
-                </small>
-                <InputText
-                  name={'email'}
-                  values={data}
-                  dataValue={data.email}
-                  value={data.email}
-                  className={'input-text-noborder icon-input'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={null}
-                />
-              </div>
-            </div>
-            {/* Gender */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Пол */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.gender')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
-                <div className="inline-block">
-                  <input
-                    type="radio"
-                    name="gender"
-                    id="gender"
-                    value={'female'}
-                    checked={'female' === data['gender']}
-                    onChange={handleChange}
-                  />
-                  <FontAwesomeIcon
-                    icon={faFemale}
-                    className="radio-gender-icon"
-                  />
+                <div className="flex gap-4">
+                  <label
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border cursor-pointer transition ${data.gender === 'female' ? 'bg-teal-50 border-teal-500 text-teal-700 font-medium' : 'border-slate-200 text-slate-600'}`}
+                  >
+                    <input
+                      type="radio"
+                      name="gender"
+                      id="gender"
+                      value={'female'}
+                      checked={'female' === data['gender']}
+                      onChange={handleChange}
+                      className="hidden"
+                    />
+                    <span className="material-symbols-outlined text-[18px]">female</span>
+                    Жіноча
+                  </label>
+
+                  <label
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border cursor-pointer transition ${data.gender === 'male' ? 'bg-teal-50 border-teal-500 text-teal-700 font-medium' : 'border-slate-200 text-slate-600'}`}
+                  >
+                    <input
+                      type="radio"
+                      name="gender"
+                      id="gender"
+                      value={'male'}
+                      checked={'male' === data['gender']}
+                      onChange={handleChange}
+                      className="hidden"
+                    />
+                    <span className="material-symbols-outlined text-[18px]">male</span>
+                    Чоловіча
+                  </label>
                 </div>
-                <div className="ml-4 inline-block">
-                  <input
-                    type="radio"
-                    name="gender"
-                    id="gender"
-                    value={'male'}
-                    checked={'male' === data['gender']}
-                    onChange={handleChange}
-                  />
-                  <FontAwesomeIcon
-                    icon={faMale}
-                    className="radio-gender-icon"
-                  />
-                </div>
-                {/* <div className="ml-4 inline-block">
-                  <input
-                    type="radio"
-                    name="gender"
-                    id="gender"
-                    value={'none'}
-                    checked={'none' === data['gender']}
-                    onChange={handleChange}
-                  />
-                  <span className="ml-2">{msg.get('patient.undefind')}</span>
-                </div> */}
               </div>
-            </div>
-            {/* Important info */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Важная информация */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.important')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputText
                   name={'important_info'}
                   values={data}
                   dataValue={data.important_info}
                   value={data.important_info}
-                  className={'input-text-noborder'}
+                  className={'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm'}
                   onChange={handleChange}
                   showLabel={false}
-                  label={null}
                 />
               </div>
-            </div>
-            {/* Notice */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Заметки */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.notice')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputTextarea
                   name={'notice'}
                   values={data}
                   onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
                   label={null}
                 />
               </div>
             </div>
-            {/* Card number */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
-                  {msg.get('patient.card')}
-                </label>
-              </div>
-              <div className="md:w-4/5 relative">
-                <InputText
-                  name={'medical_card_no'}
-                  values={data}
-                  dataValue={data.medical_card_no}
-                  value={data.medical_card_no}
-                  className={'input-text-noborder'}
-                  onChange={handleChange}
-                  showLabel={false}
-                  label={null}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="row-span">
-            {/* Birthday */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+            {/* Правая колонка */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-5 h-fit">
+              {/* Дата рождения */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.birthday')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputMask
                   component="input"
                   mask="__-__-____"
-                  defaultValue={
-                    data.birthday
-                      ? moment(data.birthday).format('DD-MM-YYYY')
-                      : ''
-                  }
+                  defaultValue={data.birthday ? moment(data.birthday).format('DD-MM-YYYY') : ''}
                   replacement={{ _: /\d/ }}
                   name="birthday"
                   id="birthday"
                   onChange={handleChange}
-                  placeholder={'dd-mm-yyyy'}
-                  className={'input-text-noborder'}
+                  placeholder={'дд-мм-рррр'}
+                  className={'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm'}
                 />
               </div>
-            </div>
-            {/* Curator */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
-                  {msg.get('patient.curator')}
+
+              {/* Куратор */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  {msg.get('patient.curator')} <span className="text-red-500">*</span>
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputSelect
                   name={'curator_id'}
                   values={data}
@@ -506,47 +467,39 @@ export default function Form({
                   options={customerData}
                   onChange={handleChange}
                   required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
                   label={null}
                 />
               </div>
-            </div>
-            {/* Register date */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
-                  {msg.get('patient.register.date')}
-                  <span className="asterisk">*</span>
+
+              {/* Дата регистрации */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  {msg.get('patient.register.date')} <span className="text-red-500">*</span>
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputMask
                   component="input"
                   defaultValue={
-                    data.register_date
-                      ? moment(data.register_date).format('DD-MM-YYYY')
-                      : ''
+                    data.register_date ? moment(data.register_date).format('DD-MM-YYYY') : ''
                   }
                   onChange={handleChange}
                   mask="__-__-____"
                   name="register_date"
                   id="register_date"
                   replacement={{ _: /\d/ }}
-                  placeholder={'dd-mm-yyyy'}
-                  className={'input-text-noborder'}
+                  placeholder={'дд-мм-рррр'}
+                  className={'w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm'}
                 />
                 {errors?.register_date && (
-                  <div className="form-error">{errors.register_date}</div>
+                  <div className="text-red-500 text-xs mt-1">{errors.register_date}</div>
                 )}
               </div>
-            </div>
-            {/* Contact */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
-                  {msg.get('patient.contact')}
+
+              {/* Контакт / Источник */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  {msg.get('patient.contact')} <span className="text-red-500">*</span>
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputSelect
                   name={'contact'}
                   values={data}
@@ -554,52 +507,38 @@ export default function Form({
                   options={contactData}
                   onChange={handleChange}
                   required
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
                   label={null}
                 />
               </div>
-            </div>
-            {/* Notice */}
-            <div className="md:flex md:items-center mb-6">
-              <div className="md:w-1/5">
-                <label className="inline-label">
+
+              {/* Оплата / Условия */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   {msg.get('patient.payment')}
                 </label>
-              </div>
-              <div className="md:w-4/5 relative">
                 <InputTextarea
                   name={'payment'}
                   values={data}
                   onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
                   label={null}
                 />
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center mt-[20px]">
-          <Link
-            className="btn-back"
-            title={msg.get('patient.back')}
-            href={`/patients`}
-          >
-            {msg.get('patient.back')}
-          </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('patient.save')}
-          </PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
-          >
-            <p className="text-sm text-gray-600">{msg.get('size.saved')}</p>
-          </Transition>
-        </div>
-      </form>
+          {/* Master Action Footer Bar */}
+          <StickyFormFooter
+            backUrl="/patients"
+            backLabel={msg.get('patient.back') || 'Повернутись'}
+            saveLabel={msg.get('patient.save') || 'Зберегти'}
+            processingLabel="Збереження..."
+            successMessage={msg.get('patient.saved') || 'Збережено успішно!'}
+            processing={processing}
+            recentlySuccessful={recentlySuccessful}
+          />
+        </form>
+      </div>
     </section>
   );
 }

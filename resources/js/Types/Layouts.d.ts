@@ -22,6 +22,7 @@ declare namespace Layouts {
       moneyin: Pagination;
       visitschedulestatuses: Pagination;
       suppliers: Pagination;
+      taxes: Pagination;
     };
     filialName: string;
     isSidebarOpen: boolean;
