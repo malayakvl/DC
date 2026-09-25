@@ -54,10 +54,6 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
             calendar_month
           </span>
           <span className="font-bold text-base text-slate-900 tracking-tight">{currentDate}</span>
-          <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            Зміна А (08:00 – 18:00)
-          </span>
         </div>
       </div>
 

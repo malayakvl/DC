@@ -8,6 +8,8 @@ import lngServiceCategories from '../../../Lang/Services/translation';
 import AddDynamicInputFields, { AddDynamicInputFieldsRef } from '../Partials/Row';
 import { pricingItemsSelector, totalPriceItemsSelector } from '@/Redux/Service/selectors';
 import { Sliders, ArrowLeft } from 'lucide-react';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import FormHeader from '../../../Components/Common/FormHeader';
 
 export default function Form({
   categoryData = null,
@@ -60,54 +62,17 @@ export default function Form({
   };
 
   return (
-    <div className={`w-full px-4 sm:px-8 py-6 flex flex-col gap-6 ${className}`}>
-      {/* Верхня навігація та хлібні крихти */}
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-          <div className="flex items-start gap-2">
-            <Link
-              href="/services"
-              className="mt-1 flex items-center justify-center w-9 h-9 rounded-xl bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:text-teal-700 transition-all"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mt-space-xs">
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    {formData?.id
-                      ? 'Редагування технологічної карти послуги'
-                      : 'Нова технологічна карта'}
-                  </h1>
-                  <p className="text-sm text-slate-500 mt-0.5">
-                    Налаштування нормативів списання матеріалів, розрахунок собівартості та
-                    ціноутворення
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button type="submit" disabled={processing} className="btn-submit">
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M5 13l4 4L19 7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                />
-              </svg>
-              {msg.get('service.save') || 'Зберегти зміни'}
-            </div>
-          </button>
-        </div>
+    <div className={`w-full mt-3`}>
+      <div className="flex flex-col gap-3 mt-2">
+        <FormHeader
+          title={formData?.id ? msg.get('service.title.edit') : msg.get('service.title.create')}
+          description={msg.get('service.title.description')}
+          backUrl="/services"
+          processing={processing}
+          saveText={msg.get('service.save') || 'Зберегти зміни'}
+        />
       </div>
+      {/* Верхня навігація та хлібні крихти */}
 
       {/* Основна форма */}
       <form onSubmit={submit} className="flex flex-col gap-6">
@@ -120,7 +85,7 @@ export default function Form({
             <h2 className="text-lg font-bold text-slate-900">Основні параметри послуги</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-slate-700 uppercase">Назва послуги</label>
               <input
@@ -246,47 +211,17 @@ export default function Form({
             </div>
           </div>
         </div>
-
+        {/* Master Action Footer Bar */}
+        <StickyFormFooter
+          backUrl="/services"
+          backLabel={msg.get('service.back') || 'Повернутись'}
+          saveLabel={msg.get('service.save') || 'Зберегти'}
+          processingLabel="Збереження..."
+          successMessage={msg.get('service.saved') || 'Збережено успішно!'}
+          processing={processing}
+          recentlySuccessful={recentlySuccessful}
+        />
         {/* Футер із кнопками збереження */}
-        <div className="flex items-center justify-between pt-2">
-          <Link className="btn-back" title={msg.get('service.back')} href={`/services`}>
-            {msg.get('service.back')}
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Transition
-              show={recentlySuccessful}
-              enter="transition ease-in-out"
-              enterFrom="opacity-0"
-              leave="transition ease-in-out"
-              leaveTo="opacity-0"
-            >
-              <p className="text-sm text-teal-600 font-semibold">
-                {msg.get('service.saved') || 'Збережено!'}
-              </p>
-            </Transition>
-
-            <button type="submit" disabled={processing} className="btn-submit">
-              <div className="flex items-center justify-center">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M5 13l4 4L19 7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                  />
-                </svg>
-                {msg.get('service.save') || 'Зберегти зміни'}
-              </div>
-            </button>
-          </div>
-        </div>
       </form>
     </div>
   );
