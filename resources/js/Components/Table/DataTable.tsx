@@ -8,22 +8,13 @@ import { TableHeaders } from '../../Constants';
 import { setPaginationAction, setSwitchToggleAction } from '../../Redux/Layout';
 import { paginationSelectorFactory } from '../../Redux/Layout/selectors';
 
-export default function DataTable({
-  paginationType,
-  children,
-  totalAmount = 0,
-  sendRequest = () => {},
-  switcherOnClick = null,
-  sendDeleteRequest = () => {},
-  sendCopyRequest = () => {},
-}) {
+export default function DataTable({ paginationType, children, switcherOnClick = null }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngHeaders,
     locale: appLang,
   });
   // const { PRODUCTS } = PaginationType;
-  const dropdownOptions = ['copy', 'delete'];
   const [loading, setLoading] = useState(false);
   const switchAllHeader = false;
   const [allChecked, setAllChecked] = useState(false);
@@ -106,7 +97,7 @@ export default function DataTable({
         )}
         <div className="relative w-full inline-block">
           {item.sortKey && (
-            <div className="sortable-block absolute top-[-9px] left-0">
+            <div className="">
               <div
                 role="presentation"
                 data-name={item.sortKey}
@@ -129,8 +120,13 @@ export default function DataTable({
                 <i className={`tbl-icon ${item.iconClass}`} />
               </div>
             )}
-            {item.titleKey && (
+            {item.titleKey && item.titleKey != 'datatable.actions' && (
               <div style={{ marginTop: '-2px' }} className="inline-block">
+                {item.titleKey ? msg.get(item.titleKey) : ''}
+              </div>
+            )}
+            {item.titleKey && item.titleKey == 'datatable.actions' && (
+              <div style={{ marginTop: '-2px' }} className="absolute top-0 right-3">
                 {item.titleKey ? msg.get(item.titleKey) : ''}
               </div>
             )}
@@ -166,7 +162,9 @@ export default function DataTable({
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <table className="data-table">
         <thead>{renderTableHeader()}</thead>
-        <tbody>{renderTableBody()}</tbody>
+        <tbody className="divide-y divide-slate-100 text-slate-800 text-sm">
+          {renderTableBody()}
+        </tbody>
       </table>
     </div>
   );

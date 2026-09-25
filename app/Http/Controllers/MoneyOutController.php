@@ -108,7 +108,7 @@ class MoneyOutController extends Controller
 
             $paymentsMethods = PaymentMethod::all();
 
-            return Inertia::render('MoneyIn/List', [
+            return Inertia::render('MoneyOut/List', [
                 'clinicData' => $clinic,
                 'paymentsMethods' => $paymentsMethods,
                 'listData' => $invoiceData,

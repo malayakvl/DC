@@ -5,9 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import InputText from '../../../Components/Form/InputText';
-import InputTextarea from '../../../Components/Form/InputTextarea';
-import InputSelect from '../../../Components/Form/InputSelect';
 import lngScheduler from '../../../Lang/Scheduler/translation';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import {
@@ -32,6 +29,9 @@ import {
   servicesSelector,
   showSchedulePopupSelector,
 } from '@/Redux/Scheduler/selectors';
+import InputText from '../../../Components/Form/InputText';
+import InputSelect from '../../../Components/Form/InputSelect';
+import InputTextarea from '../../../Components/Form/InputTextarea';
 import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '@/Redux/Layout';
@@ -147,25 +147,6 @@ export default function SchedulerFormCreate({
     }));
   }, [eventDate, doctorId, eventStatus, cabinetId]);
 
-  const submitOld = (e) => {
-    e.preventDefault();
-    values['newPatientData'] = newPatientData;
-    // const inputDate = '01.07.2025'; // Input in DD.MM.YYYY format
-    const [day, month, year] = eventDate.split('.'); // Split the input string
-    const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    values['event_date'] = formattedDate;
-    values['services'] = popupServices;
-    if (patientId) {
-      values['patientId'] = patientId;
-    }
-    if (formData.id) {
-      router.post(`/scheduler/update?id=${formData.id}`, values);
-    } else {
-      router.post('/scheduler/update', values);
-    }
-    dispatch(showOverlayAction(false));
-  };
-
   const submit = (e) => {
     e.preventDefault();
 
@@ -182,19 +163,12 @@ export default function SchedulerFormCreate({
     const url = formData.id ? `/scheduler/update?id=${formData.id}` : '/scheduler/update';
 
     router.post(url, values, {
-      preserveState: true, // Чтобы страница не перезагружалась и не сбрасывала стейт React
-      preserveScroll: true, // Чтобы сетка календаря не прыгала вверх
+      preserveState: true,
+      preserveScroll: true,
       onSuccess: () => {
-        // Когда бэк успешно обработал запрос, Inertia обновит пропсы в Index.tsx
-        // Нам нужно просто закрыть модалку
         dispatch(showOverlayAction(false));
         dispatch(showSchedulePopupAction(false));
-        dispatch(showOverlayAction(false));
         dispatch(setPopupAction(false));
-
-        // Если у тебя тут еще дергаются стейты закрытия конкретных попапов, добавь их:
-        // dispatch(showSchedulePopupAction(false));
-        // dispatch(showScheduleEditPopupAction(false));
       },
       onError: (errors) => {
         console.error('Ошибки при сохранении:', errors);
@@ -204,40 +178,47 @@ export default function SchedulerFormCreate({
 
   const renderService = (item) => {
     return (
-      <div className="selected-service selected-services-block">
-        <div className="service-info">
-          <div className="service-title">{item.name}</div>
-          <div className="service-price-selected">
+      <div
+        key={item.id}
+        className="flex items-center justify-between p-3 mb-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm"
+      >
+        <div className="flex-1 min-w-0 pr-2">
+          <div className="font-semibold text-slate-900 truncate">{item.name}</div>
+          <div className="text-xs text-slate-500 font-mono">
             {item.total_price} {currency}
           </div>
         </div>
 
-        <div className="service-actions">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="qty-btn"
+            className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition"
             onClick={() => dispatch(minusServiceAction(item))}
           >
             −
           </button>
-
-          <span className="qty-value">{item.qty ?? 1}</span>
-
+          <span className="w-6 text-center font-semibold text-xs text-slate-800">
+            {item.qty ?? 1}
+          </span>
           <button
             type="button"
-            className="qty-btn"
+            className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition"
             onClick={() => dispatch(plusServiceAction(item))}
           >
             +
           </button>
         </div>
 
-        <div className="service-total">
-          {item.total_price * item.qty} {currency}
+        <div className="w-20 text-right font-mono font-bold text-xs text-slate-900 ml-4">
+          {item.total_price * (item.qty ?? 1)} {currency}
         </div>
 
-        <button className="delete-btn" onClick={() => dispatch(setServicesAction(item))}>
-          <Trash className={'w-4 h-4 ml-2'} />
+        <button
+          type="button"
+          className="p-1.5 ml-2 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition"
+          onClick={() => dispatch(setServicesAction(item))}
+        >
+          <Trash className="w-4 h-4" />
         </button>
       </div>
     );
@@ -246,42 +227,42 @@ export default function SchedulerFormCreate({
   const addService = (_item) => {
     dispatch(setServicesAction(_item));
   };
-  console.log(values);
+
   return (
     <section className={`scheduler-popup ${showPopup ? '' : 'hidden'}`}>
-      <header>
-        <h2 className={'pt-7 pb-7'}>
+      <div>
+        <h2 className="text-lg font-bold text-slate-900">
           {formData?.id
             ? msg.get('mCategories.pricing.edit')
             : msg.get('scheduler.title.create.visit')}
         </h2>
-      </header>
-
+      </div>
       <form
         onSubmit={(event) => submit(event)}
-        className="mt-0 space-y-3 min-w-[350px]"
+        className="p-6 space-y-4 min-w-[420px] "
         encType="multipart/form-data"
       >
         <EventStatus />
 
         <EventPatient values={values} />
 
-        <div className={'flex w-full'}>
-          <div className={'w-1/2'}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
             <InputText
-              name={'title'}
+              name="title"
               values={values}
               dataValue={values.title}
               value={values.title}
               onChange={handleChange}
               required
               label={msg.get('scheduler.form.title')}
+              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
             />
           </div>
-          <div className={'w-1/2 ml-3'}>
+          <div>
             <InputSelect
-              name={'cabinet_id'}
-              className={'w-1/2'}
+              name="cabinet_id"
+              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
               values={values}
               options={cabinetData}
               onChange={handleChangeSelect}
@@ -291,134 +272,150 @@ export default function SchedulerFormCreate({
           </div>
         </div>
 
-        <div className={'flex w-full'}>
-          <div className={'w-1/2'}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
             <InputSelect
-              name={'doctor_id'}
+              name="doctor_id"
               values={values}
               options={customerData}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.doctor')}
+              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
             />
           </div>
-          <div className={'w-1/2 ml-3'}>
+          <div>
             <InputSelect
-              name={'assistent_id'}
+              name="assistent_id"
               values={values}
               options={assistantData}
               onChange={handleChangeSelect}
               required
               label={msg.get('scheduler.form.assistent')}
+              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
             />
           </div>
         </div>
-        <div className={'clearfix'} />
 
-        <div className={'clearfix'} />
         {timeStart && (
-          <div className="flex">
-            <div className={'w-1/3 relative'}>
-              <span className={'block text-[14px]'}>{msg.get('scheduler.sch.date')}</span>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="relative">
+              <span className="block text-xs font-semibold text-slate-600 mb-1">
+                {msg.get('scheduler.sch.date')}
+              </span>
               <InputMask
                 mask="99.99.9999"
-                name={'event_date'}
+                name="event_date"
                 defaultValue={eventDate}
                 onChange={(newValue) => handleChangeTimeFrom(newValue)}
-                className={'shc-form-date'}
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
               />
-              <i className={'f-calendar'} />
             </div>
-            <div className={'w-1/3 relative'}>
-              <span className={'block text-[14px]'}>{msg.get('scheduler.time.from')}</span>
+            <div className="relative">
+              <span className="block text-xs font-semibold text-slate-600 mb-1">
+                {msg.get('scheduler.time.from')}
+              </span>
               <InputMask
                 mask="99:99"
-                name={'event_time_from'}
+                name="event_time_from"
                 defaultValue={formData.event_time_from ? formData.event_time_from : timeStart}
-                className={'shc-form-date'}
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
                 onChange={(newValue) => handleChangeTimeFrom(newValue)}
               />
-              <i className={'f-clock'} />
             </div>
-            <div className={'w-1/3 relative'}>
-              <span className={'block text-[14px]'}>{msg.get('scheduler.time.to')}</span>
+            <div className="relative">
+              <span className="block text-xs font-semibold text-slate-600 mb-1">
+                {msg.get('scheduler.time.to')}
+              </span>
               <InputMask
                 mask="99:99"
-                name={'event_time_to'}
+                name="event_time_to"
                 defaultValue={formData.event_time_to ? formData.event_time_to : timeEnd}
-                className={'shc-form-date'}
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
                 onChange={(e) => handleChangeTimeTo(e.target.value)}
               />
-              <i className={'f-clock'} />
             </div>
           </div>
         )}
+
         <InputTextarea
-          name={'comment'}
+          name="comment"
           values={values}
           value={values.comment}
           onChange={handleChange}
           required
           label={msg.get('scheduler.form.comment')}
+          className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition min-h-[80px]"
         />
-        <div className={'manipulation flex flex-col'}>
-          <div
-            className={'add-services'}
-            onClick={() => {
-              // dispatch(showPricePopupAction(true));
-              setShowServices(!showServices);
-            }}
+
+        <div className="manipulation flex flex-col pt-2">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 text-teal-700 hover:text-teal-800 text-xs font-semibold cursor-pointer w-fit py-1 px-2 rounded-lg bg-teal-50/60 border border-teal-100 transition"
+            onClick={() => setShowServices(!showServices)}
           >
-            <ListPlus className={'w-[16px] h-[16px] block mt-[4px] ml-[3px]'} />
-            &nbsp;{msg.get('scheduler.btn.add')}
-          </div>
-          <div className="mt-2 ml-0">
-            {popupServices?.map((item) => <>{renderService(item)}</>)}
-          </div>
+            <ListPlus className="w-4 h-4" />
+            <span>{msg.get('scheduler.btn.add')}</span>
+          </button>
+
+          <div className="mt-3">{popupServices?.map((item) => renderService(item))}</div>
+
           {showServices && (
-            <div className="services-selector">
-              <div className="service-categories">
-                <div className="services-title">Категорії</div>
-
-                {serviceCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    className={`category-btn ${selectedCategory === category.id ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(category.id)}
-                  >
-                    <span>{category.name}</span>
-
-                    <span className="category-count">{services[category.id]?.length ?? 0}</span>
-                  </button>
-                ))}
+            <div className="mt-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-slate-700 mb-2">Категорії</div>
+                <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
+                  {serviceCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      type="button"
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                        selectedCategory === category.id
+                          ? 'bg-teal-600 text-white shadow-sm'
+                          : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+                      }`}
+                      onClick={() => setSelectedCategory(category.id)}
+                    >
+                      <span className="truncate">{category.name}</span>
+                      <span
+                        className={`px-1.5 py-0.5 rounded-full text-[10px] ${selectedCategory === category.id ? 'bg-teal-700 text-white' : 'bg-slate-100 text-slate-600'}`}
+                      >
+                        {services[category.id]?.length ?? 0}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="services-panel">
-                <div className="services-header">
-                  <div className="services-title">Послуги</div>
-
-                  <input className="service-search" placeholder="Пошук..." />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs font-bold text-slate-700">Послуги</div>
                 </div>
-
-                <div className="services-list">
+                <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1">
                   {(services[selectedCategory] || []).length === 0 && (
-                    <div className="empty-services">У даній категорії ще немає послуг</div>
+                    <div className="text-xs text-slate-400 text-center py-4">
+                      У даній категорії ще немає послуг
+                    </div>
                   )}
 
                   {(services[selectedCategory] || []).map((service) => (
                     <div
                       key={service.id}
-                      className="service-item"
+                      className="flex items-center justify-between p-2 bg-white border border-slate-200/80 rounded-xl hover:border-teal-400 transition cursor-pointer group"
                       onClick={() => addService(service)}
                     >
-                      <div className="service-name">{service.name}</div>
-
-                      <div className="service-duration">{service.duration ?? 30} хв</div>
-
-                      <div className="service-price">{service.total_price} ₴</div>
-
-                      <button type="button" className="service-add-btn">
+                      <div className="min-w-0 flex-1 pr-2">
+                        <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-600 transition truncate">
+                          {service.name}
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-mono">
+                          {service.total_price} ₴
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="w-6 h-6 rounded-lg bg-slate-100 text-teal-700 font-bold flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition text-xs shrink-0"
+                      >
                         +
                       </button>
                     </div>
@@ -427,11 +424,12 @@ export default function SchedulerFormCreate({
               </div>
             </div>
           )}
-          <div className={'clearfix'} />
         </div>
-        <div className="flex items-center pb-7">
+
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
           <SecondaryButton
-            className="btn-back"
+            type="button"
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition cursor-pointer"
             onClick={() => {
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
@@ -443,7 +441,10 @@ export default function SchedulerFormCreate({
           >
             {msg.get('scheduler.close')}
           </SecondaryButton>
-          <PrimaryButton disabled={processing}>{msg.get('scheduler.save')}</PrimaryButton>
+
+          <PrimaryButton disabled={processing} className="px-5 py-2 text-xs font-semibold">
+            {msg.get('scheduler.save')}
+          </PrimaryButton>
 
           <Transition
             show={recentlySuccessful}
@@ -452,7 +453,7 @@ export default function SchedulerFormCreate({
             leave="transition ease-in-out"
             leaveTo="opacity-0"
           >
-            <p className="text-sm text-gray-600">{msg.get('mCategories.saved')}</p>
+            <p className="text-xs text-emerald-600 font-medium">{msg.get('mCategories.saved')}</p>
           </Transition>
         </div>
       </form>

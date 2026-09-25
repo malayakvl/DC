@@ -6,14 +6,13 @@ import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngInvoiceIncoming from '../../Lang/InvoiceIncoming/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
-import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
-import InputText from '../../Components/Form/InputText';
-import InputSelect from '../../Components/Form/InputSelect';
+import ListHeader from '../../Components/Common/ListHeader';
+import Filters from './Partials/Filters';
+import Pagination from './Partials/Pagination';
 
 export default function List({ listData, filters, suppliers, paymentMethods }) {
   const dispatch = useDispatch();
@@ -83,67 +82,21 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Invoice Incoming'} />
-      <div className="">
+      <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('invoice_incoming.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/invoice-incoming/create'}>
-                        {msg.get('invoice_incoming.title.create')}
-                      </NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
+            <ListHeader
+              title={msg.get('invoice_incoming.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('invoice_incoming.title.total')}
+              description={msg.get('invoice_incoming.title.description')}
+              createHref="/invoice-incoming/create"
+              createLabel={msg.get('invoice_incoming.title.create')}
+            />
+            <Filters suppliersData={suppliers} />
 
-              <div className="flex flex-wrap gap-4 mb-6 p-4 transparent rounded-lg border border-[#D8DEE8] bg-white items-end">
-                <InputText
-                  type="date"
-                  name="date_from"
-                  label={msg.get('invoice_incoming.date_from')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <InputText
-                  type="date"
-                  name="date_to"
-                  label={msg.get('invoice_incoming.date_to')}
-                  values={values}
-                  onChange={handleChange}
-                  className="mt-1 block w-full"
-                />
-                <InputSelect
-                  name="supplier_id"
-                  label={msg.get('invoice_incoming.producer')}
-                  values={values}
-                  onChange={handleChange}
-                  options={suppliers}
-                  className="mt-1 block w-full min-w-[200px]"
-                />
-                <div className="flex gap-2 mb-1">
-                  <PrimaryButton onClick={handleFilter}>
-                    {msg.get('invoice_incoming.filter')}
-                  </PrimaryButton>
-                  <button
-                    onClick={() => {
-                      const reset = { date_from: '', date_to: '', supplier_id: '' };
-                      setValues(reset);
-                      router.get('/invoice-incoming', reset);
-                    }}
-                    className="btn-submit !bg-none !bg-gray-200 !text-gray-700 hover:!bg-gray-300 transition-colors duration-200"
-                  >
-                    {msg.get('invoice_incoming.reset')}
-                  </button>
-                </div>
-              </div>
-            </section>
+            <Pagination listData={listData} />
+
             <section className="table-card">
               <DataTable paginationType={PaginationType.INCOMINGINVOICES} sendRequest={sendRequest}>
                 {listData?.map((item) => (
@@ -204,15 +157,19 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                     <td className="">{item.customer_name}</td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
-                        title={msg.get('filial.filial.edit')}
-                        href={`invoice-incoming/edit/${item.invoice_id}`}
-                      />
-                      <NavLink
-                        className="btn-delete"
-                        title={msg.get('filial.filial.delete')}
-                        href={`invoice-incoming/delete/${item.invoice_id}`}
-                      />
+                        className="actn-btns"
+                        title={msg.get('invoice_incoming.edit') || 'Редагувати'}
+                        href={`invoice-incoming/edit/${item.id}`}
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
+                      <Link
+                        className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                        title={msg.get('invoice_incoming.delete') || 'Видалити'}
+                        href={`invoice-incoming/delete/${item.id}`}
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

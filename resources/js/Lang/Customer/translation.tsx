@@ -27,6 +27,8 @@ const lngCustomer = {
     'title.create': 'Створити Користувача',
     'title.edit': 'Редагувати Користувача',
     'title.show': 'Переглянути Користувача',
+    'title.total': 'Загалом',
+    'title.description': 'Керування користувачами клініки та іх ролями',
     'title.filials': 'Філіали',
     name: 'ПІБ',
     address: 'Адреса',
@@ -47,7 +49,14 @@ const lngCustomer = {
     invite: 'Запросити',
     color: 'Колір',
     last_name: 'Прізвище',
-    first_name: 'Ім`я'
+    first_name: 'Ім`я',
+    photo_markup: 'Фотографія',
+    optional: 'Опционально',
+    photo_tips: 'Перетягніть фото матеріалу сюди',
+    photo_tips1: 'або виберіть файл з комп’ютера',
+    dragdrop_files: 'Перетягніть фото матеріалу сюди',
+    or_select_file_type: 'або виберіть файл з комп’ютера',
+    file_sizes: 'PNG, JPG, WebP до 5 МБ',
   },
 };
 export default lngCustomer;

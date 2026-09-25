@@ -28,6 +28,7 @@ const lngStore = {
     'title.list': 'Склади',
     'title.edit': 'Редагувати Склад',
     'title.view': 'Переглянути Склад',
+    'title.description': 'Список складів, редагувати, створити',
     create: 'Створити склад',
     name: 'Назва',
     filial: 'Філіал',

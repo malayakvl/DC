@@ -131,14 +131,38 @@ class PatientController extends Controller
      * Show the form for creating a new resource.
      */
     public function create(Request $request) {
-        if ($request->user()->can('patient-create')) {
-            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-            $customerData = DB::table('users')
-                ->select('users.*')
-                ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->where('clinic_id', $clinicData->id)->orderBy('name')->get();
-            $contactData = DB::table('patients_contact')->get();
-            $formData = new Patient();
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('patient-create')) {
+                return Inertia::render('Patient/List', ['error' => 'Insufficient permissions']);
+            }
+
+            // Получаем данные клиники для текущего филиала (аналогично методу edit)
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+
+            // Получаем пользователей, связанных с этой клиникой/филиалом
+            $customerData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->where('cu.clinic_id', $clinicId)
+                ->select('u.*', 'cu.avatar')
+                ->orderBy('u.last_name')
+                ->get();
+
+            // Контакты (если они привязаны к схеме клиники или общие — поправь название таблицы при необходимости)
+            $contactData = []; // Или ваш запрос к таблице контактов
+
+            // Пустой объект/массив для формы создания нового пациента
+            $formData = [
+                'id' => null,
+                'name' => '',
+                'first_name' => '',
+                'last_name' => '',
+                'email' => '',
+                'inn' => '',
+                'phone' => '',
+                'medical_card_no' => '',
+                'discount' => 0,
+                'balance' => 0,
+            ];
 
             return Inertia::render('Patient/Create', [
                 'clinicData' => $clinicData,
@@ -146,7 +170,7 @@ class PatientController extends Controller
                 'customerData' => $customerData,
                 'formData' => $formData,
             ]);
-        }
+        });
     }
 
     /**

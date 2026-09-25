@@ -35,6 +35,7 @@ const initialState: State.Layouts = {
     [PaginationType.MONEYIN]: { ...initPagination },
     [PaginationType.VISITSCHEDULESTATUSES]: { ...initPagination },
     [PaginationType.SUPPLIERS]: { ...initPagination },
+    [PaginationType.TAXES]: { ...initPagination },
   },
   isSidebarOpen: false,
   isMobileDevice: false,

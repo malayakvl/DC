@@ -8,6 +8,7 @@ import lngSupplier from '../../Lang/Supplier/translation';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ listData, clinicData }) {
   const dispatch = useDispatch();
@@ -18,6 +19,8 @@ export default function List({ listData, clinicData }) {
   });
 
   const [editingId, setEditingId] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+
   const formRef = useRef(null);
 
   // useForm строго под поля твоей схемы suppliers
@@ -71,7 +74,6 @@ export default function List({ listData, clinicData }) {
         onSuccess: () => handleCloseForm(),
       });
     } else {
-      console.log(1);
       put(`/supplier/update/${editingId}`, {
         preserveScroll: true,
         onSuccess: () => handleCloseForm(),
@@ -89,42 +91,15 @@ export default function List({ listData, clinicData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section className="mb-6">
-              <header className="mt-2">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-                  {/* Заголовок + Бейдж + Подзаголовок */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                        {msg.get('supplier.title.list')}
-                      </h1>
-
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                        {listData?.length || 0} {msg.get('supplier.title.total')}
-                      </span>
-                    </div>
-
-                    <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
-                      {msg.get('supplier.title.description')}
-                    </p>
-                  </div>
-
-                  {/* Кнопка создания / отмены */}
-                  <div className="flex items-center shrink-0">
-                    <PrimaryButton
-                      type="button"
-                      onClick={handleOpenCreate}
-                      disabled={Boolean(editingId)} // заблокована, якщо є активний editingId
-                      className={editingId ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                      {msg.get('supplier.create')}
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-
+            <ListHeader
+              title={msg.get('supplier.title.list')}
+              count={listData?.length || 0}
+              totalLabel={msg.get('supplier.title.total')}
+              description={msg.get('supplier.title.description')}
+              onCreateClick={handleOpenCreate}
+              createLabel={msg.get('supplier.create')}
+              isCreateDisabled={Boolean(editingItem?.id)}
+            />
             {/* Компактная инлайн-форма на 2 строки */}
             {editingId && (
               <section
@@ -264,18 +239,19 @@ export default function List({ listData, clinicData }) {
                     <td className="text-right">
                       <button
                         type="button"
-                        className="btn-edit mr-2"
+                        className="actn-btns"
                         title={msg.get('supplier.edit')}
                         onClick={() => handleOpenEdit(item)}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </button>
                       <Link
-                        className="btn-delete"
-                        title={msg.get('supplier.delete')}
+                        className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                        title={msg.get('supplier.delete') || 'Видалити'}
                         href={`/supplier/delete/${item.id}`}
-                        method="delete"
-                        as="button"
-                        preserveScroll
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

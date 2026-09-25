@@ -10,11 +10,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-{{--        <link rel="preconnect" href="https://fonts.googleapis.com">--}}
-{{--        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>--}}
-{{--        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">--}}
-{{--        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">--}}
-{{--        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">        --}}{{--        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Marck+Script&family=Pacifico&display=swap" rel="stylesheet">--}}
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
         <!-- Scripts -->
         <script src="https://kit.fontawesome.com/e82fc2fd78.js" crossorigin="anonymous"></script>
         @routes

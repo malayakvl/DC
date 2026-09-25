@@ -10,6 +10,7 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ storeData }) {
   const dispatch = useDispatch();
@@ -29,21 +30,15 @@ export default function List({ storeData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('store.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/store/create'}>{msg.get('store.create')}</NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
-            <section className="table-card">
+            <ListHeader
+              title={msg.get('store.title.list')}
+              count={storeData?.length || 0}
+              totalLabel={msg.get('store.title.total')}
+              description={msg.get('store.title.description')}
+              createHref="/store/create"
+              createLabel={msg.get('store.title.create')}
+            />
+            <section className="table-card mt-4">
               <DataTable paginationType={PaginationType.STORES} sendRequest={sendRequest}>
                 {storeData?.map((item) => (
                   <tr className="" key={item.id}>
@@ -53,23 +48,20 @@ export default function List({ storeData }) {
                     <td className="">{item.address}</td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
+                        className="actn-btns"
                         title={msg.get('filial.filial.edit')}
                         href={`store/edit/${item.id}`}
                         // active={route().current('filial.edit')}
-                      />
-                      <NavLink
-                        className="btn-view"
-                        title={msg.get('filial.filial.view')}
-                        href={`store/show/${item.id}`}
-                        // active={route().current('filial.show')}
-                      />
-                      <NavLink
-                        className="btn-delete"
-                        title={msg.get('filial.filial.delete')}
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
+                      <Link
+                        className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                        title={msg.get('store.delete') || 'Видалити'}
                         href={`store/delete/${item.id}`}
-                        // active={route().current('filial.view')}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

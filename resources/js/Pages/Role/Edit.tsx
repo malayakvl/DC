@@ -5,11 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngRole from '../../Lang/Role/translation';
-import { Link } from '@inertiajs/react';
-import InputText from '../../Components/Form/InputText';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
 import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
+import StickyFormFooter from '../../Components/Common/StickyFormFooter';
+import FormHeader from '../../Components/Common/FormHeader';
 
 export default function Edit({ roleData, permissionData, rolePermissions }) {
   useDispatch();
@@ -145,93 +143,16 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   return (
     <AuthenticatedLayout header={<Head title={msg.get('role.title.edit') || 'Редагувати роль'} />}>
       <Head title={msg.get('role.title.edit') || 'Редагувати роль'} />
-
-      {/* Підключення шрифтів та Material Symbols, якщо вони ще не підключені глобально */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-        rel="stylesheet"
-      />
-
-      <div className="w-full bg-background font-body-md text-on-surface antialiased min-h-screen pb-12">
-        <div className="max-w-[1520px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
-          <form onSubmit={submit} className="flex flex-col gap-6">
-            {/* Ххлібні крихти та верхня панель дій */}
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-2 font-label-md text-sm text-outline">
-                  <Link
-                    href="/roles"
-                    className="hover:text-primary transition-colors flex items-center gap-1"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">shield_person</span>
-                    <span>Налаштування доступу</span>
-                  </Link>
-                  <span className="text-outline-variant">/</span>
-                  <Link href="/roles" className="hover:text-primary transition-colors">
-                    Ролі та права
-                  </Link>
-                  <span className="text-outline-variant">/</span>
-                  <span className="text-on-surface font-bold">{msg.get('role.title.edit')}</span>
-                </div>
-                <Link
-                  href={`/roles`}
-                  className="inline-flex items-center gap-1 text-sm text-primary font-bold hover:text-primary-container transition-colors py-1 px-3 rounded-lg hover:bg-surface-container-low"
-                >
-                  <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                  <span>{msg.get('role.back') || 'До списку ролей'}</span>
-                </Link>
-              </div>
-
-              {/* Заголовок та основні кнопки збереження */}
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-700 shadow-sm">
-                    <span className="material-symbols-outlined text-[28px]">
-                      admin_panel_settings
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h1 className="text-2xl font-bold tracking-tight text-on-surface">
-                        {msg.get('role.title.edit')}
-                      </h1>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-teal-50 text-teal-700 font-bold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
-                        Системна роль
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      Конфігурація гранулярних прав доступу, операційних дозволів та обмежень для
-                      посади
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 self-start lg:self-auto flex-wrap">
-                  <PrimaryButton
-                    disabled={processing}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-700 text-white font-semibold shadow-md hover:bg-teal-800 transition-all"
-                  >
-                    <span>{msg.get('role.save')}</span>
-                  </PrimaryButton>
-
-                  <Transition
-                    show={recentlySuccessful}
-                    enter="transition ease-in-out"
-                    enterFrom="opacity-0"
-                    leave="transition ease-in-out"
-                    leaveTo="opacity-0"
-                  >
-                    <p className="text-sm text-teal-600 font-medium">{msg.get('role.saved')}</p>
-                  </Transition>
-                </div>
-              </div>
-            </div>
-
+      <div className="py-0">
+        <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+          <form onSubmit={submit} className="flex flex-col gap-6 mt-2">
+            <FormHeader
+              title={roleData?.id ? msg.get('role.title.edit') : msg.get('role.title.create')}
+              description={msg.get('role.title.description')}
+              backUrl="/roles"
+              processing={processing}
+              saveText={msg.get('role.save') || 'Зберегти зміни'}
+            />
             {/* Картка з базовими полями (Назва та Опис) */}
             <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-6 border border-gray-100">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -407,30 +328,16 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
             </div>
 
             {/* Нижній блок збереження */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-100">
-              <div className="flex items-center gap-2 text-gray-500 text-sm">
-                <span className="material-symbols-outlined text-[18px]">schedule</span>
-                <span>
-                  Власник акаунта:{' '}
-                  <strong className="text-gray-800">{authUser?.name || 'Адміністратор'}</strong>
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                <Link
-                  href={`/roles`}
-                  className="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-semibold transition-colors text-center"
-                >
-                  {msg.get('role.back') || 'Скасувати'}
-                </Link>
-                <PrimaryButton
-                  disabled={processing}
-                  className="px-6 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <span>{msg.get('role.save')}</span>
-                </PrimaryButton>
-              </div>
-            </div>
+            {/* Master Action Footer Bar */}
+            <StickyFormFooter
+              backUrl="/roles"
+              backLabel={msg.get('role.back') || 'Повернутись'}
+              saveLabel={msg.get('role.save') || 'Зберегти'}
+              processingLabel="Збереження..."
+              successMessage={msg.get('role.saved') || 'Збережено успішно!'}
+              processing={processing}
+              recentlySuccessful={recentlySuccessful}
+            />
           </form>
         </div>
       </div>

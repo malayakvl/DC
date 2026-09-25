@@ -67,10 +67,11 @@ class MaterialController extends Controller
             $clinic = $request->user()->clinicByFilial($clinicId);
             $listData = DB::table('materials')
                 ->select('materials.*', 'material_categories.name AS categoryName', 'producers.name AS producerName',
-                    'material_categories.percent', 'units.name AS unitName')
+                    'material_categories.percent', 'units.name AS unitName', 'weight_units.name AS weightUnitName')
                 ->leftJoin('material_categories', 'material_categories.id', '=', 'materials.category_id')
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
+                ->leftJoin('units AS weight_units', 'weight_units.id', '=', 'materials.weightunit_id') // Приєднуємо таблицю одиниць для ваги
                 ->orderBy('name')->get();
             $categories = MaterialCategories::where('parent_id', null)
                 ->orWhere('special', true)
@@ -467,6 +468,43 @@ class MaterialController extends Controller
     }
 
     public function findMaterialCalc(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $name = $request->searchName;
+
+            $resData = DB::table('materials')
+                ->select(
+                    DB::raw('MIN(materials.id) as id'),
+                    'materials.name',
+                    'material_categories.percent as category_percent',
+                    // Ищем цену сначала в позициях начальных остатков/приходов (opening_balance_items),
+                    // если там нет — берем базовую цену из справочника (materials.price), иначе 0
+                    DB::raw('COALESCE(
+                    (SELECT obi.price_per_unit FROM opening_balance_items obi 
+                     JOIN opening_balances ob ON obi.opening_balance_id = ob.id 
+                     WHERE obi.material_id = materials.id 
+                     ORDER BY ob.doc_date DESC, obi.id DESC LIMIT 1),
+                    materials.retail_price,
+                    0
+                ) as price'),
+                    // Флаг: 1, если реальных остатков/приходов нет (цена из справочника), и 0 если есть
+                    DB::raw('CASE WHEN (
+                    SELECT obi.id FROM opening_balance_items obi 
+                    WHERE obi.material_id = materials.id 
+                    LIMIT 1
+                ) IS NULL THEN 1 ELSE 0 END as is_from_directory'),
+                )
+                ->leftJoin('material_categories', 'materials.category_id', '=', 'material_categories.id')
+                ->whereRaw('LOWER(materials.name) LIKE ?', ['%' . mb_strtolower($name) . '%'])
+                ->groupBy('materials.name', 'material_categories.percent', 'materials.id', 'materials.price')
+                ->get();
+
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findMaterialCalc1(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $name = $request->searchName;
 

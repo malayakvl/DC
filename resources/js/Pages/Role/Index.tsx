@@ -10,6 +10,7 @@ import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
+import ListHeader from '../../Components/Common/ListHeader';
 
 export default function Index({ roleData }) {
   const dispatch = useDispatch();
@@ -25,36 +26,35 @@ export default function Index({ roleData }) {
 
   return (
     <AuthenticatedLayout header={<Head title="Roles" />}>
+      <Head title={'Roles'} />
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <section>
-              <header>
-                <div className="flex inline-flex w-full mb-4">
-                  <h2 className="text-xl font-semibold leading-tight">
-                    {msg.get('role.title.list')}
-                  </h2>
-                  <div className="flex-1 text-right mt-[5px]">
-                    <PrimaryButton>
-                      <NavLink href={'/role/create'}>{msg.get('role.title.create')}</NavLink>
-                    </PrimaryButton>
-                  </div>
-                </div>
-              </header>
-            </section>
+            <ListHeader
+              title={msg.get('role.title.list')}
+              count={roleData?.length || 0}
+              totalLabel={msg.get('role.title.total')}
+              description={msg.get('role.title.description')}
+              createHref="role/create"
+              createLabel={msg.get('role.title.create')}
+            />
             <section className="table-card">
               <DataTable paginationType={PaginationType.ROLES} sendRequest={sendRequest}>
                 {roleData?.map((item) => (
                   <tr className="" key={item.id}>
-                    <td className="">
-                      {item.clinic_id ? item.name : msg.get(`role.${item.name}`)}
+                    <td className="text-left">
+                      <span className="whitespace-nowrap pl-3">
+                        {item.clinic_id ? item.name : msg.get(`role.${item.name}`)}
+                      </span>
                     </td>
                     <td className="text-right">
                       <Link
-                        className="btn-edit"
+                        className="actn-btns"
                         title={msg.get('filial.filial.edit')}
                         href={`/role/edit/${item.id}`}
-                      />
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">edit</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}

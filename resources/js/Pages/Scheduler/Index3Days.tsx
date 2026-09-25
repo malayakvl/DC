@@ -469,25 +469,7 @@ export default function Index3Days({
 
   return (
     <div>
-      <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
-        <div className="pv-shell">
-          <div className="pv-top">
-            <div className="pv-user">
-              <div className="pv-info">
-                <section>
-                  <header>
-                    <div className="flex inline-flex w-full mb-0">
-                      <h2 className="text-xl font-semibold leading-tight">
-                        {msg.get('scheduler.title.list')}
-                      </h2>
-                    </div>
-                  </header>
-                </section>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
       {/* FIXED HEADER AREA */}
       <div
         style={{

@@ -11,10 +11,11 @@ const lngCurrency = {
     back: 'Back',
   },
   'uk.currency': {
-    'title.create': 'Новий Виробник',
+    'title.create': 'Нова валюта',
     'title.list': 'Валюти',
     'title.edit': 'Редагувати Валюту',
     'title.view': 'Переглянути Валюту',
+    'title.description': 'Валюти та їх курси',
     create: 'Створити валюту',
     name: 'Назва',
     save: 'Зберегти',

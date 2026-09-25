@@ -63,6 +63,7 @@ class PaymentMethodController extends Controller
             return Inertia::render('PaymentMethod/List', [
                 'clinicData' => $clinic,
                 'listData'   => $listData,
+                'currencies' => Currency::all(),
             ]);
         });
     }

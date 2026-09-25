@@ -10,14 +10,32 @@
     margin: 0 8px;
     padding: 5px;
     border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    background-color: #e7e7f8;
     background-size: 50%;
     background-position: center;
 }
+.actn-btns {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 3px;
+    border: solid 1px #e4e5e5;
+    background-color: #faeedd;
+    color: #757070;
+    padding: 8px;
+    background-size: 50%;
+    background-position: center;
 
+    &:hover {
+        border: solid 1px #ccfbf1;
+        background-color: #ccfbf1;
+    }
+}
 .btn-edit {
-    background-image: url('../../images/action-icons/edit.svg');
-    background-repeat: no-repeat;
+    //background-image: url('../../images/action-icons/edit.svg');
+    //background-repeat: no-repeat;
     //background-size: contain;
     width: 36px;
     height: 36px;
@@ -25,8 +43,8 @@
     cursor: pointer;
     display: inline-block;
     margin: 0 8px;
-    border: solid 1px #f0fdfa;
-    background-color: #f0fdfa;
+    border: solid 1px #e9fffa;
+    background-color: #e9fffa;
     padding: 5px;
     background-size: 50%;
     background-position: center;
@@ -82,8 +100,8 @@
     display: inline-block;
     margin: 0 8px;
     padding: 5px;
-    border: solid 1px #d8f3f4;
-    background-color: #fefeff;
+    border: solid 1px #e7e5e4;
+    background-color: #e7e5e4;
     background-size: 50%;
     background-position: center;
 }
@@ -146,8 +164,11 @@
     //margin-left: 10px;
     font-size: 0.75rem;
     line-height: 1rem;
-    @apply text-white;
-    background: #0d9488;
+    @apply relative inline-flex items-center justify-center gap-1.5 px-2 py-2 rounded-md bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-[13px];
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+.btn-new-back {
+    @apply w-full sm:w-auto px-5 py-2.5 rounded-lg bg-slate-600 text-white hover:bg-slate-700 transition-all text-xs font-semibold  tracking-wider flex items-center justify-center gap-2 shadow-xs;
 }
 
 .main-submit {
@@ -158,9 +179,6 @@
     background-image: linear-gradient(to left top, #0e3446, #4c8ea6) !important;
 }
 
-.btn-submit:hover {
-    background-image: linear-gradient(to left top, #abb6e1, #4a588e) !important;
-}
 
 .btn-plus {
     background-image: url('../../images/action-icons/plus.svg');
