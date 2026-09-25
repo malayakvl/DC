@@ -20,7 +20,7 @@ import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 
 const SLOT_HEIGHT = 30;
-const FREE_SLOT_BG = '#fbfdff';
+const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
 
 function getDays(baseDate: string, count: number, appLang: string) {

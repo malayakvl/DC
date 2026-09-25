@@ -29,6 +29,8 @@ const lngVisitScheduleStatus = {
     'title.edit': 'Редагувати Статус',
     'title.view': 'Переглянути Статус',
     'title.delete': 'Видалити Статус',
+    'title.total': 'Загалом',
+    'title.description': 'Маркування статусів візитів в розкладі',
     create: 'Створити статус',
     name: 'Назва',
     discount: 'Знижка',

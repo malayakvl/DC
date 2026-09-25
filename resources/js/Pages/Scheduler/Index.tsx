@@ -42,8 +42,7 @@ import { SchedulerToolbar } from './components/SchedulerToolbar';
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
 const FREE_SLOT_BG = '#fbfdff';
-const TODAY_BG = '#eef6ff';
-console.log(1)
+const TODAY_BG = '#e6f0fa';
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
 
