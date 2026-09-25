@@ -180,7 +180,7 @@ export default function SchedulerFormCreate({
     return (
       <div
         key={item.id}
-        className="flex items-center justify-between p-3 mb-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm"
+        className="flex items-center justify-between p-3 mb-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl text-sm"
       >
         <div className="flex-1 min-w-0 pr-2">
           <div className="font-semibold text-slate-900 truncate">{item.name}</div>
@@ -239,114 +239,208 @@ export default function SchedulerFormCreate({
       </div>
       <form
         onSubmit={(event) => submit(event)}
-        className="p-6 space-y-4 min-w-[420px] "
+        className="p-0 space-y-4 min-w-[420px] "
         encType="multipart/form-data"
       >
         <EventStatus />
 
-        <EventPatient values={values} />
+        <div className="px-space-xl py-space-lg space-y-space-lg max-h-[calc(86vh-130px)] overflow-y-auto">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                  <span>Пацієнт</span>
+                  <span className="text-rose-500">*</span>
+                </label>
+                <button
+                  className="text-xs text-teal-700 hover:text-teal-800 font-semibold flex items-center gap-1 transition"
+                  type="button"
+                >
+                  <span className="material-symbols-outlined text-[16px]">person_add</span>
+                  <span>+ Створити нову картку</span>
+                </button>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <InputText
-              name="title"
-              values={values}
-              dataValue={values.title}
-              value={values.title}
-              onChange={handleChange}
-              required
-              label={msg.get('scheduler.form.title')}
-              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-            />
-          </div>
-          <div>
-            <InputSelect
-              name="cabinet_id"
-              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-              values={values}
-              options={cabinetData}
-              onChange={handleChangeSelect}
-              required
-              label={msg.get('scheduler.form.cabinet')}
-            />
+              <div className="relative p-1">
+                <div className="max-h-[50px] flex items-center w-full px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-500 transition-all shadow-sm">
+                  <span className="material-symbols-outlined text-teal-700 text-[20px] mr-2.5 shrink-0">
+                    person_search
+                  </span>
+                  <input
+                    className="input-calendar w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none min-w-0"
+                    id="patientInput"
+                    placeholder="Введіть ПІБ, телефон або номер картки пацієнта..."
+                    type="text"
+                    defaultValue="Коваленко Анна Михайлівна"
+                  />
+                  <div className="flex items-center gap-1.5 shrink-0 pl-2">
+                    <span className="px-2 py-0.5 text-xs font-mono font-medium text-teal-800 bg-teal-100/60 rounded-md whitespace-nowrap">
+                      #P-1120
+                    </span>
+                    <button
+                      className="p-1 hover:bg-slate-200/60 rounded-lg text-slate-500 hover:text-slate-800 transition flex items-center justify-center shrink-0"
+                      type="button"
+                      title="Картка пацієнта"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">badge</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-2.5 p-3 bg-[#f2f3ff] border border-slate-200/60 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs font-bold shadow-xs shrink-0">
+                    АК
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-0">
+                    <span className="font-semibold text-slate-900">+38 (067) 412-89-01</span>
+                    <span className="mx-1.5 text-slate-300 hidden sm:inline">•</span>
+                    <span className="text-slate-500">Останній візит: 14 серпня 2026</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
+                    <span className="material-symbols-outlined text-[14px] text-teal-700">
+                      clinical_notes
+                    </span>
+                    Алергія: Пеніциліни
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-100 text-teal-800 font-semibold shadow-2xs">
+                    Баланс: 0.00 ₴
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Room/Cabinet Selection */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    <span>Кабінет</span>
+                  </label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="material-symbols-outlined text-teal-700 text-[20px] shrink-0">
+                        meeting_room
+                      </span>
+                      <span className="text-xs font-medium text-slate-900 truncate">
+                        Кабінет 1 (Терапія)
+                      </span>
+                    </div>
+                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
+                      unfold_more
+                    </span>
+                  </div>
+                </div>
+
+                {/* Doctor Selection */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    <span>Лікар</span>
+                  </label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center text-[10px] font-bold shrink-0">
+                        НР
+                      </div>
+                      <span className="text-xs font-medium text-slate-900 truncate">
+                        Наталія Радчук
+                      </span>
+                    </div>
+                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
+                      unfold_more
+                    </span>
+                  </div>
+                </div>
+
+                {/* Assistant Selection */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    <span>Асистент</span>
+                  </label>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                        ІС
+                      </div>
+                      <span className="text-xs font-medium text-slate-900 truncate">
+                        Ірина Савченко
+                      </span>
+                    </div>
+                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
+                      unfold_more
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-[#f2f3ff] rounded-2xl border border-slate-200/60 flex flex-col gap-3 shadow-sm mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Date */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                      Дата візиту
+                    </label>
+                    <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                      <span className="text-xs font-mono font-medium text-slate-900">
+                        21.09.2026
+                      </span>
+                      <span className="material-symbols-outlined text-teal-700 text-[18px]">
+                        calendar_month
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Start Time */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                      Початок
+                    </label>
+                    <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                      <span className="text-xs font-mono font-medium text-slate-900">09:00</span>
+                      <span className="material-symbols-outlined text-teal-700 text-[18px]">
+                        schedule
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* End Time */}
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                      Кінець (авто)
+                    </label>
+                    <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-medium text-slate-900">09:30</span>
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                          30 хв
+                        </span>
+                      </div>
+                      <span className="material-symbols-outlined text-teal-700 text-[18px]">
+                        schedule
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between pt-1 gap-2">
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
+                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span>Час вільний: лікар, асистент та кабінет доступні для запису</span>
+                  </div>
+                  <button
+                    className="text-xs font-semibold text-teal-700 hover:text-teal-800 transition"
+                    type="button"
+                  >
+                    + Інтервал перерви (10 хв)
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <InputSelect
-              name="doctor_id"
-              values={values}
-              options={customerData}
-              onChange={handleChangeSelect}
-              required
-              label={msg.get('scheduler.form.doctor')}
-              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-            />
-          </div>
-          <div>
-            <InputSelect
-              name="assistent_id"
-              values={values}
-              options={assistantData}
-              onChange={handleChangeSelect}
-              required
-              label={msg.get('scheduler.form.assistent')}
-              className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-            />
-          </div>
-        </div>
-
-        {timeStart && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="relative">
-              <span className="block text-xs font-semibold text-slate-600 mb-1">
-                {msg.get('scheduler.sch.date')}
-              </span>
-              <InputMask
-                mask="99.99.9999"
-                name="event_date"
-                defaultValue={eventDate}
-                onChange={(newValue) => handleChangeTimeFrom(newValue)}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-              />
-            </div>
-            <div className="relative">
-              <span className="block text-xs font-semibold text-slate-600 mb-1">
-                {msg.get('scheduler.time.from')}
-              </span>
-              <InputMask
-                mask="99:99"
-                name="event_time_from"
-                defaultValue={formData.event_time_from ? formData.event_time_from : timeStart}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-                onChange={(newValue) => handleChangeTimeFrom(newValue)}
-              />
-            </div>
-            <div className="relative">
-              <span className="block text-xs font-semibold text-slate-600 mb-1">
-                {msg.get('scheduler.time.to')}
-              </span>
-              <InputMask
-                mask="99:99"
-                name="event_time_to"
-                defaultValue={formData.event_time_to ? formData.event_time_to : timeEnd}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-                onChange={(e) => handleChangeTimeTo(e.target.value)}
-              />
-            </div>
-          </div>
-        )}
-
-        <InputTextarea
-          name="comment"
-          values={values}
-          value={values.comment}
-          onChange={handleChange}
-          required
-          label={msg.get('scheduler.form.comment')}
-          className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition min-h-[80px]"
-        />
+        <div className="clearfix"></div>
 
         <div className="manipulation flex flex-col pt-2">
           <button
@@ -361,24 +455,25 @@ export default function SchedulerFormCreate({
           <div className="mt-3">{popupServices?.map((item) => renderService(item))}</div>
 
           {showServices && (
-            <div className="mt-3 p-3 bg-slate-50 border border-slate-200/80 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <div className="text-xs font-bold text-slate-700 mb-2">Категорії</div>
+            <div className="mt-3 p-3 bg-[#f2f3ff] border border-slate-200/80 rounded-2xl flex flex-col md:flex-row gap-3">
+              {/* Левая колонка с категориями (фиксированная ширина) */}
+              <div className="w-full md:w-[240px] shrink-0 space-y-1">
+                <div className="text-xs font-bold text-slate-700 mb-2 px-1">Категорії</div>
                 <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
                   {serviceCategories.map((category) => (
                     <button
                       key={category.id}
                       type="button"
-                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition ${
                         selectedCategory === category.id
                           ? 'bg-teal-600 text-white shadow-sm'
-                          : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+                          : 'text-slate-700 hover:bg-slate-100'
                       }`}
                       onClick={() => setSelectedCategory(category.id)}
                     >
-                      <span className="truncate">{category.name}</span>
+                      <span className="truncate text-[13px] text-left pr-2">{category.name}</span>
                       <span
-                        className={`px-1.5 py-0.5 rounded-full text-[10px] ${selectedCategory === category.id ? 'bg-teal-700 text-white' : 'bg-slate-100 text-slate-600'}`}
+                        className={`px-1.5 py-0.5 rounded-full text-[10px] shrink-0 ${selectedCategory === category.id ? 'bg-teal-700 text-white' : 'bg-slate-100 text-slate-600'}`}
                       >
                         {services[category.id]?.length ?? 0}
                       </span>
@@ -387,7 +482,8 @@ export default function SchedulerFormCreate({
                 </div>
               </div>
 
-              <div className="space-y-2">
+              {/* Правая колонка с услугами (занимает всю оставшуюся ширину) */}
+              <div className="flex-1 space-y-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs">
                 <div className="flex items-center justify-between">
                   <div className="text-xs font-bold text-slate-700">Послуги</div>
                 </div>
@@ -399,25 +495,25 @@ export default function SchedulerFormCreate({
                   )}
 
                   {(services[selectedCategory] || []).map((service) => (
-                    <div
-                      key={service.id}
-                      className="flex items-center justify-between p-2 bg-white border border-slate-200/80 rounded-xl hover:border-teal-400 transition cursor-pointer group"
-                      onClick={() => addService(service)}
-                    >
-                      <div className="min-w-0 flex-1 pr-2">
-                        <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-600 transition truncate">
-                          {service.name}
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          {service.total_price} ₴
-                        </div>
+                    <div className="mt-2.5 p-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl shadow-2xs flex items-center justify-between gap-3">
+                      {/* Название услуги */}
+                      <div className="text-xs font-semibold text-slate-900 truncate min-w-0 flex-1">
+                        Пломба композитна світлового...
                       </div>
-                      <button
-                        type="button"
-                        className="w-6 h-6 rounded-lg bg-slate-100 text-teal-700 font-bold flex items-center justify-center group-hover:bg-teal-600 group-hover:text-white transition text-xs shrink-0"
-                      >
-                        +
-                      </button>
+
+                      {/* Правая часть: Цена и кнопка удаления */}
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-xs font-mono text-slate-600 font-medium">
+                          100.00 ₴
+                        </span>
+                        <button
+                          type="button"
+                          className="w-7 h-7 rounded-lg bg-white border border-slate-200/80 text-teal-700 font-bold flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition text-sm shadow-2xs"
+                          title="Видалити послугу"
+                        >
+                          ×
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -426,10 +522,27 @@ export default function SchedulerFormCreate({
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-          <SecondaryButton
+        <div className="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-slate-100 pb-4">
+          {/* Сообщение об успешном сохранении (слева от кнопок, появляется плавно) */}
+          <Transition
+            show={recentlySuccessful}
+            enter="transition-opacity ease-in duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-out duration-300"
+            leaveTo="opacity-0"
+          >
+            <p className="text-xs text-emerald-700 font-medium pr-1.5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">check_circle</span>
+              {msg.get('mCategories.saved')}
+            </p>
+          </Transition>
+
+          {/* Кнопка "Закрыть" (стиль серой кнопки) */}
+          <button
             type="button"
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition cursor-pointer"
+            // h-9 для идеального выравнивания, px-5 для правильного отступа
+            className="h-9 px-5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold rounded-xl transition-all cursor-pointer flex items-center justify-center"
             onClick={() => {
               const element = document.getElementsByTagName('body')[0];
               element.style.overflow = 'inherit';
@@ -440,21 +553,17 @@ export default function SchedulerFormCreate({
             title={msg.get('scheduler.close')}
           >
             {msg.get('scheduler.close')}
-          </SecondaryButton>
+          </button>
 
-          <PrimaryButton disabled={processing} className="px-5 py-2 text-xs font-semibold">
-            {msg.get('scheduler.save')}
-          </PrimaryButton>
-
-          <Transition
-            show={recentlySuccessful}
-            enter="transition ease-in-out"
-            enterFrom="opacity-0"
-            leave="transition ease-in-out"
-            leaveTo="opacity-0"
+          {/* Кнопка "Сохранить" (стиль teal кнопки) */}
+          <button
+            type="submit" // Обычно это submit, если форма
+            disabled={processing}
+            // h-9 для выравнивания, фирменный teal, тень shadow-sm, состояние disabled
+            className="h-9 px-6 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-xl transition-all flex items-center justify-center shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <p className="text-xs text-emerald-600 font-medium">{msg.get('mCategories.saved')}</p>
-          </Transition>
+            {processing ? 'Обробка...' : msg.get('scheduler.save')}
+          </button>
         </div>
       </form>
     </section>

@@ -11,6 +11,15 @@
     border-color: #17A2A6;
     box-shadow: 0 0 0 4px rgba(23,162,166,.12);
 }
+.input-calendar {
+    min-height: 40px;
+    @apply  w-full py-2 px-3 text-[14px];
+    background: transparent;
+    color: #0F172A;
+    border: none !important;
+    margin-bottom: 0.5rem;
+    border-radius: 10px !important;
+}
 
 .input-invoice {
     height: 40px;
