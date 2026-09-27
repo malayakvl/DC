@@ -1,6 +1,9 @@
 import { createAction } from 'redux-actions';
 import axios from 'axios';
 
+export const setTypeViewAction = createAction('schedule/SET_TYPE_VIEW');
+export const setCalendarDateAction = createAction('schedule/SET_CALENDAR_DATE');
+export const setScheduleStatusFilterAction = createAction('schedule/SET_FILTER_STATUS');
 export const showSchedulePopupAction = createAction('schedule/SHOW_POPUP');
 export const showScheduleEditPopupAction = createAction('schedule/SHOW_EDIT_POPUP');
 export const setEditEventAction = createAction('schedule/SET_EDIT_EVENT');

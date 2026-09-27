@@ -10,6 +10,7 @@ use App\Models\PriceCategory;
 use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\User;
+use App\Models\VisitScheduleStatus;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -68,6 +69,7 @@ class SchedulerController extends Controller
             $startDate = $request->start_date
                 ? Carbon::parse($request->start_date)
                 : Carbon::today();
+            $statusesData = VisitScheduleStatus::orderBy('name')->get();
 
             $endDate = $request->end_date
                 ? Carbon::parse($request->end_date)
@@ -207,6 +209,7 @@ class SchedulerController extends Controller
                 'currencyData' => $clinicData->currency->name,
                 'cabinetData' => $listCabinets,
                 'formData' => $formData,
+                'statusesData' => $statusesData
             ]);
         });
     }

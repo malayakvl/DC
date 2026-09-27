@@ -46,7 +46,6 @@ const TODAY_BG = '#eef6ff';
 
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
-
   return Array.from({ length: count }).map((_, i) => {
     const d = addDays(start, i);
 

@@ -1,11 +1,10 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
+import React, { useMemo, useState, useEffect } from 'react';
+import { addDays, format, parseISO } from 'date-fns';
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { cabinets, doctors, SchedulerEvent } from './_mock/data';
+import { SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
-import { getEventLayout } from './engine/eventLayout';
 import Index3Days from './Index3Days';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,21 +17,7 @@ import {
 } from '@/Redux/Scheduler/selectors';
 import SchedulerFormCreate from '@/Pages/Scheduler/Form/FormPopupCreate';
 import SchedulerFormEdit from '@/Pages/Scheduler/Form/FormPopupEdit';
-import moment from 'moment/moment';
-import {
-  setExistServicesAction,
-  setPopupCabinetAction,
-  setScheduleDateAction,
-  setScheduleTimeAction,
-  showSchedulePopupAction,
-  setSchedulePopupDoctorAction,
-  showScheduleEditPopupAction,
-  setScheduleEditEventAction,
-  showPricePopupAction,
-  initServicesAction,
-} from '@/Redux/Scheduler';
-import { showOverlayAction } from '@/Redux/Layout';
-import dayjs from 'dayjs';
+import { showPricePopupAction } from '@/Redux/Scheduler';
 import Pricing from './Pricing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
@@ -41,8 +26,6 @@ import { SchedulerToolbar } from './components/SchedulerToolbar';
 
 // ================= CORE GRID ENGINE =================
 const SLOT_HEIGHT = 30;
-const FREE_SLOT_BG = '#fbfdff';
-const TODAY_BG = '#e6f0fa';
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
 
@@ -73,6 +56,7 @@ export default function Index({
   serviceCategories,
   initialView = '3days',
   allowViewSwitch = true,
+  statusesData,
 }) {
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const [typeView, setTypeView] = useState(initialView);
@@ -85,8 +69,6 @@ export default function Index({
   const editEventPopup = useSelector(showEditPopupSelector);
   // Рефы для блокировки кликов после перетаскивания / ресайза
   const isResizingRef = React.useRef(false);
-  const isDraggingRef = React.useRef(false);
-  const blockClickRef = React.useRef(false); // <--- ДОБАВИТЬ СЮДА
   const tab = useSelector(viewScheduleSelector);
   const showPrice = useSelector(pricePopupSelector);
   const [hoverPreview, setHoverPreview] = useState<{
@@ -95,7 +77,7 @@ export default function Index({
     event: any;
     services: any[];
   } | null>(null);
-  const hoverTimeout = useRef<number>();
+//   const hoverTimeout = useRef<number>();
 
   // Динамическая фильтрация и группировка опций для вкладок
   const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
@@ -134,15 +116,6 @@ export default function Index({
         return doctorsTabOptions;
     }
   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
-  const DOCTOR_WIDTH = 180;
-  const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
-  const headerTrackRef = useRef<HTMLDivElement>(null);
-
-  const syncHeaderScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    if (headerTrackRef.current) {
-      headerTrackRef.current.style.transform = `translateX(-${event.currentTarget.scrollLeft}px)`;
-    }
-  };
 
   const msg = new Lang({
     messages: lngScheduler,
@@ -418,47 +391,24 @@ export default function Index({
       <Head title="Scheduler Management" />
       <div>
         <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
-          <div className="mb-4">
-            <div className="inline-flex bg-slate-100 p-1 rounded-xl gap-1 border border-slate-200/80">
-              <button
-                type="button"
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  tab === 'patients'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-                onClick={() => handleTabClick('patients')}
-              >
-                {msg.get('scheduler.tab.patients')}
-              </button>
-
-              <button
-                type="button"
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  tab === 'visits'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-                onClick={() => handleTabClick('visits')}
-              >
-                Асистенти
-              </button>
-
-              <button
-                type="button"
-                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  tab === 'plans'
-                    ? 'bg-white text-primary shadow-sm'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-                }`}
-                onClick={() => handleTabClick('plans')}
-              >
-                Інші
-              </button>
-            </div>
-          </div>
-
-          <SchedulerToolbar />
+          <SchedulerToolbar
+            currentDate={`${days[0].label} ${days.length > 1 ? `→ ${days[days.length - 1].label}` : ''}`}
+            onPrevDay={() =>
+              setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
+            }
+            onNextDay={() =>
+              setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
+            }
+            onToday={() => setBaseDate(format(new Date(), 'yyyy-MM-dd'))}
+            allowViewSwitch={allowViewSwitch}
+            statusesData={statusesData}
+            cabinetsData={cabinetData}
+            customerData={customerData}
+            onNewAppointment={() => {
+              // Логіка відкриття створення нового запису через Redux, якщо потрібно
+              // наприклад: dispatch(showSchedulePopupAction(true)); dispatch(showOverlayAction(true));
+            }}
+          />
         </div>
         {showEventPopup && (
           <SchedulerFormCreate
@@ -517,7 +467,7 @@ export default function Index({
             </div>
           </div>
         )}
-        {typeView === '3days' && (
+        {typeView === '3days' ? (
           <div>
             <Index3Days
               baseDate={baseDate}
@@ -539,81 +489,9 @@ export default function Index({
               othersTabOptions={othersTabOptions}
             />
           </div>
+        ) : (
+          <>Day View</>
         )}
-        {/* FIXED HEADER AREA */}
-        <div
-          style={{
-            display: 'flex',
-            marginLeft: '20px',
-            marginRight: '20px',
-            flexDirection: 'column',
-            overflow: 'visible',
-            background: '#f1f5f9',
-            marginBottom: '100px',
-            borderBottom: 'solid 1px #d5d7d9',
-          }}
-        >
-          {/* ================= NAV ================= */}
-          <div
-            style={{
-              paddingTop: '0px',
-              paddingBottom: '8px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              background: '#fff',
-              borderBottom: '1px solid #e2e8f0',
-              zIndex: showEventPopup || editEventPopup ? 0 : 100,
-            }}
-          >
-            <div>
-              <button
-                className="btn-submit btn-prev"
-                onClick={() =>
-                  setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
-                }
-              >
-                {msg.get('scheduler.prev')}
-              </button>
-              <span style={{ margin: '0 12px', fontWeight: 600 }}>
-                {days[0].label} {days.length > 1 && ` → ${days[days.length - 1].label}`}
-              </span>
-              <button
-                className="btn-submit btn-prev"
-                onClick={() =>
-                  setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
-                }
-              >
-                !!!{msg.get('scheduler.next')}
-              </button>
-            </div>
-
-            {allowViewSwitch && (
-              <div>
-                <button
-                  onClick={() => setTypeView('day')}
-                  style={{ marginRight: 8, opacity: typeView === 'day' ? 1 : 0.5 }}
-                >
-                  {msg.get('scheduler.day')}
-                </button>
-                <button
-                  className="btn-submit"
-                  onClick={() => setTypeView('3days')}
-                  style={{ opacity: typeView === '3days' ? 1 : 0.5 }}
-                >
-                  {msg.get('scheduler.3days')}
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/*=========================================================================*/}
-          {/*=========================================================================*/}
-          {/* ================= MAIN HORIZONTAL SCROLL CONTAINER ================= */}
-          {/*=========================================================================*/}
-          {/*=========================================================================*/}
-          {typeView === '3days' && <></>}
-        </div>
       </div>
     </AuthenticatedLayout>
   );
