@@ -222,6 +222,7 @@ class ServiceController extends Controller
                 $pricing->save();
 
                 \Log::info('Pricing saved, id = ' . $pricing->id);
+                $total = 0;
 
                 foreach ($request->rows as $index => $row) {
                     \Log::info("Row {$index}:", $row);
@@ -235,8 +236,15 @@ class ServiceController extends Controller
                     $item->material_id = $row['product_id'];
                     $item->unit_id = $row['unit_id'] ?? null;
                     $item->quantity = str_replace(',', '.', $row['quantity'] ?? 0);
+                    $item->price = $row['price'];
+                    $item->total = $row['total'];
+                    $item->mark_up = $row['mark_up'];
+                    $total += $row['total'];
                     $item->save();
                 }
+
+                $pricing->total_price = $total; // Проверь название колонки в БД, если у тебя просто total, то меняй на $pricing->total = $total;
+                $pricing->save();
 
                 DB::commit();
                 \Log::info('=== PRICING UPDATE SUCCESS ===');

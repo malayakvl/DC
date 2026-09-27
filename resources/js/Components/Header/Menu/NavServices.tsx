@@ -14,12 +14,22 @@ export default function NavServices() {
     messages: lngHeader,
     locale: appLang,
   });
+  const { url, props } = usePage();
   const permissions = usePage().props.auth.can;
+  const activeRoutes = ['/services'];
+  const isActive = activeRoutes.some((route) => url.startsWith(route));
 
   return (
     <>
       {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['service-all']) && (
-        <Menu as="div" className="relative top-menu-nav">
+        <Menu
+          as="div"
+          className={`relative top-menu-nav ${
+            isActive
+              ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs rounded-[8px]'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+          }`}
+        >
           <MenuButton className="top-nav flex flex-col items-center">
             <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>
           </MenuButton>
