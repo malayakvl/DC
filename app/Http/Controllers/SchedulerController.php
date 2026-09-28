@@ -601,18 +601,25 @@ class SchedulerController extends Controller
     public function fetchPatients(Request $request) {
         $qData = $request->all();
         return $this->withClinicSchema($request, function($clinicId) use ($qData) {
-            $patientsQueryResults = DB::table('patients')
-                ->select('patients.id', 'core.users.first_name', 'core.users.last_name', 'patients.medical_card_no',
-                'patients.patient_status_id', 'patients.medical_card_no', 'patients.birthday', 'patients.balance', 'patients.discount',
-                'patients.important_info', 'patients.gender', 'patient_discount_statuses.name AS status_d_name',
-                'patients.last_visit', 'patients.balance', 'patients.visits_count', 'patients.last_visit')
-                ->leftJoin('patient_discount_statuses', 'patients.patient_status_id', '=', 'patient_discount_statuses.id')
-                ->leftJoin('core.', 'patients.patient_status_id', '=', 'patient_discount_statuses.id')
-                ->where(function($query) use ($qData) {
-                    $query->where('core.users.first_name', 'LIKE', '%' . $qData['strFind'] . '%')
-                          ->orWhere('core.users.last_name', 'LIKE', '%' . $qData['strFind'] . '%');
-                })
-                ->get();
+
+            $schema = 'clinic_' . $clinicId;
+            $search = $qData['strFind'];
+            $phone = null;
+            $segment = $qData['segment'] ?? null; // если у тебя есть фильтр по сегменту (например, 'debtors'), подставляй его сюда, иначе null
+
+            $patientsQueryResults = DB::select(
+                'SELECT * FROM core.patients_with_balance_ordering(?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $schema,    // 1. p_schema text
+                    null,       // 2. p_filial_id text
+                    $search,    // 3. p_patient_name text
+                    $phone,     // 4. p_phone text
+                    $segment,   // 5. p_segment text (вот этого пропавшего парня не хватало!)
+                    '50',       // 6. p_limit text
+                    '0'         // 7. p_offset text
+                ]
+            );
+
             return response()->json([
                 'items' => $patientsQueryResults
             ]);

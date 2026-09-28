@@ -194,7 +194,7 @@ export default function Filters({ listData = [], customerData }) {
             <span
               className={`w-1.5 h-1.5 rounded-full ${filtersData.segment === 'debtors' ? 'bg-white' : 'bg-rose-500'}`}
             ></span>
-            {msg.get('patient.credit_patients')} (3)
+            {msg.get('patient.credit_patients')}
           </button>
 
           <button
