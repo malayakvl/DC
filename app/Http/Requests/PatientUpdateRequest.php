@@ -31,6 +31,7 @@ class PatientUpdateRequest extends FormRequest
             'payment' => ['string', 'nullable'],
             'register_date' => ['required'],
             'birthday' => ['date', 'nullable'],
+            'gender' => ['string', 'nullable'],
         ];
     }
 }

@@ -7,6 +7,9 @@ const rootSelector = createSelector(
   (scheduler) => scheduler
 );
 
+export const schedulerViewSelector = (state) => state.scheduler.filterTypeView;
+export const schedulerStatusSelector = (state) => state.scheduler.filterStatus;
+export const schedulerBaseDateSelector = (state) => state.scheduler.filterBaseDate;
 export const showSchedulePopupSelector = (state) => state.scheduler.showSchedulePopup;
 export const showEditPopupSelector = (state) => state.scheduler.showScheduleEditPopup;
 export const editEventSelector = (state) => state.scheduler.editEvent;

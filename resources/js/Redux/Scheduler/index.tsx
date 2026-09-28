@@ -1,4 +1,6 @@
 import { handleActions } from 'redux-actions';
+import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
+
 import {
   setSchedulePopupDoctorAction,
   showSchedulePopupAction,
@@ -24,6 +26,9 @@ import {
   initServicesAction,
   setScheduleDoctorIdAction,
   setScheduleAssistantIdAction,
+  setScheduleStatusFilterAction,
+  setTypeViewAction,
+  setCalendarDateAction,
 } from './actions';
 
 const initialState = {
@@ -44,12 +49,35 @@ const initialState = {
   weekStart: new Date(new Date().setDate(new Date().getDate() - (new Date().getDay() || 7) + 1)),
   weekEnd: new Date(new Date().setDate(new Date().getDate() + (7 - (new Date().getDay() || 7)))),
   viewSchedule: 'patients',
+  filterTypeView: '3days',
+  filterCabinetId: '',
+  filterDoctorId: '',
+  filterStatus: '',
+  filterBaseDate: format(new Date(), 'yyyy-MM-dd'),
 };
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [setCalendarDateAction]: {
+    next: (state, action) => ({
+      ...state,
+      filterBaseDate: action.payload,
+    }),
+  },
+  [setScheduleStatusFilterAction]: {
+    next: (state, action) => ({
+      ...state,
+      filterStatus: action.payload,
+    }),
+  },
+  [setTypeViewAction]: {
+    next: (state, action) => ({
+      ...state,
+      filterTypeView: action.payload,
+    }),
+  },
   [setEditEventAction]: {
     next: (state, action) => ({
       ...state,
@@ -244,6 +272,9 @@ export {
   initServicesAction,
   setScheduleDoctorIdAction,
   setScheduleAssistantIdAction,
+  setTypeViewAction,
+  setScheduleStatusFilterAction,
+  setCalendarDateAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

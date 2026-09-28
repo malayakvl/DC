@@ -470,7 +470,6 @@ class IncomingInvoiceController extends Controller
             $storeId = $request->store_id;
 
             $totalAmount = 0;
-
             foreach ($request->rows as $row) {
                 $qty = $row['quantity'];      // количество в единицах материала
                 $factQty = $row['fact_qty'];  // фактический вес/объем

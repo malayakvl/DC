@@ -32,13 +32,14 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           unit_id: '',
           product: '',
           quantity: '1.00',
+          mark_up: '0.00',
           maxQty: '',
           mark_up: '',
           price: 0,
           total: 0,
           base_price: 0,
           stock: 0,
-          category: 'Витратні матеріали',
+          category: '',
         },
       ]);
     };
@@ -116,22 +117,39 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                   className="cursor-pointer px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm flex items-center justify-between"
                   onClick={() => {
                     dispatch(emptyServicesAutocompleteAction());
+
+                    // 1. Получаем базовую чистую цену
+                    const basePrice = _res.price_per_unit || _res.price || 0;
+                    // 2. Получаем процент наценки (если есть)
+                    const markupPercent = _res.category_percent || 0;
+                    const formattedPrice = parseFloat(parseFloat(basePrice).toFixed(2));
+
+                    // 3. Вычисляем цену за единицу с учетом наценки
+                    // Если retail_price уже посчитана в базе, можно брать её, иначе рассчитываем формулой: basePrice * (1 + markupPercent / 100)
+                    const finalPrice = _res.retail_price || basePrice * (1 + markupPercent / 100);
+
+                    const quantity = 1;
                     const onChangeValue = [...inputs];
                     onChangeValue[index].product = _res.name;
                     onChangeValue[index].product_id = _res.id;
-                    onChangeValue[index].quantity = '1.00';
+                    onChangeValue[index].quantity = quantity;
                     onChangeValue[index].unit_id = _res.unit_id;
-                    onChangeValue[index].price = _res.price_per_unit || _res.retail_price || 0;
-                    onChangeValue[index].total = parseFloat(
-                      (1 * onChangeValue[index].price).toFixed(2)
-                    );
+                    onChangeValue[index].price = formattedPrice;
+                    onChangeValue[index].mark_up = _res.category_percent;
+                    onChangeValue[index].category = _res.category_name;
+                    //                     onChangeValue[index].total = parseFloat(
+                    //                       (1 * onChangeValue[index].price).toFixed(2)
+                    //                     );
+                    //                     onChangeValue[index].total = parseFloat((quantity * price).toFixed(2));
+                    onChangeValue[index].total = parseFloat((quantity * finalPrice).toFixed(2));
                     onChangeValue[index].stock = _res.stock || 0;
                     setInputs(onChangeValue);
                   }}
                 >
                   <span className="font-semibold text-slate-800">{_res.name}</span>
                   <span className="text-xs font-bold text-teal-700">
-                    {_res.price_per_unit || _res.retail_price || 0} ₴
+                    {parseFloat(_res.price_per_unit || _res.retail_price || _res.price).toFixed(2)}{' '}
+                    ₴
                   </span>
                 </li>
               ))}

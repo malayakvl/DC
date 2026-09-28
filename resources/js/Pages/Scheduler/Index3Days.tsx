@@ -6,21 +6,23 @@ import { getEventLayout } from './engine/eventLayout';
 import { router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import {
-  pricePopupSelector,
   showEditPopupSelector,
   showSchedulePopupSelector,
   viewScheduleSelector,
+  schedulerViewSelector,
+  schedulerBaseDateSelector,
 } from '@/Redux/Scheduler/selectors';
 import SchedulerDayHeader from './components/SchedulerDayHeader';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
+import { setCalendarDateAction } from '../../Redux/Scheduler/index';
 
 const SLOT_HEIGHT = 30;
-const FREE_SLOT_BG = '#fbfdff';
+const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
 
 function getDays(baseDate: string, count: number, appLang: string) {
@@ -44,12 +46,14 @@ export default function Index3Days({
   groupedOptions,
   customerData,
   eventsData,
-  initialView = '3days',
   allowViewSwitch = true,
 }) {
-  useSelector(pricePopupSelector);
+//   useSelector(pricePopupSelector);
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  const [view, setView] = useState(initialView);
+  const dispatch = useDispatch();
+//   const [view, setView] = useState(initialView);
+  const view = useSelector(schedulerViewSelector);
+  const baseCalendarDate = useSelector(schedulerBaseDateSelector);
   const appLang = useSelector(appLangSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
@@ -128,8 +132,9 @@ export default function Index3Days({
 
   const dayStep = view === 'day' ? 1 : 3;
   const days = useMemo(() => {
-    return getDays(baseDate, dayStep, appLang);
-  }, [baseDate, dayStep]);
+    return getDays(baseCalendarDate, dayStep, appLang);
+//     return getDays(baseDate, dayStep, appLang);
+  }, [baseDate, dayStep, baseCalendarDate]);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
@@ -469,7 +474,6 @@ export default function Index3Days({
 
   return (
     <div>
-
       {/* FIXED HEADER AREA */}
       <div
         style={{
@@ -495,47 +499,7 @@ export default function Index3Days({
             borderBottom: '1px solid #e2e8f0',
             zIndex: showEventPopup || editEventPopup ? 0 : 100,
           }}
-        >
-          <div>
-            <button
-              className="btn-submit btn-prev"
-              onClick={() =>
-                setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
-              }
-            >
-              {msg.get('scheduler.prev')}
-            </button>
-            <span style={{ margin: '0 12px', fontWeight: 600 }}>
-              {days[0].label} {days.length > 1 && ` → ${days[days.length - 1].label}`}
-            </span>
-            <button
-              className="btn-submit btn-prev"
-              onClick={() =>
-                setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
-              }
-            >
-              {msg.get('scheduler.next')}
-            </button>
-          </div>
-
-          {allowViewSwitch && (
-            <div>
-              <button
-                onClick={() => setView('day')}
-                style={{ marginRight: 8, opacity: view === 'day' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.day')}
-              </button>
-              <button
-                className="btn-submit"
-                onClick={() => setView('3days')}
-                style={{ opacity: view === '3days' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.3days')}
-              </button>
-            </div>
-          )}
-        </div>
+        />
 
         {/* CONTAINER */}
         <div

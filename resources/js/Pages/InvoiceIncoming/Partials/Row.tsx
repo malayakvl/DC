@@ -131,7 +131,49 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       }
     };
 
+    // Выпадающий список теперь рендерится прямо под конкретным инпутом текущей строки
     const renderSearchProducerResult = (index) => {
+      // Показываем результаты только для той строки, в которой сейчас пишем
+      if (serchResults.length > 0 && numRow === index) {
+        return (
+          <div className="absolute left-0 right-0 z-50 mt-[-10px] bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+            <ul className="py-1">
+              {serchResults.map((_res) => (
+                <li
+                  key={_res.id}
+                  className="px-4 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 cursor-pointer transition-colors flex justify-between items-center"
+                  onClick={() => {
+                    setHideFields(true);
+                    dispatch(emptyMaterialsAutocompleteAction());
+                    const taxData = documentTax.split('_');
+                    inputs[index].product = _res.name;
+                    inputs[index].product_id = _res.id;
+                    inputs[index].price = _res.retail_price;
+                    inputs[index].unit_id = _res.unit_id;
+                    inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
+                    inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
+                    inputs[index].tax_amount = documentTax
+                      ? (_res.retail_price * taxData[1]) / 100
+                      : 0;
+                    inputs[index].quantity = 1;
+                    inputs[index].total = parseFloat(String(inputs[index].price));
+                  }}
+                >
+                  <span className="font-medium">{_res.name}</span>
+                  <span className="text-slate-400 text-[10px] ml-2">
+                    {msg.get('invoice_incoming.provider')} {_res.producer_name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      }
+      return null;
+    };
+
+
+    const renderSearchProducerResultOld = (index) => {
       if (serchResults.length > 0) {
         return (
           <div
@@ -141,6 +183,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
             <ul>
               {serchResults.map((_res) => (
                 <li
+                  key={_res.id}
                   className="cursor-pointer py-0.5"
                   onClick={() => {
                     setHideFields(true);
