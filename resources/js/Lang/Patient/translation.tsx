@@ -106,6 +106,14 @@ const lngPatient = {
     dragdrop_files: 'Перетягніть фото матеріалу сюди',
     or_select_file_type: 'або виберіть файл з комп’ютера',
     file_sizes: 'PNG, JPG, WebP до 5 МБ',
+    gender_search_tips: 'Пошук за ПІБ, номером телефону, карткою...',
+    all_doctors: 'Лікар: Всі лікарі',
+    all_patients: 'Усі',
+    my_patients: 'Мої пацієнти',
+    credit_patients: 'Боржники',
+    found: 'Знайдено',
+    found_patients: 'пацієнтів',
+    clear_filter: 'Очистити фільтри',
   },
 };
 export default lngPatient;

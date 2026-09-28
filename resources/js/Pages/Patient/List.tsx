@@ -10,7 +10,7 @@ import Pagination from './Partials/Pagination';
 import { Link } from '@inertiajs/react';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, currency }) {
+export default function List({ listData, currency, customerData }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
@@ -32,9 +32,9 @@ export default function List({ listData, currency }) {
               createLabel={msg.get('patient.title.create')}
             />
 
-            <Filters />
+            <Filters listData={listData} customerData={customerData} />
 
-            <Pagination listData={listData} />
+            <Pagination listData={listData} customerData={customerData} />
 
             <div className="table-responsive">
               <table className="w-full text-left border-collapse">
@@ -249,8 +249,13 @@ export default function List({ listData, currency }) {
                             </Link>
 
                             {/* Редагування */}
+                            {/* Редагування через звичайний <a>, щоб точно зловити поточний повний URL з параметрами */}
                             <Link
                               href={`/patient/edit/${item.id}`}
+                              onClick={() => {
+                                // Сохраняем точный адрес списка С фильтрами и поиском
+                                sessionStorage.setItem('patient_return_url', window.location.href);
+                              }}
                               className="actn-btns"
                               title="Редагувати"
                             >

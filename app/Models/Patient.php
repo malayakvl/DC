@@ -24,7 +24,7 @@ class Patient extends Authenticatable
         'patient_id',
         'medical_card_no',
         'patient_status_id',
-        'curator_user_id',
+        'curator_id',
         'registered_at',
         'phone',
         'address',

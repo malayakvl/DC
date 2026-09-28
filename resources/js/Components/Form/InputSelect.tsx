@@ -1,7 +1,6 @@
 import InputLabel from './InputLabel';
 import React, { useEffect, useState, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
-import lngHeaders from '../../Lang/Datatable/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
@@ -84,7 +83,7 @@ export default function InputSelect({
       onChange(syntheticEvent);
     }
   };
-console.log(normalizedOptions);
+
   return (
     <div className="relative w-full" ref={dropdownRef}>
       {label && <InputLabel htmlFor={name} value={label} />}

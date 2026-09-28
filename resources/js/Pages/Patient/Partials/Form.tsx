@@ -27,13 +27,6 @@ export default function Form({
   });
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-image.png');
-  console.log('contact data', contactData);
-
-//   const [uploadedFile, setUploadedFile] = useState();
-
-//   const onDrop = useCallback((acceptedFiles) => {
-//     setUploadedFile(acceptedFiles);
-//   }, []);
 
   const { data, setData, processing, post, recentlySuccessful, progress } = useForm({
     id: formData.id,
@@ -56,9 +49,9 @@ export default function Form({
     status_id: formData.status_id,
     notice: formData.notice,
     patient_id: formData.patient_id,
+    return_url: sessionStorage.getItem('patient_return_url') || route('patient.index'),
   });
   const { errors } = usePage().props;
-
 
   const handleChange = (e) => {
     const key = e.target.id;

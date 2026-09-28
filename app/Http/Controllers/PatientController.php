@@ -66,31 +66,41 @@ class PatientController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
+            $segment = $request->input('segment');
 
             $perPage = 50;
             $page = $request->input('page', 1);
             $offset = ($page - 1) * $perPage;
-
+//            dd($request);exit;
 
             // Fetch filtered patients with balance using the core function
             $results = DB::select("
-                SELECT *, patient_id as id 
-                FROM core.patients_with_balance_ordering(
-                    p_schema       => :schema,
-                    p_filial_id    => :filial_id,
-                    p_patient_name => :patient_name,
-                    p_phone        => :phone,
-                    p_limit        => :limit,
-                    p_offset       => :offset
-                )
-            ", [
+    SELECT *, patient_id as id 
+    FROM core.patients_with_balance_ordering(
+        p_schema       => :schema,
+        p_filial_id    => :filial_id,
+        p_patient_name => :patient_name,
+        p_phone        => :phone,
+        p_segment      => :segment,
+        p_limit        => :limit,
+        p_offset       => :offset
+    )
+", [
                 'schema'       => "clinic_{$clinicId}",
                 'filial_id'    => $filialId,
-                'patient_name' => $request->filterName ?: null,
+                'patient_name' => $request->search ?: null,
                 'phone'        => $request->filterPhone ?: null,
+                'segment'      => $segment ?: null,
                 'limit'        => $perPage,
                 'offset'       => $offset
             ]);
+
+            // Если выбран сегмент «Боржники», фильтруем коллекцию по балансу < 0
+//            if ($segment === 'debtors') {
+//                $results = array_values(array_filter($results, function($patient) {
+//                    return $patient->balance < 0;
+//                }));
+//            }
             
 
             // Calculate total count for pagination links
@@ -108,6 +118,30 @@ class PatientController extends Controller
                 });
             }
             $totalCount = $countQuery->count();
+
+            $customerData = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                    $join->on('pfu.user_id', '=', 'u.id')
+                        ->where('pfu.filial_id', $filialId);
+                })
+                ->leftJoin("clinic_{$clinicId}.roles as r", 'r.id', '=', 'pfu.role_id')
+                ->where('cu.clinic_id', $clinicId)
+                ->whereNull('pt.id') // 💥 вот ключевая строка
+                ->select(
+                    'u.id',
+                    DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
+                    'u.first_name',
+                    'u.last_name',
+                    'u.email',
+                    'cu.avatar',
+                    'pfu.color',
+                    'pfu.avatar',
+                    'r.name as role_name'
+                )
+                ->orderBy('u.last_name')
+                ->get();
             
 
             $listData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -118,11 +152,12 @@ class PatientController extends Controller
                 ['path' => $request->url(), 'query' => $request->query()]
             );
             $currency = $clinic->currency->symbol;
-            
+
             return Inertia::render('Patient/List', [
                 'clinicData' => $clinic,
                 'listData' => $listData,
-                'currency' => $currency
+                'currency' => $currency,
+                'customerData' => $customerData,
             ]);
         });
     }
@@ -361,7 +396,12 @@ class PatientController extends Controller
             if ($isNew) {
                 return Redirect::route('patient.cliniccard', ['id' => $patient->id]);
             } else {
-                return redirect()->route('patient.index');
+                $backUrl = $request->input('return_url') ?? route('patient.index');
+                return redirect()->to($backUrl);
+//                $backUrl = session('back_to_list_url', route('patient.index'));
+//                session()->forget('back_to_list_url'); // Очищаем за собой
+//
+//                return redirect()->to($backUrl);
             }
         });
     }
