@@ -53,6 +53,8 @@ const lngPatient = {
     'upper.jaw': 'верхня щелепа',
     'lower.jaw': 'нижня щелепа',
     occlusion: 'оклюзія',
+    'gender.female': 'Жіноча',
+    'gender.male': 'Чоловіча',
     periodontal: 'парадонт',
     teeth: 'зуби',
     'teeth.type': 'Тип зуба',

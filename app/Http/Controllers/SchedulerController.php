@@ -602,8 +602,12 @@ class SchedulerController extends Controller
         $qData = $request->all();
         return $this->withClinicSchema($request, function($clinicId) use ($qData) {
             $patientsQueryResults = DB::table('patients')
-                ->select('patients.id', 'core.users.first_name', 'core.users.last_name')
-                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
+                ->select('patients.id', 'core.users.first_name', 'core.users.last_name', 'patients.medical_card_no',
+                'patients.patient_status_id', 'patients.medical_card_no', 'patients.birthday', 'patients.balance', 'patients.discount',
+                'patients.important_info', 'patients.gender', 'patient_discount_statuses.name AS status_d_name',
+                'patients.last_visit', 'patients.balance', 'patients.visits_count', 'patients.last_visit')
+                ->leftJoin('patient_discount_statuses', 'patients.patient_status_id', '=', 'patient_discount_statuses.id')
+                ->leftJoin('core.', 'patients.patient_status_id', '=', 'patient_discount_statuses.id')
                 ->where(function($query) use ($qData) {
                     $query->where('core.users.first_name', 'LIKE', '%' . $qData['strFind'] . '%')
                           ->orWhere('core.users.last_name', 'LIKE', '%' . $qData['strFind'] . '%');

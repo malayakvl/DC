@@ -1,4 +1,3 @@
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
@@ -6,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngScheduler from '../../../Lang/Scheduler/translation';
-import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import {
   minusServiceAction,
   plusServiceAction,
@@ -244,74 +242,11 @@ export default function SchedulerFormCreate({
       >
         <EventStatus />
 
+        <EventPatient values={values} />
+
         <div className="px-space-xl py-space-lg space-y-space-lg max-h-[calc(86vh-130px)] overflow-y-auto">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                  <span>Пацієнт</span>
-                  <span className="text-rose-500">*</span>
-                </label>
-                <button
-                  className="text-xs text-teal-700 hover:text-teal-800 font-semibold flex items-center gap-1 transition"
-                  type="button"
-                >
-                  <span className="material-symbols-outlined text-[16px]">person_add</span>
-                  <span>+ Створити нову картку</span>
-                </button>
-              </div>
-
-              <div className="relative p-1">
-                <div className="max-h-[50px] flex items-center w-full px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-500 transition-all shadow-sm">
-                  <span className="material-symbols-outlined text-teal-700 text-[20px] mr-2.5 shrink-0">
-                    person_search
-                  </span>
-                  <input
-                    className="input-calendar w-full bg-transparent text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none min-w-0"
-                    id="patientInput"
-                    placeholder="Введіть ПІБ, телефон або номер картки пацієнта..."
-                    type="text"
-                    defaultValue="Коваленко Анна Михайлівна"
-                  />
-                  <div className="flex items-center gap-1.5 shrink-0 pl-2">
-                    <span className="px-2 py-0.5 text-xs font-mono font-medium text-teal-800 bg-teal-100/60 rounded-md whitespace-nowrap">
-                      #P-1120
-                    </span>
-                    <button
-                      className="p-1 hover:bg-slate-200/60 rounded-lg text-slate-500 hover:text-slate-800 transition flex items-center justify-center shrink-0"
-                      type="button"
-                      title="Картка пацієнта"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">badge</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-2.5 p-3 bg-[#f2f3ff] border border-slate-200/60 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs font-bold shadow-xs shrink-0">
-                    АК
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-0">
-                    <span className="font-semibold text-slate-900">+38 (067) 412-89-01</span>
-                    <span className="mx-1.5 text-slate-300 hidden sm:inline">•</span>
-                    <span className="text-slate-500">Останній візит: 14 серпня 2026</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
-                    <span className="material-symbols-outlined text-[14px] text-teal-700">
-                      clinical_notes
-                    </span>
-                    Алергія: Пеніциліни
-                  </span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-100 text-teal-800 font-semibold shadow-2xs">
-                    Баланс: 0.00 ₴
-                  </span>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Room/Cabinet Selection */}
                 <div className="flex flex-col gap-1.5">

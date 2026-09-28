@@ -35,6 +35,8 @@ class Patient extends Authenticatable
         'visits_count',
         'user_id',
         'birthday',
+        'important_info',
+        'gender',
         
     ];
 

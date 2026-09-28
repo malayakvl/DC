@@ -3,9 +3,13 @@ import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
 
-export default function Edit({ formData, customerData, contactData, statusesData }) {
-  console.log('formData', formData);
-
+export default function Edit({
+  formData,
+  customerData,
+  contactData,
+  statusesData,
+  contactTypeData,
+}) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Patient'} />
@@ -17,6 +21,7 @@ export default function Edit({ formData, customerData, contactData, statusesData
               customerData={customerData}
               contactData={contactData}
               statusesData={statusesData}
+              contactTypeData={contactTypeData}
             />
           </div>
         </div>
