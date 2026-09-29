@@ -472,8 +472,9 @@
     border-radius: 4px;
     float: left;
     margin-right: 10px;
-    border-color: #D8DEE8;;
+    border: none;
     background-color: transparent;
+    max-height: 32px;
     color: #475569;
 }
 
@@ -1874,4 +1875,8 @@
 .calendar-header-viewport {
     border: solid 1px #dadbdc;
     border-radius: 5px 5px 0px 0px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+.scheduler-time-column {
+    font-family: "Plus Jakarta Sans", sans-serif;
 }

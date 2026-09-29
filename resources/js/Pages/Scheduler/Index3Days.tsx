@@ -472,6 +472,35 @@ export default function Index3Days({
     return `${surname} ${initials}`;
   };
 
+  // Функція для переведення поточного часу в пікселі від початку дня (наприклад, від 08:00)
+  const getCurrentTimeTop = () => {
+    const now = new Date();
+    const currentHours = now.getHours(); // або використовуй getUTCHours() залежно від того, як сервер/браузер віддає час
+    const currentMinutes = now.getMinutes();
+
+    const startHour = 8; // Початок твого дня у timeSlots
+
+    // Рахуємо загальну кількість хвилин від 08:00 ранку
+    const totalMinutesFromStart = (currentHours - startHour) * 90 + currentMinutes;
+    // 1 хвилина = SLOT_HEIGHT / 15 хв = 30 / 15 = 2px
+    const topPixels = totalMinutesFromStart * (SLOT_HEIGHT / 15);
+
+    return {
+      top: topPixels,
+      timeStr: format(now, 'HH:mm'),
+    };
+  };
+
+  const [currentTimeInfo, setCurrentTimeInfo] = useState(getCurrentTimeTop());
+
+  // Оновлюємо час щохвилини
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTimeInfo(getCurrentTimeTop());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       {/* FIXED HEADER AREA */}
@@ -485,8 +514,52 @@ export default function Index3Days({
           background: '#f1f5f9',
           marginBottom: '100px',
           borderBottom: 'solid 1px #d5d7d9',
+          position: 'relative'
         }}
       >
+        {/* Лінія поточного часу */}
+        <div
+          style={{
+            position: 'absolute',
+            top: currentTimeInfo.top,
+            left: 0,
+            right: 0,
+            height: '2px',
+            backgroundColor: '#ff4d4f', // червоний або твій рожевий колір як на скрині
+            zIndex: 45,
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              left: '10px', // відступ від лівого краю або колонки часу
+              backgroundColor: '#ff4d4f',
+              color: '#fff',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+            }}
+          >
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: '#fff',
+                display: 'inline-block',
+              }}
+            />
+            Зараз {currentTimeInfo.timeStr}
+          </div>
+        </div>
         {/* NAV */}
         <div
           style={{

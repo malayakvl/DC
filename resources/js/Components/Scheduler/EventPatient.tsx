@@ -6,7 +6,7 @@ import lngScheduler from '../../Lang/Scheduler/translation';
 import { findPatientsAction } from '@/Redux/Scheduler/actions';
 import { patientsDataSelector } from '@/Redux/Scheduler/selectors';
 import { setSchedulePatientIdAction } from '@/Redux/Scheduler';
-import { UserPlus, UserCheck, Mail, Phone, User } from 'lucide-react';
+import { UserPlus, Mail, Phone, User } from 'lucide-react';
 
 export default function EventPatient({ editPatientData = null }) {
   const dispatch = useDispatch();
