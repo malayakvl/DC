@@ -568,11 +568,12 @@
 }
 
 .scheduler-popup {
-    @apply px-5 max-h-[75vh] form-scheduler bg-white overflow-y-auto;
+    @apply px-5 max-h-[65vh] form-scheduler bg-white overflow-y-auto;
     -webkit-box-shadow: -1px -1px 26px 0px rgba(197, 204, 204, 0.75);
     width: 850px;
     max-width: 850px;
     left: 23% !important;
+    min-height: 590px !important;
 }
 
 .rbc-btn-group {
@@ -1237,7 +1238,7 @@
 
     background:#fff;
 
-    border-radius:12px;
+    border-radius: 0 8px 8px 0;
     border-left:4px solid;
 
     padding:4px 4px;
@@ -1407,11 +1408,12 @@
 .calendar-event{
     position:absolute;
     background:#fff;
-    border-radius:12px;
-    box-shadow:0 4px 12px rgba(16,24,40,.10);
+    //border-radius:12px;
+    //box-shadow:0 4px 12px rgba(16,24,40,.10);
     overflow:visible;
     cursor:move;
     transition:.18s;
+    border: solid 1px #e7ecef;
 }
 
 .calendar-event:hover{
@@ -1420,7 +1422,8 @@
 }
 
 .calendar-event-body{
-    padding:4px 5px;
+    //padding:5px;
+    margin-top: 5px;
     height:100%;
     display:flex;
     flex-direction:column;
@@ -1451,6 +1454,7 @@
 
 .calendar-event-services{
     flex:1;
+    margin-top: -4px;
 }
 
 .calendar-event-service{
@@ -1870,7 +1874,7 @@
 }
 .act-zone {
     position: absolute;
-    right: 10px;
+    right: 5px;
 }
 .calendar-header-viewport {
     border: solid 1px #dadbdc;

@@ -34,6 +34,7 @@ export default function EventPatient({ editPatientData = null }) {
       ...values,
       [key]: value,
     }));
+    console.log(1);
     // find clinic patients
     if (value.length > 3) {
       dispatch(findPatientsAction(value) as any);
@@ -70,7 +71,7 @@ export default function EventPatient({ editPatientData = null }) {
                 registered_at: patient.registered_at,
                 lastVisit: patient.last_visit,
               }));
-              dispatch(setSchedulePatientIdAction(patient.id));
+              dispatch(setSchedulePatientIdAction(patient.patient_id));
             }}
           >
             <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs mr-3 shrink-0">

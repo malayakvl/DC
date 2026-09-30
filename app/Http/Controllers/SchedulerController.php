@@ -183,17 +183,18 @@ class SchedulerController extends Controller
                     'event_time_to',
                     'status_color',
                     'status_name',
-                    'u.first_name',
-                    'u.last_name',
-                    'ud.first_name AS doctor_name',
+                    // Данные пациента из таблицы users через patients
+                    'u.first_name AS patient_first_name',
+                    'u.last_name AS patient_last_name',
+                    // Данные доктора
                     'ud.first_name AS doctor_first_name',
                     'ud.last_name AS doctor_last_name',
                     'ct.name AS cabinet_name',
                 )
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'patient_id')
-                ->leftJoin("clinic_{$clinicId}.cabinets as ct", 'ct.id', '=', 'cabinet_id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'schedulers.patient_id')
+                ->leftJoin("clinic_{$clinicId}.cabinets as ct", 'ct.id', '=', 'schedulers.cabinet_id')
                 ->leftJoin('core.users as u', 'u.id', '=', 'pt.user_id')
-                ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
+                ->leftJoin('core.users as ud', 'ud.id', '=', 'schedulers.doctor_id')
                 ->get();
 
             return Inertia::render('Scheduler/Index', [
@@ -550,7 +551,7 @@ class SchedulerController extends Controller
                 ->where('schedulers.clinic_id', $clinicData->id)
                 ->whereBetween('event_date', [$weekStart, $weekEnd])
                 ->get();
-
+dd($eventsData);exit;
 //            $eventsData1 = DB::table('schedulers')
 //                ->select('schedulers.*',
 //                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
@@ -782,65 +783,61 @@ class SchedulerController extends Controller
     public function update(SchedulerUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
-            if (!$request->user()->canClinic('scheduler-edit')) {
-                // Здесь тоже лучше редиректить с ошибкой во flash, но если рендеришь — то ок
-                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
-            }
+            if ($request->user()->canClinic('scheduler-edit')) {
+                if ($request->id) {
+                    $scheduler = Scheduler::find($request->id);
+                    $scheduler->title = $request->title ?? 'Uuuuuu';
+                    $scheduler->event_date = $request->event_date;
+                    $scheduler->event_time_from = $request->event_time_from;
+                    $scheduler->event_time_to = $request->event_time_to;
+                    $scheduler->clinic_id = $clinic->id;
+                    $scheduler->cabinet_id = $request->cabinet_id;
+                    $scheduler->doctor_id = $request->doctor_id;
+                    $scheduler->patient_id = $request->patient_id;
+                    $scheduler->description = $request->comment ?? '';
 
-            if ($request->id) {
-                $scheduler = Scheduler::find($request->id);
-                $scheduler->title = $request->title;
+                    // Безпечно дістаємо дані зі статус-масиву
+                    $scheduler->status_name = $request->status_id['name'] ?? 'planned';
+                    $scheduler->status_color = $request->status_id['color'] ?? '#3B82F6';
 
-                // КСТАТИ: обрати внимание, у тебя тут опечатка в $request->fotmatted_date (пропущена r)
-                // Если во фронте ты передаешь event_date, то лучше юзать: $request->event_date
-                $scheduler->event_date = $request->event_date ?? $request->fotmatted_date;
+                    $scheduler->services = json_encode($request->services ?? []);
+                    $scheduler->save();
 
-                $scheduler->event_time_from = $request->event_time_from;
-                $scheduler->event_time_to = $request->event_time_to;
-                $scheduler->clinic_id = $clinic->id;
-                $scheduler->cabinet_id = $request->cabinet_id;
-                $scheduler->doctor_id = $request->doctor_id;
-                $scheduler->patient_id = $request->patientId;
-                $scheduler->description = $request->comment ? $request->comment : '';
-                $scheduler->status_name = $request->status["name"];
-                $scheduler->status_color = $request->status["color"];
-                $scheduler->services = json_encode($request->services);
-                $scheduler->save();
-
-                // МЕНЯЕМ ТУТ: Обычный редирект Inertia, чтобы не перезагружать страницу
-                return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
-            }
-            else {
-                if ($request->newPatientData) {
-                    // create patient
-                    $patient = new Patient();
-                    $patient->first_name = $request->newPatientData['firstName'];
-                    $patient->last_name = $request->newPatientData['lastName'];
-                    $patient->phone = $request->newPatientData['phone'];
-                    $patient->email = $request->newPatientData['email'] ? $request->newPatientData['email'] : $request->newPatientData['phone'];
-                    $patient->password = Hash::make($request->newPatientData['phone']);
-                    $patient->save();
-
-                    $patientId = $patient->id;
+                    return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
                 } else {
-                    $patientId = $request->patientId;
+                    if ($request->newPatientData) {
+                        // create patient
+                        $patient = new Patient();
+                        $patient->first_name = $request->newPatientData['firstName'];
+                        $patient->last_name = $request->newPatientData['lastName'];
+                        $patient->phone = $request->newPatientData['phone'];
+                        $patient->email = $request->newPatientData['email'] ? $request->newPatientData['email'] : $request->newPatientData['phone'];
+                        $patient->password = Hash::make($request->newPatientData['phone']);
+                        $patient->save();
+
+                        $patientId = $patient->id;
+                    } else {
+                        $patientId = $request->patientId;
+                    }
+                    $scheduler = new Scheduler();
+                    $scheduler->title = $request->title;
+                    $scheduler->event_date = $request->event_date;
+                    $scheduler->event_time_from = $request->event_time_from;
+                    $scheduler->event_time_to = $request->event_time_to;
+                    $scheduler->clinic_id = $clinic->id;
+                    $scheduler->cabinet_id = $request->cabinet_id["id"];
+                    $scheduler->doctor_id = $request->doctor_id["id"];
+                    $scheduler->patient_id = $patientId;
+                    $scheduler->description = $request->comment ? $request->comment : '';
+                    $scheduler->status_name = $request->status_id["name"];
+                    $scheduler->status_color = $request->status_id["color"];
+                    $scheduler->services = json_encode($request->services);
+                    $scheduler->save();
+                    // МЕНЯЕМ ТУТ: Обычный редирект Inertia
+                    return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
                 }
-                $scheduler = new Scheduler();
-                $scheduler->title = $request->title;
-                $scheduler->event_date = $request->event_date;
-                $scheduler->event_time_from = $request->event_time_from;
-                $scheduler->event_time_to = $request->event_time_to;
-                $scheduler->clinic_id = $clinic->id;
-                $scheduler->cabinet_id = $request->cabinet_id["id"];
-                $scheduler->doctor_id = $request->doctor_id["id"];
-                $scheduler->patient_id = $patientId;
-                $scheduler->description = $request->comment ? $request->comment : '';
-                $scheduler->status_name = $request->status_id["name"];
-                $scheduler->status_color = $request->status_id["color"];
-                $scheduler->services = json_encode($request->services);
-                $scheduler->save();
-                // МЕНЯЕМ ТУТ: Обычный редирект Inertia
-                return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
+            } else {
+
             }
         });
     }

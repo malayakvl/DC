@@ -15,6 +15,10 @@ import 'rc-time-picker/assets/index.css';
 import InputMask from 'react-input-mask';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import InputText from '../../../Components/Form/InputText';
+import InputTextarea from '../../../Components/Form/InputTextarea';
+import InputSelect from '../../../Components/Form/InputSelect';
+
 dayjs.extend(utc);
 import {
   newPatientDataSelector,
@@ -61,7 +65,7 @@ export default function SchedulerFormCreate({
     clinic_id: clinicData.id,
     cabinet_id: formData.cabinet_id,
     doctor_id: formData.doctor_id,
-    assistent: formData.assistent_id,
+    assistent: '',
     comment: formData.comment,
     status_id: formData.status_id,
     event_date: formData.event_date,
@@ -88,10 +92,12 @@ export default function SchedulerFormCreate({
   const handleChangeSelect = (e) => {
     const key = e.target.id;
     const value = e.target.value;
+    console.log(key, value);
     setValues((values) => ({
       ...values,
       [key]: value,
     }));
+    console.log(values);
   };
 
   const handleChange = (e) => {
@@ -201,7 +207,6 @@ export default function SchedulerFormCreate({
             type="button"
             className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-100 transition cursor-pointer"
             onClick={() => {
-              console.log(1)
               dispatch(plusServiceAction(item));
             }}
           >
@@ -242,7 +247,20 @@ export default function SchedulerFormCreate({
 
         <EventPatient values={values} />
 
-        <div className="px-space-xl py-space-lg space-y-space-lg max-h-[calc(86vh-130px)] overflow-y-auto">
+        <div className={'w-full'}>
+          <InputText
+            name={'title'}
+            values={values}
+            dataValue={values.title}
+            value={values.title}
+            onChange={handleChange}
+            required
+            className={'w-full scheduler-select'}
+            label={msg.get('scheduler.form.title')}
+          />
+        </div>
+
+        <div className="px-space-xl py-space-lg space-y-space-lg max-h-[calc(75vh-130px)] overflow-y-auto">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-col gap-1.5">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -251,18 +269,17 @@ export default function SchedulerFormCreate({
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
                     <span>Кабінет</span>
                   </label>
-                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span className="material-symbols-outlined text-teal-700 text-[20px] shrink-0">
-                        meeting_room
-                      </span>
-                      <span className="text-xs font-medium text-slate-900 truncate">
-                        Кабінет 1 (Терапія)
-                      </span>
-                    </div>
-                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
-                      unfold_more
-                    </span>
+                  <div className={'w-full'}>
+                    <InputSelect
+                      name={'cabinet_id'}
+                      className={'w-full scheduler-select'}
+                      values={values}
+                      value={values.cabinet_id}
+                      options={cabinetData}
+                      onChange={handleChangeSelect}
+                      required
+                      label={null}
+                    />
                   </div>
                 </div>
 
@@ -271,19 +288,17 @@ export default function SchedulerFormCreate({
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
                     <span>Лікар</span>
                   </label>
-                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center text-[10px] font-bold shrink-0">
-                        НР
-                      </div>
-                      <span className="text-xs font-medium text-slate-900 truncate">
-                        Наталія Радчук
-                      </span>
-                    </div>
-                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
-                      unfold_more
-                    </span>
-                  </div>
+                  <InputSelect
+                    name={'doctor_id'}
+                    values={values}
+                    value={values.doctor_id}
+                    options={customerData}
+                    defaultValue={formData.doctor_id}
+                    onChange={handleChangeSelect}
+                    className={'w-full scheduler-select'}
+                    required
+                    label={null}
+                  />
                 </div>
 
                 {/* Assistant Selection */}
@@ -291,19 +306,17 @@ export default function SchedulerFormCreate({
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
                     <span>Асистент</span>
                   </label>
-                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#f2f3ff] border border-slate-200/60 hover:bg-slate-100/80 transition-all cursor-pointer shadow-2xs">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center text-[10px] font-bold shrink-0">
-                        ІС
-                      </div>
-                      <span className="text-xs font-medium text-slate-900 truncate">
-                        Ірина Савченко
-                      </span>
-                    </div>
-                    <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
-                      unfold_more
-                    </span>
-                  </div>
+                  <InputSelect
+                    name={'assistent_id'}
+                    values={values}
+                    value={values.assistent}
+                    options={assistantData}
+                    defaultValue={''}
+                    onChange={handleChangeSelect}
+                    className={'w-full scheduler-select'}
+                    required
+                    label={null}
+                  />
                 </div>
               </div>
 
@@ -390,7 +403,6 @@ export default function SchedulerFormCreate({
 
         <div className="manipulation flex flex-col pt-2">
           {/* Блок выбранных услуг */}
-          {console.log('Текущие popupServices в стейте:', popupServices)}
           {popupServices && popupServices.length > 0 && (
             <div className="mb-3 space-y-1">{popupServices.map((item) => renderService(item))}</div>
           )}
@@ -470,10 +482,11 @@ export default function SchedulerFormCreate({
                                 ? 'bg-teal-600 border-teal-600 text-white font-bold'
                                 : 'bg-white border-slate-200/80 text-teal-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 font-bold'
                             }`}
-                            title={isSelected ? "Вже додано (натисніть, щоб видалити)" : "Додати послугу"}
+                            title={
+                              isSelected ? 'Вже додано (натисніть, щоб видалити)' : 'Додати послугу'
+                            }
                             onClick={(e) => {
                               e.stopPropagation(); // Защита от всплытия событий
-                              console.log('Клик сработал!', service);
                               dispatch(setServicesAction(service));
                             }}
                           >

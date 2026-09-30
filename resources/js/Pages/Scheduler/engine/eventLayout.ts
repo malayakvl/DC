@@ -1,9 +1,9 @@
 const PIXELS_PER_MINUTE = 2;
-const DAY_START = 8 * 60; // 08:00
+const DAY_START = 8 * 70; // 08:00
 
 function toMinutes(time: string) {
   const [h, m] = time.split(':').map(Number);
-  return h * 60 + m;
+  return h * 70 + m;
 }
 
 export function getEventLayout(event: any) {
@@ -12,6 +12,6 @@ export function getEventLayout(event: any) {
 
   return {
     top: (start - DAY_START) * PIXELS_PER_MINUTE,
-    height: (end - start) * PIXELS_PER_MINUTE,
+    height: (end - start) * PIXELS_PER_MINUTE + 10,
   };
 }

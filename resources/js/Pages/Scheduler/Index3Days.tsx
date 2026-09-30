@@ -21,7 +21,7 @@ import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 import { setCalendarDateAction } from '../../Redux/Scheduler/index';
 
-const SLOT_HEIGHT = 30;
+const SLOT_HEIGHT = 35;
 const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
 
@@ -48,10 +48,10 @@ export default function Index3Days({
   eventsData,
   allowViewSwitch = true,
 }) {
-//   useSelector(pricePopupSelector);
+  //   useSelector(pricePopupSelector);
   const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const dispatch = useDispatch();
-//   const [view, setView] = useState(initialView);
+  //   const [view, setView] = useState(initialView);
   const view = useSelector(schedulerViewSelector);
   const baseCalendarDate = useSelector(schedulerBaseDateSelector);
   const appLang = useSelector(appLangSelector);
@@ -133,7 +133,7 @@ export default function Index3Days({
   const dayStep = view === 'day' ? 1 : 3;
   const days = useMemo(() => {
     return getDays(baseCalendarDate, dayStep, appLang);
-//     return getDays(baseDate, dayStep, appLang);
+    //     return getDays(baseDate, dayStep, appLang);
   }, [baseDate, dayStep, baseCalendarDate]);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
@@ -153,7 +153,7 @@ export default function Index3Days({
       end: `${event.event_date}T${event.event_time_to}`,
       status_color: event.status_color,
       status_name: event.status_name,
-      patient_name: event.last_name + ' ' + event.first_name,
+      patient_name: event.patient_last_name + ' ' + event.patient_first_name,
       services: event.services,
       cabinet_name: event.cabinet_name,
       doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
@@ -176,7 +176,7 @@ export default function Index3Days({
           end: `${event.event_date}T${event.event_time_to}`,
           status_color: event.status_color,
           status_name: event.status_name,
-          patient_name: event.last_name + ' ' + event.first_name,
+          patient_name: event.patient_last_name + ' ' + event.patient_first_name,
           services: event.services,
           cabinet_name: event.cabinet_name,
           doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
@@ -455,7 +455,6 @@ export default function Index3Days({
 
   const formatPatientName = (name) => {
     if (!name) return '';
-
     const parts = name.trim().split(/\s+/);
 
     if (parts.length === 1) {
@@ -475,14 +474,16 @@ export default function Index3Days({
   // Функція для переведення поточного часу в пікселі від початку дня (наприклад, від 08:00)
   const getCurrentTimeTop = () => {
     const now = new Date();
-    const currentHours = now.getHours(); // або використовуй getUTCHours() залежно від того, як сервер/браузер віддає час
+    const currentHours = now.getHours();
     const currentMinutes = now.getMinutes();
 
-    const startHour = 8; // Початок твого дня у timeSlots
+    const startHour = 8; // Початок дня (08:00)
 
-    // Рахуємо загальну кількість хвилин від 08:00 ранку
-    const totalMinutesFromStart = (currentHours - startHour) * 90 + currentMinutes;
-    // 1 хвилина = SLOT_HEIGHT / 15 хв = 30 / 15 = 2px
+    // Кількість хвилин від початку дня
+//     const totalMinutesFromStart = (currentHours - startHour) * 79 + currentMinutes;
+    const totalMinutesFromStart = (currentHours - startHour) * 79;
+
+    // Оскільки слот 30px відповідає 15 хвилинах, то 1 хвилина = 30 / 15 = 2px
     const topPixels = totalMinutesFromStart * (SLOT_HEIGHT / 15);
 
     return {
@@ -514,52 +515,9 @@ export default function Index3Days({
           background: '#f1f5f9',
           marginBottom: '100px',
           borderBottom: 'solid 1px #d5d7d9',
-          position: 'relative'
+          position: 'relative',
         }}
       >
-        {/* Лінія поточного часу */}
-        <div
-          style={{
-            position: 'absolute',
-            top: currentTimeInfo.top,
-            left: 0,
-            right: 0,
-            height: '2px',
-            backgroundColor: '#ff4d4f', // червоний або твій рожевий колір як на скрині
-            zIndex: 45,
-            pointerEvents: 'none',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: '10px', // відступ від лівого краю або колонки часу
-              backgroundColor: '#ff4d4f',
-              color: '#fff',
-              padding: '2px 8px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              fontWeight: 600,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-            }}
-          >
-            <span
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: '#fff',
-                display: 'inline-block',
-              }}
-            />
-            Зараз {currentTimeInfo.timeStr}
-          </div>
-        </div>
         {/* NAV */}
         <div
           style={{
@@ -653,6 +611,51 @@ export default function Index3Days({
                     zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
+                  {/* 2. Встав лінію сюди: вона малюватиметься тільки для поточного дня */}
+                  {day.date === format(new Date(), 'yyyy-MM-dd') && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: `${currentTimeInfo.top}px`,
+                        left: 0,
+                        right: 0,
+                        height: '2px',
+                        backgroundColor: '#ff4d4f',
+                        zIndex: 45,
+                        pointerEvents: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '10px',
+                          backgroundColor: '#ff4d4f',
+                          color: '#fff',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            backgroundColor: '#fff',
+                            display: 'inline-block',
+                          }}
+                        />
+                        Зараз {currentTimeInfo.timeStr}
+                      </div>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
@@ -699,10 +702,23 @@ export default function Index3Days({
                                   backgroundSize: `100% ${SLOT_HEIGHT * 4}px, 100% ${SLOT_HEIGHT}px`,
                                 }}
                               >
+                                {/* Додаємо візуальний блок-затемнення для неробочого часу (наприклад, після 18:00) */}
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: `${(18 - 8) * 4 * SLOT_HEIGHT}px`, // якщо день починається о 8:00, то 18:00 це через 10 годин (10 годин * 4 слоти на годину * SLOT_HEIGHT)
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.07)', // легке затемнення
+                                    pointerEvents: 'none', // щоб кліки все одно доходили до обробника, який видасть console.log('disable for click')
+                                    borderTop: '1px dashed #cbd5e1',
+                                  }}
+                                />
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
-                                  const compact = layout.height < 70;
+                                  const compact = layout.height < 90;
                                   // const medium = layout.height >= 70 && layout.height < 110;
                                   const large = layout.height >= 110;
 
@@ -732,65 +748,51 @@ export default function Index3Days({
                                         height: layout.height,
                                         left: 4,
                                         right: 4,
+                                        border: 'solid 1px ' + event.status_color,
                                         borderLeft: `4px solid ${event.status_color}`,
                                       }}
                                     >
                                       <div className="calendar-event-body">
-                                        <div className="calendar-event-header">
-                                          <div className="calendar-event-patient">
-                                            {formatPatientName(event.patient_name)}
-                                            <span className="act-zone">
-                                              <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  e.preventDefault();
-
-                                                  router.visit(`/act/create?visit_id=${event.id}`);
-                                                }}
-                                                title="Створити акт"
-                                                style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  width: '20px',
-                                                  height: '20px',
-                                                  borderRadius: '4px',
-                                                  background: '#0ea5a4',
-                                                  color: '#fff',
-                                                  border: 'none',
-                                                  cursor: 'pointer',
-                                                  transition: 'all 0.2s',
-                                                  flexShrink: 0,
-                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                  e.currentTarget.style.background = '#0d9488';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                  e.currentTarget.style.background = '#0ea5a4';
-                                                }}
-                                              >
-                                                <svg
-                                                  width="11"
-                                                  height="11"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2.5"
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                >
-                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                                  <polyline points="14 2 14 8 20 8"></polyline>
-                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                                                </svg>
-                                              </button>
-                                            </span>
-                                          </div>
+                                        <div className="flex items-center justify-between gap-1">
+                                          <span className="bg-teal-50 text-teal-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-teal-200/60">
+                                            {msg.get('scheduler.statuses.' + event.status_name)}
+                                          </span>
+                                          <span className="text-[10px] font-semibold text-slate-500">
+                                            {event.event_time_from}-{event.event_time_to}
+                                          </span>
                                         </div>
+                                        <div className="my-0.5 inline-block h-[25px]">
+                                          <h5 className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate p-0 m-0 mt-0.5">
+                                            <b>{formatPatientName(event.patient_name)}</b>
+                                          </h5>
+                                          <span className="act-zone">
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
 
+                                                router.visit(`/act/create?visit_id=${event.id}`);
+                                              }}
+                                              title="Створити акт"
+                                              style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: '20px',
+                                                height: '20px',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                flexShrink: 0,
+                                              }}
+                                            >
+                                              <span className="material-symbols-outlined text-[14px]">
+                                                inventory
+                                              </span>
+                                            </button>
+                                          </span>
+                                        </div>
                                         <div className="calendar-event-services">
                                           {servicesCount === 0 && (
                                             <div className="calendar-event-service">
@@ -799,20 +801,20 @@ export default function Index3Days({
                                           )}
 
                                           {servicesCount === 1 && (
-                                            <div className="calendar-event-service">
-                                              🦷 {services[0].name}
-                                            </div>
+                                            <p className="text-[11px] text-slate-500 truncate">
+                                              {services[0].name}
+                                            </p>
                                           )}
 
                                           {servicesCount > 1 && large && (
                                             <>
                                               {services.slice(0, 3).map((service) => (
-                                                <div
+                                                <p
                                                   key={service.id}
-                                                  className="calendar-event-service"
+                                                  className="text-[11px] text-slate-500 truncate"
                                                 >
-                                                  🦷 {service.name}
-                                                </div>
+                                                  {service.name}
+                                                </p>
                                               ))}
 
                                               {services.length > 3 && (
@@ -831,128 +833,15 @@ export default function Index3Days({
                                         </div>
 
                                         {!compact && (
-                                          <div
-                                            className="calendar-event-footer"
-                                            style={{
-                                              display: 'flex',
-                                              justifyContent: 'space-between',
-                                              alignItems: 'center',
-                                              gap: '4px',
-                                              marginTop: 'auto',
-                                              width: '100%',
-                                              overflow: 'hidden',
-                                              paddingTop: '4px',
-                                              borderTop: '1px dashed rgba(0,0,0,0.08)',
-                                            }}
-                                          >
-                                            <div
-                                              className="calendar-event-time"
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '3px',
-                                                whiteSpace: 'nowrap',
-                                                fontSize: '10px',
-                                                flexShrink: 1,
-                                                minWidth: 0,
-                                                color: '#475569',
-                                              }}
-                                            >
-                                              <svg
-                                                width="11"
-                                                height="11"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                style={{ flexShrink: 0, minWidth: '11px' }}
-                                              >
-                                                <circle
-                                                  cx="12"
-                                                  cy="12"
-                                                  r="9"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2"
-                                                />
-                                                <path
-                                                  d="M12 7v5l3 2"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2"
-                                                  strokeLinecap="round"
-                                                />
-                                              </svg>
-                                              <span>
-                                                {event.event_time_from}-{event.event_time_to}
+                                          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 mt-[-10px]">
+                                            <span className="font-bold text-teal-800">3,200 ₴</span>
+                                            <div className="flex items-center gap-1 text-slate-400 group-hover:text-slate-600">
+                                              <span className="material-symbols-outlined text-[14px]">
+                                                dentistry
                                               </span>
-                                            </div>
-
-                                            <div
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                flexShrink: 0,
-                                              }}
-                                            >
-                                              <span
-                                                className="calendar-event-duration"
-                                                style={{
-                                                  whiteSpace: 'nowrap',
-                                                  fontSize: '10px',
-                                                  color: '#64748b',
-                                                }}
-                                              >
-                                                {formatDuration(
-                                                  event.event_time_from,
-                                                  event.event_time_to
-                                                )}
+                                              <span className="material-symbols-outlined text-[14px]">
+                                                history
                                               </span>
-
-                                              {/*<button*/}
-                                              {/*  type="button"*/}
-                                              {/*  onClick={(e) => {*/}
-                                              {/*    e.stopPropagation();*/}
-                                              {/*    e.preventDefault();*/}
-
-                                              {/*    router.visit(`/act/create?visit_id=${event.id}`);*/}
-                                              {/*  }}*/}
-                                              {/*  title="Створити акт"*/}
-                                              {/*  style={{*/}
-                                              {/*    display: 'flex',*/}
-                                              {/*    alignItems: 'center',*/}
-                                              {/*    justifyContent: 'center',*/}
-                                              {/*    width: '20px',*/}
-                                              {/*    height: '20px',*/}
-                                              {/*    borderRadius: '4px',*/}
-                                              {/*    background: '#0ea5a4',*/}
-                                              {/*    color: '#fff',*/}
-                                              {/*    border: 'none',*/}
-                                              {/*    cursor: 'pointer',*/}
-                                              {/*    transition: 'all 0.2s',*/}
-                                              {/*    flexShrink: 0,*/}
-                                              {/*    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',*/}
-                                              {/*  }}*/}
-                                              {/*  onMouseEnter={(e) => {*/}
-                                              {/*    e.currentTarget.style.background = '#0d9488';*/}
-                                              {/*  }}*/}
-                                              {/*  onMouseLeave={(e) => {*/}
-                                              {/*    e.currentTarget.style.background = '#0ea5a4';*/}
-                                              {/*  }}*/}
-                                              {/*>*/}
-                                              {/*  <svg*/}
-                                              {/*    width="11"*/}
-                                              {/*    height="11"*/}
-                                              {/*    viewBox="0 0 24 24"*/}
-                                              {/*    fill="none"*/}
-                                              {/*    stroke="currentColor"*/}
-                                              {/*    strokeWidth="2.5"*/}
-                                              {/*    strokeLinecap="round"*/}
-                                              {/*    strokeLinejoin="round"*/}
-                                              {/*  >*/}
-                                              {/*    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>*/}
-                                              {/*    <polyline points="14 2 14 8 20 8"></polyline>*/}
-                                              {/*    <line x1="12" y1="18" x2="12" y2="12"></line>*/}
-                                              {/*    <line x1="9" y1="15" x2="15" y2="15"></line>*/}
-                                              {/*  </svg>*/}
-                                              {/*</button>*/}
                                             </div>
                                           </div>
                                         )}

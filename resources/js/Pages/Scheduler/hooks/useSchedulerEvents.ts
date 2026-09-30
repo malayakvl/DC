@@ -1,5 +1,5 @@
 // hooks/useSchedulerEvents.ts
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { parseISO, format, differenceInMinutes } from 'date-fns';
 import moment from 'moment';
@@ -16,9 +16,27 @@ import {
   initServicesAction,
   showScheduleEditPopupAction,
   setScheduleDoctorIdAction,
-} from '@/Redux/Scheduler';
+} from '../../../Redux/Scheduler/index';
 import { showOverlayAction } from '@/Redux/Layout';
-import { SchedulerEvent } from '../_mock/data';
+
+export interface SchedulerEvent {
+  id: string;
+  title: string;
+  doctor_id: number;
+  patient_id: number;
+  cabinet_id: number;
+  event_date: string;
+  event_time_from: string;
+  event_time_to: string;
+  start: string;
+  end: string;
+  status_color: string;
+  status_name?: string;
+  patient_name: string;
+  services: any;
+  cabinet_name?: string;
+  doctor_name?: string;
+}
 
 const SLOT_HEIGHT = 30;
 
@@ -29,7 +47,7 @@ export function useSchedulerEvents(
   isResizingRef: React.MutableRefObject<boolean>,
   isDraggingRef: React.MutableRefObject<boolean>
 ) {
-  const dispatch = useDispatch();
+  const dispatch: any = useDispatch();
 
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     if (!eventsData) return [];
@@ -59,10 +77,6 @@ export function useSchedulerEvents(
     }));
   });
 
-  // const isResizingRef = useRef(false);
-  // const isDraggingRef = useRef(false);
-  // const blockClickRef = useRef(false);
-
   // 💡 ФУНКЦИЯ-ГЛУШИТЕЛЬ ФАНТОМНЫХ КЛИКОВ
   const suppressNextClick = useCallback(() => {
     blockClickRef.current = true;
@@ -73,10 +87,8 @@ export function useSchedulerEvents(
       window.removeEventListener('click', captureClick, true);
     };
 
-    // Перехватываем следующий клик на самом раннем этапе (capture phase)
     window.addEventListener('click', captureClick, true);
 
-    // Страховочный сброс флагов через 200мс
     setTimeout(() => {
       window.removeEventListener('click', captureClick, true);
       isResizingRef.current = false;
@@ -155,13 +167,10 @@ export function useSchedulerEvents(
       doctorId: number,
       timeSlots: any[]
     ) => {
-      // ⛔️ ЕСЛИ ТОЛЬКО ЧТО БЫЛ РЕСАЙЗ ИЛИ ДРЭГ — ИГНОРИРУЕМ КЛИК ПО ЯЧЕЙКЕ!
       if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
-        console.log('🚫 Клик по ячейке заблокирован после ресайза');
         e.stopPropagation();
         return;
       }
-      if (isResizingRef.current || isDraggingRef.current || blockClickRef.current) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickY = e.clientY - rect.top;
       const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
@@ -182,6 +191,8 @@ export function useSchedulerEvents(
         dispatch(showOverlayAction(true));
         dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
         dispatch(setScheduleTimeAction(clickedSlot.label));
+      } else {
+        console.log('disable for click');
       }
     },
     [dispatch, msg]
@@ -189,22 +200,17 @@ export function useSchedulerEvents(
 
   const handleEventClick = useCallback(
     (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
-      // 1. Мгновенно глушим всплытие, чтобы событие НЕ долетело до ячейки календаря под ивентом!
       e.stopPropagation();
 
-      // 2. Если во время отпускания кнопки мыши еще висит флаг Drag/Resize — отменяем действие
       if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
-        console.log('🚫 Клик по ивенту заблокирован после resize/drag');
         return;
       }
 
-      // 3. Логика распарсивания услуг
       const servicesArray =
         typeof cellEvent.services === 'string'
           ? JSON.parse(cellEvent.services)
           : cellEvent.services || [];
 
-      // 4. Диспатчим данные в стор
       dispatch(setScheduleEditEventAction(cellEvent));
       dispatch(setScheduleDateAction(cellEvent.event_date));
       dispatch(initServicesAction(servicesArray));
@@ -216,7 +222,6 @@ export function useSchedulerEvents(
     [dispatch]
   );
 
-  // --- HANDLER 4: Drag & Drop ---
   const handleDragStart = useCallback(
     (e: React.MouseEvent, event: SchedulerEvent) => {
       if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
@@ -288,7 +293,7 @@ export function useSchedulerEvents(
           return;
         }
 
-        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
+        suppressNextClick();
 
         router.put(
           route('scheduler.update-position', event.id),
@@ -309,7 +314,6 @@ export function useSchedulerEvents(
     [suppressNextClick]
   );
 
-  // --- HANDLER 5: Resize ---
   const handleResizeStart = useCallback(
     (e: React.MouseEvent, eventId: string, currentEndISO: string) => {
       e.stopPropagation();
@@ -362,7 +366,7 @@ export function useSchedulerEvents(
           return;
         }
 
-        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
+        suppressNextClick();
       };
 
       document.addEventListener('mousemove', handleMouseMove);
