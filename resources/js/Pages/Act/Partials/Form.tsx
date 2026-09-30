@@ -1,8 +1,19 @@
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '@/hooks';
+import { appLangSelector } from '@/Redux/Layout/selectors';
+import Lang from 'lang.js';
+import lngAct from '../../../Lang/Act/translation';
+import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
+import InputText from '../../../Components/Form/InputText';
+import InputSelect from '../../../Components/Form/InputSelect';
+import InputCalendar from '../../../Components/Form/InputCalendar';
 import AddDynamicInputFields, { emptyRow } from './Row';
+import PrimaryButton from '../../../Components/Form/PrimaryButton';
+import FormHeader from '../../../Components/Common/FormHeader';
+import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import axios from 'axios';
 
 const normaliseRow = (row) => {
   const quantity = Number(row.quantity ?? row.qty ?? 1);
@@ -13,8 +24,6 @@ const normaliseRow = (row) => {
     price: Number(row.price || 0),
     base_price: Number(row.base_price ?? row.price ?? 0),
     total: Number(row.total || 0),
-    // Values saved in an existing act are totals. Convert them to a norm for
-    // one service so changing the service quantity remains reversible.
     components: (Array.isArray(row.components) ? row.components : []).map((component) => ({
       ...component,
       base_quantity: Number(
@@ -39,6 +48,13 @@ export default function Form({
   formData,
   formRowData = [],
 }) {
+  const appLang = useSelector(appLangSelector);
+  const dispatch = useAppDispatch();
+  const msg = new Lang({
+    messages: { ...lngInvoiceIncoming, ...lngAct },
+    locale: appLang,
+  });
+
   const [values, setValues] = useState({
     act_number: formData.act_number || '',
     act_date: formData.act_date || '',
@@ -48,6 +64,7 @@ export default function Form({
     status: formData.status || 'draft',
     visit_id: formData.visit_id || '',
   });
+
   const [rows, setRows] = useState(
     (formRowData || []).length ? formRowData.map(normaliseRow) : [emptyRow()]
   );
@@ -55,9 +72,17 @@ export default function Form({
   const [fifo, setFifo] = useState({});
   const [fifoError, setFifoError] = useState('');
   const fifoRequestId = useRef(0);
+  const { processing, recentlySuccessful } = useForm();
 
-  const changeValue = (event) =>
-    setValues((current) => ({ ...current, [event.target.name]: event.target.value }));
+  const changeValue = (event) => {
+    const key = event.target.id || event.target.name;
+    const value = event.target.value;
+    setValues((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleChangeCalendar = (date) => {
+    setValues((current) => ({ ...current, act_date: date }));
+  };
 
   const makeRowsFromVisit = async (visit) => {
     const services = Array.isArray(visit.services) ? visit.services : [];
@@ -122,8 +147,6 @@ export default function Form({
           .map((component, componentIndex) => ({
             key: `${rowIndex}:${componentIndex}`,
             material_id: Number(component.material_id || component.product_id),
-            // The component quantity is the norm for one service; the act quantity
-            // changes the FIFO demand and its cost proportionally.
             fact_qty: Number(component.base_quantity || 0) * Number(row.quantity || 0),
           }))
       )
@@ -144,7 +167,6 @@ export default function Form({
           (response.data.items || []).map((item) => [item.key, item])
         );
         setFifo(fifoByComponent);
-        console.log('TUT');
         setRows((currentRows) => {
           let changed = false;
           const nextRows = currentRows.map((row, rowIndex) => {
@@ -200,131 +222,188 @@ export default function Form({
   };
 
   return (
-    <section className="w-full">
-      <header>
-        <h2>
-          <Link className="icon-back" href="/acts">
-            &nbsp;
-          </Link>
-          {formData.id ? 'Редагування акта' : 'Новий акт'}
-        </h2>
-      </header>
-      <form onSubmit={submit} className="mt-0 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <label>
-            Номер акта
-            <input
-              required
-              name="act_number"
-              className="input-text"
-              value={values.act_number}
-              onChange={changeValue}
-            />
-          </label>
-          <label>
-            Дата
-            <input
-              required
-              name="act_date"
-              className="input-text"
-              type="datetime-local"
-              value={(values.act_date || '').replace(' ', 'T').slice(0, 16)}
-              onChange={changeValue}
-            />
-          </label>
-          <label>
-            Статус
-            <select
-              required
-              name="status"
-              className="input-text"
-              value={values.status}
-              onChange={changeValue}
-            >
-              {statusData.map((item) => (
-                <option key={item.id || item.name} value={item.id || item.name}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Візит <span className="text-xs text-gray-500">(необов'язково)</span>
-            <select
-              name="visit_id"
-              className="input-text"
-              value={values.visit_id}
-              onChange={chooseVisit}
-            >
-              <option value="">Створити вручну</option>
-              {visitsData.map((visit) => (
-                <option key={visit.id} value={visit.id}>
-                  {visit.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Пацієнт
-            <select
-              required
-              name="patient_id"
-              className="input-text"
-              value={values.patient_id}
-              onChange={changeValue}
-            >
-              <option value="">Оберіть пацієнта</option>
-              {patientsData.map((patient) => (
-                <option key={patient.id} value={patient.id}>
-                  {patient.last_name} {patient.first_name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Лікар
-            <select
-              name="doctor_id"
-              className="input-text"
-              value={values.doctor_id}
-              onChange={changeValue}
-            >
-              <option value="">Оберіть лікаря</option>
-              {customerData.map((doctor) => (
-                <option key={doctor.id} value={doctor.id}>
-                  {doctor.last_name} {doctor.first_name}
-                </option>
-              ))}
-            </select>
-          </label>
+    <section>
+      <div className="flex flex-col gap-3 mt-2">
+        <FormHeader
+          title={formData?.id ? 'Редагування акта' : 'Новий акт'}
+          description="Заповніть реквізити акта та виберіть послуги"
+          backUrl="/acts"
+          processing={processing}
+          saveText="Зберегти зміни"
+        />
+      </div>
+
+      <form onSubmit={submit} className="space-y-4 py-6" encType="multipart/form-data">
+        {/* Картка реквізитів */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-teal-600 text-[20px]">
+                description
+              </span>
+              <h2 className="text-base font-semibold text-gray-900">
+                Реквізити акта та пацієнт
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Номер акта */}
+            <div className="flex flex-col gap-1.5">
+              <InputText
+                required
+                name="act_number"
+                values={values}
+                value={values.act_number}
+                onChange={changeValue}
+                label="Номер акта"
+                className="filter-select-bordered w-full"
+              />
+            </div>
+
+            {/* Дата */}
+            <div className="flex flex-col gap-1.5">
+              <InputCalendar
+                name="act_date"
+                values={values}
+                dataValue={values.act_date}
+                value={values.act_date}
+                onChange={handleChangeCalendar}
+                required
+                label="Дата та час"
+                className="filter-select-bordered w-full"
+              />
+            </div>
+
+            {/* Статус */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-600">Статус</label>
+                <select
+                  required
+                  name="status"
+                  value={values.status}
+                  onChange={changeValue}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
+                >
+                  {statusData.map((item) => (
+                    <option key={item.id || item.name} value={item.id || item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Візит */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-600">
+                  Візит <span className="text-gray-400">(необов&#39;язково)</span>
+                </label>
+                <select
+                  name="visit_id"
+                  value={values.visit_id}
+                  onChange={chooseVisit}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
+                >
+                  <option value="">Створити вручну</option>
+                  {visitsData.map((visit) => (
+                    <option key={visit.id} value={visit.id}>
+                      {visit.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Пацієнт */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-600">Пацієнт</label>
+                <select
+                  required
+                  name="patient_id"
+                  value={values.patient_id}
+                  onChange={changeValue}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
+                >
+                  <option value="">Оберіть пацієнта</option>
+                  {patientsData.map((patient) => (
+                    <option key={patient.id} value={patient.id}>
+                      {patient.last_name} {patient.first_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Лікар */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-slate-600">Лікар</label>
+                <select
+                  name="doctor_id"
+                  value={values.doctor_id}
+                  onChange={changeValue}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
+                >
+                  <option value="">Оберіть лікаря</option>
+                  {customerData.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.last_name} {doctor.first_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
+
         {loadingVisit && (
-          <div className="text-sm text-gray-500">Завантажуємо матеріали процедур…</div>
+          <div className="text-sm text-teal-600 font-medium px-2">Завантажуємо матеріали процедур…</div>
         )}
-        {fifoError && <div className="text-sm text-red-600">{fifoError}</div>}
-        <div className="relative">
-          <table className="w-full invoice-table act-table">
-            <thead>
-              <tr>
-                <th className="pb-3">Послуга</th>
-                <th className="pb-3 w-qty">К-сть</th>
-                <th className="pb-3 w-price">Ціна</th>
-                <th className="pb-3 w-price">Сума</th>
-                <th className="pb-3 w-btn" />
-                <th className="pb-3 w-btn" />
-              </tr>
-            </thead>
-            <tbody>
-              <AddDynamicInputFields rows={rows} onChange={setRows} fifo={fifo} />
-            </tbody>
-          </table>
+        {fifoError && <div className="text-sm text-red-600 px-2">{fifoError}</div>}
+
+        {/* Таблиця послуг/товарів */}
+        <div className="relative rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden flex flex-col">
+          <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3">
+                    Послуга
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-qty text-center">
+                    К-сть
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-price text-center">
+                    Ціна
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-price text-center">
+                    Сума
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-btn" />
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-btn" />
+                </tr>
+              </thead>
+              <tbody>
+                <AddDynamicInputFields rows={rows} onChange={setRows} fifo={fifo} />
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="text-right">
-          <Link className="btn-back" href="/acts">
-            Назад
-          </Link>
-          <PrimaryButton disabled={loadingVisit}>Зберегти</PrimaryButton>
-        </div>
+
+        {/* Закріплений футер збереження */}
+        <StickyFormFooter
+          backUrl="/acts"
+          backLabel="Повернутись"
+          saveLabel="Зберегти"
+          processingLabel="Збереження..."
+          successMessage="Збережено успішно!"
+          processing={processing}
+          recentlySuccessful={recentlySuccessful}
+        />
       </form>
     </section>
   );
