@@ -178,9 +178,50 @@ class ServiceController extends Controller
     public function findServiceItems(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $serviceId = $request->serviceId;
+
+            // Підзапит для отримання найближчої активної партії з ненульовим залишком (FIFO)
+            $subQuery = DB::table('store_batches')
+                ->select('material_id', 'price_per_unit')
+                ->where('qty_left', '>', 0)
+                ->orderBy('arrived_at', 'asc')
+                ->orderBy('id', 'asc');
+
+            $resData = DB::table('pricing_items')
+                ->select(
+                    'pricing_items.*',
+                    'materials.name AS product',
+                    'units.name AS unit_name',
+                    // Використовуємо правильну колонку expected_uses для амортизації інструментів
+                    DB::raw("
+                    CASE 
+                        WHEN materials.is_instrument AND COALESCE(materials.expected_uses, 0) > 0 
+                        THEN COALESCE(batches.price_per_unit, materials.price, 0) / materials.expected_uses
+                        ELSE COALESCE(batches.price_per_unit, materials.price, 0)
+                    END AS actual_price
+                "),
+                    'materials.is_instrument',
+                    'materials.expected_uses'
+                )
+                ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                ->leftJoin('units', 'units.id', '=', 'pricing_items.unit_id')
+                ->leftJoinSub($subQuery, 'batches', function($join) {
+                    $join->on('batches.material_id', '=', 'pricing_items.material_id');
+                })
+                ->where('pricing_id', '=', $serviceId)
+                ->get();
+
+            return response()->json([
+                'items' => $resData
+            ]);
+        });
+    }
+
+    public function findServiceItemsOld(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $serviceId = $request->serviceId;
             
             $resData = DB::table('pricing_items')
-                ->select('pricing_items.*', 'materials.name AS product', 'units.name AS unit_name')
+                ->select('pricing_items.*', 'materials.name AS product', 'units.short_name AS short_name')
                 ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
                 ->leftJoin('units', 'units.id', '=', 'pricing_items.unit_id')
                 ->where('pricing_id', '=', $serviceId)

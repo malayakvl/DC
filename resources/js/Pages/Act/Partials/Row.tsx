@@ -60,21 +60,21 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
   };
 
   const selectService = async (service, index) => {
-    const response = await axios.post('/service/findServiceItems', { serviceId: service.id });
-    updateRow(index, {
-      product_id: service.id,
-      product: service.name,
-      price: Number(service.price) || 0,
-      base_price: Number(service.price) || 0,
-      quantity: 1,
-      components: (response.data.items || []).map((component) => ({
-        ...component,
-        base_quantity: Number(component.quantity || 0),
-      })),
-    });
-    setResults([]);
-    setActiveRow(null);
-  };
+      const response = await axios.post('/service/findServiceItems', { serviceId: service.id });
+      updateRow(index, {
+        product_id: service.id,
+        product: service.name,
+        price: Number(service.price) || 0, // <--- Тут береться service.price із таблиці pricings
+        base_price: Number(service.price) || 0,
+        quantity: 1,
+        components: (response.data.items || []).map((component) => ({
+          ...component,
+          base_quantity: Number(component.quantity || 0),
+        })),
+      });
+      setResults([]);
+      setActiveRow(null);
+    };
 
   const updateComponent = (rowIndex, componentIndex, totalQuantity) => {
     const next = rows.map((row, index) =>
@@ -167,7 +167,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                                 }
                               />
                               <span className="text-[11px] text-slate-400 w-6">
-                                {component.unit_name || ''}
+                                {component.short_name || ''}
                               </span>
                             </div>
                           </div>
@@ -262,7 +262,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
           {/* Ціна */}
           <td className="py-3 px-3 align-top w-price">
             <input
-              className="w-full px-3 py-2 text-center rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
+              className="w-full px-3 py-2 text-center rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition min-w-[150px]"
               type="text"
               min="0"
               value={row.price ?? 0}
@@ -271,12 +271,12 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
           </td>
 
           {/* Сума */}
-          <td className="py-3 px-3 align-middle text-center font-semibold text-slate-800 text-xs w-price whitespace-nowrap">
+          <td className="py-3 px-3 align-top text-center font-semibold text-slate-800 text-xs w-price whitespace-nowrap">
             {Number(row.total || 0).toFixed(2)} ₴
           </td>
 
           {/* Кнопка видалення рядка */}
-          <td className="py-3 px-2 align-middle w-btn text-center">
+          <td className="py-3 px-2 align-top w-btn text-center">
             {rows.length > 1 && (
               <button
                 type="button"
@@ -290,7 +290,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
           </td>
 
           {/* Кнопка додавання нового рядка */}
-          <td className="py-3 px-2 align-middle w-btn text-center">
+          <td className="py-3 px-2 align-top w-btn text-center">
             {index === rows.length - 1 && (
               <button
                 type="button"
