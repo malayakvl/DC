@@ -1,5 +1,5 @@
 import { Link, router, useForm } from '@inertiajs/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
@@ -17,27 +17,70 @@ import axios from 'axios';
 
 const normaliseRow = (row) => {
   const quantity = Number(row.quantity ?? row.qty ?? 1);
+  const rawPrice = Number(row.price || row.base_price || 0);
+
+  const rawComponents = Array.isArray(row.components) ? row.components : [];
+  const groupedMap = new Map();
+
+  rawComponents.forEach((component) => {
+    const mId = component.material_id || component.product_id || component.id;
+
+    let compQty = Number(component.base_quantity);
+    if (isNaN(compQty)) {
+      const totalCompQty = Number(component.quantity || 0);
+      compQty = totalCompQty / Math.max(quantity, 1);
+    }
+
+    if (mId) {
+      if (groupedMap.has(mId)) {
+        groupedMap.get(mId).base_quantity += compQty;
+      } else {
+        groupedMap.set(mId, {
+          ...component,
+          material_id: mId,
+          base_quantity: compQty,
+        });
+      }
+    }
+  });
+
   return {
     product_id: row.product_id || row.service_id || '',
     product: row.product || '',
     quantity,
-    price: Number(row.price || 0),
-    base_price: Number(row.base_price ?? row.price ?? 0),
-    total: Number(row.total || 0),
-    components: (Array.isArray(row.components) ? row.components : []).map((component) => ({
-      ...component,
-      base_quantity: Number(
-        component.base_quantity ?? Number(component.quantity || 0) / Math.max(quantity, 1)
-      ),
-    })),
+    price: rawPrice,
+    base_price: rawPrice,
+    total: Number(row.total || quantity * rawPrice),
+    components: Array.from(groupedMap.values()),
   };
 };
 
-const withBaseQuantities = (components) =>
-  (components || []).map((component) => ({
-    ...component,
-    base_quantity: Number(component.quantity || 0),
-  }));
+const withBaseQuantities = (components, serviceQuantity = 1) => {
+  const groupedMap = new Map();
+  (components || []).forEach((component) => {
+    const mId = component.material_id || component.product_id || component.id;
+
+    // Всегда вытаскиваем чистую базу: если бэкенд прислал общую сумму, делим на количество услуги
+    let q = Number(component.base_quantity);
+    if (isNaN(q) || q === 0) {
+      const totalQ = Number(component.quantity || 0);
+      q = serviceQuantity > 0 ? totalQ / serviceQuantity : totalQ;
+    }
+
+    if (mId) {
+      if (groupedMap.has(mId)) {
+        groupedMap.get(mId).base_quantity += q;
+      } else {
+        groupedMap.set(mId, {
+          ...component,
+          material_id: mId,
+          base_quantity: q,
+        });
+      }
+    }
+  });
+  return Array.from(groupedMap.values());
+};
 
 export default function Form({
   clinicData,
@@ -85,27 +128,28 @@ export default function Form({
   };
 
   const makeRowsFromVisit = async (visit) => {
-    const services = Array.isArray(visit.services) ? visit.services : [];
-    const serviceRows = await Promise.all(
-      services.map(async (service) => {
-        const id = service.id || service.service_id;
-        if (!id) return null;
-        const response = await axios.post('/service/findServiceItems', { serviceId: id });
-        const quantity = Number(service.qty ?? service.quantity ?? 1);
-        const price = Number(service.price ?? 0);
-        return {
-          product_id: id,
-          product: service.name || '',
-          quantity,
-          price,
-          base_price: price,
-          total: Number((quantity * price).toFixed(2)),
-          components: withBaseQuantities(response.data.items),
-        };
-      })
-    );
-    return serviceRows.filter(Boolean);
-  };
+      const services = Array.isArray(visit.services) ? visit.services : [];
+      const serviceRows = await Promise.all(
+        services.map(async (service) => {
+          const id = service.id || service.service_id;
+          if (!id) return null;
+          const response = await axios.post('/service/findServiceItems', { serviceId: id });
+          const quantity = Number(service.qty ?? service.quantity ?? 1);
+          const servicePrice = Number(service.price ?? 150);
+          return {
+            product_id: id,
+            product: service.name || '',
+            quantity,
+            price: servicePrice,
+            base_price: servicePrice,
+            total: Number((quantity * servicePrice).toFixed(2)),
+            // Передаем количество услуги в функцию, чтобы база честно разделилась
+            components: withBaseQuantities(response.data.items, quantity),
+          };
+        })
+      );
+      return serviceRows.filter(Boolean);
+    };
 
   const chooseVisit = async (event) => {
     const visitId = event.target.value;
@@ -116,7 +160,7 @@ export default function Form({
     setLoadingVisit(true);
     try {
       const visitRows = await makeRowsFromVisit(visit);
-      setRows(visitRows.length ? visitRows : [emptyRow()]);
+      setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()]);
       setValues((current) => ({
         ...current,
         visit_id: visitId,
@@ -134,61 +178,76 @@ export default function Form({
       const visit = visitsData.find((item) => String(item.id) === String(formData.visit_id));
       if (visit)
         makeRowsFromVisit(visit).then((visitRows) =>
-          setRows(visitRows.length ? visitRows : [emptyRow()])
+          setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()])
         );
     }
   }, []);
 
+  // Автоматично додаємо собівартість матеріалів до базової ціни послуги
   useEffect(() => {
-    const materials = rows
-      ?.flatMap((row, rowIndex) =>
-        (row.components || [])
-          .filter((component) => component.material_id || component.product_id)
-          .map((component, componentIndex) => ({
-            key: `${rowIndex}:${componentIndex}`,
-            material_id: Number(component.material_id || component.product_id),
-            fact_qty: Number(component.base_quantity || 0) * Number(row.quantity || 0),
-          }))
-      )
-      .filter((item) => item.material_id && item.fact_qty > 0);
+    if (!Object.keys(fifo).length) return;
 
-    if (!materials.length) {
+    setRows((currentRows) =>
+      currentRows.map((row, rowIndex) => {
+        const rowTotalCost = (row.components || []).reduce((sum, _, compIndex) => {
+          const fifoItem = fifo[`${rowIndex}:${compIndex}`];
+          const batchSum = (fifoItem?.batches || []).reduce(
+            (acc, b) => acc + Number(b.total || b.quantity * b.price_per_unit || 0),
+            0
+          );
+          return sum + (batchSum > 0 ? batchSum : Number(fifoItem?.cost || 0));
+        }, 0);
+
+        const basePrice = Number(row.base_price || 150);
+        const finalPrice = Number((basePrice + rowTotalCost).toFixed(2));
+
+        if (row.price !== finalPrice) {
+          return {
+            ...row,
+            price: finalPrice,
+            total: Number((row.quantity * finalPrice).toFixed(2)),
+          };
+        }
+        return row;
+      })
+    );
+  }, [fifo]);
+
+  // Единый стабильный эффект для запроса FIFO-превью без зацикливания
+  useEffect(() => {
+    // Собираем список услуг из акта для отправки на бэкенд
+    const services = rows
+      .map((row, rowIndex) => {
+        const serviceId = Number(row.product_id || row.service_id);
+        const quantity = Number(row.quantity || row.qty || 1);
+
+        if (!serviceId) return null;
+
+        return {
+          key: String(rowIndex),
+          service_id: serviceId,
+          quantity: quantity,
+        };
+      })
+      .filter(Boolean);
+
+    if (!services.length) {
       setFifo({});
       setFifoError('');
       return;
     }
 
-    const request = window.setTimeout(async () => {
-      const currentRequestId = ++fifoRequestId.current;
+    const currentRequestId = ++fifoRequestId.current;
+    const timer = window.setTimeout(async () => {
       try {
-        const response = await axios.post('/act/fifo-preview', { materials });
+        // Отправляем список услуг, а не сырые материалы!
+        const response = await axios.post('/act/fifo-preview', { services });
         if (currentRequestId !== fifoRequestId.current) return;
+
         const fifoByComponent = Object.fromEntries(
           (response.data.items || []).map((item) => [item.key, item])
         );
         setFifo(fifoByComponent);
-        setRows((currentRows) => {
-          let changed = false;
-          const nextRows = currentRows.map((row, rowIndex) => {
-            const quantity = Math.max(Number(row.quantity || 0), 1);
-            const materialPrice = (row.components || []).reduce(
-              (sum, component, componentIndex) => {
-                const cost = Number(fifoByComponent[`${rowIndex}:${componentIndex}`]?.cost || 0);
-                const markup = Number(component.mark_up || 0);
-                return sum + cost * (1 + markup / 100);
-              },
-              0
-            );
-            const total = Number(
-              (Number(row.base_price ?? row.price ?? 0) * quantity + materialPrice).toFixed(2)
-            );
-            const price = Number((total / quantity).toFixed(2));
-            if (price === Number(row.price || 0) && total === Number(row.total || 0)) return row;
-            changed = true;
-            return { ...row, price, total };
-          });
-          return changed ? nextRows : currentRows;
-        });
         setFifoError('');
       } catch (error) {
         if (currentRequestId !== fifoRequestId.current) return;
@@ -197,13 +256,21 @@ export default function Form({
       }
     }, 250);
 
-    return () => window.clearTimeout(request);
-  }, [rows]);
+    return () => window.clearTimeout(timer);
+  }, [
+    JSON.stringify(
+      rows.map((r) => ({
+        id: r.product_id || r.service_id,
+        q: r.quantity,
+      }))
+    ),
+  ]);
 
   const submit = (event) => {
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
     if (!values.patient_id || !validRows.length) return;
+
     const payload = {
       ...values,
       rows: validRows.map((row) => ({
@@ -241,14 +308,11 @@ export default function Form({
               <span className="material-symbols-outlined text-teal-600 text-[20px]">
                 description
               </span>
-              <h2 className="text-base font-semibold text-gray-900">
-                Реквізити акта та пацієнт
-              </h2>
+              <h2 className="text-base font-semibold text-gray-900">Реквізити акта та пацієнт</h2>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Номер акта */}
             <div className="flex flex-col gap-1.5">
               <InputText
                 required
@@ -261,7 +325,6 @@ export default function Form({
               />
             </div>
 
-            {/* Дата */}
             <div className="flex flex-col gap-1.5">
               <InputCalendar
                 name="act_date"
@@ -275,7 +338,6 @@ export default function Form({
               />
             </div>
 
-            {/* Статус */}
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-slate-600">Статус</label>
@@ -286,8 +348,11 @@ export default function Form({
                   onChange={changeValue}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
                 >
-                  {statusData.map((item) => (
-                    <option key={item.id || item.name} value={item.id || item.name}>
+                  {statusData.map((item, index) => (
+                    <option
+                      key={`status-${item.id || item.name}-${index}`}
+                      value={item.id || item.name}
+                    >
                       {item.name}
                     </option>
                   ))}
@@ -295,7 +360,6 @@ export default function Form({
               </div>
             </div>
 
-            {/* Візит */}
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-slate-600">
@@ -307,9 +371,11 @@ export default function Form({
                   onChange={chooseVisit}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
                 >
-                  <option value="">Створити вручну</option>
-                  {visitsData.map((visit) => (
-                    <option key={visit.id} value={visit.id}>
+                  <option key={`$visit-empty`} value="">
+                    Створити вручну
+                  </option>
+                  {visitsData.map((visit, index) => (
+                    <option key={`$visit-${visit.id}-${index}`} value={visit.id}>
                       {visit.name}
                     </option>
                   ))}
@@ -317,7 +383,6 @@ export default function Form({
               </div>
             </div>
 
-            {/* Пацієнт */}
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-slate-600">Пацієнт</label>
@@ -328,9 +393,11 @@ export default function Form({
                   onChange={changeValue}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
                 >
-                  <option value="">Оберіть пацієнта</option>
-                  {patientsData.map((patient) => (
-                    <option key={patient.id} value={patient.id}>
+                  <option key={`patient-empty`} value="">
+                    Оберіть пацієнта
+                  </option>
+                  {patientsData.map((patient, index) => (
+                    <option key={`patient-${patient.id}-${index}`} value={patient.id}>
                       {patient.last_name} {patient.first_name}
                     </option>
                   ))}
@@ -338,7 +405,6 @@ export default function Form({
               </div>
             </div>
 
-            {/* Лікар */}
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-slate-600">Лікар</label>
@@ -348,9 +414,11 @@ export default function Form({
                   onChange={changeValue}
                   className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
                 >
-                  <option value="">Оберіть лікаря</option>
-                  {customerData.map((doctor) => (
-                    <option key={doctor.id} value={doctor.id}>
+                  <option key={`doctor-empty`} value="">
+                    Оберіть лікаря
+                  </option>
+                  {customerData.map((doctor, index) => (
+                    <option key={`doctor-${doctor.id}-${index}`} value={doctor.id}>
                       {doctor.last_name} {doctor.first_name}
                     </option>
                   ))}
@@ -361,7 +429,9 @@ export default function Form({
         </div>
 
         {loadingVisit && (
-          <div className="text-sm text-teal-600 font-medium px-2">Завантажуємо матеріали процедур…</div>
+          <div className="text-sm text-teal-600 font-medium px-2">
+            Завантажуємо матеріали процедур…
+          </div>
         )}
         {fifoError && <div className="text-sm text-red-600 px-2">{fifoError}</div>}
 
@@ -394,7 +464,6 @@ export default function Form({
           </div>
         </div>
 
-        {/* Закріплений футер збереження */}
         <StickyFormFooter
           backUrl="/acts"
           backLabel="Повернутись"

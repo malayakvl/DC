@@ -1,14 +1,9 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
-import {
-  emptyMaterialsAutocompleteAction,
-  findMaterialAction,
-  findServiceMaterialCalcAction,
-} from '@/Redux/Material';
+import { emptyMaterialsAutocompleteAction, findServiceMaterialCalcAction } from '@/Redux/Material';
 import { setInvoiceItems, setShowTableError } from '@/Redux/Incominginvoice';
 import { invoiceTaxSelector } from '@/Redux/Incominginvoice/selectors';
 import { searchResultMaterialsSelector } from '@/Redux/Material/selectors';
-import InputSelect from '../../../Components/Form/InputSelect';
 
 export interface AddDynamicInputFieldsRef {
   addRow: () => void;
@@ -24,7 +19,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     const serchResults = useAppSelector(searchResultMaterialsSelector);
     const [numRow, setNumRow] = useState(0);
     const documentTax = useAppSelector(invoiceTaxSelector);
-    const [taxPercent, setTaxPercent] = useState(0);
+    const [, setTaxPercent] = useState(0);
 
     const handleAddInput = () => {
       dispatch(setShowTableError(false));
@@ -34,26 +29,58 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           product_id: '',
           product: '',
           unit_id: '',
-          quantity: 0,
-          pack_qty: 0,
-          fact_qty: 0,
-          price: 0,
+          quantity: 1,
+          pack_qty: 1,
+          fact_qty: 1,
+          price: 0, // Чистая цена закупки от поставщика
+          mark_up: 0, // Наценка клиники (если нужна)
           tax_amount: 0,
-          total: 0,
+          total: 0, // Итог = цена * количество
         },
       ]);
     };
-
     useImperativeHandle(ref, () => ({
       addRow: handleAddInput,
     }));
 
-    const handleChange = (event, index, type = '') => {
+    useEffect(() => {
+      if (formRowData && formRowData.length > 0) {
+        const taxData = documentTax ? documentTax.split('_') : [0, 0];
+        const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
+        setTaxPercent(taxRate);
+
+        const initialCalculated = formRowData.map((row) => {
+          const rowCopy = { ...row };
+          return calculateRowValues(rowCopy, taxRate);
+        });
+        console.log('initial calc', initialCalculated);
+        setInputs(initialCalculated);
+      }
+    }, [formRowData]);
+
+    // Универсальная функция пересчета суммы и налога для строки
+    const calculateRowValues = (row, taxRate) => {
+      // Исправляем: берем row.qty вместо row.quantity
+      const qty = parseFloat(row.qty !== undefined ? row.qty : row.quantity) || 0;
+      const factQty = parseFloat(row.fact_qty) || 0;
+      const price = parseFloat(row.price) || 0;
+
+      const total = qty * factQty * price;
+
+      row.total = parseFloat(total.toFixed(2));
+      row.tax_amount = taxRate ? parseFloat(((total * taxRate) / 100).toFixed(2)) : 0;
+      return row;
+    };
+
+    const handleChange = (event, index, customName = null, customValue = null) => {
       dispatch(setShowTableError(false));
-      const { name, value } = event.target;
+      const name = customName || event.target.name;
+      const value = customValue !== null ? customValue : event.target.value;
+
       const onChangeValue = [...inputs];
       onChangeValue[index][name] = value;
       setNumRow(index);
+
       if (name === 'product') {
         if (value.length > 3) {
           dispatch(emptyMaterialsAutocompleteAction());
@@ -62,81 +89,58 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           dispatch(emptyMaterialsAutocompleteAction());
           setHideFields(false);
         }
-      } else if (name === 'plusBtn') {
-        inputs[index].quantity = inputs[index].quantity + 1;
-        inputs[index].total = (
-          parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
-        ).toFixed(2);
-        inputs[index].fact_qty = (
-          parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].pack_qty))
-        ).toFixed(2);
-      } else if (name === 'minusBtn') {
-        const _factPerUnit = inputs[index].fact_qty / inputs[index].quantity;
-        inputs[index].quantity = inputs[index].quantity > 1 ? inputs[index].quantity - 1 : 1;
-        inputs[index].total = (
-          parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
-        ).toFixed(2);
-        inputs[index].fact_qty = (
-          parseFloat(String(inputs[index].quantity)) * parseFloat(String(_factPerUnit))
-        ).toFixed(2);
-      } else if (name === 'price') {
-        inputs[index].price = event.target.value;
-        inputs[index].total = (
-          parseFloat(String(inputs[index].quantity)) * parseFloat(String(inputs[index].price))
-        ).toFixed(2);
-        inputs[index].tax_amount = (inputs[index].total * 20) / 100;
       }
-      inputs[index].tax = ((parseFloat(String(inputs[index].total)) * 20) / 100).toFixed(2);
+
+      const taxData = documentTax ? documentTax.split('_') : [0, 0];
+      const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
+
+      onChangeValue[index] = calculateRowValues(onChangeValue[index], taxRate);
       setInputs(onChangeValue);
     };
 
-    useEffect(() => {
-      const taxData = documentTax.split('_');
-      inputs.map((_input) => {
-        _input.tax_amount = taxData[1] ? (_input.price * taxData[1]) / 100 : 0;
-      });
-      setTaxPercent(parseInt(taxData[1]));
-    }, [documentTax]);
+    const handleQuantityChange = (index, delta) => {
+      const onChangeValue = [...inputs];
+      const row = onChangeValue[index];
+      const currentQty = parseFloat(row.quantity) || 0;
+      const newQty = Math.max(0.01, currentQty + delta);
+      row.quantity = newQty.toFixed(2);
 
-    useEffect(() => {}, [taxPercent]);
+      const taxData = documentTax ? documentTax.split('_') : [0, 0];
+      const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
+
+      onChangeValue[index] = calculateRowValues(row, taxRate);
+      setInputs(onChangeValue);
+    };
 
     const handleDeleteInput = (index) => {
       const newArray = [...inputs];
       newArray.splice(index, 1);
       setInputs(newArray);
-      return;
     };
 
-    const handleChangeFactQty = (event, index) => {
-      dispatch(setShowTableError(false));
-      const { name, value } = event.target;
-      const onChangeValue = [...inputs];
-      onChangeValue[index][name] = value;
-      // recalculate total
-      const total = (inputs[index].fact_qty * inputs[index].price) / inputs[index].pack_qty;
-      inputs[index].total = total.toFixed(2);
-      inputs[index].tax_amount = (total * 20) / 100;
-      setInputs(onChangeValue);
-    };
+    // Слушаем изменение налога в шапке документа и пересчитываем все строки
+    useEffect(() => {
+      const taxData = documentTax ? documentTax.split('_') : [0, 0];
+      const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
+      setTaxPercent(taxRate);
+
+      if (inputs && inputs.length > 0) {
+        const updatedInputs = inputs.map((item) => {
+          const rowCopy = { ...item };
+          return calculateRowValues(rowCopy, taxRate);
+        });
+        setInputs(updatedInputs);
+      }
+    }, [documentTax]);
 
     useEffect(() => {
       dispatch(setInvoiceItems(inputs));
     }, [inputs]);
 
-    const calcPos = (index) => {
-      if (index >= 1) {
-        return 70 + index * 10 + 33 * index;
-      } else {
-        return (index + 1) * 70;
-      }
-    };
-
-    // Выпадающий список теперь рендерится прямо под конкретным инпутом текущей строки
     const renderSearchProducerResult = (index) => {
-      // Показываем результаты только для той строки, в которой сейчас пишем
       if (serchResults.length > 0 && numRow === index) {
         return (
-          <div className="absolute left-0 right-0 z-50 mt-[-10px] bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
             <ul className="py-1">
               {serchResults.map((_res) => (
                 <li
@@ -145,23 +149,34 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                   onClick={() => {
                     setHideFields(true);
                     dispatch(emptyMaterialsAutocompleteAction());
-                    const taxData = documentTax.split('_');
-                    inputs[index].product = _res.name;
-                    inputs[index].product_id = _res.id;
-                    inputs[index].price = _res.retail_price;
-                    inputs[index].unit_id = _res.unit_id;
-                    inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
-                    inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
-                    inputs[index].tax_amount = documentTax
-                      ? (_res.retail_price * taxData[1]) / 100
-                      : 0;
-                    inputs[index].quantity = 1;
-                    inputs[index].total = parseFloat(String(inputs[index].price));
+
+                    // Берем чистую цену поставщика
+                    const basePrice = parseFloat(_res.price || _res.price_per_unit || 0);
+                    const quantity = 1;
+                    const taxData = documentTax ? documentTax.split('_') : [0, 0];
+                    const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
+
+                    const onChangeValue = [...inputs];
+                    onChangeValue[index].product = _res.name;
+                    onChangeValue[index].product_id = _res.id;
+                    onChangeValue[index].price = parseFloat(basePrice.toFixed(2));
+                    onChangeValue[index].unit_id = _res.unit_id;
+                    onChangeValue[index].pack_qty = parseFloat(
+                      _res.weight ? _res.weight : 1
+                    ).toFixed(2);
+                    onChangeValue[index].fact_qty = parseFloat(
+                      _res.weight ? _res.weight : 1
+                    ).toFixed(2);
+                    onChangeValue[index].quantity = quantity;
+
+                    onChangeValue[index] = calculateRowValues(onChangeValue[index], taxRate);
+                    setInputs(onChangeValue);
                   }}
                 >
                   <span className="font-medium">{_res.name}</span>
                   <span className="text-slate-400 text-[10px] ml-2">
-                    {msg.get('invoice_incoming.provider')} {_res.producer_name}
+                    {msg.get('invoice_incoming.provider')} {_res.producer_name} —{' '}
+                    {parseFloat(_res.price || 0).toFixed(2)} ₴
                   </span>
                 </li>
               ))}
@@ -172,83 +187,49 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       return null;
     };
 
-
-    const renderSearchProducerResultOld = (index) => {
-      if (serchResults.length > 0) {
-        return (
-          <div
-            className="absolute autocomplete"
-            style={{ top: calcPos(index) + 'px', width: '500px' }}
-          >
-            <ul>
-              {serchResults.map((_res) => (
-                <li
-                  key={_res.id}
-                  className="cursor-pointer py-0.5"
-                  onClick={() => {
-                    setHideFields(true);
-                    dispatch(emptyMaterialsAutocompleteAction());
-                    const taxData = documentTax.split('_');
-                    inputs[index].product = _res.name;
-                    inputs[index].product_id = _res.id;
-                    inputs[index].price = _res.retail_price;
-                    inputs[index].unit_id = _res.unit_id;
-                    inputs[index].pack_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
-                    inputs[index].fact_qty = parseFloat(_res.weight ? _res.weight : 1).toFixed(2);
-                    inputs[index].tax_amount = documentTax
-                      ? (_res.retail_price * taxData[1]) / 100
-                      : 0;
-                    inputs[index].quantity = 1;
-                    inputs[index].total = parseFloat(String(inputs[index].price));
-                    // console.log('ConnectedTvOutlined', parseFloat(String(inputs[index].price)));
-                  }}
-                >
-                  {_res.name}&nbsp; {msg.get('invoice_incoming.provider')} {_res.producer_name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      } else {
-        return <></>;
-      }
-    };
-
     return (
       <>
         {inputs.map((item, index) => (
-          <tr key={index}>
-            <td className="w-product  pb-2">
-              <div className="relative">
+          <tr
+            key={index}
+            className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
+          >
+            {/* Назва матеріалу / Пошук */}
+            <td className="py-3 px-3 relative w-[650px]">
+              <div className="flex flex-col gap-1">
                 <input
                   name="product"
-                  className="input-text input-invoice material-input"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all"
                   type="text"
-                  value={item.product}
+                  placeholder="Почніть введення матеріалу..."
+                  value={item.product || ''}
                   onChange={(event) => handleChange(event, index)}
                 />
+                {numRow === index && renderSearchProducerResult(index)}
               </div>
             </td>
+
+            {/* Кількість */}
             <td className="py-3 px-3 align-top">
               <div className="flex items-center justify-center">
                 <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
                   <button
                     type="button"
-                    onClick={() => handleChange(event, index, 'minus')}
+                    onClick={() => handleQuantityChange(index, -1)}
                     className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
                   >
                     -
                   </button>
                   <input
-                    name="qty"
-                    className="w-14 text-center no-border bg-transparent font-bold text-slate-900 text-xs focus:outline-none"
+                    name="quantity"
+                    className="w-14 text-center bg-transparent font-bold border-0 text-slate-900 text-xs focus:outline-none"
                     type="text"
                     value={item.quantity || ''}
                     onChange={(event) => handleChange(event, index)}
                   />
                   <button
                     type="button"
-                    onClick={() => handleChange(event, index, 'plus')}
+                    onClick={() => handleQuantityChange(index, 1)}
                     className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-sm"
                   >
                     +
@@ -256,12 +237,14 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 </div>
               </div>
             </td>
-            <td className="py-3 px-1 whitespace-nowrap align-top">
+
+            {/* Одиниця виміру */}
+            <td className="py-3 px-3 whitespace-nowrap align-top">
               <select
                 name="unit_id"
                 value={item.unit_id || ''}
                 onChange={(event) => handleChange(event, index)}
-                className="w-full rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
               >
                 <option value="">Одиниця...</option>
                 {unitsData?.map((unit) => (
@@ -271,49 +254,60 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 ))}
               </select>
             </td>
-            <td className="w-price text-center pb-2">
+
+            {/* Фактична кількість / Фасовка */}
+            <td className="py-3 px-3 text-center align-top pt-3">
               <input
-                className="input-text text-center service-price"
+                className="w-20 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white"
                 name="fact_qty"
-                type="fact_qty"
-                value={item.fact_qty}
-                onChange={(event) => handleChangeFactQty(event, index)}
-              />
-            </td>
-            <td className="w-price text-center pb-2">
-              <input
-                className="input-text text-center service-price text-center"
-                name="price"
                 type="text"
-                value={item.price}
+                value={item.fact_qty || ''}
                 onChange={(event) => handleChange(event, index)}
               />
             </td>
-            <td className="w-price text-center pb-2">
+
+            {/* Ціна за одиницю (Чиста закупка) */}
+            <td className="py-3 px-3 text-center align-top pt-3">
               <input
-                className="input-text text-center service-price text-center tbl-amount-total"
-                name="total"
+                className="w-24 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white"
+                name="price"
                 type="text"
-                value={item.total}
-                // onChange={(event) => handleChange(event, index)}
+                value={item.price || ''}
+                onChange={(event) => handleChange(event, index)}
               />
             </td>
-            <td className="w-btn pb-2">
+
+            {/* Усього */}
+            <td className="py-3 px-3 text-center align-top pt-3">
+              <input
+                className="w-28 px-3 py-2 rounded-xl bg-teal-50/50 border border-teal-100 text-center text-xs font-bold text-teal-800 focus:outline-none"
+                name="total"
+                type="text"
+                value={item.total || ''}
+                readOnly
+              />
+            </td>
+
+            {/* Дії */}
+            <td className="py-3 px-3 text-center align-top pt-3">
               {inputs.length > 1 && (
-                <button onClick={() => handleDeleteInput(index)} className="btn-delete" />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteInput(index)}
+                  className="px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100 transition-colors"
+                  title="Видалити"
+                >
+                  ✕
+                </button>
               )}
             </td>
           </tr>
         ))}
-        <tr>
-          <td colSpan={6}>
-            <div className="body hidden"> {JSON.stringify(inputs)} </div>
-            <div className="text-left">{renderSearchProducerResult(numRow)}</div>
-          </td>
-        </tr>
       </>
     );
   }
 );
+
+AddDynamicInputFields.displayName = 'AddDynamicInputFields';
 
 export default AddDynamicInputFields;

@@ -79,10 +79,10 @@ class ActController extends Controller
     {
         return $this->withClinicSchema($request, function () use ($request) {
             $data = $request->validate([
-                'materials' => ['required', 'array'],
-                'materials.*.key' => ['required', 'string'],
-                'materials.*.material_id' => ['required', 'integer'],
-                'materials.*.fact_qty' => ['required', 'numeric', 'min:0'],
+                'services' => ['required', 'array'],
+                'services.*.key' => ['required', 'string'],
+                'services.*.service_id' => ['required', 'integer'],
+                'services.*.quantity' => ['required', 'numeric', 'min:0'],
             ]);
 
             $filialId = $request->session()->get('filial_id');
@@ -92,14 +92,59 @@ class ActController extends Controller
                 return response()->json(['items' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
             }
 
+            $itemsToProcess = [];
+
+            // Проходимо по кожній послузі з акта та її компонентах з техкарти
+            foreach ($data['services'] as $serviceRow) {
+                $serviceId = (int) $serviceRow['service_id'];
+                $serviceQty = (float) $serviceRow['quantity'];
+                $rowKey = $serviceRow['key'];
+
+                $pricingItems = DB::table('pricing_items')
+                    ->where('pricing_id', $serviceId)
+                    ->get(['material_id', 'quantity']);
+
+                foreach ($pricingItems as $index => $pItem) {
+                    $mId = (int) $pItem->material_id;
+                    $baseQty = (float) $pItem->quantity;
+                    $requiredForThisRow = $baseQty * $serviceQty;
+
+                    // Формуємо унікальний ключ для кожного компонента рядка (наприклад, "0:0", "0:1", "0:2")
+                    $componentKey = $rowKey . ':' . $index;
+
+                    $itemsToProcess[] = [
+                        'key' => $componentKey,
+                        'material_id' => $mId,
+                        'required_qty' => $requiredForThisRow,
+                    ];
+                }
+            }
+
+            if (empty($itemsToProcess)) {
+                return response()->json(['items' => []]);
+            }
+
+            // Підтягуємо метадані матеріалів
+            $materialIds = collect($itemsToProcess)->pluck('material_id')->unique()->all();
+            $materialsMeta = DB::table('materials')
+                ->whereIn('id', $materialIds)
+                ->get(['id', 'is_instrument', 'expected_uses', 'price'])
+                ->keyBy('id');
+
             $items = [];
             $availableByMaterial = [];
-            foreach ($data['materials'] as $need) {
+
+            foreach ($itemsToProcess as $need) {
                 $materialId = (int) $need['material_id'];
-                $requiredQty = round((float) $need['fact_qty'], 4);
+                $requiredQty = round((float) $need['required_qty'], 4);
                 $remainingQty = $requiredQty;
                 $cost = 0.0;
                 $batches = [];
+
+                $materialMeta = $materialsMeta->get($materialId);
+                $isInstrument = $materialMeta->is_instrument ?? false;
+                $expectedUses = (int) ($materialMeta->expected_uses ?? 0);
+                $fallbackPrice = $materialMeta->price ?? 0;
 
                 if (!isset($availableByMaterial[$materialId])) {
                     $availableByMaterial[$materialId] = DB::table('store_batches')
@@ -118,20 +163,23 @@ class ActController extends Controller
                         ->all();
                 }
 
+                // FIFO розрахунок по партіях зі складу
                 foreach ($availableByMaterial[$materialId] as &$batch) {
                     if ($remainingQty <= 0) {
                         break;
                     }
 
                     $usedQty = min($remainingQty, $batch['fact_qty_left']);
-                    $unitCost = $batch['price_per_unit'];
+                    $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
+
+                    $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
                     $lineCost = round($usedQty * $unitCost, 4);
 
                     $batches[] = [
                         'batch_id' => $batch['id'],
                         'arrived_at' => $batch['arrived_at'],
                         'quantity' => $usedQty,
-                        'price_per_unit' => $unitCost,
+                        'price_per_unit' => round($unitCost, 4),
                         'total' => $lineCost,
                     ];
                     $cost += $lineCost;
@@ -154,7 +202,6 @@ class ActController extends Controller
             return response()->json(['items' => $items]);
         });
     }
-    
 
     public function index(Request $request)
     {
