@@ -95,6 +95,7 @@ export default function Form({
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
   });
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const [values, setValues] = useState({
     act_number: formData.act_number || '',
@@ -180,6 +181,9 @@ export default function Form({
     }
   };
 
+  // Перевірка на дефіцит по всьому словнику fifo
+  const hasShortage = Object.values(fifo).some((item) => Number(item?.shortage_qty || 0) > 0);
+
   useEffect(() => {
     if (formData.visit_id && !formRowData.length) {
       const visit = visitsData.find((item) => String(item.id) === String(formData.visit_id));
@@ -189,6 +193,16 @@ export default function Form({
         );
     }
   }, []);
+
+  useEffect(() => {
+    setIsCalculating(true);
+    const timer = setTimeout(async () => {
+      console.log('reaclculate');
+      setIsCalculating(false);
+    }, 500); // чекаємо півсекунди після останньої зміни
+
+    return () => clearTimeout(timer);
+  }, [rows, fifo]); // або залежності, за якими ти тригериш перерахунок
 
   // Автоматично додаємо собівартість матеріалів до базової ціни послуги
   // Автоматично додаємо собівартість матеріалів до базової ціни послуги
@@ -254,6 +268,7 @@ export default function Form({
   }, [fifo]);
 
   // Единый стабильный эффект для запроса FIFO-превью без зацикливания
+  // працює ідеально якщо міняємо загальну кількість процедур
   useEffect(() => {
     // Собираем список услуг из акта для отправки на бэкенд
     const services = rows
@@ -306,6 +321,74 @@ export default function Form({
     ),
   ]);
 
+
+//   useEffect(() => {
+//     // Собираем список услуг из акта для отправки на бэкенд вместе с компонентами
+//     const services = rows
+//       .map((row, rowIndex) => {
+//         const serviceId = Number(row.product_id || row.service_id);
+//         const quantity = Number(row.quantity || row.qty || 1);
+//
+//         if (!serviceId) return null;
+//
+//         return {
+//           key: String(rowIndex),
+//           service_id: serviceId,
+//           quantity: quantity,
+//           // Передаємо також матеріали, якщо лікар змінював їх кількість вручну
+//           components: (row.components || []).map((c) => ({
+//             material_id: Number(c.material_id || c.product_id),
+//             quantity:
+//               c.quantity !== undefined && c.quantity !== ''
+//                 ? Number(c.quantity)
+//                 : Number(c.base_quantity || 0) * quantity,
+//           })),
+//         };
+//       })
+//       .filter(Boolean);
+//
+//     if (!services.length) {
+//       setFifo({});
+//       setFifoError('');
+//       return;
+//     }
+//
+//     const currentRequestId = ++fifoRequestId.current;
+//     const timer = window.setTimeout(async () => {
+//       try {
+//         // Отправляем список услуг вместе с компонентами
+//         const response = await axios.post('/act/fifo-preview', { services });
+//         if (currentRequestId !== fifoRequestId.current) return;
+//
+//         const fifoByComponent = Object.fromEntries(
+//           (response.data.items || []).map((item) => [item.key, item])
+//         );
+//         setFifo(fifoByComponent);
+//         setFifoError('');
+//       } catch (error) {
+//         if (currentRequestId !== fifoRequestId.current) return;
+//         setFifo({});
+//         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
+//       }
+//     }, 250);
+//
+//     return () => window.clearTimeout(timer);
+//   }, [
+//     JSON.stringify(
+//       rows.map((r) => ({
+//         id: r.product_id || r.service_id,
+//         q: r.quantity || r.qty,
+//         // Додаємо в залежності компоненти, щоб тригерити перерахунок при зміні кількості матеріалу
+//         comps: (r.components || []).map((c) => ({
+//           id: c.material_id || c.product_id,
+//           q: c.quantity,
+//         })),
+//       }))
+//     ),
+//   ]);
+
+
+
   const submit = (event) => {
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
@@ -324,8 +407,9 @@ export default function Form({
         })),
       })),
     };
-  console.log(payload);exit;
-    router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
+    console.log(payload);
+//     exit;
+//     router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
   };
 
   return (

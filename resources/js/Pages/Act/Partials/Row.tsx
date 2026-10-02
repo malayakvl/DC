@@ -78,7 +78,11 @@ const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, compon
             onChange={(e) => {
               const val = e.target.value;
               setLocalVal(val);
-              updateComponent(index, componentIndex, val);
+              updateComponent(rowIndex, materialIndex, {
+                quantity: val,
+                is_manually_edited: true,
+              });
+//               updateComponent(index, componentIndex, val);
             }}
           />
           <span className="text-[11px] text-slate-400 w-6">{component.short_name || ''}</span>
@@ -180,6 +184,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
     });
     changeRows(next);
   };
+
 
   const searchServices = async (value, index) => {
     updateRow(index, { product: value, product_id: '', components: [], price: 0, base_price: 0 });

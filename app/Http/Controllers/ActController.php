@@ -86,6 +86,9 @@ class ActController extends Controller
                 'services.*.key' => ['required', 'string'],
                 'services.*.service_id' => ['required', 'integer'],
                 'services.*.quantity' => ['required', 'numeric', 'min:0'],
+                'services.*.components' => ['nullable', 'array'],
+                'services.*.components.*.material_id' => ['required', 'integer'],
+                'services.*.components.*.quantity' => ['required', 'numeric', 'min:0'],
             ]);
 
             $filialId = $request->session()->get('filial_id');
@@ -97,29 +100,48 @@ class ActController extends Controller
 
             $itemsToProcess = [];
 
-            // Проходимо по кожній послузі з акта та її компонентах з техкарти
+            // Проходимо по кожній послузі з акта
             foreach ($data['services'] as $serviceRow) {
                 $serviceId = (int) $serviceRow['service_id'];
                 $serviceQty = (float) $serviceRow['quantity'];
                 $rowKey = $serviceRow['key'];
 
-                $pricingItems = DB::table('pricing_items')
-                    ->where('pricing_id', $serviceId)
-                    ->get(['material_id', 'quantity']);
+                $customComponents = $serviceRow['components'] ?? [];
 
-                foreach ($pricingItems as $pItem) {
-                    $mId = (int) $pItem->material_id;
-                    $baseQty = (float) $pItem->quantity;
-                    $requiredForThisRow = $baseQty * $serviceQty;
+                // Якщо лікар змінював кількість матеріалу вручну — беремо з кастомних компонентів
+                if (!empty($customComponents)) {
+                    foreach ($customComponents as $comp) {
+                        $mId = (int) $comp['material_id'];
+                        $requiredForThisRow = (float) $comp['quantity'];
 
-                    // Формуємо унікальний ключ на основі material_id, щоб порядок в базі не мав значення
-                    $componentKey = $rowKey . ':' . $mId;
+                        $componentKey = $rowKey . ':' . $mId;
 
-                    $itemsToProcess[] = [
-                        'key' => $componentKey,
-                        'material_id' => $mId,
-                        'required_qty' => $requiredForThisRow,
-                    ];
+                        $itemsToProcess[] = [
+                            'key' => $componentKey,
+                            'material_id' => $mId,
+                            'required_qty' => $requiredForThisRow,
+                        ];
+                    }
+                } else {
+                    // Якщо ручних правок немає — беремо стандартну техкарту з бази
+                    $pricingItems = DB::table('pricing_items')
+                        ->where('pricing_id', $serviceId)
+                        ->get(['material_id', 'quantity']);
+
+                    foreach ($pricingItems as $pItem) {
+                        $mId = (int) $pItem->material_id;
+                        $baseQty = (float) $pItem->quantity;
+                        $requiredForThisRow = $baseQty * $serviceQty;
+
+                        // Формуємо унікальний ключ на основі material_id, щоб порядок в базі не мав значення
+                        $componentKey = $rowKey . ':' . $mId;
+
+                        $itemsToProcess[] = [
+                            'key' => $componentKey,
+                            'material_id' => $mId,
+                            'required_qty' => $requiredForThisRow,
+                        ];
+                    }
                 }
             }
 
