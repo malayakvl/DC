@@ -277,7 +277,6 @@ export default function Form({
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
     if (!values.patient_id || !validRows.length) return;
-
     const payload = {
       ...values,
       rows: validRows.map((row) => ({
@@ -288,10 +287,11 @@ export default function Form({
         components: (row.components || []).map((component) => ({
           material_id: component.material_id || component.product_id,
           unit_id: component.unit_id,
-          quantity: Number(component.base_quantity || 0) * Number(row.quantity || 0),
+          quantity: Number(row.quantity || 0),
         })),
       })),
     };
+  console.log(payload);exit;
     router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
   };
 
@@ -415,7 +415,7 @@ export default function Form({
 
         {loadingVisit && (
           <div className="text-sm text-teal-600 font-medium px-2">
-            Завантажуємо матеріали процедур…
+            {msg.get('act.load.data.visits')}
           </div>
         )}
         {fifoError && <div className="text-sm text-red-600 px-2">{fifoError}</div>}
@@ -427,16 +427,16 @@ export default function Form({
               <thead>
                 <tr>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3">
-                    Послуга
+                    {msg.get('act.service')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-qty text-center">
-                    К-сть
+                    {msg.get('act.qty')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-price text-center">
-                    Ціна
+                    {msg.get('act.price')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-price text-center">
-                    Сума
+                    {msg.get('act.total')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-btn" />
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 pb-3 w-btn" />

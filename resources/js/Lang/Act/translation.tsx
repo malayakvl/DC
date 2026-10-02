@@ -67,6 +67,8 @@ const lngAct = {
     amortization: 'амортизація на',
     visit: 'Візит (необов`язково)',
     patient: 'Пацієнт',
+    'load.data.visits': 'Завантажуємо матеріали процедур…',
+    service: 'Послуга',
   },
 };
 export default lngAct;

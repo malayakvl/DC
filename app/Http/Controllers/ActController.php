@@ -107,13 +107,13 @@ class ActController extends Controller
                     ->where('pricing_id', $serviceId)
                     ->get(['material_id', 'quantity']);
 
-                foreach ($pricingItems as $index => $pItem) {
+                foreach ($pricingItems as $pItem) {
                     $mId = (int) $pItem->material_id;
                     $baseQty = (float) $pItem->quantity;
                     $requiredForThisRow = $baseQty * $serviceQty;
 
-                    // Формуємо унікальний ключ для кожного компонента рядка (наприклад, "0:0", "0:1", "0:2")
-                    $componentKey = $rowKey . ':' . $index;
+                    // Формуємо унікальний ключ на основі material_id, щоб порядок в базі не мав значення
+                    $componentKey = $rowKey . ':' . $mId;
 
                     $itemsToProcess[] = [
                         'key' => $componentKey,
@@ -173,7 +173,7 @@ class ActController extends Controller
                     }
 
                     $usedQty = min($remainingQty, $batch['fact_qty_left']);
-                    $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
+                    $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit']  : $fallbackPrice;
 
                     $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
                     $lineCost = round($usedQty * $unitCost, 4);
@@ -216,17 +216,17 @@ class ActController extends Controller
             $filialId = $request->session()->get('filial_id');
             $query = DB::table("clinic_{$clinicId}.acts as acts")
                 ->select(
-                'acts.*',
-                'payments.amount as payment_amount',
+                    'acts.*',
+                    'payments.amount as payment_amount',
 
-                // Пациент
-                'patient_user.first_name as patient_first_name',
-                'patient_user.last_name  as patient_last_name',
+                    // Пациент
+                    'patient_user.first_name as patient_first_name',
+                    'patient_user.last_name  as patient_last_name',
 
-                // Доктор
-                'doctor_user.first_name  as doctor_first_name',
-                'doctor_user.last_name   as doctor_last_name'
-            )
+                    // Доктор
+                    'doctor_user.first_name  as doctor_first_name',
+                    'doctor_user.last_name   as doctor_last_name'
+                )
 
                 // --- пациент ---
                 ->leftJoin("clinic_{$clinicId}.patients as patients", 'patients.id', '=', 'acts.patient_id')
@@ -431,7 +431,7 @@ class ActController extends Controller
                     foreach ($components as &$component) {
                         $mId = $component['material_id'] ?? null;
                         $uId = $component['unit_id'] ?? null;
-                        
+
                         if ($mId && isset($materialMap[$mId])) {
                             $component['product'] = $materialMap[$mId];
                         }
@@ -441,7 +441,7 @@ class ActController extends Controller
                     }
                     $item->components = $components;
                 });
-                
+
                 $typeData = array();
                 $patientsData = DB::table('patients')
                     ->join('core.users', 'core.users.id', '=', 'patients.user_id')
@@ -648,7 +648,6 @@ class ActController extends Controller
                 'rows.*.components.*.material_id' => ['required', 'integer'],
                 'rows.*.components.*.quantity' => ['required', 'numeric', 'min:0'],
             ]);
-            dd($data);exit;
 
             $filialId = (int) $request->session()->get('filial_id');
             $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
@@ -760,9 +759,11 @@ class ActController extends Controller
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->get();
+            dd($batches);
 
             foreach ($batches as $batch) {
                 if ($remainingFactQty <= 0) {
+                    dd('тут');
                     break;
                 }
                 if ((float) $batch->qty <= 0 || (float) $batch->fact_qty <= 0) {
@@ -869,153 +870,148 @@ class ActController extends Controller
     }
 
 
-
-
-
-
-
     /**
      * Update the specified resource in storage.
      */
     public function updateOld(InvoiceUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
 
-    //         if ($request->id) {
-    //             $data = $request;
-    //         } else {
-    //             $data = $request->values;
-    //         }
-    //         if ($request->user()->can('invoice-incoming-edit')) {
-    //             if ($request->id) {
-    //                 $invoice = Invoice::find($data->id);
-    //                 // invoice was issued and we need to remove materials from store and remove operation
-    //             }
-    //             else {
-    //                 $invoice = new Invoice();
-    //             }
-    // //            dd($request);exit;
-    //             $invoice->fill($request->validated());
-    //             $invoice->invoice_number = $request->invoice_number;
-    //             $invoice->invoice_date = $request->invoice_date;
-    //             $invoice->status_id = $request->status_id;
-    //             $invoice->type_id = 1;
-    //             $invoice->tax_id = $request->tax_id;
-    //             $invoice->currency_id = $request->currency_id;
-    //             $invoice->save();
-    //             if (!$request->id) {
-    //                 $invoiceId = $invoice->id;
-    //             } else {
-    //                 $invoiceId = $request->id;
-    //                 DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
-    //             }
-    //             $producer = Producer::find($request->producer_id);
-    //             $store = Store::find($request->store_id);
-    //             if ($request->status_id === 2) {
-    //                 DB::table('document_operations')
-    //                     ->where('document_id', $invoiceId)
-    //                     ->where('document_type', 'invoice')
-    //                     ->delete();
-    //             }
-    //             $total = 0;
-    //             foreach ($request->rows as $row) {
-    //                 $invoiceItem = new InvoiceItems();
-    //                 $invoiceItem->invoice_id = $invoiceId;
-    //                 $invoiceItem->product_id = $row["product_id"];
-    //                 $invoiceItem->unit_id = $row["unit_id"];
-    //                 $invoiceItem->fact_qty = $row["fact_qty"];
-    //                 $invoiceItem->price_per_unit = $row["total"]/$row["fact_qty"];
-    //                 $invoiceItem->quantity = $row["quantity"];
-    //                 $invoiceItem->price = $row["price"];
-    //                 $invoiceItem->total = $row["total"];
-    //                 $total = $total + $row["total"];
-    //                 $invoiceItem->save();
-    //                 if (intval($request->status_id) === 2) {
-    //                     $documentOperation  = new DocumentOperations();
-    //                     $documentOperation->operation_date = $request->invoice_date;
-    //                     $documentOperation->operation_number = $request->invoice_number;
-    //                     $documentOperation->document_id = $invoiceId;
-    //                     $documentOperation->document_type = 'iinv';
-    //                     $documentOperation->operation_dt = '281';
-    //                     $documentOperation->subconto_dt = json_encode(array(
-    //                         'store_id' => $request->store_id,
-    //                         'store_name' => $store->name,
-    //                         'product_id' => $row["product_id"],
-    //                         'product_name' => $row['product'],
-    //                         'producer_id' => $producer->id,
-    //                         'producer_name' => $producer->name,
-    //                         'fact_qty' => $row['fact_qty'],
-    //                         'qty' => $row['quantity'],
-    //                         'price_per_unit' => number_format(($row['total']/$row['fact_qty']), 2)
-    //                     ));
-    //                     // get weight if exist
-    //                     $material = Material::find($row["product_id"]);
-    // //                    DB::select('
-    // //                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
-    // //                        VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
-    // //                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
-    // //                        ON CONFLICT ON CONSTRAINT store_materials_pkey
-    // //                        DO UPDATE SET
-    // //                        weight = sm.weight  + ' .$row["fact_qty"]. ',
-    // //                        quantity = sm.quantity + ' .$row["quantity"]. ';
-    // //                    ');
-    //                     $storeMaterials = new StoreMaterials();
-    //                     $storeMaterials->doc_date = $request->invoice_date;
-    //                     $storeMaterials->document_type = 'iinv';
-    //                     $storeMaterials->document_id = $invoiceId;
-    //                     $storeMaterials->store_id = $request->store_id;
-    //                     $storeMaterials->material_id = $row["product_id"];
-    //                     $storeMaterials->qty = $row["quantity"];
-    //                     $storeMaterials->store_qty = $row["quantity"];
-    //                     $storeMaterials->unit_id = $material->unit_id;
-    //                     $storeMaterials->fact_qty = $row['fact_qty'];
-    //                     $storeMaterials->store_fact_qty = $row['fact_qty'];
-    //                     $storeMaterials->fact_unit_id = $material->weightunit_id;
-    //                     $storeMaterials->price_per_unit = number_format(($row['total']/$row['fact_qty']), 2);
-    //                     $storeMaterials->producer_id = $request->producer_id;
-    //                     $storeMaterials->save();
+            //         if ($request->id) {
+            //             $data = $request;
+            //         } else {
+            //             $data = $request->values;
+            //         }
+            //         if ($request->user()->can('invoice-incoming-edit')) {
+            //             if ($request->id) {
+            //                 $invoice = Invoice::find($data->id);
+            //                 // invoice was issued and we need to remove materials from store and remove operation
+            //             }
+            //             else {
+            //                 $invoice = new Invoice();
+            //             }
+            // //            dd($request);exit;
+            //             $invoice->fill($request->validated());
+            //             $invoice->invoice_number = $request->invoice_number;
+            //             $invoice->invoice_date = $request->invoice_date;
+            //             $invoice->status_id = $request->status_id;
+            //             $invoice->type_id = 1;
+            //             $invoice->tax_id = $request->tax_id;
+            //             $invoice->currency_id = $request->currency_id;
+            //             $invoice->save();
+            //             if (!$request->id) {
+            //                 $invoiceId = $invoice->id;
+            //             } else {
+            //                 $invoiceId = $request->id;
+            //                 DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
+            //             }
+            //             $producer = Producer::find($request->producer_id);
+            //             $store = Store::find($request->store_id);
+            //             if ($request->status_id === 2) {
+            //                 DB::table('document_operations')
+            //                     ->where('document_id', $invoiceId)
+            //                     ->where('document_type', 'invoice')
+            //                     ->delete();
+            //             }
+            //             $total = 0;
+            //             foreach ($request->rows as $row) {
+            //                 $invoiceItem = new InvoiceItems();
+            //                 $invoiceItem->invoice_id = $invoiceId;
+            //                 $invoiceItem->product_id = $row["product_id"];
+            //                 $invoiceItem->unit_id = $row["unit_id"];
+            //                 $invoiceItem->fact_qty = $row["fact_qty"];
+            //                 $invoiceItem->price_per_unit = $row["total"]/$row["fact_qty"];
+            //                 $invoiceItem->quantity = $row["quantity"];
+            //                 $invoiceItem->price = $row["price"];
+            //                 $invoiceItem->total = $row["total"];
+            //                 $total = $total + $row["total"];
+            //                 $invoiceItem->save();
+            //                 if (intval($request->status_id) === 2) {
+            //                     $documentOperation  = new DocumentOperations();
+            //                     $documentOperation->operation_date = $request->invoice_date;
+            //                     $documentOperation->operation_number = $request->invoice_number;
+            //                     $documentOperation->document_id = $invoiceId;
+            //                     $documentOperation->document_type = 'iinv';
+            //                     $documentOperation->operation_dt = '281';
+            //                     $documentOperation->subconto_dt = json_encode(array(
+            //                         'store_id' => $request->store_id,
+            //                         'store_name' => $store->name,
+            //                         'product_id' => $row["product_id"],
+            //                         'product_name' => $row['product'],
+            //                         'producer_id' => $producer->id,
+            //                         'producer_name' => $producer->name,
+            //                         'fact_qty' => $row['fact_qty'],
+            //                         'qty' => $row['quantity'],
+            //                         'price_per_unit' => number_format(($row['total']/$row['fact_qty']), 2)
+            //                     ));
+            //                     // get weight if exist
+            //                     $material = Material::find($row["product_id"]);
+            // //                    DB::select('
+            // //                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
+            // //                        VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
+            // //                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
+            // //                        ON CONFLICT ON CONSTRAINT store_materials_pkey
+            // //                        DO UPDATE SET
+            // //                        weight = sm.weight  + ' .$row["fact_qty"]. ',
+            // //                        quantity = sm.quantity + ' .$row["quantity"]. ';
+            // //                    ');
+            //                     $storeMaterials = new StoreMaterials();
+            //                     $storeMaterials->doc_date = $request->invoice_date;
+            //                     $storeMaterials->document_type = 'iinv';
+            //                     $storeMaterials->document_id = $invoiceId;
+            //                     $storeMaterials->store_id = $request->store_id;
+            //                     $storeMaterials->material_id = $row["product_id"];
+            //                     $storeMaterials->qty = $row["quantity"];
+            //                     $storeMaterials->store_qty = $row["quantity"];
+            //                     $storeMaterials->unit_id = $material->unit_id;
+            //                     $storeMaterials->fact_qty = $row['fact_qty'];
+            //                     $storeMaterials->store_fact_qty = $row['fact_qty'];
+            //                     $storeMaterials->fact_unit_id = $material->weightunit_id;
+            //                     $storeMaterials->price_per_unit = number_format(($row['total']/$row['fact_qty']), 2);
+            //                     $storeMaterials->producer_id = $request->producer_id;
+            //                     $storeMaterials->save();
 
-    // //                    DB::select('
-    // //                        INSERT INTO store_materials AS sm (doc_date, store_id, material_id, qty, unit_id, fact_qty, fact_unit_id, price_per_unit, producer_id)
-    // //                        VALUES (\''.$request->invoice_date. '\',  '.$request->store_id.', '.$row["product_id"].',
-    // //                        '.$row["quantity"].', ' .$material->unit_id. ', '. $row['fact_qty'].',
-    // //                        ' .$material->weightunit_id. ',
-    // //                        '.number_format(($row['total']/$row['fact_qty']), 2).',
-    // //                        ' .$request->producer_id. '
-    // //                    ');
+            // //                    DB::select('
+            // //                        INSERT INTO store_materials AS sm (doc_date, store_id, material_id, qty, unit_id, fact_qty, fact_unit_id, price_per_unit, producer_id)
+            // //                        VALUES (\''.$request->invoice_date. '\',  '.$request->store_id.', '.$row["product_id"].',
+            // //                        '.$row["quantity"].', ' .$material->unit_id. ', '. $row['fact_qty'].',
+            // //                        ' .$material->weightunit_id. ',
+            // //                        '.number_format(($row['total']/$row['fact_qty']), 2).',
+            // //                        ' .$request->producer_id. '
+            // //                    ');
 
-    //                     $documentOperation->operation_kt = '631';
-    //                     $documentOperation->subconto_kt = json_encode(array(
-    //                         'producer_id' => $request->producer_id,
-    //                         'producer_name' => $producer->name
-    //                     ));
-    // //                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
-    //                     $documentOperation->amount = $row["total"];
-    //                     $documentOperation->quantity = $row["quantity"];
-    //                     $documentOperation->comment = 'income_products';
-    //                     $documentOperation->save();
-    //                 }
-    //             }
-    //             // create operations
-    //             if (intval($request->status_id) === 2) {
-    //                 $documentOperation  = new DocumentOperations();
-    //                 $documentOperation->operation_date = $request->invoice_date;
-    //                 $documentOperation->operation_number = $request->invoice_number;
-    //                 $documentOperation->document_id = $invoiceId;
-    //                 $documentOperation->document_type = 'iinv';
-    //                 $documentOperation->operation_dt = '6442';
-    //                 $documentOperation->subconto_dt = json_encode(array('name' => 'nds'));
-    //                 $documentOperation->operation_kt = '631';
-    //                 $documentOperation->subconto_kt = json_encode(array('producer_id' => $request->producer_id, 'name' => $producer->name));
-    //                 $documentOperation->amount = $total*20/100;
-    //                 $documentOperation->quantity = 0;
-    //                 $documentOperation->comment = 'nds';
-    //                 $documentOperation->save();
-    //             }
+            //                     $documentOperation->operation_kt = '631';
+            //                     $documentOperation->subconto_kt = json_encode(array(
+            //                         'producer_id' => $request->producer_id,
+            //                         'producer_name' => $producer->name
+            //                     ));
+            // //                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
+            //                     $documentOperation->amount = $row["total"];
+            //                     $documentOperation->quantity = $row["quantity"];
+            //                     $documentOperation->comment = 'income_products';
+            //                     $documentOperation->save();
+            //                 }
+            //             }
+            //             // create operations
+            //             if (intval($request->status_id) === 2) {
+            //                 $documentOperation  = new DocumentOperations();
+            //                 $documentOperation->operation_date = $request->invoice_date;
+            //                 $documentOperation->operation_number = $request->invoice_number;
+            //                 $documentOperation->document_id = $invoiceId;
+            //                 $documentOperation->document_type = 'iinv';
+            //                 $documentOperation->operation_dt = '6442';
+            //                 $documentOperation->subconto_dt = json_encode(array('name' => 'nds'));
+            //                 $documentOperation->operation_kt = '631';
+            //                 $documentOperation->subconto_kt = json_encode(array('producer_id' => $request->producer_id, 'name' => $producer->name));
+            //                 $documentOperation->amount = $total*20/100;
+            //                 $documentOperation->quantity = 0;
+            //                 $documentOperation->comment = 'nds';
+            //                 $documentOperation->save();
+            //             }
 
-    //             return Redirect::route('invoice.incoming.index');
-    //         }
+            //             return Redirect::route('invoice.incoming.index');
+            //         }
         });
-        
+
     }
 
     /**
