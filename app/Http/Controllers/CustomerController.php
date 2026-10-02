@@ -316,7 +316,6 @@ class CustomerController extends Controller
 
         // 3️⃣ Переключаемся в схему клиники и забираем роли + связи
         $original = DB::select("SHOW search_path")[0]->search_path;
-
         try {
             // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
             DB::statement("SET search_path TO clinic_{$clinicId}, public, core");

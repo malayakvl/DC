@@ -1,5 +1,4 @@
-import { Transition } from '@headlessui/react';
-import { Link, router, useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
@@ -18,7 +17,6 @@ import {
 } from '@/Redux/Incominginvoice/selectors';
 import { setInvoiceTax, setShowTableError } from '@/Redux/Incominginvoice';
 import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
-import { ArrowLeft } from 'lucide-react';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import FormHeader from '../../../Components/Common/FormHeader';
 

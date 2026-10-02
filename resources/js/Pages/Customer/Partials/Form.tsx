@@ -67,20 +67,6 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile, photoPath]);
 
-//   useEffect(() => {
-//     if (!selectedFile) {
-//       setPreview(photoPath ? photoPath : '/images/no-image.png');
-//       return;
-//     }
-//
-//     const objectUrl = URL.createObjectURL(selectedFile);
-//     setPreview(objectUrl);
-//     console.log(objectUrl);
-//
-//     // free memory when ever this component is unmounted
-//     return () => URL.revokeObjectURL(objectUrl);
-//   }, [selectedFile, photoPath]);
-
   const renderSearchResult = () => {
     if (serchResults.length > 0) {
       return (

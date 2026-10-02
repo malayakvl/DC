@@ -1,5 +1,10 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { appLangSelector } from '@/Redux/Layout/selectors';
+import Lang from 'lang.js';
+import lngAct from '../../../Lang/Act/translation';
+import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -20,6 +25,11 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
   const requestId = useRef(0);
+  const appLang = useSelector(appLangSelector);
+  const msg = new Lang({
+    messages: { ...lngInvoiceIncoming, ...lngAct },
+    locale: appLang,
+  });
 
   const changeRows = (nextRows) => onChange(nextRows);
 
@@ -163,11 +173,11 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                   const totalCost = row.components.reduce((sum, component, componentIndex) => {
                     const fifoItem = fifo[`${index}:${componentIndex}`];
                     let unitCost = Number(fifoItem?.cost || 0);
-                    const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
+                    const isInst =
+                      component.is_instrument && Number(component.expected_uses || 0) > 0;
                     if (isInst && Number(component.expected_uses || 0) > 0) {
                       unitCost = unitCost / Number(component.expected_uses);
                     }
-//                     const requiredQty = Number(component.base_quantity || 0) * Number(row.quantity || 1);
                     const requiredQty =
                       fifoItem && fifoItem.required_qty !== undefined
                         ? Number(fifoItem.required_qty)
@@ -182,7 +192,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                           : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
                       0
                     );
-                    return sum + ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty);
+                    return (
+                      sum +
+                      ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty)
+                    );
                   }, 0);
 
                   return (
@@ -192,10 +205,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                           <span className="material-symbols-outlined text-teal-600 text-[16px]">
                             inventory_2
                           </span>
-                          Витратні матеріали до послуги:
+                          {msg.get('act.materials.and.services')}
                         </div>
                         <div className="text-[11px] bg-teal-50 text-teal-700 px-2 py-0.5 rounded-md font-medium border border-teal-200/60">
-                          Загальна собівартість:{' '}
+                          {msg.get('act.total.payment')}
                           <strong className="font-bold">{totalCost.toFixed(2)} ₴</strong>
                         </div>
                       </div>
@@ -212,8 +225,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                             component.is_instrument && Number(component.expected_uses || 0) > 0;
 
                           // Фактична кількість, що списується
-//                           const requiredQty =
-//                             Number(component.base_quantity || 0) * Number(row.quantity || 1);
                           const requiredQty =
                             fifoItem?.required_qty !== undefined
                               ? Number(fifoItem.required_qty)
@@ -244,7 +255,8 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                                   {component.product}
                                   {isInst && (
                                     <span className="ml-1.5 text-[10px] bg-sky-50 text-sky-600 px-1.5 py-0.5 rounded border border-sky-100">
-                                      Інструмент (основний ресурс: {component.expected_uses} вик.)
+                                      {msg.get('act.instrument')} ({msg.get('act.main.resources')}{' '}
+                                      {component.expected_uses} {msg.get('act.uses')})
                                     </span>
                                   )}
                                 </span>
@@ -267,20 +279,25 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                               <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex flex-col gap-1">
                                 <div className="flex items-center justify-between">
                                   <span>
-                                    Собівартість {isInst ? '(з урахуванням амортизації)' : ''}:{' '}
+                                    {msg.get('act.service.amount')}{' '}
+                                    {isInst ? '(з урахуванням амортизації)' : ''}:{' '}
                                     <strong className="text-slate-800 font-semibold">
                                       {Number(
-                                        fifoItem?.cost ? fifoItem.cost / Math.max(requiredQty, 1) : 0
+                                        fifoItem?.cost
+                                          ? fifoItem.cost / Math.max(requiredQty, 1)
+                                          : 0
                                       ).toFixed(2)}{' '}
                                       ₴
                                       <span className="text-slate-400 font-normal ml-1">
-                                        (Сума за кількість: {itemTotalCost.toFixed(2)} ₴)
+                                        ({msg.get('act.amount.quantity')}:{' '}
+                                        {itemTotalCost.toFixed(2)} ₴)
                                       </span>
                                     </strong>
                                   </span>
                                   {fifoItem?.shortage_qty > 0 && (
                                     <span className="text-red-500 font-medium">
-                                      Нестача: {Number(fifoItem.shortage_qty).toFixed(2)}{' '}
+                                      {msg.get('act.absent')}:{' '}
+                                      {Number(fifoItem.shortage_qty).toFixed(2)}{' '}
                                       {component.unit_name}
                                     </span>
                                   )}
@@ -289,7 +306,8 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                                 {(fifoItem?.batches || []).length > 0 && (
                                   <details className="mt-1 group">
                                     <summary className="cursor-pointer text-[10px] text-teal-600 hover:text-teal-800 font-medium select-none">
-                                      Деталізація партій ({(fifoItem?.batches || []).length})
+                                      {msg.get('act.batches.deteils')} (
+                                      {(fifoItem?.batches || []).length})
                                     </summary>
                                     <div className="mt-1 pl-2 space-y-0.5 border-l-2 border-teal-200 bg-slate-50 p-1.5 rounded-lg">
                                       {fifoItem.batches.map((batch, batchIdx) => {
@@ -305,14 +323,15 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                                             className="flex justify-between text-[10px] text-slate-600"
                                           >
                                             <span>
-                                              Партія #{batch.batch_id} ({batch.arrived_at})
+                                              {msg.get('act.batch')} #{batch.batch_id} (
+                                              {batch.arrived_at})
                                             </span>
                                             <span className="font-mono">
                                               {Number(batch.quantity).toFixed(2)} ×{' '}
                                               {Number(batch.price_per_unit).toFixed(2)} ₴ ={' '}
                                               <strong>{batchTotal.toFixed(2)} ₴</strong>
                                               {isInst
-                                                ? ` (амортизація на ${component.expected_uses} вик.)`
+                                                ? ` (${msg.get('act.amortization')} ${component.expected_uses} ${msg.get('act.uses')})`
                                                 : ''}
                                             </span>
                                           </div>

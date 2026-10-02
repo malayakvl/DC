@@ -11,6 +11,7 @@ use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\User;
 use App\Models\VisitScheduleStatus;
+use App\Services\CustomerService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -27,11 +28,14 @@ class SchedulerController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
+    protected CustomerService $customerService;
 
-    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->schemaService = $schemaService;
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
 
 
@@ -75,28 +79,7 @@ class SchedulerController extends Controller
                 ? Carbon::parse($request->end_date)
                 : Carbon::today()->addDays(2); // текущий + 2 = 3 дня
 
-            $customerSelectData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                // ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
-                    $join->on('pfu.user_id', '=', 'u.id')
-                        ->where('pfu.filial_id', $filialId);
-                })
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar',
-                    'pfu.color',
-                    'pfu.avatar'
-                )
-                ->orderBy('u.last_name')
-                ->get();
+            $customerSelectData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
             $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
@@ -108,44 +91,9 @@ class SchedulerController extends Controller
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
 
-            $customerData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
-                    $join->on('pfu.user_id', '=', 'u.id')
-                        ->where('pfu.filial_id', $filialId);
-                })
-                ->leftJoin("clinic_{$clinicId}.roles as r", 'r.id', '=', 'pfu.role_id')
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar',
-                    'pfu.color',
-                    'pfu.avatar',
-                    'r.name as role_name'
-                )
-                ->orderBy('u.last_name')
-                ->get();
-            $assistantSelectData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar'
-                )
-                ->orderBy('u.last_name')
-                ->get();
+            $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+            $assistantSelectData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+
 
             $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
                 return [

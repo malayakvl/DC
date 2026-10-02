@@ -1,16 +1,13 @@
-import { Link, router, useForm } from '@inertiajs/react';
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
-import InputSelect from '../../../Components/Form/InputSelect';
 import InputCalendar from '../../../Components/Form/InputCalendar';
 import AddDynamicInputFields, { emptyRow } from './Row';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import FormHeader from '../../../Components/Common/FormHeader';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import axios from 'axios';
@@ -92,7 +89,6 @@ export default function Form({
   formRowData = [],
 }) {
   const appLang = useSelector(appLangSelector);
-  const dispatch = useAppDispatch();
   const msg = new Lang({
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
@@ -128,28 +124,28 @@ export default function Form({
   };
 
   const makeRowsFromVisit = async (visit) => {
-      const services = Array.isArray(visit.services) ? visit.services : [];
-      const serviceRows = await Promise.all(
-        services.map(async (service) => {
-          const id = service.id || service.service_id;
-          if (!id) return null;
-          const response = await axios.post('/service/findServiceItems', { serviceId: id });
-          const quantity = Number(service.qty ?? service.quantity ?? 1);
-          const servicePrice = Number(service.price ?? 150);
-          return {
-            product_id: id,
-            product: service.name || '',
-            quantity,
-            price: servicePrice,
-            base_price: servicePrice,
-            total: Number((quantity * servicePrice).toFixed(2)),
-            // Передаем количество услуги в функцию, чтобы база честно разделилась
-            components: withBaseQuantities(response.data.items, quantity),
-          };
-        })
-      );
-      return serviceRows.filter(Boolean);
-    };
+    const services = Array.isArray(visit.services) ? visit.services : [];
+    const serviceRows = await Promise.all(
+      services.map(async (service) => {
+        const id = service.id || service.service_id;
+        if (!id) return null;
+        const response = await axios.post('/service/findServiceItems', { serviceId: id });
+        const quantity = Number(service.qty ?? service.quantity ?? 1);
+        const servicePrice = Number(service.price ?? 150);
+        return {
+          product_id: id,
+          product: service.name || '',
+          quantity,
+          price: servicePrice,
+          base_price: servicePrice,
+          total: Number((quantity * servicePrice).toFixed(2)),
+          // Передаем количество услуги в функцию, чтобы база честно разделилась
+          components: withBaseQuantities(response.data.items, quantity),
+        };
+      })
+    );
+    return serviceRows.filter(Boolean);
+  };
 
   const chooseVisit = async (event) => {
     const visitId = event.target.value;
@@ -292,11 +288,11 @@ export default function Form({
     <section>
       <div className="flex flex-col gap-3 mt-2">
         <FormHeader
-          title={formData?.id ? 'Редагування акта' : 'Новий акт'}
-          description="Заповніть реквізити акта та виберіть послуги"
+          title={formData?.id ? msg.get('act.title.edit') : msg.get('act.title.create')}
+          description={msg.get('act.title.description')}
           backUrl="/acts"
           processing={processing}
-          saveText="Зберегти зміни"
+          saveText={msg.get('act.save')}
         />
       </div>
 

@@ -20,6 +20,7 @@ use App\Models\Invoice;
 use App\Models\Supplier;
 use App\Models\Tax;
 use App\Models\Unit;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -32,11 +33,13 @@ class ActController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
+    protected CustomerService $customerService;
 
-    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->schemaService = $schemaService;
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
 
     private function actStatuses(): array
@@ -240,7 +243,7 @@ class ActController extends Controller
                 $query->where('acts.filial_id', $filialId);
             }
             $acts = $query->paginate(20);
-        // dd($acts);exit;
+
             return Inertia::render('Act/List', [
                 'clinicData' => $clinic,
                 'listData'   => $acts
@@ -320,6 +323,7 @@ class ActController extends Controller
                 return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
             }
             $clinicData = $request->user()->clinicByFilial($clinicId);
+            $filialId = $request->session()->get('filial_id');
             $typeData = array();
 
             $formData = new Act();
@@ -337,23 +341,12 @@ class ActController extends Controller
                 ++$num;
             }
             $formData->act_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);
-            
             $patientsData = DB::table('patients')
                 ->join('core.users', 'core.users.id', '=', 'patients.user_id')
                 ->select('patients.id', 'users.first_name', 'users.last_name', 'users.email')
                 ->orderBy('users.last_name')
                 ->get();
-            $customerData = DB::table('core.clinic_user')
-                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                    ->select(
-                        'users.id',
-                        'users.first_name',
-                        'users.last_name',
-                        'users.email'
-                    )
-                    ->where('clinic_user.clinic_id', $clinicId)
-                    ->orderBy('users.last_name')
-                    ->get();
+            $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
 
             $visitsData = DB::table('schedulers as schedulers')
                 ->leftJoin('patients as patients', 'patients.id', '=', 'schedulers.patient_id')
@@ -368,6 +361,7 @@ class ActController extends Controller
                 ->orderByDesc('schedulers.event_time_from')
                 ->limit(100)
                 ->get()
+
                 ->map(function ($visit) {
                     $visit->services = json_decode($visit->services ?? '[]', true) ?: [];
                     return $visit;
@@ -654,6 +648,7 @@ class ActController extends Controller
                 'rows.*.components.*.material_id' => ['required', 'integer'],
                 'rows.*.components.*.quantity' => ['required', 'numeric', 'min:0'],
             ]);
+            dd($data);exit;
 
             $filialId = (int) $request->session()->get('filial_id');
             $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');

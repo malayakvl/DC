@@ -1,6 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/hooks';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   searchResultServicesSelector,
   searchResultServicesElementsSelector,
@@ -10,6 +9,9 @@ import {
   findServiceMaterialAction,
 } from '@/Redux/Service/actions';
 import { setPriceItems, setShowTableError, setTotalPrice } from '@/Redux/Service';
+import { appLangSelector } from '@/Redux/Layout/selectors';
+import Lang from 'lang.js';
+import lngServices from '../../../Lang/Services/translation';
 
 export interface AddDynamicInputFieldsRef {
   addRow: () => void;
@@ -18,6 +20,11 @@ export interface AddDynamicInputFieldsRef {
 // eslint-disable-next-line react/display-name
 const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
   ({ formRowData = null, unitData }, ref) => {
+    const appLang = useSelector(appLangSelector);
+    const msg = new Lang({
+      messages: { ...lngServices },
+      locale: appLang,
+    });
     // Хелпер для нормалізації та фіксації константних цін у рядку
     const normalizeRow = (item: any) => {
       const price = parseFloat(item.price) || 0;
@@ -49,7 +56,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       return formRowData.map(normalizeRow);
     });
 
-    const dispatch = useAppDispatch();
+    const dispatch = useDispatch();
     const [numRow, setNumRow] = useState(0);
     const serchResults = useSelector(searchResultServicesSelector);
     useSelector(searchResultServicesElementsSelector);
@@ -238,7 +245,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 onChange={(event) => handleChange(event, index)}
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
               >
-                <option value="">Одиниця...</option>
+                <option value="">{msg.get('service.unit')}...</option>
                 {unitData?.map((unit) => (
                   <option key={unit.id} value={unit.id}>
                     {unit.name}
