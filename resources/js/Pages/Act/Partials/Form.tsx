@@ -191,18 +191,51 @@ export default function Form({
   }, []);
 
   // Автоматично додаємо собівартість матеріалів до базової ціни послуги
+  // Автоматично додаємо собівартість матеріалів до базової ціни послуги
   useEffect(() => {
     if (!Object.keys(fifo).length) return;
 
     setRows((currentRows) =>
       currentRows.map((row, rowIndex) => {
-        const rowTotalCost = (row.components || []).reduce((sum, _, compIndex) => {
-          const fifoItem = fifo[`${rowIndex}:${compIndex}`];
+        const rowTotalCost = (row.components || []).reduce((sum, component, compIndex) => {
+          const exactKey = `${rowIndex}:${compIndex}`;
+          let fifoItem = fifo[exactKey];
+
+          if (!fifoItem) {
+            const foundKeyByMaterial = Object.keys(fifo).find(
+              (key) =>
+                key.startsWith(`${rowIndex}:`) && fifo[key]?.material_id === component.material_id
+            );
+            if (foundKeyByMaterial) {
+              fifoItem = fifo[foundKeyByMaterial];
+            }
+          }
+
+          let unitCost = Number(fifoItem?.cost || 0);
+          const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
+          if (isInst && Number(component.expected_uses || 0) > 0) {
+            unitCost = unitCost / Number(component.expected_uses);
+          }
+
+          const requiredQty =
+            component.quantity !== undefined &&
+            component.quantity !== '' &&
+            component.quantity !== null
+              ? Number(component.quantity)
+              : fifoItem && fifoItem.required_qty !== undefined
+                ? Number(fifoItem.required_qty)
+                : Number(component.base_quantity || 0) * Number(row.quantity || 1);
+
           const batchSum = (fifoItem?.batches || []).reduce(
-            (acc, b) => acc + Number(b.total || b.quantity * b.price_per_unit || 0),
+            (acc, b) =>
+              acc +
+              (b.total !== undefined
+                ? Number(b.total)
+                : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
             0
           );
-          return sum + (batchSum > 0 ? batchSum : Number(fifoItem?.cost || 0));
+
+          return sum + ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty);
         }, 0);
 
         const basePrice = Number(row.base_price || 150);

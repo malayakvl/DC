@@ -20,6 +20,132 @@ export interface ActRowsRef {
   addRow: () => void;
 }
 
+const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, componentIndex }) => {
+  const [isBatchesOpen, setIsBatchesOpen] = useState(false);
+  const [localVal, setLocalVal] = useState(
+    component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
+      ? String(component.quantity)
+      : String(fifoItem?.required_qty ?? component.base_quantity ?? 0)
+  );
+
+  React.useEffect(() => {
+    const newVal =
+      component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
+        ? String(component.quantity)
+        : String(fifoItem?.required_qty ?? component.base_quantity ?? 0);
+    setLocalVal(newVal);
+  }, [component.quantity, fifoItem?.required_qty, component.base_quantity]);
+
+  const unitCost =
+    Number(fifoItem?.cost || 0) / Math.max(Number(fifoItem?.available_qty || 1), 1) ||
+    Number(fifoItem?.batches?.[0]?.price_per_unit || 0);
+
+  const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
+  const numericRequiredQty = Number(localVal) || 0;
+
+  const itemTotalCost =
+    (fifoItem?.batches || []).length > 0
+      ? fifoItem.batches.reduce(
+          (acc, b) =>
+            acc +
+            (b.total !== undefined
+              ? Number(b.total)
+              : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
+          0
+        )
+      : unitCost * numericRequiredQty;
+
+  const batchesCount = (fifoItem?.batches || []).length;
+
+  return (
+    <li className="p-2.5 bg-white border border-slate-200/70 rounded-xl text-xs shadow-2xs">
+      <div className="flex items-center justify-between gap-3">
+        <span className="font-medium text-slate-800 truncate flex-1">
+          {component.product}
+          {isInst && (
+            <span className="ml-1.5 text-[10px] bg-sky-50 text-sky-600 px-1.5 py-0.5 rounded border border-sky-100">
+              {msg.get('act.instrument')} ({msg.get('act.main.resources')} {component.expected_uses}{' '}
+              {msg.get('act.uses')})
+            </span>
+          )}
+        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <input
+            type="text"
+            inputMode="decimal"
+            className="w-16 text-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            value={localVal}
+            onChange={(e) => {
+              const val = e.target.value;
+              setLocalVal(val);
+              updateComponent(index, componentIndex, val);
+            }}
+          />
+          <span className="text-[11px] text-slate-400 w-6">{component.short_name || ''}</span>
+        </div>
+      </div>
+
+      <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <span>
+            {msg.get('act.service.amount')} {isInst ? '(з урахуванням амортизації)' : ''}:{' '}
+            <strong className="text-slate-800 font-semibold">
+              {Number(fifoItem?.cost ? fifoItem.cost / Math.max(numericRequiredQty, 1) : 0).toFixed(
+                2
+              )}{' '}
+              ₴
+              <span className="text-slate-400 font-normal ml-1">
+                ({msg.get('act.amount.quantity')}: {itemTotalCost.toFixed(2)} ₴)
+              </span>
+            </strong>
+          </span>
+          {fifoItem?.shortage_qty > 0 && (
+            <span className="text-red-500 font-medium">
+              {msg.get('act.absent')}: {Number(fifoItem.shortage_qty).toFixed(2)}{' '}
+              {component.unit_name}
+            </span>
+          )}
+        </div>
+
+        {batchesCount > 0 && (
+          <div className="mt-1 pt-1">
+            <button
+              type="button"
+              onClick={() => setIsBatchesOpen(!isBatchesOpen)}
+              className="flex items-center gap-1 text-teal-600 hover:text-teal-700 font-medium cursor-pointer select-none"
+            >
+              <span
+                className={`material-symbols-outlined text-[14px] transition-transform ${isBatchesOpen ? 'rotate-90' : ''}`}
+              >
+                arrow_right
+              </span>
+              Деталізація партій ({batchesCount})
+            </button>
+
+            {isBatchesOpen && (
+              <div className="mt-1.5 pl-3 border-l-2 border-teal-500/30 space-y-1 text-slate-600">
+                {fifoItem.batches.map((batch, bIndex) => (
+                  <div key={`batch-${bIndex}`} className="flex items-center justify-between">
+                    <span>
+                      Партія #{batch.batch_id} (
+                      {batch.arrived_at ? batch.arrived_at.substring(0, 10) : ''})
+                    </span>
+                    <span className="font-medium text-slate-800">
+                      {Number(batch.quantity).toFixed(2)} ×{' '}
+                      {Number(batch.price_per_unit).toFixed(2)} ₴ = {Number(batch.total).toFixed(2)}{' '}
+                      ₴
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </li>
+  );
+};
+
 // eslint-disable-next-line react/display-name
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref) => {
   const [results, setResults] = useState([]);
@@ -90,11 +216,13 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
       return sum + Number(item.quantity || 0) * Number(item.price || 0);
     }, 0);
 
+    const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
+
     updateRow(index, {
       product_id: service.id,
       product: service.name,
       base_price: baseServicePrice,
-      price: calculatedComponentsPrice > 0 ? calculatedComponentsPrice : baseServicePrice,
+      price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
       quantity: 1,
       components: items.map((component) => ({
         ...component,
@@ -127,140 +255,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
     changeRows(next);
   };
 
-  // Микро-компонент для отдельного материала со стабильным инпутом
-  // Микро-компонент для отдельного материала со стабильным инпутом и раскрывашкой партий
-  const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, componentIndex }) => {
-    const initialQty =
-      component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
-        ? component.quantity
-        : fifoItem && fifoItem.required_qty !== undefined
-          ? fifoItem.required_qty
-          : Number(component.base_quantity || 0);
-
-    const [currentQty, setCurrentQty] = useState(initialQty);
-    const [isBatchesOpen, setIsBatchesOpen] = useState(false); // Состояние раскрывашки
-
-    const unitCost =
-      Number(fifoItem?.cost || 0) / Math.max(Number(fifoItem?.available_qty || 1), 1) ||
-      Number(fifoItem?.batches?.[0]?.price_per_unit || 0);
-
-    const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
-    const numericRequiredQty = Number(currentQty) || 0;
-
-    const itemTotalCost =
-      (fifoItem?.batches || []).length > 0
-        ? fifoItem.batches.reduce(
-            (acc, b) =>
-              acc +
-              (b.total !== undefined
-                ? Number(b.total)
-                : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
-            0
-          )
-        : unitCost * numericRequiredQty;
-
-    const serviceId = component.service_id || 'custom';
-    const componentUniqueKey = `comp-${serviceId}-${component.material_id || componentIndex}`;
-    const batchesCount = (fifoItem?.batches || []).length;
-
-    return (
-      <li
-        key={componentUniqueKey}
-        className="p-2.5 bg-white border border-slate-200/70 rounded-xl text-xs shadow-2xs"
-      >
-        <div className="flex items-center justify-between gap-3">
-          <span className="font-medium text-slate-800 truncate flex-1">
-            {component.product}
-            {isInst && (
-              <span className="ml-1.5 text-[10px] bg-sky-50 text-sky-600 px-1.5 py-0.5 rounded border border-sky-100">
-                {msg.get('act.instrument')} ({msg.get('act.main.resources')}{' '}
-                {component.expected_uses} {msg.get('act.uses')})
-              </span>
-            )}
-          </span>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <input
-              type="text"
-              inputMode="decimal"
-              className="w-16 text-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              defaultValue={initialQty}
-              onChange={(event) => {
-                const val = event.target.value;
-                setCurrentQty(val);
-                updateComponent(index, componentIndex, val);
-              }}
-            />
-            <span className="text-[11px] text-slate-400 w-6">{component.short_name || ''}</span>
-          </div>
-        </div>
-
-        <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <span>
-              {msg.get('act.service.amount')} {isInst ? '(з урахуванням амортизації)' : ''}:{' '}
-              <strong className="text-slate-800 font-semibold">
-                {Number(
-                  fifoItem?.cost ? fifoItem.cost / Math.max(numericRequiredQty, 1) : 0
-                ).toFixed(2)}{' '}
-                ₴
-                <span className="text-slate-400 font-normal ml-1">
-                  ({msg.get('act.amount.quantity')}: {itemTotalCost.toFixed(2)} ₴)
-                </span>
-              </strong>
-            </span>
-            {fifoItem?.shortage_qty > 0 && (
-              <span className="text-red-500 font-medium">
-                {msg.get('act.absent')}: {Number(fifoItem.shortage_qty).toFixed(2)}{' '}
-                {component.unit_name}
-              </span>
-            )}
-          </div>
-
-          {/* Раскрывающийся список (аккордеон) партий FIFO */}
-          {batchesCount > 0 && (
-            <div className="mt-1 pt-1">
-              <button
-                type="button"
-                onClick={() => setIsBatchesOpen(!isBatchesOpen)}
-                className="flex items-center gap-1 text-teal-600 hover:text-teal-700 font-medium cursor-pointer select-none"
-              >
-                <span className={`material-symbols-outlined text-[14px] transition-transform ${isBatchesOpen ? 'rotate-90' : ''}`}>
-                  arrow_right
-                </span>
-                Деталізація партій ({batchesCount})
-              </button>
-
-              {isBatchesOpen && (
-                <div className="mt-1.5 pl-3 border-l-2 border-teal-500/30 space-y-1 text-slate-600">
-                  {fifoItem.batches.map((batch, bIndex) => (
-                    <div key={`batch-${bIndex}`} className="flex items-center justify-between">
-                      <span>
-                        Партія #{batch.batch_id} (
-                        {batch.arrived_at ? batch.arrived_at.substring(0, 10) : ''})
-                      </span>
-                      <span className="font-medium text-slate-800">
-                        {Number(batch.quantity).toFixed(2)} ×{' '}
-                        {Number(batch.price_per_unit).toFixed(2)} ₴ ={' '}
-                        {Number(batch.total).toFixed(2)} ₴
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </li>
-    );
-  };
-
   return (
     <>
       {rows.map((row, index) => (
-        <tr
-          key={`row-${index}-${Math.random()}`}
-          className="border-b border-slate-100 last:border-none"
-        >
+        <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
           {/* Назва послуги з автокомплітом та матеріалами */}
           <td className="py-3 px-3 align-top w-full pl-0">
             <div className="relative">
@@ -278,9 +276,9 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
               {activeRow === index && results.length > 0 && (
                 <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                   <ul className="py-1">
-                    {results.map((service) => (
+                    {results.map((service, sIdx) => (
                       <li
-                        key={`service-${Math.random()}`}
+                        key={`service-${service.id || sIdx}`}
                         className="px-4 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 cursor-pointer transition-colors flex justify-between items-center"
                         onMouseDown={() => selectService(service, index)}
                       >
@@ -298,11 +296,9 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
               {(row.components || []).length > 0 &&
                 (() => {
                   const findFifoItem = (component, componentIndex) => {
-                    // 1. Ищем по точному ключу бэкенда `${index}:${componentIndex}`
                     const exactKey = `${index}:${componentIndex}`;
                     if (fifo[exactKey]) return fifo[exactKey];
 
-                    // 2. Страховка по ID материала на случай смещения индексов
                     const foundKeyByMaterial = Object.keys(fifo).find(
                       (key) =>
                         key.startsWith(`${index}:`) &&
@@ -313,37 +309,40 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                     return null;
                   };
 
-                  const totalCost = row.components.reduce((sum, component, componentIndex) => {
-                    const fifoItem = findFifoItem(component, componentIndex);
-                    let unitCost = Number(fifoItem?.cost || 0);
-                    const isInst =
-                      component.is_instrument && Number(component.expected_uses || 0) > 0;
-                    if (isInst && Number(component.expected_uses || 0) > 0) {
-                      unitCost = unitCost / Number(component.expected_uses);
-                    }
+                  const totalCost = row.components.reduce(
+                    (sum, component, componentIndex) => {
+                      const fifoItem = findFifoItem(component, componentIndex);
+                      let unitCost = Number(fifoItem?.cost || 0);
+                      const isInst =
+                        component.is_instrument && Number(component.expected_uses || 0) > 0;
+                      if (isInst && Number(component.expected_uses || 0) > 0) {
+                        unitCost = unitCost / Number(component.expected_uses);
+                      }
 
-                    const requiredQty =
-                      component.quantity !== undefined &&
-                      component.quantity !== '' &&
-                      component.quantity !== null
-                        ? component.quantity
-                        : fifoItem && fifoItem.required_qty !== undefined
-                          ? fifoItem.required_qty
-                          : Number(component.base_quantity || 0) * Number(row.quantity || 1);
+                      const requiredQty =
+                        component.quantity !== undefined &&
+                        component.quantity !== '' &&
+                        component.quantity !== null
+                          ? component.quantity
+                          : fifoItem && fifoItem.required_qty !== undefined
+                            ? fifoItem.required_qty
+                            : Number(component.base_quantity || 0) * Number(row.quantity || 1);
 
-                    const batchSum = (fifoItem?.batches || []).reduce(
-                      (acc, b) =>
-                        acc +
-                        (b.total !== undefined
-                          ? Number(b.total)
-                          : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
-                      0
-                    );
-                    return (
-                      sum +
-                      ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty)
-                    );
-                  }, 0);
+                      const batchSum = (fifoItem?.batches || []).reduce(
+                        (acc, b) =>
+                          acc +
+                          (b.total !== undefined
+                            ? Number(b.total)
+                            : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
+                        0
+                      );
+                      return (
+                        sum +
+                        ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty)
+                      );
+                    },
+                    Number(row.base_price || 0)
+                  );
 
                   return (
                     <div className="mt-2.5 p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl text-slate-700">
@@ -366,7 +365,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
 
                           return (
                             <MaterialItem
-                              key={`comp-${row.product_id || 'item'}-${component.material_id || componentIndex}`}
+                              key={`comp-${component.material_id || componentIndex}`}
                               component={component}
                               index={index}
                               componentIndex={componentIndex}
@@ -439,7 +438,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
 
           {/* Кнопка видалення рядка */}
           <td className="py-3 px-2 align-top w-btn text-center">
-            {rows.label > 1 && (
+            {rows.length > 1 && (
               <button
                 type="button"
                 onClick={() => changeRows(rows.filter((_, rowIndex) => rowIndex !== index))}
