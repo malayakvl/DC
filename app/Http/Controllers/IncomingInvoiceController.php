@@ -172,10 +172,7 @@ class IncomingInvoiceController extends Controller
                 }
                 $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
                 $producerData = Supplier::all();
-                
                 $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
-                dd($customerData);exit;
-
 
                 return Inertia::render('InvoiceIncoming/Create', [
                     'clinicData' => $clinicData,

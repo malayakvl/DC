@@ -382,9 +382,9 @@ class ActController extends Controller
                 'formData' => $formData,
                 'patientsData' => $patientsData,
                 'customerData' => $customerData,
+                'statusData' => Invoices::INVOICE_STATUSES,
                 'visitsData' => $visitsData,
                 'unitsData' => Unit::orderBy('name')->get(),
-                'statusData' => $this->actStatuses(),
                 'typeData' => $typeData,
             ]);
         });

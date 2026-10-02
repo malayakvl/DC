@@ -65,6 +65,8 @@ const lngAct = {
     'batches.deteils': 'Деталізація партій',
     batch: 'Партія',
     amortization: 'амортизація на',
+    visit: 'Візит (необов`язково)',
+    patient: 'Пацієнт',
   },
 };
 export default lngAct;

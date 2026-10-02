@@ -187,7 +187,7 @@ export default function Form({
                 description
               </span>
               <h2 className="text-base font-semibold text-gray-900">
-                Реквізити документа та умови постачання
+                {msg.get('invoice_incoming.create.title.description')}
               </h2>
             </div>
           </div>

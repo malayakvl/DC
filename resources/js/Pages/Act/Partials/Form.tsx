@@ -6,7 +6,9 @@ import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
+import InputSelect from '../../../Components/Form/InputSelect';
 import InputCalendar from '../../../Components/Form/InputCalendar';
+import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import AddDynamicInputFields, { emptyRow } from './Row';
 import FormHeader from '../../../Components/Common/FormHeader';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
@@ -117,6 +119,15 @@ export default function Form({
     const key = event.target.id || event.target.name;
     const value = event.target.value;
     setValues((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleChangeSelect = (e) => {
+    const key = e.target.id;
+    const value = e.target.value;
+    setValues((values) => ({
+      ...values,
+      [key]: value,
+    }));
   };
 
   const handleChangeCalendar = (date) => {
@@ -335,90 +346,68 @@ export default function Form({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-600">Статус</label>
-                <select
-                  required
-                  name="status"
-                  value={values.status}
-                  onChange={changeValue}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
-                >
-                  {statusData.map((item, index) => (
-                    <option
-                      key={`status-${item.id || item.name}-${index}`}
-                      value={item.id || item.name}
-                    >
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
+              {/* 3. Статус */}
+              <div className="flex flex-col gap-1.5">
+                <div className="w-full flex items-center justify-between">
+                  <InputSelect
+                    translatable={true}
+                    name={'status'}
+                    values={values}
+                    value={values.status}
+                    options={statusData}
+                    onChange={handleChangeSelect}
+                    required
+                    className="filter-select-bordered w-full"
+                    label={msg.get('invoice_incoming.status')}
+                  />
+                </div>
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-600">
-                  Візит <span className="text-gray-400">(необов&#39;язково)</span>
-                </label>
-                <select
-                  name="visit_id"
+                <InputSelect
+                  translatable={false}
+                  name={'visit_id'}
+                  values={values}
                   value={values.visit_id}
-                  onChange={chooseVisit}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
-                >
-                  <option key={`$visit-empty`} value="">
-                    Створити вручну
-                  </option>
-                  {visitsData.map((visit, index) => (
-                    <option key={`$visit-${visit.id}-${index}`} value={visit.id}>
-                      {visit.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-600">Пацієнт</label>
-                <select
+                  options={visitsData}
+                  onChange={handleChangeSelect}
                   required
-                  name="patient_id"
-                  value={values.patient_id}
-                  onChange={changeValue}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
-                >
-                  <option key={`patient-empty`} value="">
-                    Оберіть пацієнта
-                  </option>
-                  {patientsData.map((patient, index) => (
-                    <option key={`patient-${patient.id}-${index}`} value={patient.id}>
-                      {patient.last_name} {patient.first_name}
-                    </option>
-                  ))}
-                </select>
+                  className="filter-select-bordered w-full"
+                  label={msg.get('act.visit')}
+                />
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-slate-600">Лікар</label>
-                <select
-                  name="doctor_id"
+                <InputCustomerSelect
+                  translatable={false}
+                  name={'patient_id'}
+                  values={values}
+                  value={values.patient_id}
+                  options={patientsData}
+                  onChange={handleChangeSelect}
+                  required
+                  className="filter-select-bordered w-full"
+                  label={msg.get('act.patient')}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1">
+                <InputCustomerSelect
+                  name={'doctor_id'}
+                  className="filter-select-bordered w-full"
+                  values={values}
                   value={values.doctor_id}
-                  onChange={changeValue}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
-                >
-                  <option key={`doctor-empty`} value="">
-                    Оберіть лікаря
-                  </option>
-                  {customerData.map((doctor, index) => (
-                    <option key={`doctor-${doctor.id}-${index}`} value={doctor.id}>
-                      {doctor.last_name} {doctor.first_name}
-                    </option>
-                  ))}
-                </select>
+                  options={customerData}
+                  onChange={handleChangeSelect}
+                  required
+                  label={msg.get('invoice_incoming.person')}
+                />
               </div>
             </div>
           </div>
