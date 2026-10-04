@@ -1,6 +1,7 @@
 import { router, useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
@@ -12,6 +13,7 @@ import InputCustomerSelect from '../../../Components/Form/InputCustomerSelect';
 import AddDynamicInputFields, { emptyRow } from './Row';
 import FormHeader from '../../../Components/Common/FormHeader';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
+import { findActItemsAction } from '../../../Redux/Act';
 import axios from 'axios';
 
 const normaliseRow = (row) => {
@@ -96,6 +98,7 @@ export default function Form({
     locale: appLang,
   });
   const [isCalculating, setIsCalculating] = useState(false);
+  const dispatch = useAppDispatch();
 
   const [values, setValues] = useState({
     act_number: formData.act_number || '',
@@ -141,6 +144,8 @@ export default function Form({
       services.map(async (service) => {
         const id = service.id || service.service_id;
         if (!id) return null;
+
+        dispatch(findActItemsAction(service));
         const response = await axios.post('/service/findServiceItems', { serviceId: id });
         const quantity = Number(service.qty ?? service.quantity ?? 1);
         const servicePrice = Number(service.price ?? 150);
@@ -197,129 +202,64 @@ export default function Form({
   useEffect(() => {
     setIsCalculating(true);
     const timer = setTimeout(async () => {
-      console.log('reaclculate');
       setIsCalculating(false);
     }, 500); // чекаємо півсекунди після останньої зміни
 
     return () => clearTimeout(timer);
   }, [rows, fifo]); // або залежності, за якими ти тригериш перерахунок
 
-  // Автоматично додаємо собівартість матеріалів до базової ціни послуги
-  // Автоматично додаємо собівартість матеріалів до базової ціни послуги
-  useEffect(() => {
-    if (!Object.keys(fifo).length) return;
-
-    setRows((currentRows) =>
-      currentRows.map((row, rowIndex) => {
-        const rowTotalCost = (row.components || []).reduce((sum, component, compIndex) => {
-          const exactKey = `${rowIndex}:${compIndex}`;
-          let fifoItem = fifo[exactKey];
-
-          if (!fifoItem) {
-            const foundKeyByMaterial = Object.keys(fifo).find(
-              (key) =>
-                key.startsWith(`${rowIndex}:`) && fifo[key]?.material_id === component.material_id
-            );
-            if (foundKeyByMaterial) {
-              fifoItem = fifo[foundKeyByMaterial];
-            }
-          }
-
-          let unitCost = Number(fifoItem?.cost || 0);
-          const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
-          if (isInst && Number(component.expected_uses || 0) > 0) {
-            unitCost = unitCost / Number(component.expected_uses);
-          }
-
-          const requiredQty =
-            component.quantity !== undefined &&
-            component.quantity !== '' &&
-            component.quantity !== null
-              ? Number(component.quantity)
-              : fifoItem && fifoItem.required_qty !== undefined
-                ? Number(fifoItem.required_qty)
-                : Number(component.base_quantity || 0) * Number(row.quantity || 1);
-
-          const batchSum = (fifoItem?.batches || []).reduce(
-            (acc, b) =>
-              acc +
-              (b.total !== undefined
-                ? Number(b.total)
-                : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
-            0
-          );
-
-          return sum + ((fifoItem?.batches || []).length > 0 ? batchSum : unitCost * requiredQty);
-        }, 0);
-
-        const basePrice = Number(row.base_price || 150);
-        const finalPrice = Number((basePrice + rowTotalCost).toFixed(2));
-
-        if (row.price !== finalPrice) {
-          return {
-            ...row,
-            price: finalPrice,
-            total: Number((row.quantity * finalPrice).toFixed(2)),
-          };
-        }
-        return row;
-      })
-    );
-  }, [fifo]);
-
   // Единый стабильный эффект для запроса FIFO-превью без зацикливания
   // працює ідеально якщо міняємо загальну кількість процедур
-  useEffect(() => {
-    // Собираем список услуг из акта для отправки на бэкенд
-    const services = rows
-      .map((row, rowIndex) => {
-        const serviceId = Number(row.product_id || row.service_id);
-        const quantity = Number(row.quantity || row.qty || 1);
-
-        if (!serviceId) return null;
-
-        return {
-          key: String(rowIndex),
-          service_id: serviceId,
-          quantity: quantity,
-        };
-      })
-      .filter(Boolean);
-
-    if (!services.length) {
-      setFifo({});
-      setFifoError('');
-      return;
-    }
-
-    const currentRequestId = ++fifoRequestId.current;
-    const timer = window.setTimeout(async () => {
-      try {
-        // Отправляем список услуг, а не сырые материалы!
-        const response = await axios.post('/act/fifo-preview', { services });
-        if (currentRequestId !== fifoRequestId.current) return;
-
-        const fifoByComponent = Object.fromEntries(
-          (response.data.items || []).map((item) => [item.key, item])
-        );
-        setFifo(fifoByComponent);
-        setFifoError('');
-      } catch (error) {
-        if (currentRequestId !== fifoRequestId.current) return;
-        setFifo({});
-        setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
-      }
-    }, 250);
-
-    return () => window.clearTimeout(timer);
-  }, [
-    JSON.stringify(
-      rows.map((r) => ({
-        id: r.product_id || r.service_id,
-        q: r.quantity,
-      }))
-    ),
-  ]);
+//   useEffect(() => {
+//     // Собираем список услуг из акта для отправки на бэкенд
+//     const services = rows
+//       .map((row, rowIndex) => {
+//         const serviceId = Number(row.product_id || row.service_id);
+//         const quantity = Number(row.quantity || row.qty || 1);
+//
+//         if (!serviceId) return null;
+//
+//         return {
+//           key: String(rowIndex),
+//           service_id: serviceId,
+//           quantity: quantity,
+//         };
+//       })
+//       .filter(Boolean);
+//     if (!services.length) {
+//       setFifo({});
+//       setFifoError('');
+//       return;
+//     }
+//
+//     const currentRequestId = ++fifoRequestId.current;
+//     const timer = window.setTimeout(async () => {
+//       try {
+//         // Отправляем список услуг, а не сырые материалы!
+//         const response = await axios.post('/act/fifo-preview', { services });
+//         if (currentRequestId !== fifoRequestId.current) return;
+//
+//         const fifoByComponent = Object.fromEntries(
+//           (response.data.items || []).map((item) => [item.key, item])
+//         );
+//         setFifo(fifoByComponent);
+//         setFifoError('');
+//       } catch (error) {
+//         if (currentRequestId !== fifoRequestId.current) return;
+//         setFifo({});
+//         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
+//       }
+//     }, 250);
+//
+//     return () => window.clearTimeout(timer);
+//   }, [
+//     JSON.stringify(
+//       rows.map((r) => ({
+//         id: r.product_id || r.service_id,
+//         q: r.quantity,
+//       }))
+//     ),
+//   ]);
 
 
 //   useEffect(() => {

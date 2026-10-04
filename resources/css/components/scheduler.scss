@@ -1231,44 +1231,20 @@
 }
 
 .calendar-event{
-
     position:absolute;
     left:4px;
     right:4px;
-
     background:#fff;
-
-    border-radius: 0 8px 8px 0;
-    border-left:4px solid;
-
+    border-radius: 8px;
     padding:4px 4px;
-
     display:flex;
     flex-direction:column;
-
     overflow:hidden;
-
-    box-shadow:
-            0 8px 18px rgba(15,23,42,.08),
-            0 2px 6px rgba(15,23,42,.04);
-
     cursor:grab;
-
-    transition:.18s;
+    min-width: 316px;
+    margin-left: -2px;
 }
 
-.calendar-event:hover{
-
-    transform:translateY(-1px);
-
-    box-shadow:
-            0 12px 26px rgba(15,23,42,.12);
-}
-
-.calendar-event:active{
-
-    cursor:grabbing;
-}
 
 .calendar-event-header{
 
@@ -1359,30 +1335,8 @@
     color:#94a3b8;
 }
 
-.calendar-event.compact{
 
-    padding:6px 8px;
-}
 
-.calendar-event.compact
-.calendar-event-header{
-
-    margin-bottom:0;
-}
-
-.calendar-event.compact
-.calendar-event-patient{
-
-    font-size:12px;
-}
-
-.calendar-event.compact
-.calendar-event-time{
-
-    margin-top:2px;
-
-    font-size:10px;
-}
 
 .calendar-event-resize{
 
@@ -1422,8 +1376,7 @@
 }
 
 .calendar-event-body{
-    //padding:5px;
-    margin-top: 5px;
+    margin-top: 0px;
     height:100%;
     display:flex;
     flex-direction:column;
@@ -1452,7 +1405,7 @@
     margin-left:8px;
 }
 
-.calendar-event-services{
+.calendar-event{
     flex:1;
     margin-top: -4px;
 }
@@ -1883,4 +1836,36 @@
 }
 .scheduler-time-column {
     font-family: "Plus Jakarta Sans", sans-serif;
+}
+.animated-ping {
+    @apply w-1.5 h-1.5 rounded-full bg-white animate-ping;
+}
+.event-status {
+    background: none;
+    color: black;
+    border: solid 1px transparent;
+    font-weight: bold;
+    @apply text-[10px] font-bold px-1.5 py-0.5 rounded ;
+    border-radius: 0.25rem;
+}
+.done {
+    background: none;
+    color: black;
+    border: solid 1px transparent;
+}
+.planned {
+    background: #d3e2fc;
+    color: #053d98;
+    border: solid 1px #d3e2fc;
+}
+.inclicnic {
+    background: #fef3c7;
+    color: #9d5221;
+    border: solid 1px #fef3c7;
+}
+.act-btn {
+    @apply w-6 h-6 rounded-md bg-white text-[12px] flex items-center justify-center hover:bg-white transition;
+}
+.doctor-cell {
+    text-transform: uppercase;
 }

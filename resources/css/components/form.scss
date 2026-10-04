@@ -76,6 +76,9 @@
 .form-error {
     @apply text-[13px] text-red-500 absolute;
 }
+.form-material-error {
+    @apply text-[12px] text-red-500;
+}
 
 .autocomplete {
     border: solid 1px;

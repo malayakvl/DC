@@ -14,12 +14,12 @@ import {
   viewScheduleSelector,
   schedulerViewSelector,
   schedulerBaseDateSelector,
+  eventsDataSelector,
 } from '@/Redux/Scheduler/selectors';
 import SchedulerDayHeader from './components/SchedulerDayHeader';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
-import { setCalendarDateAction } from '../../Redux/Scheduler/index';
 
 const SLOT_HEIGHT = 35;
 const FREE_SLOT_BG = '#fff';
@@ -48,15 +48,14 @@ export default function Index3Days({
   eventsData,
   allowViewSwitch = true,
 }) {
-  //   useSelector(pricePopupSelector);
-  const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   const dispatch = useDispatch();
-  //   const [view, setView] = useState(initialView);
   const view = useSelector(schedulerViewSelector);
   const baseCalendarDate = useSelector(schedulerBaseDateSelector);
   const appLang = useSelector(appLangSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
+  const eventsChangesData = useSelector(eventsDataSelector);
+  const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
 
   // Рефы для блокировки кликов
   const isResizingRef = React.useRef(false);
@@ -120,7 +119,7 @@ export default function Index3Days({
     }
   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
 
-  const DOCTOR_WIDTH = 180;
+  const DOCTOR_WIDTH = 320;
   const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
   const headerTrackRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,10 +160,11 @@ export default function Index3Days({
   });
 
   useEffect(() => {
-    if (eventsData) {
+    if (eventsChangesData.length) {
+      console.log('Обновляем локальний стейт евентов полсе смени дати', eventsChangesData);
       setLocalEvents(
-        eventsData.map((event) => ({
-          id: String(event.id),
+        eventsChangesData.map((event) => ({
+          id: event.event_id,
           title: event.title,
           doctor_id: event.doctor_id,
           patient_id: event.patient_id,
@@ -176,14 +176,14 @@ export default function Index3Days({
           end: `${event.event_date}T${event.event_time_to}`,
           status_color: event.status_color,
           status_name: event.status_name,
-          patient_name: event.patient_last_name + ' ' + event.patient_first_name,
+          patient_name: event.pl_name + ' ' + event.p_name,
           services: event.services,
           cabinet_name: event.cabinet_name,
-          doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+          doctor_name: event.first_name + ' ' + event.last_name,
         }))
       );
     }
-  }, [eventsData]);
+  }, [eventsChangesData]);
 
   // ================= DRAG & DROP =================
   const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
@@ -395,6 +395,50 @@ export default function Index3Days({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
+  const hexToRgba = (hex, alpha = 0.15) => {
+    if (!hex) return 'rgba(59, 130, 246, 0.15)'; // фолбек на випадок відсутності кольору
+    let c = hex.replace('#', '');
+    if (c.length === 3) {
+      c = c
+        .split('')
+        .map((x) => x + x)
+        .join('');
+    }
+    const num = parseInt(c, 16);
+    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+  };
+
+  // Мапа відповідності кольорів або класів під твої сочні ескізи
+  const getEventBackground = (status) => {
+    // Або якщо потрібно запітчити по HEX-коду з бази:
+    switch (status) {
+      case 'done':
+        return '#f4f7fa'; // підтверджено (сочний зелений з твого ескізу)
+      case 'planned':
+        return '#eff6ff'; // заплановано (синій)
+      case 'inclicnic':
+        return '#fffbeb';
+      default:
+        return '#f8fafc'; // фолбек (slate-50)
+    }
+  };
+
+  const getEventBorder = (status) => {
+    // Або якщо потрібно запітчити по HEX-коду з бази:
+    switch (status) {
+      case 'done':
+        return '#f4f7fa'; // підтверджено (сочний зелений з твого ескізу)
+      case 'planned':
+//         return 'rgb(181, 174, 231)'; // заплановано (синій)
+        return 'transparent'; // заплановано (синій)
+      case 'inclicnic':
+//         return 'rgb(239, 181, 106)';
+        return 'transparent';
+      default:
+        return '#f8fafc'; // фолбек (slate-50)
+    }
+  };
+
   const PREVIEW_WIDTH = 340;
   const PREVIEW_HEIGHT = 280;
 
@@ -479,15 +523,14 @@ export default function Index3Days({
 
     const startHour = 8; // Початок дня (08:00)
 
-    // Кількість хвилин від початку дня
-//     const totalMinutesFromStart = (currentHours - startHour) * 79 + currentMinutes;
-    const totalMinutesFromStart = (currentHours - startHour) * 79;
-
-    // Оскільки слот 30px відповідає 15 хвилинах, то 1 хвилина = 30 / 15 = 2px
+    const totalMinutesFromStart = (currentHours - startHour) * 60 + currentMinutes;
     const topPixels = totalMinutesFromStart * (SLOT_HEIGHT / 15);
 
+    // Додаємо зміщення шапки (приблизно 190px, які забракував хедер дня та кабінетів)
+    const HEADER_OFFSET = 190;
+
     return {
-      top: topPixels,
+      top: topPixels + HEADER_OFFSET,
       timeStr: format(now, 'HH:mm'),
     };
   };
@@ -631,7 +674,7 @@ export default function Index3Days({
                         style={{
                           position: 'absolute',
                           left: '10px',
-                          backgroundColor: '#ff4d4f',
+                          backgroundColor: '#f43f5e',
                           color: '#fff',
                           padding: '2px 8px',
                           borderRadius: '4px',
@@ -640,18 +683,9 @@ export default function Index3Days({
                           display: 'flex',
                           alignItems: 'center',
                           gap: '4px',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
                         }}
                       >
-                        <span
-                          style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            backgroundColor: '#fff',
-                            display: 'inline-block',
-                          }}
-                        />
+                        <span className="animated-ping" />
                         Зараз {currentTimeInfo.timeStr}
                       </div>
                     </div>
@@ -721,6 +755,7 @@ export default function Index3Days({
                                   const compact = layout.height < 90;
                                   // const medium = layout.height >= 70 && layout.height < 110;
                                   const large = layout.height >= 110;
+                                  console.log('scheduler event', event);
 
                                   const services = (() => {
                                     try {
@@ -741,30 +776,27 @@ export default function Index3Days({
                                       onMouseLeave={() => {
                                         setHoverPreview(null);
                                       }}
-                                      className={`calendar-event ${compact ? 'compact' : ''}`}
+                                      className={`shadow-sm calendar-event ${compact ? 'compact' : ''}`}
                                       style={{
                                         position: 'absolute',
                                         top: layout.top,
                                         height: layout.height,
                                         left: 4,
                                         right: 4,
-                                        border: 'solid 1px ' + event.status_color,
-                                        borderLeft: `4px solid ${event.status_color}`,
+                                        backgroundColor: getEventBackground(event.status_name),
+                                        border: `1px solid ${getEventBorder(event.status_name)}`, // рамка залишається насиченою
                                       }}
                                     >
                                       <div className="calendar-event-body">
                                         <div className="flex items-center justify-between gap-1">
-                                          <span className="bg-teal-50 text-teal-800 text-[10px] font-bold px-1.5 py-0.5 rounded border border-teal-200/60">
-                                            {msg.get('scheduler.statuses.' + event.status_name)}
-                                          </span>
-                                          <span className="text-[10px] font-semibold text-slate-500">
+                                          <span className={`text-[11px] font-bold`}>
                                             {event.event_time_from}-{event.event_time_to}
                                           </span>
-                                        </div>
-                                        <div className="my-0.5 inline-block h-[25px]">
-                                          <h5 className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate p-0 m-0 mt-0.5">
-                                            <b>{formatPatientName(event.patient_name)}</b>
-                                          </h5>
+                                          <span
+                                            className={`event-status ${event.status_name} mr-[40px]`}
+                                          >
+                                            {msg.get('scheduler.statuses.' + event.status_name)}
+                                          </span>
                                           <span className="act-zone">
                                             <button
                                               type="button"
@@ -775,23 +807,14 @@ export default function Index3Days({
                                                 router.visit(`/act/create?visit_id=${event.id}`);
                                               }}
                                               title="Створити акт"
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                width: '20px',
-                                                height: '20px',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s',
-                                                flexShrink: 0,
-                                              }}
-                                            >
-                                              <span className="material-symbols-outlined text-[14px]">
-                                                inventory
-                                              </span>
-                                            </button>
+                                              className="act-btn"
+                                            ></button>
                                           </span>
+                                        </div>
+                                        <div className="my-0.5 inline-block h-[18px]">
+                                          <h5 className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate p-0 m-0 mt-0.5">
+                                            <b>{formatPatientName(event.patient_name)}</b>
+                                          </h5>
                                         </div>
                                         <div className="calendar-event-services">
                                           {servicesCount === 0 && (
@@ -801,7 +824,9 @@ export default function Index3Days({
                                           )}
 
                                           {servicesCount === 1 && (
-                                            <p className="text-[11px] text-slate-500 truncate">
+                                            <p
+                                              className={`text-[11px] text-[#524e4e] ${large ? 'break-words' : 'line-clamp-2'}`}
+                                            >
                                               {services[0].name}
                                             </p>
                                           )}
@@ -811,7 +836,7 @@ export default function Index3Days({
                                               {services.slice(0, 3).map((service) => (
                                                 <p
                                                   key={service.id}
-                                                  className="text-[11px] text-slate-500 truncate"
+                                                  className="text-[11px] text-[#524e4e] truncate"
                                                 >
                                                   {service.name}
                                                 </p>
@@ -827,22 +852,14 @@ export default function Index3Days({
 
                                           {servicesCount > 1 && !large && (
                                             <div className="calendar-event-more hover-target">
-                                              🦷 {servicesCount} послуги
+                                              {servicesCount} послуги
                                             </div>
                                           )}
                                         </div>
 
                                         {!compact && (
-                                          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 mt-[-10px]">
+                                          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100">
                                             <span className="font-bold text-teal-800">3,200 ₴</span>
-                                            <div className="flex items-center gap-1 text-slate-400 group-hover:text-slate-600">
-                                              <span className="material-symbols-outlined text-[14px]">
-                                                dentistry
-                                              </span>
-                                              <span className="material-symbols-outlined text-[14px]">
-                                                history
-                                              </span>
-                                            </div>
                                           </div>
                                         )}
                                       </div>

@@ -83,7 +83,6 @@ class ActController extends Controller
         return $this->withClinicSchema($request, function () use ($request) {
             $data = $request->validate([
                 'services' => ['required', 'array'],
-                'services.*.key' => ['required', 'string'],
                 'services.*.service_id' => ['required', 'integer'],
                 'services.*.quantity' => ['required', 'numeric', 'min:0'],
                 'services.*.components' => ['nullable', 'array'],
@@ -104,50 +103,22 @@ class ActController extends Controller
             foreach ($data['services'] as $serviceRow) {
                 $serviceId = (int) $serviceRow['service_id'];
                 $serviceQty = (float) $serviceRow['quantity'];
-                $rowKey = $serviceRow['key'];
+                $components = $serviceRow['components'] ?? [];
+                foreach ($components as $comp) {
+                    $mId = (int) $comp['material_id'];
+                    $requiredForThisRow = (float) $comp['quantity'];
 
-                $customComponents = $serviceRow['components'] ?? [];
-
-                // Якщо лікар змінював кількість матеріалу вручну — беремо з кастомних компонентів
-                if (!empty($customComponents)) {
-                    foreach ($customComponents as $comp) {
-                        $mId = (int) $comp['material_id'];
-                        $requiredForThisRow = (float) $comp['quantity'];
-
-                        $componentKey = $rowKey . ':' . $mId;
-
-                        $itemsToProcess[] = [
-                            'key' => $componentKey,
-                            'material_id' => $mId,
-                            'required_qty' => $requiredForThisRow,
-                        ];
-                    }
-                } else {
-                    // Якщо ручних правок немає — беремо стандартну техкарту з бази
-                    $pricingItems = DB::table('pricing_items')
-                        ->where('pricing_id', $serviceId)
-                        ->get(['material_id', 'quantity']);
-
-                    foreach ($pricingItems as $pItem) {
-                        $mId = (int) $pItem->material_id;
-                        $baseQty = (float) $pItem->quantity;
-                        $requiredForThisRow = $baseQty * $serviceQty;
-
-                        // Формуємо унікальний ключ на основі material_id, щоб порядок в базі не мав значення
-                        $componentKey = $rowKey . ':' . $mId;
-
-                        $itemsToProcess[] = [
-                            'key' => $componentKey,
-                            'material_id' => $mId,
-                            'required_qty' => $requiredForThisRow,
-                        ];
-                    }
+                    $itemsToProcess[] = [
+                        'service_id' => $serviceId,
+                        'material_id' => $mId,
+                        'required_qty' => $requiredForThisRow,
+                    ];
                 }
             }
-
             if (empty($itemsToProcess)) {
                 return response()->json(['items' => []]);
             }
+//            dd($itemsToProcess);
 
             // Підтягуємо метадані матеріалів
             $materialIds = collect($itemsToProcess)->pluck('material_id')->unique()->all();
@@ -161,10 +132,11 @@ class ActController extends Controller
 
             foreach ($itemsToProcess as $need) {
                 $materialId = (int) $need['material_id'];
-                $requiredQty = round((float) $need['required_qty'], 4);
+                $requiredQty = round((float) $need['required_qty'], 0);
                 $remainingQty = $requiredQty;
                 $cost = 0.0;
                 $batches = [];
+
 
                 $materialMeta = $materialsMeta->get($materialId);
                 $isInstrument = $materialMeta->is_instrument ?? false;
@@ -191,6 +163,7 @@ class ActController extends Controller
                 // FIFO розрахунок по партіях зі складу
                 foreach ($availableByMaterial[$materialId] as &$batch) {
                     if ($remainingQty <= 0) {
+                        dd(1);
                         break;
                     }
 
@@ -214,7 +187,6 @@ class ActController extends Controller
                 unset($batch);
 
                 $items[] = [
-                    'key' => $need['key'],
                     'material_id' => (int) $materialId,
                     'required_qty' => $requiredQty,
                     'available_qty' => round($requiredQty - $remainingQty, 4),

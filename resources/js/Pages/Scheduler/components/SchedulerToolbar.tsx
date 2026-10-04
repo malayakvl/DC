@@ -9,8 +9,7 @@ import { setTypeViewAction } from '../../../Redux/Scheduler/index';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import getDays from '@/lib/calendarFunctions';
 import { addDays, format, parseISO } from 'date-fns';
-import { setCalendarDateAction } from '../../../Redux/Scheduler/index';
-
+import { setCalendarDateAction, fetchPeriodEventsAction } from '../../../Redux/Scheduler/index';
 
 interface SchedulerToolbarProps {
   onPrevDay?: () => void;
@@ -69,8 +68,14 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
         <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1 gap-2">
           <button
             onClick={() => {
-              const newDate = format(addDays(parseISO(baseCalendarDate), -dayStep), 'yyyy-MM-dd');
+              const newDate = format(
+                addDays(parseISO(baseCalendarDate), -(dayStep)),
+                'yyyy-MM-dd'
+              );
+              const qDateFrom = format(addDays(parseISO(baseCalendarDate), -dayStep), 'yyyy-MM-dd');
+              const qDateTo = format(addDays(parseISO(qDateFrom), +(dayStep - 1)), 'yyyy-MM-dd');
               dispatch(setCalendarDateAction(newDate));
+              dispatch(fetchPeriodEventsAction(qDateFrom, qDateTo));
             }}
             className="p-1 hover:bg-white rounded text-slate-600 hover:text-slate-900 transition-colors shadow-none hover:shadow-sm"
             title="Попередній період"

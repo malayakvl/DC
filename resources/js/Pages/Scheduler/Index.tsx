@@ -104,18 +104,18 @@ export default function Index({
   }, [groupedOptions]);
 
   // Определяем, какой список людей рендерить в сетке в зависимости от активной вкладки
-  const currentTabPeople = useMemo(() => {
-    switch (tab) {
-      case 'patients': // Первая вкладка (по логике в коде она называется patients, но там врачи)
-        return doctorsTabOptions;
-      case 'visits': // Вкладка "Асистенти"
-        return assistantsTabOptions;
-      case 'plans': // Вкладка "Інші"
-        return othersTabOptions;
-      default:
-        return doctorsTabOptions;
-    }
-  }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
+//   const currentTabPeople = useMemo(() => {
+//     switch (tab) {
+//       case 'patients': // Первая вкладка (по логике в коде она называется patients, но там врачи)
+//         return doctorsTabOptions;
+//       case 'visits': // Вкладка "Асистенти"
+//         return assistantsTabOptions;
+//       case 'plans': // Вкладка "Інші"
+//         return othersTabOptions;
+//       default:
+//         return doctorsTabOptions;
+//     }
+//   }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
 
   const msg = new Lang({
     messages: lngScheduler,
@@ -127,10 +127,10 @@ export default function Index({
   }, [baseDate, dayStep]);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
-  const gridHeight = timeSlots.length * SLOT_HEIGHT;
+//   const gridHeight = timeSlots.length * SLOT_HEIGHT;
 
   // ================= INTERACTIVE EVENTS STATE =================
-  const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
+  const [_, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     return eventsData.map((event) => ({
       id: String(event.id),
       title: event.title,
@@ -144,7 +144,7 @@ export default function Index({
       end: `${event.event_date}T${event.event_time_to}`,
       status_color: event.status_color,
       status_name: event.status_name,
-      patient_name: event.last_name + ' ' + event.first_name,
+      patient_name: event.pl_name + ' ' + event.p_name,
       services: event.services,
       cabinet_name: event.cabinet_name,
       doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
@@ -152,30 +152,30 @@ export default function Index({
   });
 
   // АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ СЕТКИ ПРИ ИЗМЕНЕНИИ ДАННЫХ С СЕРВЕРА
-  useEffect(() => {
-    if (eventsData) {
-      setLocalEvents(
-        eventsData.map((event) => ({
-          id: String(event.id),
-          title: event.title,
-          doctor_id: event.doctor_id,
-          patient_id: event.patient_id,
-          cabinet_id: event.cabinet_id,
-          event_date: event.event_date,
-          event_time_from: event.event_time_from.slice(0, 5),
-          event_time_to: event.event_time_to.slice(0, 5),
-          start: `${event.event_date}T${event.event_time_from}`,
-          end: `${event.event_date}T${event.event_time_to}`,
-          status_color: event.status_color,
-          status_name: event.status_name,
-          patient_name: event.last_name + ' ' + event.first_name,
-          services: event.services,
-          cabinet_name: event.cabinet_name,
-          doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
-        }))
-      );
-    }
-  }, [eventsData]); // Реагирует на любые изменения пропса eventsData
+//   useEffect(() => {
+//     if (eventsData) {
+//       setLocalEvents(
+//         eventsData.map((event) => ({
+//           id: String(event.id),
+//           title: event.title,
+//           doctor_id: event.doctor_id,
+//           patient_id: event.patient_id,
+//           cabinet_id: event.cabinet_id,
+//           event_date: event.event_date,
+//           event_time_from: event.event_time_from.slice(0, 5),
+//           event_time_to: event.event_time_to.slice(0, 5),
+//           start: `${event.event_date}T${event.event_time_from}`,
+//           end: `${event.event_date}T${event.event_time_to}`,
+//           status_color: event.status_color,
+//           status_name: event.status_name,
+//           patient_name: "Генерим Тут",
+//           services: event.services,
+//           cabinet_name: event.cabinet_name,
+//           doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+//         }))
+//       );
+//     }
+//   }, [eventsData]); // Реагирует на любые изменения пропса eventsData
 
   // ================= DRAG & DROP ENGINE =================
 
@@ -393,11 +393,11 @@ export default function Index({
         <div className="p-4 sm:py-8 sm:px-4 mb-4 content-data bg-content">
           <SchedulerToolbar
             currentDate={`${days[0].label} ${days.length > 1 ? `→ ${days[days.length - 1].label}` : ''}`}
-            onPrevDay={() =>
-              setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
-            }
+            onPrevDay={() => {
+              setBaseDate((prev) => format(addDays(parseISO(prev), -(dayStep - 1)), 'yyyy-MM-dd'));
+            }}
             onNextDay={() =>
-              setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
+              setBaseDate((prev) => format(addDays(parseISO(prev), (dayStep - 1)), 'yyyy-MM-dd'))
             }
             onToday={() => setBaseDate(format(new Date(), 'yyyy-MM-dd'))}
             allowViewSwitch={allowViewSwitch}

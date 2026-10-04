@@ -8,7 +8,7 @@ import lngAct from '../../../Lang/Act/translation';
 import InputText from '../../../Components/Form/InputText';
 import { router, useForm } from '@inertiajs/react';
 import { actFiltersSelector, actClearFiltersSelector } from '@/Redux/Act/selectors';
-import { setFilters, clearFilters } from '@/Redux/Act';
+import { setFilters, clearFilters } from '@/Redux/InvoiceIncoming';
 
 export default function Filters({ suppliersData }) {
   const appLang = useSelector(appLangSelector);

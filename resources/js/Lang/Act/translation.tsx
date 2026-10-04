@@ -69,6 +69,7 @@ const lngAct = {
     patient: 'Пацієнт',
     'load.data.visits': 'Завантажуємо матеріали процедур…',
     service: 'Послуга',
+    batch_details: 'Деталізація партій',
   },
 };
 export default lngAct;

@@ -12,6 +12,7 @@ import {
   setScheduleStatusAction,
   setRemoteEventsAction,
   fetchEventsAction,
+  fetchPeriodEventsAction,
   showPricePopupAction,
   setServicesAction,
   findPatientsAction,
@@ -168,6 +169,12 @@ const ACTION_HANDLERS = {
       eventsData: action.payload,
     }),
   },
+  [fetchPeriodEventsAction]: {
+    next: (state, action) => ({
+      ...state,
+      eventsData: action.payload,
+    }),
+  },
   [findPatientsAction]: {
     next: (state, action) => ({
       ...state,
@@ -259,6 +266,7 @@ export {
   setScheduleStatusAction,
   setRemoteEventsAction,
   fetchEventsAction,
+  fetchPeriodEventsAction,
   showPricePopupAction,
   setServicesAction,
   setSchedulePatientIdAction,

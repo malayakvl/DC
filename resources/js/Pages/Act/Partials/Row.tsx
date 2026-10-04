@@ -5,6 +5,9 @@ import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
+import { actItemsSelector, actDeficitsErrorSelector } from '../../../Redux/Act/selectors';
+import { useAppDispatch } from '../../../hooks';
+import { updateServiceQuantityAction, setupActStoreErrorAction } from '../../../Redux/Act';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -20,32 +23,41 @@ export interface ActRowsRef {
   addRow: () => void;
 }
 
-const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, componentIndex }) => {
+const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, actItemsError }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
+  const materialId = component.material_id;
+  const errorMessage = actItemsError[materialId] || '';
+
   const [localVal, setLocalVal] = useState(
     component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
       ? String(component.quantity)
       : String(fifoItem?.required_qty ?? component.base_quantity ?? 0)
   );
+  const materialBatches = component.batches || [];
 
-  React.useEffect(() => {
-    const newVal =
-      component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
-        ? String(component.quantity)
-        : String(fifoItem?.required_qty ?? component.base_quantity ?? 0);
-    setLocalVal(newVal);
-  }, [component.quantity, fifoItem?.required_qty, component.base_quantity]);
+  //   React.useEffect(() => {
+  //     const newVal =
+  //       component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
+  //         ? String(component.quantity)
+  //         : String(fifoItem?.required_qty ?? component.base_quantity ?? 0);
+  //     setLocalVal(newVal);
+  //   }, [component.quantity, fifoItem?.required_qty, component.base_quantity]);
 
+  //   const unitCost =
+  //     Number(fifoItem?.cost || 0) / Math.max(Number(fifoItem?.available_qty || 1), 1) ||
+  //     Number(fifoItem?.batches?.[0]?.price_per_unit || 0);
+  // Розрахунок собівартості на основі cost та кількості з компонента
   const unitCost =
-    Number(fifoItem?.cost || 0) / Math.max(Number(fifoItem?.available_qty || 1), 1) ||
-    Number(fifoItem?.batches?.[0]?.price_per_unit || 0);
+    Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1) ||
+    Number(materialBatches[0]?.price_per_unit || 0);
 
   const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
   const numericRequiredQty = Number(localVal) || 0;
 
+  // Загальна вартість матеріалу по партіях
   const itemTotalCost =
-    (fifoItem?.batches || []).length > 0
-      ? fifoItem.batches.reduce(
+    materialBatches.length > 0
+      ? materialBatches.reduce(
           (acc, b) =>
             acc +
             (b.total !== undefined
@@ -55,12 +67,13 @@ const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, compon
         )
       : unitCost * numericRequiredQty;
 
-  const batchesCount = (fifoItem?.batches || []).length;
+  const batchesCount = materialBatches.length;
+
 
   return (
-    <li className="p-2.5 bg-white border border-slate-200/70 rounded-xl text-xs shadow-2xs">
+    <li className="p-2.5 bg-white border border-slate-200/70 rounded-xl text-[13px] shadow-2xs">
       <div className="flex items-center justify-between gap-3">
-        <span className="font-medium text-slate-800 truncate flex-1">
+        <span className="font-medium text-slate-800 flex-1">
           {component.product}
           {isInst && (
             <span className="ml-1.5 text-[10px] bg-sky-50 text-sky-600 px-1.5 py-0.5 rounded border border-sky-100">
@@ -69,23 +82,24 @@ const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, compon
             </span>
           )}
         </span>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <input
-            type="text"
-            inputMode="decimal"
-            className="w-16 text-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
-            value={localVal}
-            onChange={(e) => {
-              const val = e.target.value;
-              setLocalVal(val);
-              updateComponent(rowIndex, materialIndex, {
-                quantity: val,
-                is_manually_edited: true,
-              });
-//               updateComponent(index, componentIndex, val);
-            }}
-          />
-          <span className="text-[11px] text-slate-400 w-6">{component.short_name || ''}</span>
+        <div className="flex gap-1.5 shrink-0">
+          <div className="text-right">
+            <input
+              type="text"
+              inputMode="decimal"
+              className="w-16 text-center px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              value={localVal}
+              onChange={(e) => {
+                const val = e.target.value;
+                setLocalVal(val);
+                updateComponent(rowIndex, materialIndex, {
+                  quantity: val,
+                  is_manually_edited: true,
+                });
+              }}
+            />
+            <span className="block text-[11px] form-material-error">{errorMessage}</span>
+          </div>
         </div>
       </div>
 
@@ -94,7 +108,7 @@ const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, compon
           <span>
             {msg.get('act.service.amount')} {isInst ? '(з урахуванням амортизації)' : ''}:{' '}
             <strong className="text-slate-800 font-semibold">
-              {Number(fifoItem?.cost ? fifoItem.cost / Math.max(numericRequiredQty, 1) : 0).toFixed(
+              {Number(itemTotalCost ? itemTotalCost / Math.max(numericRequiredQty, 1) : 0).toFixed(
                 2
               )}{' '}
               ₴
@@ -123,15 +137,15 @@ const MaterialItem = ({ component, index, fifoItem, msg, updateComponent, compon
               >
                 arrow_right
               </span>
-              Деталізація партій ({batchesCount})
+              {msg.get('act.batch_details')} ({batchesCount})
             </button>
 
             {isBatchesOpen && (
               <div className="mt-1.5 pl-3 border-l-2 border-teal-500/30 space-y-1 text-slate-600">
-                {fifoItem.batches.map((batch, bIndex) => (
+                {materialBatches.map((batch, bIndex) => (
                   <div key={`batch-${bIndex}`} className="flex items-center justify-between">
                     <span>
-                      Партія #{batch.batch_id} (
+                      {msg.get('act.batch')} #{batch.batch_id} (
                       {batch.arrived_at ? batch.arrived_at.substring(0, 10) : ''})
                     </span>
                     <span className="font-medium text-slate-800">
@@ -160,8 +174,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
   });
-
+  const actItemRows = useSelector(actItemsSelector);
+  const actItemsError = useSelector(actDeficitsErrorSelector);
   const changeRows = (nextRows) => onChange(nextRows);
+  const dispatch = useAppDispatch();
 
   const handleAddInput = () => {
     changeRows([...rows, emptyRow()]);
@@ -262,7 +278,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
 
   return (
     <>
-      {rows.map((row, index) => (
+      {actItemRows.map((row, index) => (
         <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
           {/* Назва послуги з автокомплітом та матеріалами */}
           <td className="py-3 px-3 align-top w-full pl-0">
@@ -271,7 +287,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                 name="product"
                 className="w-full px-3 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
                 type="text"
-                value={row.product || ''}
+                value={row.service || ''}
                 placeholder="Почніть вводити назву послуги..."
                 onChange={(event) => searchServices(event.target.value, index)}
                 onFocus={() => setActiveRow(index)}
@@ -352,8 +368,8 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                   return (
                     <div className="mt-2.5 p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl text-slate-700">
                       <div className="text-xs font-semibold text-slate-800 mb-2 flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-teal-600 text-[16px]">
+                        <div className="flex items-center gap-1.5 text-[16px]">
+                          <span className="material-symbols-outlined text-teal-600">
                             inventory_2
                           </span>
                           {msg.get('act.materials.and.services')}
@@ -366,15 +382,14 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
 
                       <ul className="list-none space-y-2">
                         {row.components.map((component, componentIndex) => {
-                          const fifoItem = findFifoItem(component, componentIndex);
 
                           return (
                             <MaterialItem
                               key={`comp-${component.material_id || componentIndex}`}
                               component={component}
                               index={index}
-                              componentIndex={componentIndex}
-                              fifoItem={fifoItem}
+                              actItemsError={actItemsError}
+                              fifoItem={component.batches}
                               msg={msg}
                               updateComponent={updateComponent}
                             />
@@ -393,11 +408,19 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
               <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
                 <button
                   type="button"
-                  onClick={() =>
-                    updateRow(index, {
-                      quantity: Math.max(Number(row.quantity || 1) - 1, 1),
-                    })
-                  }
+                  onClick={() => {
+                    dispatch(setupActStoreErrorAction([]));
+                    dispatch(
+                      updateServiceQuantityAction(
+                        row.service_id,
+                        Math.max(Number(row.quantity || 1) - 1, 1),
+                        actItemRows
+                      )
+                    );
+//                     updateRow(index, {
+//                       quantity: Math.max(Number(row.quantity || 1) - 1, 1),
+//                     });
+                  }}
                   className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-2xs cursor-pointer"
                 >
                   -
@@ -412,11 +435,15 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    updateRow(index, {
-                      quantity: Number(row.quantity || 1) + 1,
-                    })
-                  }
+                  onClick={() => {
+                    dispatch(
+                      updateServiceQuantityAction(
+                        row.service_id,
+                        Number(row.quantity || 1) + 1,
+                        actItemRows
+                      )
+                    );
+                  }}
                   className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-2xs cursor-pointer"
                 >
                   +
@@ -438,7 +465,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange, fifo = {} }, ref)
 
           {/* Сума */}
           <td className="py-3 px-3 align-top text-center font-semibold text-slate-800 text-xs w-price whitespace-nowrap">
-            {Number(row.total || 0).toFixed(2)} ₴
+            <div className="inline-block mt-[10px]">{Number(row.total || 0).toFixed(2)} ₴</div>
           </td>
 
           {/* Кнопка видалення рядка */}

@@ -4,11 +4,16 @@ import {
   setShowTableError,
   updateServiceItemQtyAction,
   setFilters,
-  clearFilters
+  clearFilters,
+  findActItemsAction,
+  updateServiceQuantityAction,
+  syncAndRecalculateAct,
+  setupActStoreErrorAction,
 } from './actions';
 
 const initialState = {
-  invoiceItems: [],
+  actItems: [],
+  actItemsError: [],
   invoiceTax: '',
   curreny: '',
   showTableError: false,
@@ -21,7 +26,7 @@ const initialState = {
     filterDateTo: '',
     filterStatus: '',
   },
-  isClear: false
+  isClear: false,
 };
 
 // ------------------------------------
@@ -31,7 +36,11 @@ const ACTION_HANDLERS = {
   [setActItems.toString()]: {
     next: (state, action) => ({
       ...state,
-      invoiceItems: action.payload,
+      // Додаємо новий об'єкт (або масив об'єктів) до вже існуючого масиву
+      actItems: [
+        ...state.actItems,
+        ...(Array.isArray(action.payload) ? action.payload : [action.payload]),
+      ],
     }),
   },
   [setFilters.toString()]: {
@@ -45,15 +54,30 @@ const ACTION_HANDLERS = {
       ...state,
       filters: {
         filterName: '',
-        filterPhone: ''
+        filterPhone: '',
       },
-      isClear: true
+      isClear: true,
     }),
   },
   [setShowTableError.toString()]: {
     next: (state, action) => ({
       ...state,
       showTableError: action.payload,
+    }),
+  },
+  [findActItemsAction.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      actItems: [
+        ...state.actItems,
+        ...(Array.isArray(action.payload) ? action.payload : [action.payload]),
+      ],
+    }),
+  },
+  [setupActStoreErrorAction.toString()]: {
+    next: (state, action) => ({
+      ...state,
+      actItemsError: action.payload,
     }),
   },
   [updateServiceItemQtyAction.toString()]: {
@@ -67,12 +91,12 @@ const ACTION_HANDLERS = {
           const updatedComponents = [...row.components];
           updatedComponents[itemIndex] = {
             ...updatedComponents[itemIndex],
-            quantity: qty
+            quantity: qty,
           };
 
           updatedItems[rowIndex] = {
             ...row,
-            components: updatedComponents
+            components: updatedComponents,
           };
         }
       }
@@ -91,7 +115,10 @@ export {
   updateServiceItemQtyAction,
   setFilters,
   clearFilters,
-
+  findActItemsAction,
+  updateServiceQuantityAction,
+  syncAndRecalculateAct,
+  setupActStoreErrorAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

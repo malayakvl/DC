@@ -41,6 +41,22 @@ export const fetchEventsAction: any = createAction(
         });
     }
 );
+export const fetchPeriodEventsAction: any = createAction(
+  'scheduler/FIND_EVENTS',
+  async (dateFrom: any, dateTo: any) =>
+    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
+      const state = getState();
+      return axios
+        .get(
+          `/scheduler/fetchEvents?start=${dateFrom}&end=${dateTo}`,
+          { start: dateFrom, end: dateTo },
+          {}
+        )
+        .then(async (res) => {
+          return res.data.items;
+        });
+    }
+);
 export const findPatientsAction: any = createAction(
   'scheduler/FIND_PATIENTS',
   async (data: any) =>
