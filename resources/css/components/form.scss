@@ -672,3 +672,7 @@ label.float-label {
     border: none !important;
     max-height: 55px !important;
 }
+
+.act-component-qty {
+    @apply w-16 text-center px-2 py-1.5 rounded-md bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500;
+}

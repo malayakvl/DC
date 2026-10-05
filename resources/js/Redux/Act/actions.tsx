@@ -3,9 +3,9 @@ import { createAction } from 'redux-actions';
 import axios from 'axios';
 
 // Внутрішня функція розрахунку базових кількостей (щоб не тягнути імпорти з форми)
-const calculateBaseQuantities = (components, serviceQuantity = 1) => {
+const calculateBaseQuantities = (components: any, serviceQuantity = 1) => {
   const groupedMap = new Map();
-  (components || []).forEach((component) => {
+  (components || []).forEach((component: any) => {
     const mId = component.material_id || component.product_id || component.id;
 
     let q = Number(component.base_quantity);
@@ -36,7 +36,7 @@ export const setShowTableError = createAction('act/SET_TABLE_ERRORS');
 export const setupActStoreErrorAction = createAction('act/SET_STORE_DEFICIT_ERROR');
 export const updateServiceItemQtyAction = createAction(
   'act/UPDATE_SERVICE_ITEM_QTY',
-  (rowIndex, itemIndex, qty) => ({ rowIndex, itemIndex, qty })
+  (rowIndex: any, itemIndex: any, qty: number) => ({ rowIndex, itemIndex, qty })
 );
 export const setFilters = createAction('act/SET_FILTERS');
 
@@ -44,7 +44,7 @@ export const clearFilters = createAction('act/CLEAR_FILTERS');
 
 export const findActItemsAction: any = createAction(
   'act/FIND_ITEMS_ACTIONS',
-  async (service: any) => async (dispatch: any) => {
+  async (service: any) => async () => {
     const serviceId = service.id || service.service_id;
 
     try {
@@ -84,9 +84,8 @@ export const updateServiceQuantityAction: any = createAction(
       }
       // newQuantity здесь — это новое общее количество услуги (например, 1, 2, 3...)
       const newServiceQty = Number(qty);
-      console.log('newServiceQty', newServiceQty);
       // Оновлюємо компоненти: множимо кількість кожного компонента на нове загальне quantity
-      const updatedComponents = (targetItem.components || []).map((comp) => {
+      const updatedComponents = (targetItem.components || []).map((comp: any) => {
         // Берём неизменяемую базу на 1 единицу услуги (или вычисляем через initial/base_quantity)
         const baseQty = Number(comp.base_quantity ?? comp.quantity / (targetItem.quantity || 1));
 
@@ -105,14 +104,14 @@ export const updateServiceQuantityAction: any = createAction(
         });
         const storeItems = response.data.items;
 
-        const hasDeficit = storeItems.some((fifoItem) => fifoItem.shortage_qty > 0);
+        const hasDeficit = storeItems.some((fifoItem: any) => fifoItem.shortage_qty > 0);
 
         if (hasDeficit) {
           console.log('deficit');
           // Збираємо деталі, чого саме не вистачає, щоб показати нормальне повідомлення
           const deficitsMap = storeItems
-            .filter((i) => i.shortage_qty > 0)
-            .reduce((acc, i) => {
+            .filter((i: any) => i.shortage_qty > 0)
+            .reduce((acc: any, i: any) => {
               acc[i.material_id] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
               return acc;
             }, {});
@@ -137,12 +136,142 @@ export const updateServiceQuantityAction: any = createAction(
   }
 );
 
+export const updateComponentQuantityAction: any = createAction(
+  'act/UPDATE_COMPONENT_QUANTITY_NEW',
+  async (serviceId: number, materialId: number, qty: number, targetServiceItem: any) =>
+    async (dispatch: any) => {
+      try {
+        console.log('serviceId:', serviceId, 'materialId:', materialId, 'Qty:', qty);
+        console.log('targetServiceItem:', targetServiceItem);
+
+        if (!targetServiceItem) {
+          console.error('Service item not found');
+          return null;
+        }
+
+        const serviceQty = Number(targetServiceItem.quantity || 1);
+        const newComponentQty = Number(qty);
+
+        // 1. Оновлюємо кількість тільки для потрібного компонента
+        const updatedComponents = (targetServiceItem.components || []).map((comp: any) => {
+          if (comp.material_id === materialId) {
+            const baseQty = newComponentQty / serviceQty;
+            return {
+              ...comp,
+              base_quantity: baseQty,
+              quantity: newComponentQty,
+            };
+          }
+          return comp;
+        });
+
+        // 2. Створюємо оновлену копію послуги для бекенду
+        const updatedTargetItem = {
+          ...targetServiceItem,
+          components: updatedComponents,
+        };
+
+        try {
+          // 3. Запит на бекенд для FIFO перевірки
+          const response = await axios.post('/act/fifo-preview', {
+            services: [updatedTargetItem],
+          });
+          const storeItems = response.data.items;
+
+          const hasDeficit = storeItems.some((fifoItem: any) => fifoItem.shortage_qty > 0);
+
+          if (hasDeficit) {
+            const deficitsMap = storeItems
+              .filter((i: any) => i.shortage_qty > 0)
+              .reduce((acc: any, i: any) => {
+                acc[i.material_id] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
+                return acc;
+              }, {});
+
+            dispatch(setupActStoreErrorAction(deficitsMap));
+            return null; // Дефіцит — стейт не чіпаємо
+          } else {
+            dispatch(setupActStoreErrorAction([]));
+          }
+
+          // 4. Повертаємо дані для редюсера
+          return {
+            serviceId,
+            materialId,
+            qty: newComponentQty,
+            base_quantity: newComponentQty / serviceQty,
+          };
+
+        } catch (error) {
+          console.error('Error validating component on backend, rolling back...', error);
+          throw error;
+        }
+      } catch (error) {
+        console.error('Error updating component quantity', error);
+        return null;
+      }
+    }
+);
+
+export const updateComponentQuantityAction1: any = createAction(
+  'act/UPDATE_COMPONENT_QUANTITY_NEW',
+  async (serviceId: number, materialId: number, qty: number, allInvoiceItems: any) =>
+    async (dispatch: any) => {
+      try {
+        console.log('serviceId:', serviceId, 'materialId:', materialId, 'Qty:', qty);
+        console.log(allInvoiceItems)
+        // 1. Копируем массив строк акта, чтобы не мутировать стейт напрямую
+        const currentItems = [...allInvoiceItems];
+        // 2. Находим саму услугу (процедуру) в общем списке по её ID (pricing_id или service_id)
+        const targetItemIndex = currentItems.findIndex(
+          (item: any) => item.pricing_id === serviceId || item.service_id === serviceId
+        );
+
+        if (targetItemIndex === -1) {
+          console.error('Service item not found in state');
+          return null;
+        }
+        const targetItem = currentItems[targetItemIndex];
+        const serviceQty = Number(targetItem.quantity || 1);
+        const newComponentQty = Number(qty);
+
+        // 3. Обновляем количество ТОЛЬКО для конкретного компонента внутри этой услуги
+        const updatedComponents = (targetItem.components || []).map((comp: any) => {
+          if (comp.material_id === materialId) {
+            const baseQty = newComponentQty / serviceQty; // пересчитываем базу на 1 ед. услуги
+            return {
+              ...comp,
+              base_quantity: baseQty,
+              quantity: newComponentQty,
+            };
+          }
+          return comp;
+        });
+
+        // Создаем обновленную копию услуги для отправки на бэкенд
+        const updatedTargetItem = {
+          ...targetItem,
+          components: updatedComponents,
+        };
+
+        // Подставляем обновленную услугу в массив для бэкенда
+        const itemsForBackend = [...currentItems];
+        itemsForBackend[targetItemIndex] = updatedTargetItem;
+        console.log('itemsForBackend', itemsForBackend);
+
+      } catch (error) {
+        console.error('Error fetching service items', error);
+        return null;
+      }
+    }
+);
+
 export const syncAndRecalculateAct: any = createAction(
   'act/UPDATE_SERVICE_QUANTITY_OLD',
-  async (actItems: any, storeItems: any) => async (dispatch: any) => {
+  async (actItems: any, storeItems: any) => async () => {
     console.log('actItems', actItems);
     console.log('storeItems', storeItems);
-    const shortages = storeItems.filter((item) => item.shortage_qty > 0);
+    const shortages = storeItems.filter((item: any) => item.shortage_qty > 0);
 
     if (shortages.length > 0) {
       console.warn('Увага! Виявлено дефіцит матеріалів на складі:', shortages);
@@ -152,71 +281,71 @@ export const syncAndRecalculateAct: any = createAction(
   }
 );
 
-export const syncAndRecalculateActOld = createAction(
-  'act/SYNC_AND_RECALCULATE_OLD',
-  async ({ actItems, storeItems }, { rejectWithValue }) => {
-    try {
-      // 1. Формуємо масив services для бекенду (якщо передали один елемент, загортаємо в масив)
-      const itemsArray = Array.isArray(actItems) ? actItems : [actItems];
-      console.log('itemsArray', itemsArray);
-      const servicesForFifo = itemsArray.map((item) => ({
-        service_id: Number(item.service_id),
-        quantity: Number(item.quantity),
-        components: (item.components || []).map((comp) => ({
-          material_id: Number(comp.material_id),
-          quantity: Number(comp.quantity),
-        })),
-      }));
-
-      // 2. Робимо запит на бєкенд
-      const response = await axios.post('/act/fifo-preview', {
-        services: servicesForFifo,
-      });
-
-      // 3. Повертаємо дані для редюсера (і актуальні рядки, і відповідь від сервера)
-      return {
-        actItems: itemsArray,
-        fifoData: response.data.items, // або response.data.item залежно від того, що повертає бэк
-        storeItems: storeItems || null,
-      };
-    } catch (error) {
-      console.error('Помилка при синхронізації FIFO:', error);
-      return rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
-
-export const updateServiceQuantityActionOld = createAction(
-  'act/UPDATE_SERVICE_QUANTITY_OLD',
-  async ({ serviceId, newQuantity }, { dispatch, getState }) => {
-    // 1. Беремо актуальний стейт з Redux (ніяких зайвих запитів на сервер!)
-    const state = getState();
-    const currentItems = state.act.actItems; // або ваш шлях до стейту
-    // 2. Знаходимо потрібний рядок/процедуру за service_id
-    const targetItem = currentItems.find((item) => item.service_id === serviceId);
-    if (!targetItem) return;
-
-    try {
-      // 3. Відправляємо на бекенд нові дані (або сам ітем із новим quantity)
-      const response = await axios.post('/service/updateActItemQuantity', {
-        serviceId,
-        quantity: newQuantity,
-        // можемо передати інші дані, якщо бекенду вони потрібні для перерахунку
-      });
-
-      // 4. Якщо сервер відповів успішно (все гуд):
-      // Оновлюємо стейт у редюсері (або даними з бекенда, або локально перерахованими)
-      // Наприклад, якщо бекенд повертає оновлений масив або оновлений рядок:
-      dispatch(setActItems(response.data.items));
-
-      return response.data;
-    } catch (error) {
-      console.error('Помилка при оновленні на бекенді', error);
-
-      // 5. Якщо є помилка — нічого в стейті не міняємо, а виводимо повідомлення
-      // dispatch(showErrorNotification('Не вдалося оновити кількість'));
-
-      return null;
-    }
-  }
-);
+// export const syncAndRecalculateActOld = createAction(
+//   'act/SYNC_AND_RECALCULATE_OLD',
+//   async ({ actItems, storeItems }, { rejectWithValue }) => {
+//     try {
+//       // 1. Формуємо масив services для бекенду (якщо передали один елемент, загортаємо в масив)
+//       const itemsArray = Array.isArray(actItems) ? actItems : [actItems];
+//       console.log('itemsArray', itemsArray);
+//       const servicesForFifo = itemsArray.map((item) => ({
+//         service_id: Number(item.service_id),
+//         quantity: Number(item.quantity),
+//         components: (item.components || []).map((comp) => ({
+//           material_id: Number(comp.material_id),
+//           quantity: Number(comp.quantity),
+//         })),
+//       }));
+//
+//       // 2. Робимо запит на бєкенд
+//       const response = await axios.post('/act/fifo-preview', {
+//         services: servicesForFifo,
+//       });
+//
+//       // 3. Повертаємо дані для редюсера (і актуальні рядки, і відповідь від сервера)
+//       return {
+//         actItems: itemsArray,
+//         fifoData: response.data.items, // або response.data.item залежно від того, що повертає бэк
+//         storeItems: storeItems || null,
+//       };
+//     } catch (error) {
+//       console.error('Помилка при синхронізації FIFO:', error);
+//       return rejectWithValue(error.response?.data || error.message);
+//     }
+//   }
+// );
+//
+// export const updateServiceQuantityActionOld = createAction(
+//   'act/UPDATE_SERVICE_QUANTITY_OLD',
+//   async ({ serviceId, newQuantity }, { dispatch, getState }) => {
+//     // 1. Беремо актуальний стейт з Redux (ніяких зайвих запитів на сервер!)
+//     const state = getState();
+//     const currentItems = state.act.actItems; // або ваш шлях до стейту
+//     // 2. Знаходимо потрібний рядок/процедуру за service_id
+//     const targetItem = currentItems.find((item) => item.service_id === serviceId);
+//     if (!targetItem) return;
+//
+//     try {
+//       // 3. Відправляємо на бекенд нові дані (або сам ітем із новим quantity)
+//       const response = await axios.post('/service/updateActItemQuantity', {
+//         serviceId,
+//         quantity: newQuantity,
+//         // можемо передати інші дані, якщо бекенду вони потрібні для перерахунку
+//       });
+//
+//       // 4. Якщо сервер відповів успішно (все гуд):
+//       // Оновлюємо стейт у редюсері (або даними з бекенда, або локально перерахованими)
+//       // Наприклад, якщо бекенд повертає оновлений масив або оновлений рядок:
+//       dispatch(setActItems(response.data.items));
+//
+//       return response.data;
+//     } catch (error) {
+//       console.error('Помилка при оновленні на бекенді', error);
+//
+//       // 5. Якщо є помилка — нічого в стейті не міняємо, а виводимо повідомлення
+//       // dispatch(showErrorNotification('Не вдалося оновити кількість'));
+//
+//       return null;
+//     }
+//   }
+// );

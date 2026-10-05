@@ -7,6 +7,7 @@ import {
   clearFilters,
   findActItemsAction,
   updateServiceQuantityAction,
+  updateComponentQuantityAction,
   syncAndRecalculateAct,
   setupActStoreErrorAction,
 } from './actions';
@@ -34,7 +35,7 @@ const initialState = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [setActItems.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       // Додаємо новий об'єкт (або масив об'єктів) до вже існуючого масиву
       actItems: [
@@ -44,13 +45,13 @@ const ACTION_HANDLERS = {
     }),
   },
   [setFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       filters: action.payload,
     }),
   },
   [clearFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       filters: {
         filterName: '',
@@ -60,13 +61,13 @@ const ACTION_HANDLERS = {
     }),
   },
   [setShowTableError.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       showTableError: action.payload,
     }),
   },
   [findActItemsAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       actItems: [
         ...state.actItems,
@@ -75,13 +76,13 @@ const ACTION_HANDLERS = {
     }),
   },
   [setupActStoreErrorAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       actItemsError: action.payload,
     }),
   },
   [updateServiceItemQtyAction.toString()]: {
-    next: (state, action) => {
+    next: (state: any, action: any) => {
       const { rowIndex, itemIndex, qty } = action.payload;
       const updatedItems = [...state.invoiceItems];
 
@@ -113,6 +114,7 @@ export {
   setActItems,
   setShowTableError,
   updateServiceItemQtyAction,
+  updateComponentQuantityAction,
   setFilters,
   clearFilters,
   findActItemsAction,

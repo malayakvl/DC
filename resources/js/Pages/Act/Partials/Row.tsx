@@ -7,7 +7,11 @@ import lngAct from '../../../Lang/Act/translation';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import { actItemsSelector, actDeficitsErrorSelector } from '../../../Redux/Act/selectors';
 import { useAppDispatch } from '../../../hooks';
-import { updateServiceQuantityAction, setupActStoreErrorAction } from '../../../Redux/Act';
+import {
+  updateServiceQuantityAction,
+  setupActStoreErrorAction,
+  updateComponentQuantityAction,
+} from '../../../Redux/Act';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -27,16 +31,19 @@ const MaterialItem = ({
   component,
   msg,
   actItemsError,
+  dispatch,
+  invoiceItems,
 }: {
   component: any;
-  fifoItem: any;
   msg: any;
   actItemsError: any;
+  dispatch: any;
+  invoiceItems: any;
 }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
   const materialId = component.material_id;
+  const priceId = component.price_id;
   const errorMessage = actItemsError[materialId] || '';
-
   const [localVal, setLocalVal] = useState(
     component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
       ? String(component.quantity)
@@ -93,10 +100,18 @@ const MaterialItem = ({
             <input
               type="text"
               inputMode="decimal"
-              className="w-16 text-center px-2 py-1.5 rounded-md bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="act-component-qty"
               value={localVal}
               onChange={(e) => {
                 const val = e.target.value;
+                dispatch(
+                  updateComponentQuantityAction(
+                    component.pricing_id,
+                    materialId,
+                    Number(e.target.value),
+                    invoiceItems
+                  )
+                );
                 setLocalVal(val);
               }}
             />
@@ -300,7 +315,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                 {activeRow === index && results.length > 0 && (
                   <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                     <ul className="py-1">
-                      {results.map((service:any, sIdx: number) => (
+                      {results.map((service: any, sIdx: number) => (
                         <li
                           key={`service-${service.id || sIdx}`}
                           className="px-4 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 cursor-pointer transition-colors flex justify-between items-center"
@@ -352,7 +367,8 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                                 key={`comp-${component.material_id || componentIndex}`}
                                 component={component}
                                 actItemsError={actItemsError}
-                                fifoItem={component.batches}
+                                dispatch={dispatch}
+                                invoiceItems={row}
                                 msg={msg}
                               />
                             );
@@ -379,9 +395,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                           actItemRows
                         )
                       );
-                      //                     updateRow(index, {
-                      //                       quantity: Math.max(Number(row.quantity || 1) - 1, 1),
-                      //                     });
                     }}
                     className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-2xs cursor-pointer"
                   >
@@ -393,7 +406,9 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                     type="text"
                     min="1"
                     value={row.quantity ?? 1}
-                    onChange={(event) => updateRow(index, { quantity: event.target.value })}
+                    onChange={(event) => {
+                      updateRow(index, { quantity: event.target.value });
+                    }}
                   />
                   <button
                     type="button"
