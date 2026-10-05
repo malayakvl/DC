@@ -66,10 +66,10 @@ const lngAct = {
     batch: 'Партія',
     amortization: 'амортизація на',
     visit: 'Візит (необов`язково)',
-    patient: 'Пацієнт',
     'load.data.visits': 'Завантажуємо матеріали процедур…',
     service: 'Послуга',
     batch_details: 'Деталізація партій',
+    arrived: 'Прихід',
   },
 };
 export default lngAct;

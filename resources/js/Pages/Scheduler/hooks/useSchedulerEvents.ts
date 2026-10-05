@@ -199,7 +199,7 @@ export function useSchedulerEvents(
   );
 
   const handleEventClick = useCallback(
-    (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
+    (e: React.MouseEvent, cellEvent: any) => {
       e.stopPropagation();
 
       if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {

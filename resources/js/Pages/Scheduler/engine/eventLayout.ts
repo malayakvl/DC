@@ -13,6 +13,6 @@ export function getEventLayout(event: any) {
 
   return {
     top: (startMinutes - DAY_START_MINUTES) * PIXELS_PER_MINUTE,
-    height: Math.max((endMinutes - startMinutes) * PIXELS_PER_MINUTE - 2, 20),
+    height: Math.max((endMinutes - startMinutes) * PIXELS_PER_MINUTE, 20) - 4,
   };
 }

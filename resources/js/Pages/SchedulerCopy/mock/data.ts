@@ -26,6 +26,7 @@ export interface SchedulerEvent {
   services: any[]; // Changed from services: any;
   price: number;
   duration: number;
+  status_name: string;
 }
 
 // export const events: SchedulerEvent[] = [

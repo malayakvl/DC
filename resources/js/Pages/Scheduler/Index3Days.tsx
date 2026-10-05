@@ -6,7 +6,7 @@ import { getEventLayout } from './engine/eventLayout';
 import { router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import {
   showEditPopupSelector,
@@ -46,16 +46,19 @@ export default function Index3Days({
   groupedOptions,
   customerData,
   eventsData,
-  allowViewSwitch = true,
+}: {
+  cabinetData: any;
+  groupedOptions: any;
+  customerData: any;
+  eventsData: any;
 }) {
-  const dispatch = useDispatch();
   const view = useSelector(schedulerViewSelector);
   const baseCalendarDate = useSelector(schedulerBaseDateSelector);
   const appLang = useSelector(appLangSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
   const eventsChangesData = useSelector(eventsDataSelector);
-  const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+  const baseDate = useState(() => format(new Date(), 'yyyy-MM-dd'));
 
   // Рефы для блокировки кликов
   const isResizingRef = React.useRef(false);
@@ -139,7 +142,7 @@ export default function Index3Days({
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
 
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
-    return eventsData.map((event) => ({
+    return eventsData.map((event: any) => ({
       id: String(event.id),
       title: event.title,
       doctor_id: event.doctor_id,
@@ -163,7 +166,7 @@ export default function Index3Days({
     if (eventsChangesData.length) {
       console.log('Обновляем локальний стейт евентов полсе смени дати', eventsChangesData);
       setLocalEvents(
-        eventsChangesData.map((event) => ({
+        eventsChangesData.map((event: any) => ({
           id: event.event_id,
           title: event.title,
           doctor_id: event.doctor_id,
@@ -395,21 +398,21 @@ export default function Index3Days({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const hexToRgba = (hex, alpha = 0.15) => {
-    if (!hex) return 'rgba(59, 130, 246, 0.15)'; // фолбек на випадок відсутності кольору
-    let c = hex.replace('#', '');
-    if (c.length === 3) {
-      c = c
-        .split('')
-        .map((x) => x + x)
-        .join('');
-    }
-    const num = parseInt(c, 16);
-    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
-  };
+  // const hexToRgba = (hex, alpha = 0.15) => {
+  //   if (!hex) return 'rgba(59, 130, 246, 0.15)'; // фолбек на випадок відсутності кольору
+  //   let c = hex.replace('#', '');
+  //   if (c.length === 3) {
+  //     c = c
+  //       .split('')
+  //       .map((x) => x + x)
+  //       .join('');
+  //   }
+  //   const num = parseInt(c, 16);
+  //   return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+  // };
 
   // Мапа відповідності кольорів або класів під твої сочні ескізи
-  const getEventBackground = (status) => {
+  const getEventBackground = (status: any) => {
     // Або якщо потрібно запітчити по HEX-коду з бази:
     switch (status) {
       case 'done':
@@ -423,81 +426,81 @@ export default function Index3Days({
     }
   };
 
-  const getEventBorder = (status) => {
+  const getEventBorder = (status: any) => {
     // Або якщо потрібно запітчити по HEX-коду з бази:
     switch (status) {
       case 'done':
         return '#f4f7fa'; // підтверджено (сочний зелений з твого ескізу)
       case 'planned':
-//         return 'rgb(181, 174, 231)'; // заплановано (синій)
+        //         return 'rgb(181, 174, 231)'; // заплановано (синій)
         return 'transparent'; // заплановано (синій)
       case 'inclicnic':
-//         return 'rgb(239, 181, 106)';
+        //         return 'rgb(239, 181, 106)';
         return 'transparent';
       default:
         return '#f8fafc'; // фолбек (slate-50)
     }
   };
 
-  const PREVIEW_WIDTH = 340;
-  const PREVIEW_HEIGHT = 280;
+  // const PREVIEW_WIDTH = 340;
+  // const PREVIEW_HEIGHT = 280;
 
-  const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const margin = 12;
+  // const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
+  //   const rect = e.currentTarget.getBoundingClientRect();
+  //   const margin = 12;
+  //
+  //   let x = rect.right + margin;
+  //   let y = rect.top;
+  //
+  //   if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
+  //     x = rect.left - PREVIEW_WIDTH - margin;
+  //   }
+  //
+  //   if (x < margin) {
+  //     x = margin;
+  //   }
+  //
+  //   if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
+  //     y = window.innerHeight - PREVIEW_HEIGHT - margin;
+  //   }
+  //
+  //   if (y < margin) {
+  //     y = margin;
+  //   }
+  //   const _services = event ? JSON.parse(event.services) : [];
+  //   const previewTotal = event
+  //     ? _services.reduce(
+  //         (sum: number, service: any) =>
+  //           sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
+  //         0
+  //       )
+  //     : 0;
+  //   event.amount_total = previewTotal;
+  //
+  //   setHoverPreview({
+  //     x,
+  //     y,
+  //     event,
+  //     services,
+  //   });
+  // };
 
-    let x = rect.right + margin;
-    let y = rect.top;
+  // const formatDuration = (from: string, to: string) => {
+  //   const [fh, fm] = from.split(':').map(Number);
+  //   const [th, tm] = to.split(':').map(Number);
+  //
+  //   const minutes = th * 60 + tm - (fh * 60 + fm);
+  //
+  //   const hours = Math.floor(minutes / 60);
+  //   const mins = minutes % 60;
+  //
+  //   if (hours === 0) return `${mins} хв`;
+  //   if (mins === 0) return `${hours} год`;
+  //
+  //   return `${hours} год ${mins} хв`;
+  // };
 
-    if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
-      x = rect.left - PREVIEW_WIDTH - margin;
-    }
-
-    if (x < margin) {
-      x = margin;
-    }
-
-    if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
-      y = window.innerHeight - PREVIEW_HEIGHT - margin;
-    }
-
-    if (y < margin) {
-      y = margin;
-    }
-    const _services = event ? JSON.parse(event.services) : [];
-    const previewTotal = event
-      ? _services.reduce(
-          (sum, service) =>
-            sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
-          0
-        )
-      : 0;
-    event.amount_total = previewTotal;
-
-    setHoverPreview({
-      x,
-      y,
-      event,
-      services,
-    });
-  };
-
-  const formatDuration = (from: string, to: string) => {
-    const [fh, fm] = from.split(':').map(Number);
-    const [th, tm] = to.split(':').map(Number);
-
-    const minutes = th * 60 + tm - (fh * 60 + fm);
-
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-
-    if (hours === 0) return `${mins} хв`;
-    if (mins === 0) return `${hours} год`;
-
-    return `${hours} год ${mins} хв`;
-  };
-
-  const formatPatientName = (name) => {
+  const formatPatientName = (name: any) => {
     if (!name) return '';
     const parts = name.trim().split(/\s+/);
 
@@ -509,7 +512,7 @@ export default function Index3Days({
 
     const initials = parts
       .slice(1)
-      .map((part) => `${part.charAt(0)}.`)
+      .map((part: any) => `${part.charAt(0)}.`)
       .join(' ');
 
     return `${surname} ${initials}`;
@@ -694,7 +697,7 @@ export default function Index3Days({
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
                     <div style={{ display: 'flex', flex: 1, height: gridHeight }}>
-                      {cabinetData.map((cab, cabIdx) => (
+                      {cabinetData.map((cab: any, cabIdx: any) => (
                         <div
                           key={cab.id}
                           style={{
@@ -758,11 +761,22 @@ export default function Index3Days({
                                   console.log('scheduler event', event);
 
                                   const services = (() => {
-                                    try {
-                                      return JSON.parse(event.services || '[]');
-                                    } catch {
-                                      return [];
+                                    // Если это уже массив, просто возвращаем его
+                                    if (Array.isArray(event.services)) {
+                                      return event.services;
                                     }
+
+                                    // Если это строка, пытаемся её распарсить
+                                    if (typeof event.services === 'string') {
+                                      try {
+                                        return JSON.parse(event.services);
+                                      } catch {
+                                        return [];
+                                      }
+                                    }
+
+                                    // Во всех остальных случаях (undefined, null и т.д.) возвращаем пустой массив
+                                    return [];
                                   })();
 
                                   const servicesCount = services.length;
@@ -772,10 +786,6 @@ export default function Index3Days({
                                       key={event.id}
                                       onClick={(e) => handleEventClick(e, event)}
                                       onMouseDown={(e) => handleDragStart(e, event)}
-                                      onMouseEnter={(e) => showPreview(e, event, services)}
-                                      onMouseLeave={() => {
-                                        setHoverPreview(null);
-                                      }}
                                       className={`shadow-sm calendar-event ${compact ? 'compact' : ''}`}
                                       style={{
                                         position: 'absolute',
@@ -808,7 +818,11 @@ export default function Index3Days({
                                               }}
                                               title="Створити акт"
                                               className="act-btn"
-                                            ></button>
+                                            >
+                                              <span className="material-symbols-outlined text-[16px]">
+                                                description
+                                              </span>
+                                            </button>
                                           </span>
                                         </div>
                                         <div className="my-0.5 inline-block h-[18px]">
@@ -833,7 +847,7 @@ export default function Index3Days({
 
                                           {servicesCount > 1 && large && (
                                             <>
-                                              {services.slice(0, 3).map((service) => (
+                                              {services.slice(0, 3).map((service: any) => (
                                                 <p
                                                   key={service.id}
                                                   className="text-[11px] text-[#524e4e] truncate"
