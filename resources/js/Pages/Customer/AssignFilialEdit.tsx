@@ -7,6 +7,8 @@ import Lang from 'lang.js';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 import StickyFormFooter from '../../Components/Common/StickyFormFooter';
+import FormHeader from '../../Components/Common/FormHeader';
+import { InputColor } from '../../Components/Form/InputColor';
 
 export default function AssignFilialEdit({
   clinicData,
@@ -44,41 +46,13 @@ export default function AssignFilialEdit({
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-6 mb-8 content-data bg-content flex flex-col gap-6">
-            {/* Top Navigation & Action Line */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                {/* Title & Back link */}
-                <div className="flex items-center gap-3 mt-1">
-                  <Link
-                    href="/customers"
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all shadow-xs group"
-                    title={msg.get('customer.back') || 'Повернутись'}
-                  >
-                    <span className="material-symbols-outlined text-[20px] group-hover:-translate-x-0.5 transition-transform">
-                      arrow_back
-                    </span>
-                  </Link>
-                  <div>
-                    <h1 className="text-xl sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2 flex-wrap">
-                      <span>{msg.get('customer.attach') || "Пов'язати з філіалами"}</span>
-                    </h1>
-                    <p className="text-xs sm:text-sm text-slate-500">
-                      Керування робочими локаціями, посадовими правами та індивідуальним колірним
-                      кодуванням в розкладі
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Status Badges */}
-              <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>ID: DC-{customer.id}</span>
-                </div>
-              </div>
-            </div>
-
+            <FormHeader
+              title={msg.get('customer.attach')}
+              description={msg.get('customer.title.description')}
+              backUrl="/customers"
+              processing={processing}
+              saveText={msg.get('act.save')}
+            />
             {/* Staff Summary Banner Card */}
             <section className="bg-white rounded-xl p-4 sm:p-5 shadow-xs relative overflow-hidden border border-slate-100">
               <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-l from-teal-500/5 via-emerald-500/5 to-transparent pointer-events-none hidden md:block"></div>
@@ -169,6 +143,20 @@ export default function AssignFilialEdit({
                           </div>
                         </div>
 
+                        {/* Schedule Badge Color Selection Section with InputColor */}
+                        <div className="flex flex-col gap-2 pt-1">
+                          <InputColor
+                            defaultColor={activeColor}
+                            style="w-full"
+                            icon="palette"
+                            name={`color_${item.id}`}
+                            label={msg.get('customer.color') || 'Колір у розкладі'}
+                            placeholder="#0d9488"
+                            tips={null}
+                            disabled={!isAssigned}
+                          />
+                        </div>
+
                         {/* Role Selection Dropdown */}
                         <div className="flex flex-col gap-1.5">
                           <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center justify-between">
@@ -213,69 +201,6 @@ export default function AssignFilialEdit({
                             <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[20px]">
                               unfold_more
                             </span>
-                          </div>
-                        </div>
-
-                        {/* Schedule Badge Color Selection Section */}
-                        <div className="flex flex-col gap-2 pt-1">
-                          <div className="flex items-center justify-between">
-                            <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                              <span className="material-symbols-outlined text-[16px] text-teal-600">
-                                palette
-                              </span>
-                              <span>{msg.get('customer.color') || 'Колір у розкладі'}</span>
-                            </label>
-                            <span className="text-xs font-mono text-slate-500 uppercase font-semibold">
-                              {activeColor}
-                            </span>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                            <div className="relative flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 shadow-xs">
-                              <div
-                                className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mr-2 shadow-inner"
-                                style={{ backgroundColor: activeColor }}
-                              >
-                                <span className="material-symbols-outlined text-[14px] text-white">
-                                  water_drop
-                                </span>
-                              </div>
-                              <input
-                                id={`color_${item.id}`}
-                                type="text"
-                                value={activeColor}
-                                disabled={!isAssigned}
-                                onChange={(e) => {
-                                  const tmpPerm = [...values['permissions']];
-                                  const filialId = item.id;
-                                  const existingIdx = tmpPerm.findIndex(
-                                    (obj) => obj.filial_id === filialId
-                                  );
-                                  if (existingIdx !== -1) {
-                                    tmpPerm[existingIdx].color = e.target.value;
-                                    setValues((vals) => ({ ...vals, permissions: tmpPerm }));
-                                  }
-                                }}
-                                className="customer-color-field"
-                              />
-                              <input
-                                type="color"
-                                value={activeColor}
-                                disabled={!isAssigned}
-                                onChange={(e) => {
-                                  const tmpPerm = [...values['permissions']];
-                                  const filialId = item.id;
-                                  const existingIdx = tmpPerm.findIndex(
-                                    (obj) => obj.filial_id === filialId
-                                  );
-                                  if (existingIdx !== -1) {
-                                    tmpPerm[existingIdx].color = e.target.value;
-                                    setValues((vals) => ({ ...vals, permissions: tmpPerm }));
-                                  }
-                                }}
-                                className="absolute right-2 opacity-0 w-8 h-8 cursor-pointer"
-                              />
-                            </div>
                           </div>
                         </div>
                       </div>

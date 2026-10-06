@@ -60,6 +60,7 @@ const lngScheduler = {
     'tab.patients': 'Лікарі та пацієнти',
     'tab.visits': 'Асистенти',
     'tab.plans': 'Адміністратори',
+    'visit.date': 'Дата візиту',
   },
 };
 export default lngScheduler;

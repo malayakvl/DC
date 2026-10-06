@@ -1,5 +1,5 @@
 // hooks/useSchedulerEvents.ts
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { parseISO, format, differenceInMinutes } from 'date-fns';
 import moment from 'moment';
@@ -16,52 +16,97 @@ import {
   initServicesAction,
   showScheduleEditPopupAction,
   setScheduleDoctorIdAction,
-} from '@/Redux/Scheduler';
+} from '../../../Redux/Scheduler/index';
 import { showOverlayAction } from '@/Redux/Layout';
-import { SchedulerEvent } from '../_mock/data';
 
-const SLOT_HEIGHT = 30;
+export interface SchedulerEvent {
+  id: string;
+  title: string;
+  doctor_id: number;
+  patient_id: number;
+  cabinet_id: number;
+  event_date: string;
+  event_time_from: string;
+  event_time_to: string;
+  start: string;
+  end: string;
+  status_color: string;
+  status_name?: string;
+  patient_name: string;
+  services: any;
+  cabinet_name?: string;
+  doctor_name?: string;
+}
+
+const toEventTime = (value?: string) => value?.slice(0, 5) || '';
+
+const parseServices = (services: unknown) => {
+  if (Array.isArray(services)) return services;
+
+  if (typeof services === 'string') {
+    try {
+      const parsedServices = JSON.parse(services);
+      return Array.isArray(parsedServices) ? parsedServices : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
+};
+
+function normalizeSchedulerEvent(event: any): SchedulerEvent {
+  const patientName =
+    event.patient_name ||
+    [
+      event.patient_last_name ?? event.pl_name ?? event.last_name,
+      event.patient_first_name ?? event.p_name ?? event.first_name,
+    ]
+      .filter(Boolean)
+      .join(' ');
+  const doctorName =
+    event.doctor_name ||
+    [event.doctor_first_name ?? event.first_name, event.doctor_last_name ?? event.last_name]
+      .filter(Boolean)
+      .join(' ');
+  const eventTimeFrom = toEventTime(event.event_time_from);
+  const eventTimeTo = toEventTime(event.event_time_to);
+
+  return {
+    id: String(event.id ?? event.event_id),
+    title: event.title,
+    doctor_id: Number(event.doctor_id),
+    patient_id: Number(event.patient_id),
+    cabinet_id: Number(event.cabinet_id),
+    event_date: event.event_date,
+    event_time_from: eventTimeFrom,
+    event_time_to: eventTimeTo,
+    start: event.start || `${event.event_date}T${event.event_time_from}`,
+    end: event.end || `${event.event_date}T${event.event_time_to}`,
+    status_color: event.status_color || '#0ea5a4',
+    status_name: event.status_name,
+    patient_name: patientName,
+    services: parseServices(event.services),
+    cabinet_name: event.cabinet_name,
+    doctor_name: doctorName,
+  };
+}
 
 export function useSchedulerEvents(
   eventsData: any[],
   msg: any,
   blockClickRef: React.MutableRefObject<boolean>,
   isResizingRef: React.MutableRefObject<boolean>,
-  isDraggingRef: React.MutableRefObject<boolean>
+  isDraggingRef: React.MutableRefObject<boolean>,
+  slotHeight = 30
 ) {
-  const dispatch = useDispatch();
+  const dispatch: any = useDispatch();
 
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
     if (!eventsData) return [];
 
-    return eventsData.map((event) => ({
-      id: String(event.id),
-      title: event.title,
-      doctor_id: event.doctor_id,
-      patient_id: event.patient_id,
-      cabinet_id: event.cabinet_id,
-      event_date: event.event_date,
-      event_time_from: event.event_time_from.slice(0, 5),
-      event_time_to: event.event_time_to.slice(0, 5),
-      start: `${event.event_date}T${event.event_time_from}`,
-      end: `${event.event_date}T${event.event_time_to}`,
-      status_color: event.status_color || '#0ea5a4',
-      status_name: event.status_name,
-      patient_name: event.last_name ? `${event.last_name} ${event.first_name}` : event.patient_name,
-      services:
-        typeof event.services === 'string'
-          ? JSON.parse(event.services || '[]')
-          : event.services || [],
-      cabinet_name: event.cabinet_name,
-      doctor_name: event.doctor_first_name
-        ? `${event.doctor_first_name} ${event.doctor_last_name}`
-        : event.doctor_name,
-    }));
+    return eventsData.map(normalizeSchedulerEvent);
   });
-
-  // const isResizingRef = useRef(false);
-  // const isDraggingRef = useRef(false);
-  // const blockClickRef = useRef(false);
 
   // 💡 ФУНКЦИЯ-ГЛУШИТЕЛЬ ФАНТОМНЫХ КЛИКОВ
   const suppressNextClick = useCallback(() => {
@@ -73,10 +118,8 @@ export function useSchedulerEvents(
       window.removeEventListener('click', captureClick, true);
     };
 
-    // Перехватываем следующий клик на самом раннем этапе (capture phase)
     window.addEventListener('click', captureClick, true);
 
-    // Страховочный сброс флагов через 200мс
     setTimeout(() => {
       window.removeEventListener('click', captureClick, true);
       isResizingRef.current = false;
@@ -87,33 +130,7 @@ export function useSchedulerEvents(
 
   useEffect(() => {
     if (eventsData) {
-      setLocalEvents(
-        eventsData.map((event) => ({
-          id: String(event.id),
-          title: event.title,
-          doctor_id: event.doctor_id,
-          patient_id: event.patient_id,
-          cabinet_id: event.cabinet_id,
-          event_date: event.event_date,
-          event_time_from: event.event_time_from.slice(0, 5),
-          event_time_to: event.event_time_to.slice(0, 5),
-          start: `${event.event_date}T${event.event_time_from}`,
-          end: `${event.event_date}T${event.event_time_to}`,
-          status_color: event.status_color || '#0ea5a4',
-          status_name: event.status_name,
-          patient_name: event.last_name
-            ? `${event.last_name} ${event.first_name}`
-            : event.patient_name,
-          services:
-            typeof event.services === 'string'
-              ? JSON.parse(event.services || '[]')
-              : event.services || [],
-          cabinet_name: event.cabinet_name,
-          doctor_name: event.doctor_first_name
-            ? `${event.doctor_first_name} ${event.doctor_last_name}`
-            : event.doctor_name,
-        }))
-      );
+      setLocalEvents(eventsData.map(normalizeSchedulerEvent));
     }
   }, [eventsData]);
 
@@ -155,16 +172,13 @@ export function useSchedulerEvents(
       doctorId: number,
       timeSlots: any[]
     ) => {
-      // ⛔️ ЕСЛИ ТОЛЬКО ЧТО БЫЛ РЕСАЙЗ ИЛИ ДРЭГ — ИГНОРИРУЕМ КЛИК ПО ЯЧЕЙКЕ!
       if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
-        console.log('🚫 Клик по ячейке заблокирован после ресайза');
         e.stopPropagation();
         return;
       }
-      if (isResizingRef.current || isDraggingRef.current || blockClickRef.current) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickY = e.clientY - rect.top;
-      const slotIndex = Math.floor(clickY / SLOT_HEIGHT);
+      const slotIndex = Math.floor(clickY / slotHeight);
 
       if (slotIndex >= 0 && slotIndex < timeSlots.length) {
         const clickedSlot = timeSlots[slotIndex];
@@ -182,29 +196,23 @@ export function useSchedulerEvents(
         dispatch(showOverlayAction(true));
         dispatch(setScheduleDateAction(dayjs(date).format('DD.MM.YYYY')));
         dispatch(setScheduleTimeAction(clickedSlot.label));
+      } else {
+        console.log('disable for click');
       }
     },
-    [dispatch, msg]
+    [dispatch, msg, slotHeight]
   );
 
   const handleEventClick = useCallback(
-    (e: React.MouseEvent, cellEvent: SchedulerEvent) => {
-      // 1. Мгновенно глушим всплытие, чтобы событие НЕ долетело до ячейки календаря под ивентом!
+    (e: React.MouseEvent, cellEvent: any) => {
       e.stopPropagation();
 
-      // 2. Если во время отпускания кнопки мыши еще висит флаг Drag/Resize — отменяем действие
       if (blockClickRef.current || isResizingRef.current || isDraggingRef.current) {
-        console.log('🚫 Клик по ивенту заблокирован после resize/drag');
         return;
       }
 
-      // 3. Логика распарсивания услуг
-      const servicesArray =
-        typeof cellEvent.services === 'string'
-          ? JSON.parse(cellEvent.services)
-          : cellEvent.services || [];
+      const servicesArray = parseServices(cellEvent.services);
 
-      // 4. Диспатчим данные в стор
       dispatch(setScheduleEditEventAction(cellEvent));
       dispatch(setScheduleDateAction(cellEvent.event_date));
       dispatch(initServicesAction(servicesArray));
@@ -216,7 +224,6 @@ export function useSchedulerEvents(
     [dispatch]
   );
 
-  // --- HANDLER 4: Drag & Drop ---
   const handleDragStart = useCallback(
     (e: React.MouseEvent, event: SchedulerEvent) => {
       if ((e.target as HTMLElement).hasAttribute('data-resize-handle')) return;
@@ -248,7 +255,8 @@ export function useSchedulerEvents(
           blockClickRef.current = true;
         }
 
-        const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+        const minutesPerPixel = 15 / slotHeight;
+        const minutesDelta = Math.round((deltaY * minutesPerPixel) / 15) * 15;
         const elementOver = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
         const columnEl = elementOver?.closest('[data-column-type="doctor-cell"]');
 
@@ -288,7 +296,7 @@ export function useSchedulerEvents(
           return;
         }
 
-        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
+        suppressNextClick();
 
         router.put(
           route('scheduler.update-position', event.id),
@@ -306,10 +314,9 @@ export function useSchedulerEvents(
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    [suppressNextClick]
+    [slotHeight, suppressNextClick]
   );
 
-  // --- HANDLER 5: Resize ---
   const handleResizeStart = useCallback(
     (e: React.MouseEvent, eventId: string, currentEndISO: string) => {
       e.stopPropagation();
@@ -330,7 +337,8 @@ export function useSchedulerEvents(
           blockClickRef.current = true;
         }
 
-        const minutesDelta = Math.round(deltaY / 2 / 15) * 15;
+        const minutesPerPixel = 15 / slotHeight;
+        const minutesDelta = Math.round((deltaY * minutesPerPixel) / 15) * 15;
 
         if (minutesDelta !== 0) {
           const newEndDate = new Date(baseEnd.getTime() + minutesDelta * 60000);
@@ -362,13 +370,13 @@ export function useSchedulerEvents(
           return;
         }
 
-        suppressNextClick(); // 👈 УБИВАЕМ СЛЕДУЮЩИЙ КЛИК
+        suppressNextClick();
       };
 
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    [suppressNextClick]
+    [slotHeight, suppressNextClick]
   );
 
   return {

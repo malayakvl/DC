@@ -1,43 +1,54 @@
 import React, { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   schedulerViewSelector,
   schedulerStatusSelector,
   schedulerBaseDateSelector,
+  schedulerCabinetFilterSelector,
+  schedulerDoctorFilterSelector,
 } from '../../../Redux/Scheduler/selectors';
-import { setTypeViewAction } from '../../../Redux/Scheduler/index';
+import {
+  setScheduleCabinetFilterAction,
+  setScheduleDoctorFilterAction,
+  setScheduleStatusFilterAction,
+  setTypeViewAction,
+} from '../../../Redux/Scheduler/index';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import getDays from '@/lib/calendarFunctions';
 import { addDays, format, parseISO } from 'date-fns';
-import { setCalendarDateAction } from '../../../Redux/Scheduler/index';
-
+import { setCalendarDateAction, fetchPeriodEventsAction } from '../../../Redux/Scheduler/index';
+import { useAppDispatch } from '@/hooks';
 
 interface SchedulerToolbarProps {
-  onPrevDay?: () => void;
-  onNextDay?: () => void;
-  onToday?: () => void;
   onNewAppointment?: () => void;
-  cabinetsData: any;
-  statusesData: any;
-  customerData: any;
+  cabinetsData: any[];
+  statusesData: any[];
+  customerData: any[];
   allowViewSwitch?: boolean;
 }
 
 export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
-  onPrevDay,
-  onNextDay,
-  onToday,
   cabinetsData,
   statusesData,
   customerData,
   onNewAppointment,
+  allowViewSwitch = true,
 }) => {
   const appLang = useSelector(appLangSelector);
   const viewMode = useSelector(schedulerViewSelector);
   const baseCalendarDate = useSelector(schedulerBaseDateSelector);
-  const dispatch = useDispatch();
+  const cabinetFilterId = useSelector(schedulerCabinetFilterSelector);
+  const doctorFilterId = useSelector(schedulerDoctorFilterSelector);
+  const statusFilter = useSelector(schedulerStatusSelector);
+  const dispatch = useAppDispatch();
 
   const dayStep = viewMode === 'day' ? 1 : 3;
+
+  const goToDate = (newDate: string) => {
+    const dateTo = format(addDays(parseISO(newDate), dayStep - 1), 'yyyy-MM-dd');
+    dispatch(setCalendarDateAction(newDate));
+    dispatch(fetchPeriodEventsAction(newDate, dateTo));
+  };
 
   // Динамически получаем дни для текущего периода
   const days = useMemo(() => {
@@ -58,7 +69,7 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
       <div className="flex flex-wrap items-center gap-3">
         {/* Кнопка сброса на сегодняшний день */}
         <button
-          onClick={onToday}
+          onClick={() => goToDate(format(new Date(), 'yyyy-MM-dd'))}
           className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs rounded-lg transition-colors shadow-sm"
           type="button"
         >
@@ -70,7 +81,7 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
           <button
             onClick={() => {
               const newDate = format(addDays(parseISO(baseCalendarDate), -dayStep), 'yyyy-MM-dd');
-              dispatch(setCalendarDateAction(newDate));
+              goToDate(newDate);
             }}
             className="p-1 hover:bg-white rounded text-slate-600 hover:text-slate-900 transition-colors shadow-none hover:shadow-sm"
             title="Попередній період"
@@ -91,7 +102,7 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
           <button
             onClick={() => {
               const newDate = format(addDays(parseISO(baseCalendarDate), dayStep), 'yyyy-MM-dd');
-              dispatch(setCalendarDateAction(newDate));
+              goToDate(newDate);
             }}
             className="p-1 hover:bg-white rounded text-slate-600 hover:text-slate-900 transition-colors shadow-none hover:shadow-sm"
             title="Наступний період"
@@ -105,7 +116,8 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
           {/* Cabinet Filter */}
           <div className="relative">
             <select
-              onChange={(e) => console.log(e.target.value)}
+              value={cabinetFilterId}
+              onChange={(event) => dispatch(setScheduleCabinetFilterAction(event.target.value))}
               className="appearance-none bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 text-xs font-medium pl-3 pr-8 py-2 rounded-lg focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
             >
               <option value="">Всі кабінети</option>
@@ -122,7 +134,11 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
 
           {/* Doctor Filter */}
           <div className="relative">
-            <select className="appearance-none bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 text-xs font-medium pl-3 pr-8 py-2 rounded-lg focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
+            <select
+              value={doctorFilterId}
+              onChange={(event) => dispatch(setScheduleDoctorFilterAction(event.target.value))}
+              className="appearance-none bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 text-xs font-medium pl-3 pr-8 py-2 rounded-lg focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
+            >
               <option value="">Всі лікарі ({customerData?.length || 0})</option>
               {customerData?.map((customer) => (
                 <option key={customer.id} value={customer.id}>
@@ -137,11 +153,15 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
 
           {/* Status Filter */}
           <div className="relative">
-            <select className="appearance-none bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 text-xs font-medium pl-3 pr-8 py-2 rounded-lg focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer">
+            <select
+              value={statusFilter}
+              onChange={(event) => dispatch(setScheduleStatusFilterAction(event.target.value))}
+              className="appearance-none bg-slate-50 border border-slate-200 hover:border-slate-300 text-slate-800 text-xs font-medium pl-3 pr-8 py-2 rounded-lg focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer"
+            >
               <option value="">Всі статуси</option>
               {statusesData &&
                 statusesData.map((status) => (
-                  <option key={status.id} value={status.id}>
+                  <option key={status.id} value={status.name}>
                     {status.name}
                   </option>
                 ))}
@@ -155,22 +175,24 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
 
       {/* Правая часть: Переключатель вида (День / 3 дня) и кнопка создания */}
       <div className="flex items-center gap-3">
-        <div className="inline-flex bg-slate-100 p-1 rounded-lg">
-          <button
-            onClick={() => dispatch(setTypeViewAction('day'))}
-            className={`px-3 py-1 text-xs font-bold rounded transition-colors whitespace-nowrap ${viewMode === 'day' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            type="button"
-          >
-            День
-          </button>
-          <button
-            onClick={() => dispatch(setTypeViewAction('3days'))}
-            className={`px-3 py-1 text-xs font-medium rounded transition-colors whitespace-nowrap ${viewMode === '3days' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-            type="button"
-          >
-            3 дні
-          </button>
-        </div>
+        {allowViewSwitch && (
+          <div className="inline-flex bg-slate-100 p-1 rounded-lg">
+            <button
+              onClick={() => dispatch(setTypeViewAction('day'))}
+              className={`px-3 py-1 text-xs font-bold rounded transition-colors whitespace-nowrap ${viewMode === 'day' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              type="button"
+            >
+              День
+            </button>
+            <button
+              onClick={() => dispatch(setTypeViewAction('3days'))}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors whitespace-nowrap ${viewMode === '3days' ? 'bg-white text-primary shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              type="button"
+            >
+              3 дні
+            </button>
+          </div>
+        )}
 
         <button
           onClick={onNewAppointment}

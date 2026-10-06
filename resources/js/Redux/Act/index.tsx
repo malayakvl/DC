@@ -4,11 +4,17 @@ import {
   setShowTableError,
   updateServiceItemQtyAction,
   setFilters,
-  clearFilters
+  clearFilters,
+  findActItemsAction,
+  updateServiceQuantityAction,
+  updateComponentQuantityAction,
+  syncAndRecalculateAct,
+  setupActStoreErrorAction,
 } from './actions';
 
 const initialState = {
-  invoiceItems: [],
+  actItems: [],
+  actItemsError: [],
   invoiceTax: '',
   curreny: '',
   showTableError: false,
@@ -21,7 +27,7 @@ const initialState = {
     filterDateTo: '',
     filterStatus: '',
   },
-  isClear: false
+  isClear: false,
 };
 
 // ------------------------------------
@@ -29,35 +35,54 @@ const initialState = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [setActItems.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
-      invoiceItems: action.payload,
+      // Додаємо новий об'єкт (або масив об'єктів) до вже існуючого масиву
+      actItems: [
+        ...state.actItems,
+        ...(Array.isArray(action.payload) ? action.payload : [action.payload]),
+      ],
     }),
   },
   [setFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       filters: action.payload,
     }),
   },
   [clearFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       filters: {
         filterName: '',
-        filterPhone: ''
+        filterPhone: '',
       },
-      isClear: true
+      isClear: true,
     }),
   },
   [setShowTableError.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       showTableError: action.payload,
     }),
   },
+  [findActItemsAction.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      actItems: [
+        ...state.actItems,
+        ...(Array.isArray(action.payload) ? action.payload : [action.payload]),
+      ],
+    }),
+  },
+  [setupActStoreErrorAction.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      actItemsError: action.payload,
+    }),
+  },
   [updateServiceItemQtyAction.toString()]: {
-    next: (state, action) => {
+    next: (state: any, action: any) => {
       const { rowIndex, itemIndex, qty } = action.payload;
       const updatedItems = [...state.invoiceItems];
 
@@ -67,12 +92,12 @@ const ACTION_HANDLERS = {
           const updatedComponents = [...row.components];
           updatedComponents[itemIndex] = {
             ...updatedComponents[itemIndex],
-            quantity: qty
+            quantity: qty,
           };
 
           updatedItems[rowIndex] = {
             ...row,
-            components: updatedComponents
+            components: updatedComponents,
           };
         }
       }
@@ -89,9 +114,13 @@ export {
   setActItems,
   setShowTableError,
   updateServiceItemQtyAction,
+  updateComponentQuantityAction,
   setFilters,
   clearFilters,
-
+  findActItemsAction,
+  updateServiceQuantityAction,
+  syncAndRecalculateAct,
+  setupActStoreErrorAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

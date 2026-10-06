@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import Lang from 'lang.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { findPatientsAction } from '@/Redux/Scheduler/actions';
 import { patientsDataSelector } from '@/Redux/Scheduler/selectors';
 import { setSchedulePatientIdAction } from '@/Redux/Scheduler';
-import { UserPlus, UserCheck, Mail, Phone, User } from 'lucide-react';
+import { UserPlus, Mail, Phone, User } from 'lucide-react';
+import { useAppDispatch } from '../../hooks';
 
-export default function EventPatient({ editPatientData = null }) {
-  const dispatch = useDispatch();
+// 1. Описываем интерфейс для пропсов
+interface EventPatientProps {
+  editPatientData?: {
+    patient: any;
+    patient_id: any;
+  } | null;
+  values?: any; // если values тоже передаются извне
+}
+export default function EventPatient({ editPatientData = null }: EventPatientProps) {
+  // const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngScheduler,
@@ -17,7 +27,7 @@ export default function EventPatient({ editPatientData = null }) {
   });
   const patientsData = useSelector(patientsDataSelector);
   const [addPatient, setAddPatient] = useState(false);
-  const [patientData, setPatientData] = useState({
+  const [patientData, setPatientData] = useState<Record<string, any>>({
     firstName: '',
     lastName: '',
     email: '',
@@ -27,13 +37,14 @@ export default function EventPatient({ editPatientData = null }) {
   });
   const [showPatientsList, setShowPatientsList] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setPatientData((values) => ({
       ...values,
       [key]: value,
     }));
+    console.log(1);
     // find clinic patients
     if (value.length > 3) {
       dispatch(findPatientsAction(value) as any);
@@ -47,7 +58,7 @@ export default function EventPatient({ editPatientData = null }) {
 
     return (
       <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-        {patientsData.map((patient) => (
+        {patientsData.map((patient: any) => (
           <div
             key={patient.id}
             className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer transition border-b border-slate-100 last:border-none"
@@ -55,10 +66,22 @@ export default function EventPatient({ editPatientData = null }) {
               setShowPatientsList(false);
               setPatientData((prev) => ({
                 ...prev,
-                patient: `${patient.last_name} ${patient.first_name}`,
-                patientExistId: patient.id,
+                patient: `${patient.last_name} ${patient.first_name}`, // ФИО для отображения
+                patientExistId: patient.patient_id, // ID пациента для бэка
+                primaryPhone: patient.primary_phone || '', // Телефон
+                medicalCardNo: patient.medical_card_no || '', // Номер медкартки
+                discount: patient.discount || 0, // Скидка
+                balance: patient.balance || 0, // Баланс
+                gender: patient.gender || '', // Пол
+                birthday: patient.birthday || '', // День рождения
+                importantInfo: patient.important_info || '', // Важная инфа (аллергии и т.д.)
+                phone: patient.primary_phone,
+                first_name: patient.first_name,
+                last_name: patient.last_name,
+                registered_at: patient.registered_at,
+                lastVisit: patient.last_visit,
               }));
-              dispatch(setSchedulePatientIdAction(patient.id));
+              dispatch(setSchedulePatientIdAction(patient.patient_id));
             }}
           >
             <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs mr-3 shrink-0">
@@ -70,7 +93,7 @@ export default function EventPatient({ editPatientData = null }) {
               <div className="text-sm font-medium text-slate-900 truncate">
                 {patient.last_name} {patient.first_name}
               </div>
-              <div className="text-xs text-slate-500">{patient.phone || 'Без телефону'}</div>
+              <div className="text-xs text-slate-500">{patient.primaryPhone || 'Без телефону'}</div>
             </div>
 
             <svg
@@ -123,20 +146,25 @@ export default function EventPatient({ editPatientData = null }) {
 
           <div className="flex items-center gap-1.5 shrink-0 pl-2">
             {patientData.patientExistId && (
-              <span className="px-2 py-0.5 text-xs font-mono font-medium text-teal-800 bg-teal-100/60 rounded-md whitespace-nowrap">
-                #{patientData.patientExistId}
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
+                <span className="material-symbols-outlined text-[14px] text-teal-700">
+                  clinical_notes
+                </span>
+                {patientData.medicalCardNo}
               </span>
             )}
 
-            <button
-              onClick={() => setAddPatient(!addPatient)}
-              className="px-2.5 py-1.5 hover:bg-teal-50 rounded-lg text-teal-700 transition flex items-center gap-1.5 text-xs font-medium shrink-0 border border-teal-200/60 bg-white shadow-xs"
-              type="button"
-              title={msg.get('scheduler.add.patient')}
-            >
-              <UserPlus className="w-[16px] h-[16px]" />
-              <span className="hidden sm:inline">Створити нову картку</span>
-            </button>
+            {!patientData.patientExistId && (
+              <button
+                onClick={() => setAddPatient(!addPatient)}
+                className="px-2.5 py-1.5 hover:bg-teal-50 rounded-lg text-teal-700 transition flex items-center gap-1.5 text-xs font-medium shrink-0 border border-teal-200/60 bg-white shadow-xs"
+                type="button"
+                title={msg.get('scheduler.add.patient')}
+              >
+                <UserPlus className="w-[16px] h-[16px]" />
+                <span className="hidden sm:inline">Створити нову картку</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -148,24 +176,41 @@ export default function EventPatient({ editPatientData = null }) {
           <div className="mt-2.5 p-3 bg-[#f2f3ff] border border-slate-200/60 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-7 h-7 rounded-full bg-teal-700 text-white flex items-center justify-center text-xs font-bold shadow-xs shrink-0">
-                АК
+                {patientData?.first_name[0]}
+                {patientData?.last_name[0]}
               </div>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-0">
                 <span className="font-semibold text-slate-900">
-                  {patientData.phone || 'Без телефону'}
+                  {patientData?.primaryPhone || 'Без телефону'}
                 </span>
                 <span className="mx-1.5 text-slate-300 hidden sm:inline">•</span>
-                <span className="text-slate-500">Останній візит: 14 серпня 2026</span>
+                <span className="text-slate-500">Останній візит: {patientData.lastVisit}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-800 shadow-2xs">
-                <span className="material-symbols-outlined text-[14px] text-teal-700">
-                  clinical_notes
+              {/* Важная информация (аллергии и т.д.) с иконкой warning и акцентным цветом */}
+              {patientData.importantInfo && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 shadow-2xs font-medium">
+                  <span className="material-symbols-outlined text-[14px] text-amber-600">
+                    warning
+                  </span>
+                  {patientData.importantInfo}
                 </span>
-                {patientData.important_info}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-50 border border-teal-100 text-teal-800 font-semibold shadow-2xs">
+              )}
+
+              {/* Баланс */}
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-semibold shadow-2xs ${
+                  Number(patientData.balance) < 0
+                    ? 'bg-rose-50 border-rose-200 text-rose-700' // Боржник
+                    : Number(patientData.balance) > 0
+                      ? 'bg-sky-50 border-sky-200 text-sky-700' // Переплата
+                      : 'bg-teal-50 border-teal-100 text-teal-850' // Повний розрахунок (0)
+                }`}
+              >
+                <span className="material-symbols-outlined text-[14px]">
+                  {Number(patientData.balance) < 0 ? 'account_balance_wallet' : 'check_circle'}
+                </span>
                 Баланс: {patientData.balance} ₴
               </span>
             </div>

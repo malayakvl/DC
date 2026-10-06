@@ -7,10 +7,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { userSearchResultsSelector } from '../../../Redux/Clinic/selectors';
 import { findMaterialAction } from '../../../Redux/Clinic/actions';
-import {
-  setInvoiceItems,
-  setShowTableError,
-} from '../../../Redux/Incominginvoice';
+import { setInvoiceItems, setShowTableError } from '../../../Redux/Incominginvoice';
 import { invoiceTaxSelector } from '../../../Redux/Incominginvoice/selectors';
 
 export default function AddDynamicInputFields({

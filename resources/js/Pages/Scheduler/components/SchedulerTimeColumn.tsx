@@ -10,6 +10,7 @@ type SchedulerTimeColumnProps = {
 export default function SchedulerTimeColumn({ timeSlots, slotHeight }: SchedulerTimeColumnProps) {
   return (
     <div
+      className="scheduler-time-column"
       style={{
         width: 70,
         flexShrink: 0,
@@ -30,9 +31,6 @@ export default function SchedulerTimeColumn({ timeSlots, slotHeight }: Scheduler
             key={timeStr}
             style={{
               height: slotHeight,
-              boxShadow: isHour
-                ? 'inset 0 -1px 0 rgba(0,0,0,.15)'
-                : 'inset 0 -1px 0 rgba(0,0,0,.04)',
               background: isHour ? '#f4fefb' : '#fff',
               borderRight: '1px solid #0ea5a4',
               borderLeft: '1px solid #0ea5a4',
@@ -58,11 +56,20 @@ export default function SchedulerTimeColumn({ timeSlots, slotHeight }: Scheduler
                   style={{
                     width: '6px',
                     height: '6px',
-                    borderRadius: '50%',
                     backgroundColor: '#fff',
                     display: 'inline-block',
                   }}
                 ></span>
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    backgroundColor: '#0ea5a4',
+                    display: 'inline-block',
+                    flexShrink: 0,
+                  }}
+                />
                 <span style={{ fontSize: '12px', fontWeight: 700, color: '#000', lineHeight: 1 }}>
                   {timeStr}
                 </span>

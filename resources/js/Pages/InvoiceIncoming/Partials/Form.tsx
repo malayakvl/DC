@@ -1,6 +1,5 @@
-import { Transition } from '@headlessui/react';
-import { Link, router, useForm } from '@inertiajs/react';
-import React, { useRef, useState } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
@@ -18,7 +17,6 @@ import {
 } from '@/Redux/Incominginvoice/selectors';
 import { setInvoiceTax, setShowTableError } from '@/Redux/Incominginvoice';
 import InputTaxSelect from '../../../Components/Form/InputTaxSelect';
-import { ArrowLeft } from 'lucide-react';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import FormHeader from '../../../Components/Common/FormHeader';
 
@@ -44,7 +42,6 @@ export default function Form({
   const invoiceItems = useSelector(invoiceItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
-  // const [showRowsError, setShowRowsError] = useState(false);
 
   const [values, setValues] = useState({
     invoice_number: formData.invoice_number ? formData.invoice_number : '',
@@ -72,9 +69,23 @@ export default function Form({
       [key]: value,
     }));
     if (key === 'tax_id') {
-      dispatch(setInvoiceTax(e.target.value));
+      // Ищем выбранный налог в переданном массиве taxData, чтобы узнать его реальный процент (например, 20, 7, 5, 0)
+      const selectedTax = taxData.find((tax) => String(tax.id) === String(value));
+      const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
+
+      // Диспатчим в стейт строку с процентом, например "tax_20" или просто число
+      dispatch(setInvoiceTax(`tax_${rate}`));
     }
   };
+
+  // Синхронізуємо початкові рядки з бази у Redux стор при завантаженні форми редагування
+  useEffect(() => {
+    if (formData?.tax_id && taxData) {
+      const selectedTax = taxData.find((tax) => String(tax.id) === String(formData.tax_id));
+      const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
+      dispatch(setInvoiceTax(`tax_${rate}`));
+    }
+  }, [formData?.tax_id, taxData]);
 
   const handleChangeCalendar = (data) => {
     const key = 'invoice_date';
@@ -144,6 +155,14 @@ export default function Form({
     }
   };
 
+  // Расчет общих итогов по документу для отображения в футере таблицы
+  const totalWithoutTax = invoiceItems.reduce(
+    (acc, item) => acc + (parseFloat(item.total) || 0),
+    0
+  );
+  const totalTax = invoiceItems.reduce((acc, item) => acc + (parseFloat(item.tax_amount) || 0), 0);
+  const totalWithTax = totalWithoutTax + totalTax;
+
   return (
     <section>
       <div className="flex flex-col gap-3 mt-2">
@@ -168,7 +187,7 @@ export default function Form({
                 description
               </span>
               <h2 className="text-base font-semibold text-gray-900">
-                Реквізити документа та умови постачання
+                {msg.get('invoice_incoming.create.title.description')}
               </h2>
             </div>
           </div>
@@ -307,32 +326,31 @@ export default function Form({
         </div>
 
         <div className="relative rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-          <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+          <div className="p-6 flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.product')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100  text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.qty')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.unit')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.factqty')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100  text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.price')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100  text-center">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.total')}
                   </th>
-                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 w-btn">
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 w-btn pb-3">
                     {msg.get('invoice_incoming.actions')}
                   </th>
-                  {/*<th className="pb-3 w-btn">&nbsp;</th>*/}
                 </tr>
               </thead>
               <tbody>
@@ -356,6 +374,7 @@ export default function Form({
                         quantity: '',
                         price: '',
                         total: '',
+                        tax_amount: '',
                       },
                     ]}
                   />
@@ -364,7 +383,7 @@ export default function Form({
               {!isPosted && (
                 <tfoot>
                   <tr>
-                    <td colSpan="7">
+                    <td colSpan="7" className="pt-3">
                       <button
                         type="button"
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-50 text-teal-700 text-xs font-bold hover:bg-teal-100 transition-colors"
@@ -377,13 +396,32 @@ export default function Form({
                 </tfoot>
               )}
             </table>
+
+            {/* Блок итогов документа в стиле 1С */}
+            <div className="flex justify-end items-center gap-6 pt-4 border-t border-slate-200 text-xs font-semibold text-slate-700">
+              <div>
+                Всього без ПДВ:{' '}
+                <span className="font-bold text-slate-900">{totalWithoutTax.toFixed(2)} ₴</span>
+              </div>
+              <div>
+                ПДВ: <span className="font-bold text-slate-900">{totalTax.toFixed(2)} ₴</span>
+              </div>
+              <div className="text-sm">
+                Всього з ПДВ:{' '}
+                <span className="font-bold text-teal-700 text-base">
+                  {totalWithTax.toFixed(2)} ₴
+                </span>
+              </div>
+            </div>
           </div>
         </div>
+
         <div className="bg-blue-100 align-items-end">
           <div className={`mb-4 clearfix row-invoice-error ${showTableError ? 'block' : 'hidden'}`}>
             {msg.get('invoice_incoming.rows.error')}
           </div>
         </div>
+
         {/* Master Action Footer Bar */}
         <StickyFormFooter
           backUrl="/invoice-incoming"

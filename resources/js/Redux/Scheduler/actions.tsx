@@ -4,6 +4,8 @@ import axios from 'axios';
 export const setTypeViewAction = createAction('schedule/SET_TYPE_VIEW');
 export const setCalendarDateAction = createAction('schedule/SET_CALENDAR_DATE');
 export const setScheduleStatusFilterAction = createAction('schedule/SET_FILTER_STATUS');
+export const setScheduleCabinetFilterAction = createAction('schedule/SET_FILTER_CABINET');
+export const setScheduleDoctorFilterAction = createAction('schedule/SET_FILTER_DOCTOR');
 export const showSchedulePopupAction = createAction('schedule/SHOW_POPUP');
 export const showScheduleEditPopupAction = createAction('schedule/SHOW_EDIT_POPUP');
 export const setEditEventAction = createAction('schedule/SET_EDIT_EVENT');
@@ -31,43 +33,43 @@ export const setUpdateEventAction = createAction('schedule/SETUP_UPDATE_EVENT');
 
 export const fetchEventsAction: any = createAction(
   'scheduler/FIND_EVENTS',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
-      const state = getState();
-      return axios
-        .post(`/scheduler/fetchEvents`, { start: data.start, end: data.end }, {})
-        .then(async (res) => {
-          return res.data.items;
-        });
-    }
+  async (data: any) => (): Promise<void> => {
+    return axios
+      .post(`/scheduler/fetchEvents`, { start: data.start, end: data.end }, {})
+      .then(async (res) => {
+        return res.data.items;
+      });
+  }
+);
+export const fetchPeriodEventsAction: any = createAction(
+  'scheduler/FIND_EVENTS',
+  async (dateFrom: any, dateTo: any) => (): Promise<void> => {
+    return axios.get(`/scheduler/fetchEvents?start=${dateFrom}&end=${dateTo}`).then(async (res) => {
+      return res.data.items;
+    });
+  }
 );
 export const findPatientsAction: any = createAction(
   'scheduler/FIND_PATIENTS',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
-      const state = getState();
-      return axios.get(`/scheduler/findPatients?strFind=${data}`).then(async (res) => {
-        return res.data.items;
-      });
-    }
+  async (data: any) => (): Promise<void> => {
+    return axios.get(`/scheduler/findPatients?strFind=${data}`).then(async (res) => {
+      return res.data.items;
+    });
+  }
 );
 export const updateSchedulerPeriodAction: any = createAction(
   'scheduler/UPDATE_PERIOD',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
-      const state = getState();
-      return axios.get(`/scheduler/updatePeriod?data=${JSON.stringify(data)}`).then(async (res) => {
-        return res.data.items;
-      });
-    }
+  async (data: any) => (): Promise<void> => {
+    return axios.get(`/scheduler/updatePeriod?data=${JSON.stringify(data)}`).then(async (res) => {
+      return res.data.items;
+    });
+  }
 );
 export const updateEventsAction: any = createAction(
   'scheduler/UPDATE_EVENT_DATA',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<void> => {
-      const state = getState();
-      return axios.post(`/scheduler/update-event`, data, {}).then(async (res) => {
-        return;
-      });
-    }
+  async (data: any) => (): Promise<void> => {
+    return axios.post(`/scheduler/update-event`, data, {}).then(async () => {
+      return;
+    });
+  }
 );

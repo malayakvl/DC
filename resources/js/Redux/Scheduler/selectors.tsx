@@ -1,14 +1,7 @@
-import { createSelector } from 'reselect';
-// ------------------------------------
-// Selectors
-// ------------------------------------
-const rootSelector = createSelector(
-  (state) => state,
-  (scheduler) => scheduler
-);
-
 export const schedulerViewSelector = (state) => state.scheduler.filterTypeView;
 export const schedulerStatusSelector = (state) => state.scheduler.filterStatus;
+export const schedulerCabinetFilterSelector = (state) => state.scheduler.filterCabinetId;
+export const schedulerDoctorFilterSelector = (state) => state.scheduler.filterDoctorId;
 export const schedulerBaseDateSelector = (state) => state.scheduler.filterBaseDate;
 export const showSchedulePopupSelector = (state) => state.scheduler.showSchedulePopup;
 export const showEditPopupSelector = (state) => state.scheduler.showScheduleEditPopup;

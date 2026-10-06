@@ -178,13 +178,170 @@ class ServiceController extends Controller
     public function findServiceItems(Request $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $serviceId = $request->serviceId;
-            
-            $resData = DB::table('pricing_items')
-                ->select('pricing_items.*', 'materials.name AS product', 'units.name AS unit_name')
+
+            $filialId = $request->session()->get('filial_id');
+            $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
+
+            // 1. Отримуємо базові компоненти послуги з таблиці pricing_items разом із матеріалами та одиницями
+            $pricingItems = DB::table('pricing_items')
+                ->select(
+                    'pricing_items.*',
+                    'materials.name AS product',
+                    'units.name AS unit_name',
+                    'materials.is_instrument',
+                    'materials.expected_uses',
+                    'materials.price AS fallback_price'
+                )
                 ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
                 ->leftJoin('units', 'units.id', '=', 'pricing_items.unit_id')
                 ->where('pricing_id', '=', $serviceId)
                 ->get();
+
+            if ($pricingItems->isEmpty() || !$storeId) {
+                return response()->json(['items' => []]);
+            }
+
+            // Збираємо всі унікальні material_id для запиту партій зі складу
+            $materialIds = $pricingItems->pluck('material_id')->unique()->all();
+
+            // Кешуємо доступні партії по кожному матеріалу (де є залишок)
+            $availableByMaterial = [];
+            foreach ($materialIds as $materialId) {
+                $availableByMaterial[$materialId] = DB::table('store_batches')
+                    ->where('store_id', $storeId)
+                    ->where('material_id', $materialId)
+                    ->where('fact_qty_left', '>', 0)
+                    ->orderBy('arrived_at')
+                    ->orderBy('id')
+                    ->get(['id', 'arrived_at', 'fact_qty_left', 'price_per_unit'])
+                    ->map(fn ($batch) => [
+                        'id' => $batch->id,
+                        'arrived_at' => $batch->arrived_at,
+                        'fact_qty_left' => (float) $batch->fact_qty_left,
+                        'price_per_unit' => (float) $batch->price_per_unit,
+                    ])
+                    ->all();
+            }
+
+            $resultItems = [];
+
+            // 2. Проходимо по кожному компоненту і робимо FIFO-розрахунок
+            foreach ($pricingItems as $item) {
+                $materialId = (int) $item->material_id;
+                $requiredQty = (float) $item->quantity; // Кількість за замовчуванням у рецептурі
+                $remainingQty = $requiredQty;
+                $cost = 0.0;
+                $batches = [];
+
+                $isInstrument = (bool) $item->is_instrument;
+                $expectedUses = (int) ($item->expected_uses ?? 0);
+                $fallbackPrice = (float) ($item->fallback_price ?? 0);
+
+                // Симулюємо списування по партіях (FIFO)
+                if (isset($availableByMaterial[$materialId])) {
+                    foreach ($availableByMaterial[$materialId] as &$batch) {
+                        if ($remainingQty <= 0) {
+                            break;
+                        }
+
+                        $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                        $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
+
+                        // Враховуємо амортизацію для інструментів
+                        $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
+                        $lineCost = round($usedQty * $unitCost, 4);
+
+                        $batches[] = [
+                            'batch_id' => $batch['id'],
+                            'arrived_at' => $batch['arrived_at'],
+                            'quantity' => $usedQty,
+                            'price_per_unit' => round($unitCost, 4),
+                            'total' => $lineCost,
+                        ];
+
+                        $cost += $lineCost;
+                        $remainingQty = round($remainingQty - $usedQty, 4);
+                        // Зменшуємо залишок локально в симуляції для наступних ітерацій
+                        $batch['fact_qty_left'] = round($batch['fact_qty_left'] - $usedQty, 4);
+                    }
+                    unset($batch);
+                }
+
+                $availableQty = round($requiredQty - $remainingQty, 4);
+                $shortageQty = max(0, $remainingQty);
+
+                // Вираховуємо actual_price (як у вашому старому запиті)
+                $rawPriceForCalc = !empty($batches) ? $batches[0]['price_per_unit'] : $fallbackPrice;
+                $actualPrice = ($isInstrument && $expectedUses > 0) ? ($rawPriceForCalc / max($expectedUses, 1)) : $rawPriceForCalc;
+
+                // Формуємо фінальний об'єкт компонента з усіма партіями та статусом залишків
+                $resultItems[] = [
+                    'id' => $item->id,
+                    'pricing_id' => $item->pricing_id,
+                    'material_id' => $materialId,
+                    'quantity' => $requiredQty,
+                    'unit_id' => $item->unit_id,
+                    'price' => $item->price,
+                    'total' => $item->total,
+                    'mark_up' => $item->mark_up,
+                    'base_price' => $item->base_price,
+                    'product' => $item->product,
+                    'unit_name' => $item->unit_name,
+                    'actual_price' => (string)$actualPrice,
+                    'is_instrument' => $isInstrument,
+                    'expected_uses' => $item->expected_uses,
+                    'base_quantity' => $item->base_quantity ?? $requiredQty,
+                    // Додаємо поля FIFO прямо в компонент під час первинного завантаження
+                    'available_qty' => $availableQty,
+                    'shortage_qty' => $shortageQty,
+                    'cost' => round($cost, 4),
+                    'batches' => $batches,
+                ];
+            }
+
+            return response()->json([
+                'items' => $resultItems
+            ]);
+        });
+    }
+
+
+
+    public function findServiceItemsOld(Request $request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $serviceId = $request->serviceId;
+
+            // Підзапит для отримання найближчої активної партії з ненульовим залишком (FIFO)
+            $subQuery = DB::table('store_batches')
+                ->select('material_id', 'price_per_unit')
+                ->where('qty_left', '>', 0)
+                ->orderBy('arrived_at', 'asc')
+                ->orderBy('id', 'asc');
+
+            $resData = DB::table('pricing_items')
+                ->select(
+                    'pricing_items.*',
+                    'materials.name AS product',
+                    'units.name AS unit_name',
+                    // Використовуємо правильну колонку expected_uses для амортизації інструментів
+                    DB::raw("
+                    CASE 
+                        WHEN materials.is_instrument AND COALESCE(materials.expected_uses, 0) > 0 
+                        THEN COALESCE(batches.price_per_unit, materials.price, 0) / materials.expected_uses
+                        ELSE COALESCE(batches.price_per_unit, materials.price, 0)
+                    END AS actual_price
+                "),
+                    'materials.is_instrument',
+                    'materials.expected_uses'
+                )
+                ->leftJoin('materials', 'materials.id', '=', 'pricing_items.material_id')
+                ->leftJoin('units', 'units.id', '=', 'pricing_items.unit_id')
+                ->leftJoinSub($subQuery, 'batches', function($join) {
+                    $join->on('batches.material_id', '=', 'pricing_items.material_id');
+                })
+                ->where('pricing_id', '=', $serviceId)
+                ->get();
+
             return response()->json([
                 'items' => $resData
             ]);

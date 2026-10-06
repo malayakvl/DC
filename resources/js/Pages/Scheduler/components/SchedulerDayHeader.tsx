@@ -196,7 +196,7 @@ export default function SchedulerDayHeader({
                 </div>
 
                 <span className="text-[11px] font-bold bg-white/90 text-teal-800 border border-teal-200 px-2.5 py-0.5 rounded-full shadow-2xs">
-                  {cab.doctors_count || 6} спеціалістів • {cab.appointments_count || 18} прийомів
+                  {cab.doctors_count || 0} спеціалістів • {cab.appointments_count || 0} прийомів
                 </span>
               </div>
 
@@ -284,8 +284,10 @@ export default function SchedulerDayHeader({
                           {fullName}
                         </div>
                         <div
+                          className="doctor-cell"
                           style={{
                             fontSize: 10,
+                            textTransform: 'toUpperCase',
                             fontWeight: 700,
                             color: '#0f766e',
                             letterSpacing: '0.03em',
@@ -294,9 +296,9 @@ export default function SchedulerDayHeader({
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                           }}
-                          title={doc.specialty || 'ТЕРАПЕВТ'}
+                          title={doc.role_name || 'ТЕРАПЕВТ'}
                         >
-                          ТЕРАПЕВТ
+                          {doc.role_name}
                         </div>
                       </div>
                     </div>

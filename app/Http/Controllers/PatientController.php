@@ -267,26 +267,6 @@ class PatientController extends Controller
                 )
                 ->orderBy('u.last_name')
                 ->get();
-//            $customerData = DB::table('core.clinic_user as cu')
-//                    ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-//                    ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-//                    ->where('cu.clinic_id', $clinicId)
-//                    ->where('pt.id', '=', $id)
-//                    ->select(
-//                        'u.*',
-//                        'cu.avatar',
-//                        'pt.id as patient_id',
-//                        'pt.medical_card_no',
-//                        'pt.registered_at',
-//                        'pt.patient_status_id',
-//                        'pt.discount',
-//                        'pt.balance',
-//                        'pt.visits_count',
-//                        'pt.last_visit'
-//                    )
-//                    ->orderBy('u.last_name')
-//                    ->groupBy('u.id', 'u.first_name', 'u.last_name', 'u.email', 'cu.avatar', 'pt.id', 'pt.medical_card_no', 'pt.registered_at', 'pt.patient_status_id', 'pt.discount', 'pt.balance', 'pt.visits_count', 'pt.last_visit')
-//                    ->get();
             $statusesData = DB::table('patient_discount_statuses')
                 ->select('patient_discount_statuses.*')
                 ->orderBy('name')->get();
@@ -335,7 +315,6 @@ class PatientController extends Controller
                 'schema' => "clinic_{$clinicId}",
                 'patient_id' => $id
                 ]);
-//             dd($formData);exit;
             return Inertia::render('Patient/Edit', [
                 'formData' => $formData,
                 'customerData' => $customerData,

@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngMaterial from '../../Lang/Material/translation';
-import PrimaryButton from '../../Components/Form/PrimaryButton';
-import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
@@ -24,7 +22,7 @@ export default function List({ listData, clinicData, categoryData, supplierData,
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
-console.log(listData);
+
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={msg.get('material.title.list')} />
