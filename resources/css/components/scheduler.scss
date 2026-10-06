@@ -2000,6 +2000,138 @@
     line-height: 18px;
 }
 
+.scheduler-day-view-header {
+    display: flex;
+    min-width: max-content;
+    background: #fff;
+}
+
+.scheduler-day-view-header__date {
+    width: 70px;
+    height: 96px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px;
+    box-sizing: border-box;
+    border-right: 1px solid #cbd5e1;
+    color: #0f766e;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.scheduler-day-view-header__columns {
+    display: flex;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.scheduler-day-view-header__column {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    border-right: 1px solid #e2e8f0;
+}
+
+.scheduler-day-view-header__cabinet {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ccfbf1;
+    background: #f0fdfa;
+    color: #115e59;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.scheduler-day-view-header__doctor {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.scheduler-day-view-header__avatar {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #ccfbf1;
+    color: #0f766e;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.scheduler-day-view-header__doctor-name {
+    overflow: hidden;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scheduler-day-view {
+    margin: 0 20px 100px;
+    border: 1px solid #dadbdc;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.scheduler-day-view__header-viewport {
+    position: sticky;
+    top: 109px;
+    z-index: 50;
+    overflow: hidden;
+    border-bottom: 1px solid #cbd5e1;
+    background: #fff;
+}
+
+.scheduler-day-view__grid-viewport {
+    overflow: auto;
+}
+
+.scheduler-day-view__grid {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+}
+
+.scheduler-day-view__column {
+    position: relative;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    border-right: 1px solid #e2e8f0;
+    background-color: #fff;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, .12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, .03) 1px, transparent 1px);
+    background-size: 100% 140px, 100% 35px;
+    cursor: pointer;
+}
+
+.scheduler-day-view__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 320px;
+    padding: 32px;
+    box-sizing: border-box;
+    color: #64748b;
+    font-size: 14px;
+}
+
 .doctor-cell {
     text-transform: uppercase;
 }

@@ -3,6 +3,7 @@ import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 // import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
+import { getSchedulePeople } from './engine/schedulePeople';
 import { router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
@@ -14,9 +15,13 @@ import {
   viewScheduleSelector,
   schedulerViewSelector,
   schedulerBaseDateSelector,
+  schedulerCabinetFilterSelector,
+  schedulerDoctorFilterSelector,
+  schedulerStatusSelector,
   eventsDataSelector,
 } from '@/Redux/Scheduler/selectors';
 import SchedulerDayHeader from './components/SchedulerDayHeader';
+import SchedulerEventCard from './components/SchedulerEventCard';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
@@ -24,10 +29,6 @@ import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 const SLOT_HEIGHT = 35;
 const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
-const COMPACT_EVENT_HEIGHT = 90;
-const EVENT_WITHOUT_FOOTER_CHROME = 62;
-const EVENT_WITH_FOOTER_CHROME = 84;
-const EVENT_SERVICE_LINE_HEIGHT = 18;
 
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
@@ -48,12 +49,10 @@ function getDays(baseDate: string, count: number, appLang: string) {
 export default function Index3Days({
   cabinetData,
   groupedOptions,
-  customerData,
   eventsData,
 }: {
   cabinetData: any;
   groupedOptions: any;
-  customerData: any;
   eventsData: any;
 }) {
   const view = useSelector(schedulerViewSelector);
@@ -62,6 +61,9 @@ export default function Index3Days({
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
   const eventsChangesData = useSelector(eventsDataSelector);
+  const cabinetFilterId = useSelector(schedulerCabinetFilterSelector);
+  const doctorFilterId = useSelector(schedulerDoctorFilterSelector);
+  const statusFilter = useSelector(schedulerStatusSelector);
   const baseDate = useState(() => format(new Date(), 'yyyy-MM-dd'));
 
   // Рефы для блокировки кликов
@@ -91,43 +93,24 @@ export default function Index3Days({
     isDraggingRef
   );
 
-  const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
-    let doctorsOptions: any[] = [];
-    let assistantsOptions: any[] = [];
-    let othersOptions: any[] = [];
-
-    groupedOptions?.forEach((group: any) => {
-      if (group.label === 'roles.doctor') {
-        doctorsOptions = [...doctorsOptions, ...(group.options || [])];
-      } else if (group.label === 'roles.assistant') {
-        assistantsOptions = [...assistantsOptions, ...(group.options || [])];
-      } else {
-        othersOptions = [...othersOptions, ...(group.options || [])];
-      }
-    });
-
-    return {
-      doctorsTabOptions: doctorsOptions,
-      assistantsTabOptions: assistantsOptions,
-      othersTabOptions: othersOptions,
-    };
-  }, [groupedOptions]);
-
   const currentTabPeople = useMemo(() => {
-    switch (tab) {
-      case 'patients':
-        return doctorsTabOptions;
-      case 'visits':
-        return assistantsTabOptions;
-      case 'plans':
-        return othersTabOptions;
-      default:
-        return doctorsTabOptions;
-    }
-  }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
+    const people = getSchedulePeople(groupedOptions, tab);
+
+    return doctorFilterId
+      ? people.filter((person) => String(person.id) === String(doctorFilterId))
+      : people;
+  }, [doctorFilterId, groupedOptions, tab]);
+
+  const visibleCabinets = useMemo(
+    () =>
+      cabinetFilterId
+        ? cabinetData.filter((cabinet: any) => String(cabinet.id) === String(cabinetFilterId))
+        : cabinetData,
+    [cabinetData, cabinetFilterId]
+  );
 
   const DOCTOR_WIDTH = 320;
-  const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
+  const dayWidth = 70 + visibleCabinets.length * currentTabPeople.length * DOCTOR_WIDTH;
   const headerTrackRef = useRef<HTMLDivElement | null>(null);
 
   const syncHeaderScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -415,37 +398,6 @@ export default function Index3Days({
   //   return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
   // };
 
-  // Мапа відповідності кольорів або класів під твої сочні ескізи
-  const getEventBackground = (status: any) => {
-    // Або якщо потрібно запітчити по HEX-коду з бази:
-    switch (status) {
-      case 'done':
-        return '#f4f7fa'; // підтверджено (сочний зелений з твого ескізу)
-      case 'planned':
-        return '#eff6ff'; // заплановано (синій)
-      case 'inclicnic':
-        return '#fffbeb';
-      default:
-        return '#f8fafc'; // фолбек (slate-50)
-    }
-  };
-
-  const getEventBorder = (status: any) => {
-    // Або якщо потрібно запітчити по HEX-коду з бази:
-    switch (status) {
-      case 'done':
-        return '#f4f7fa'; // підтверджено (сочний зелений з твого ескізу)
-      case 'planned':
-        //         return 'rgb(181, 174, 231)'; // заплановано (синій)
-        return 'transparent'; // заплановано (синій)
-      case 'inclicnic':
-        //         return 'rgb(239, 181, 106)';
-        return 'transparent';
-      default:
-        return '#f8fafc'; // фолбек (slate-50)
-    }
-  };
-
   // const PREVIEW_WIDTH = 340;
   // const PREVIEW_HEIGHT = 280;
 
@@ -503,24 +455,6 @@ export default function Index3Days({
   //
   //   return `${hours} год ${mins} хв`;
   // };
-
-  const formatPatientName = (name: any) => {
-    if (!name) return '';
-    const parts = name.trim().split(/\s+/);
-
-    if (parts.length === 1) {
-      return parts[0];
-    }
-
-    const surname = parts[0];
-
-    const initials = parts
-      .slice(1)
-      .map((part: any) => `${part.charAt(0)}.`)
-      .join(' ');
-
-    return `${surname} ${initials}`;
-  };
 
   // Функція для переведення поточного часу в пікселі від початку дня (наприклад, від 08:00)
   const getCurrentTimeTop = () => {
@@ -622,7 +556,7 @@ export default function Index3Days({
                   <SchedulerDayHeader
                     day={day}
                     isToday={day.date === format(new Date(), 'yyyy-MM-dd')}
-                    cabinets={cabinetData}
+                    cabinets={visibleCabinets}
                     people={currentTabPeople}
                     doctorWidth={DOCTOR_WIDTH}
                     todayBg={TODAY_BG}
@@ -701,7 +635,7 @@ export default function Index3Days({
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
                     <div style={{ display: 'flex', flex: 1, height: gridHeight }}>
-                      {cabinetData.map((cab: any, cabIdx: any) => (
+                      {visibleCabinets.map((cab: any, cabIdx: any) => (
                         <div
                           key={cab.id}
                           style={{
@@ -709,7 +643,7 @@ export default function Index3Days({
                             display: 'flex',
                             height: '100%',
                             borderRight:
-                              cabIdx < cabinetData.length - 1 ? '2px solid #94a3b8' : 'none',
+                              cabIdx < visibleCabinets.length - 1 ? '2px solid #94a3b8' : 'none',
                           }}
                         >
                           {currentTabPeople.map((doc, docIdx) => {
@@ -717,13 +651,16 @@ export default function Index3Days({
                               (e) =>
                                 e.event_date === day.date &&
                                 e.cabinet_id === cab.id &&
-                                e.doctor_id === doc.id
+                                e.doctor_id === doc.id &&
+                                (!statusFilter || e.status_name === statusFilter)
                             );
 
                             return (
                               <div
                                 key={doc.id}
-                                onClick={(e) => handleCellClick(e, day.date, cab, doc, timeSlots)}
+                                onClick={(e) =>
+                                  handleCellClick(e, day.date, cab.id, doc.id, timeSlots)
+                                }
                                 data-column-type="doctor-cell"
                                 data-date={day.date}
                                 data-cabinet-id={cab.id}
@@ -736,7 +673,7 @@ export default function Index3Days({
                                   backgroundColor: FREE_SLOT_BG,
                                   cursor: 'pointer',
                                   borderRight:
-                                    docIdx < customerData.length - 1
+                                    docIdx < currentTabPeople.length - 1
                                       ? '1px solid #e2e8f0'
                                       : '1px solid #e2e8f0',
                                   backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)`,
@@ -759,146 +696,22 @@ export default function Index3Days({
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
-                                  const compact = layout.height < COMPACT_EVENT_HEIGHT;
-                                  const showPrice = layout.height >= 110;
-
-                                  const services = (() => {
-                                    // Если это уже массив, просто возвращаем его
-                                    if (Array.isArray(event.services)) {
-                                      return event.services;
-                                    }
-
-                                    // Если это строка, пытаемся её распарсить
-                                    if (typeof event.services === 'string') {
-                                      try {
-                                        return JSON.parse(event.services);
-                                      } catch {
-                                        return [];
-                                      }
-                                    }
-
-                                    // Во всех остальных случаях (undefined, null и т.д.) возвращаем пустой массив
-                                    return [];
-                                  })();
-
-                                  const servicesCount = services.length;
-                                  const serviceLineCapacity = compact
-                                    ? 1
-                                    : Math.max(
-                                        1,
-                                        Math.floor(
-                                          (layout.height -
-                                            (showPrice
-                                              ? EVENT_WITH_FOOTER_CHROME
-                                              : EVENT_WITHOUT_FOOTER_CHROME)) /
-                                            EVENT_SERVICE_LINE_HEIGHT
-                                        )
-                                      );
-                                  const visibleServicesCount =
-                                    servicesCount > serviceLineCapacity
-                                      ? Math.max(1, serviceLineCapacity - 1)
-                                      : servicesCount;
-                                  const hiddenServicesCount = Math.max(
-                                    0,
-                                    servicesCount - visibleServicesCount
-                                  );
-                                  const showInlineMore =
-                                    hiddenServicesCount > 0 && serviceLineCapacity === 1;
-
                                   return (
-                                    <div
+                                    <SchedulerEventCard
+                                      event={event}
                                       key={event.id}
-                                      onClick={(e) => handleEventClick(e, event)}
-                                      onMouseDown={(e) => handleDragStart(e, event)}
-                                      className={`shadow-sm calendar-event scheduler-event-card ${compact ? 'compact' : ''}`}
-                                      style={{
-                                        position: 'absolute',
-                                        top: layout.top,
-                                        height: layout.height,
-                                        left: 4,
-                                        right: 4,
-                                        backgroundColor: getEventBackground(event.status_name),
-                                        border: `1px solid ${getEventBorder(event.status_name)}`,
-                                      }}
-                                    >
-                                      <div className="calendar-event-body scheduler-event-card__body">
-                                        <div className="scheduler-event-card__header">
-                                          <span className="scheduler-event-card__time">
-                                            {event.event_time_from}-{event.event_time_to}
-                                          </span>
-                                          <div className="scheduler-event-card__actions">
-                                            <span className={`event-status ${event.status_name}`}>
-                                              {msg.get('scheduler.statuses.' + event.status_name)}
-                                            </span>
-                                            <button
-                                              type="button"
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                                router.visit(`/act/create?visit_id=${event.id}`);
-                                              }}
-                                              title="Створити акт"
-                                              className="act-btn"
-                                            >
-                                              <span className="material-symbols-outlined text-[16px]">
-                                                description
-                                              </span>
-                                            </button>
-                                          </div>
-                                        </div>
-
-                                        <div className="scheduler-event-card__patient">
-                                          {formatPatientName(event.patient_name)}
-                                        </div>
-
-                                        <div className="scheduler-event-card__services">
-                                          {servicesCount === 0 && (
-                                            <div className="scheduler-event-card__service-name">
-                                              {event.title}
-                                            </div>
-                                          )}
-
-                                          {services
-                                            .slice(0, visibleServicesCount)
-                                            .map((service: any, index: number) => (
-                                              <div
-                                                className="scheduler-event-card__service-line"
-                                                key={service.id ?? `${event.id}-${index}`}
-                                              >
-                                                <span className="scheduler-event-card__service-name">
-                                                  {service.name}
-                                                </span>
-                                                {showInlineMore &&
-                                                  index === visibleServicesCount - 1 && (
-                                                    <span className="scheduler-event-card__more scheduler-event-card__more--inline">
-                                                      +{hiddenServicesCount} ще
-                                                    </span>
-                                                  )}
-                                              </div>
-                                            ))}
-
-                                          {hiddenServicesCount > 0 && !showInlineMore && (
-                                            <span className="scheduler-event-card__more">
-                                              +{hiddenServicesCount} ще
-                                            </span>
-                                          )}
-                                        </div>
-
-                                        {showPrice && (
-                                          <div className="scheduler-event-card__footer">
-                                            <span>3,200 ₴</span>
-                                          </div>
-                                        )}
-                                      </div>
-
-                                      <div
-                                        onMouseDown={(e) =>
-                                          handleResizeStart(e, event.id, event.end)
-                                        }
-                                        data-resize-handle
-                                        className="calendar-event-resize"
-                                      />
-                                    </div>
+                                      layout={layout}
+                                      onClick={(mouseEvent) => handleEventClick(mouseEvent, event)}
+                                      onMouseDown={(mouseEvent) =>
+                                        handleDragStart(mouseEvent, event)
+                                      }
+                                      onResizeStart={(mouseEvent) =>
+                                        handleResizeStart(mouseEvent, event.id, event.end)
+                                      }
+                                      statusLabel={msg.get(
+                                        'scheduler.statuses.' + event.status_name
+                                      )}
+                                    />
                                   );
                                 })}
                               </div>

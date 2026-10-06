@@ -28,6 +28,8 @@ import {
   setScheduleDoctorIdAction,
   setScheduleAssistantIdAction,
   setScheduleStatusFilterAction,
+  setScheduleCabinetFilterAction,
+  setScheduleDoctorFilterAction,
   setTypeViewAction,
   setCalendarDateAction,
 } from './actions';
@@ -71,6 +73,18 @@ const ACTION_HANDLERS = {
     next: (state: any, action: any) => ({
       ...state,
       filterStatus: action.payload,
+    }),
+  },
+  [setScheduleCabinetFilterAction.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      filterCabinetId: action.payload,
+    }),
+  },
+  [setScheduleDoctorFilterAction.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      filterDoctorId: action.payload,
     }),
   },
   [setTypeViewAction.toString()]: {
@@ -282,6 +296,8 @@ export {
   setScheduleAssistantIdAction,
   setTypeViewAction,
   setScheduleStatusFilterAction,
+  setScheduleCabinetFilterAction,
+  setScheduleDoctorFilterAction,
   setCalendarDateAction,
 };
 

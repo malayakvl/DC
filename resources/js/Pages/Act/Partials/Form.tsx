@@ -61,7 +61,6 @@ const withBaseQuantities = (components: any, serviceQuantity = 1) => {
   (components || []).forEach((component: any) => {
     const mId = component.material_id || component.product_id || component.id;
 
-    // Всегда вытаскиваем чистую базу: если бэкенд прислал общую сумму, делим на количество услуги
     let q = Number(component.base_quantity);
     if (isNaN(q) || q === 0) {
       const totalQ = Number(component.quantity || 0);
@@ -105,7 +104,7 @@ export default function Form({
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
   });
-  const [_, setIsCalculating] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const [values, setValues] = useState<Record<string, any>>({
@@ -121,6 +120,7 @@ export default function Form({
   const [rows, setRows] = useState(
     (formRowData || []).length ? formRowData.map(normaliseRow) : [emptyRow()]
   );
+
   const [loadingVisit, setLoadingVisit] = useState(false);
   const [fifo, setFifo] = useState({});
   const [fifoError, setFifoError] = useState('');
@@ -133,8 +133,8 @@ export default function Form({
     setValues((current) => ({ ...current, [key]: value }));
   };
 
-  const handleChangeSelect = (e) => {
-    const key = e.target.id;
+  const handleChangeSelect = (e: any) => {
+    const key = e.target.id || e.target.name;
     const value = e.target.value;
     setValues((values) => ({
       ...values,
@@ -164,7 +164,6 @@ export default function Form({
           price: servicePrice,
           base_price: servicePrice,
           total: Number((quantity * servicePrice).toFixed(2)),
-          // Передаем количество услуги в функцию, чтобы база честно разделилась
           components: withBaseQuantities(response.data.items, quantity),
         };
       })
@@ -172,172 +171,25 @@ export default function Form({
     return serviceRows.filter(Boolean);
   };
 
-  // const chooseVisit = async (event: any) => {
-  //   const visitId = event.target.value;
-  //   setValues((current) => ({ ...current, visit_id: visitId }));
-  //   if (!visitId) return;
-  //   const visit = visitsData.find((item) => String(item.id) === String(visitId));
-  //   if (!visit) return;
-  //   setLoadingVisit(true);
-  //   try {
-  //     const visitRows = await makeRowsFromVisit(visit);
-  //     setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()]);
-  //     setValues((current) => ({
-  //       ...current,
-  //       visit_id: visitId,
-  //       patient_id: visit.patient_id || '',
-  //       doctor_id: visit.doctor_id || '',
-  //       act_date: `${visit.event_date || ''} ${visit.event_time_from || ''}`.trim(),
-  //     }));
-  //   } finally {
-  //     setLoadingVisit(false);
-  //   }
-  // };
-
-  // Перевірка на дефіцит по всьому словнику fifo
-  // const hasShortage = Object.values(fifo).some((item) => Number(item?.shortage_qty || 0) > 0);
-
   useEffect(() => {
     if (formData.visit_id && !formRowData.length) {
       const visit = visitsData.find((item) => String(item.id) === String(formData.visit_id));
-      if (visit)
-        makeRowsFromVisit(visit).then((visitRows) =>
-          setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()])
-        );
+      if (visit) {
+        setLoadingVisit(true);
+        makeRowsFromVisit(visit)
+          .then((visitRows) =>
+            setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()])
+          )
+          .finally(() => setLoadingVisit(false));
+      }
     }
   }, []);
-
-  useEffect(() => {
-    setIsCalculating(true);
-    const timer = setTimeout(async () => {
-      setIsCalculating(false);
-    }, 500); // чекаємо півсекунди після останньої зміни
-
-    return () => clearTimeout(timer);
-  }, [rows, fifo]); // або залежності, за якими ти тригериш перерахунок
-
-  // Единый стабильный эффект для запроса FIFO-превью без зацикливания
-  // працює ідеально якщо міняємо загальну кількість процедур
-  //   useEffect(() => {
-  //     // Собираем список услуг из акта для отправки на бэкенд
-  //     const services = rows
-  //       .map((row, rowIndex) => {
-  //         const serviceId = Number(row.product_id || row.service_id);
-  //         const quantity = Number(row.quantity || row.qty || 1);
-  //
-  //         if (!serviceId) return null;
-  //
-  //         return {
-  //           key: String(rowIndex),
-  //           service_id: serviceId,
-  //           quantity: quantity,
-  //         };
-  //       })
-  //       .filter(Boolean);
-  //     if (!services.length) {
-  //       setFifo({});
-  //       setFifoError('');
-  //       return;
-  //     }
-  //
-  //     const currentRequestId = ++fifoRequestId.current;
-  //     const timer = window.setTimeout(async () => {
-  //       try {
-  //         // Отправляем список услуг, а не сырые материалы!
-  //         const response = await axios.post('/act/fifo-preview', { services });
-  //         if (currentRequestId !== fifoRequestId.current) return;
-  //
-  //         const fifoByComponent = Object.fromEntries(
-  //           (response.data.items || []).map((item) => [item.key, item])
-  //         );
-  //         setFifo(fifoByComponent);
-  //         setFifoError('');
-  //       } catch (error) {
-  //         if (currentRequestId !== fifoRequestId.current) return;
-  //         setFifo({});
-  //         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
-  //       }
-  //     }, 250);
-  //
-  //     return () => window.clearTimeout(timer);
-  //   }, [
-  //     JSON.stringify(
-  //       rows.map((r) => ({
-  //         id: r.product_id || r.service_id,
-  //         q: r.quantity,
-  //       }))
-  //     ),
-  //   ]);
-
-  //   useEffect(() => {
-  //     // Собираем список услуг из акта для отправки на бэкенд вместе с компонентами
-  //     const services = rows
-  //       .map((row, rowIndex) => {
-  //         const serviceId = Number(row.product_id || row.service_id);
-  //         const quantity = Number(row.quantity || row.qty || 1);
-  //
-  //         if (!serviceId) return null;
-  //
-  //         return {
-  //           key: String(rowIndex),
-  //           service_id: serviceId,
-  //           quantity: quantity,
-  //           // Передаємо також матеріали, якщо лікар змінював їх кількість вручну
-  //           components: (row.components || []).map((c) => ({
-  //             material_id: Number(c.material_id || c.product_id),
-  //             quantity:
-  //               c.quantity !== undefined && c.quantity !== ''
-  //                 ? Number(c.quantity)
-  //                 : Number(c.base_quantity || 0) * quantity,
-  //           })),
-  //         };
-  //       })
-  //       .filter(Boolean);
-  //
-  //     if (!services.length) {
-  //       setFifo({});
-  //       setFifoError('');
-  //       return;
-  //     }
-  //
-  //     const currentRequestId = ++fifoRequestId.current;
-  //     const timer = window.setTimeout(async () => {
-  //       try {
-  //         // Отправляем список услуг вместе с компонентами
-  //         const response = await axios.post('/act/fifo-preview', { services });
-  //         if (currentRequestId !== fifoRequestId.current) return;
-  //
-  //         const fifoByComponent = Object.fromEntries(
-  //           (response.data.items || []).map((item) => [item.key, item])
-  //         );
-  //         setFifo(fifoByComponent);
-  //         setFifoError('');
-  //       } catch (error) {
-  //         if (currentRequestId !== fifoRequestId.current) return;
-  //         setFifo({});
-  //         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
-  //       }
-  //     }, 250);
-  //
-  //     return () => window.clearTimeout(timer);
-  //   }, [
-  //     JSON.stringify(
-  //       rows.map((r) => ({
-  //         id: r.product_id || r.service_id,
-  //         q: r.quantity || r.qty,
-  //         // Додаємо в залежності компоненти, щоб тригерити перерахунок при зміні кількості матеріалу
-  //         comps: (r.components || []).map((c) => ({
-  //           id: c.material_id || c.product_id,
-  //           q: c.quantity,
-  //         })),
-  //       }))
-  //     ),
-  //   ]);
 
   const submit = (event: any) => {
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
     if (!values.patient_id || !validRows.length) return;
+
     const payload = {
       ...values,
       rows: validRows.map((row) => ({
@@ -352,9 +204,8 @@ export default function Form({
         })),
       })),
     };
+
     console.log(payload);
-    //     exit;
-    //     router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
   };
 
   return (
@@ -408,68 +259,57 @@ export default function Form({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              {/* 3. Статус */}
-              <div className="flex flex-col gap-1.5">
-                <div className="w-full flex items-center justify-between">
-                  <InputSelect
-                    translatable={true}
-                    name={'status'}
-                    values={values}
-                    value={values.status}
-                    options={statusData}
-                    onChange={handleChangeSelect}
-                    required
-                    className="filter-select-bordered w-full"
-                    label={msg.get('invoice_incoming.status')}
-                  />
-                </div>
-              </div>
+              <InputSelect
+                translatable={true}
+                name={'status'}
+                values={values}
+                value={values.status}
+                options={statusData}
+                onChange={handleChangeSelect}
+                required
+                className="filter-select-bordered w-full"
+                label={msg.get('invoice_incoming.status')}
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex flex-col gap-1">
-                <InputSelect
-                  translatable={false}
-                  name={'visit_id'}
-                  values={values}
-                  value={values.visit_id}
-                  options={visitsData}
-                  onChange={handleChangeSelect}
-                  required
-                  className="filter-select-bordered w-full"
-                  label={msg.get('act.visit')}
-                />
-              </div>
+              <InputSelect
+                translatable={false}
+                name={'visit_id'}
+                values={values}
+                value={values.visit_id}
+                options={visitsData}
+                onChange={handleChangeSelect}
+                required
+                className="filter-select-bordered w-full"
+                label={msg.get('act.visit')}
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex flex-col gap-1">
-                <InputCustomerSelect
-                  name={'patient_id'}
-                  values={values}
-                  value={values.patient_id}
-                  options={patientsData}
-                  onChange={handleChangeSelect}
-                  required
-                  className="filter-select-bordered w-full"
-                  label={msg.get('act.patient')}
-                />
-              </div>
+              <InputCustomerSelect
+                name={'patient_id'}
+                values={values}
+                value={values.patient_id}
+                options={patientsData}
+                onChange={handleChangeSelect}
+                required
+                className="filter-select-bordered w-full"
+                label={msg.get('act.patient')}
+              />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex flex-col gap-1">
-                <InputCustomerSelect
-                  name={'doctor_id'}
-                  className="filter-select-bordered w-full"
-                  values={values}
-                  value={values.doctor_id}
-                  options={customerData}
-                  onChange={handleChangeSelect}
-                  required
-                  label={msg.get('invoice_incoming.person')}
-                />
-              </div>
+              <InputCustomerSelect
+                name={'doctor_id'}
+                className="filter-select-bordered w-full"
+                values={values}
+                value={values.doctor_id}
+                options={customerData}
+                onChange={handleChangeSelect}
+                required
+                label={msg.get('invoice_incoming.person')}
+              />
             </div>
           </div>
         </div>
@@ -483,7 +323,7 @@ export default function Form({
 
         {/* Таблиця послуг/товарів */}
         <div className="relative rounded-2xl bg-white shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-          <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+          <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-slate-50/50 w-full overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr>
