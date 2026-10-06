@@ -12,6 +12,15 @@ export default function StickyFormFooter({
   processing = false,
   recentlySuccessful = false,
   onSave, // Опционально, если кнопка должна делать что-то кроме submit
+}: {
+  backUrl: string;
+  backLabel: string;
+  saveLabel: string;
+  processingLabel: string;
+  successMessage: string;
+  processing: boolean;
+  recentlySuccessful: boolean;
+  onSave: any;
 }) {
   return (
     <div className="bg-white rounded-xl p-4 shadow-md border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-40">

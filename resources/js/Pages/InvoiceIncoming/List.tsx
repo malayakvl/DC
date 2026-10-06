@@ -37,18 +37,18 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
     supplier_id: filters?.supplier_id || '',
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFilter = () => {
-    router.get('/invoice-incoming', values, {
-      preserveState: true,
-      replace: true,
-    });
-  };
-
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setValues((prev) => ({ ...prev, [name]: value }));
+//   };
+//
+//   const handleFilter = () => {
+//     router.get('/invoice-incoming', values, {
+//       preserveState: true,
+//       replace: true,
+//     });
+//   };
+console.log(listData);
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -159,14 +159,14 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
                       <Link
                         className="actn-btns"
                         title={msg.get('invoice_incoming.edit') || 'Редагувати'}
-                        href={`invoice-incoming/edit/${item.id}`}
+                        href={`invoice-incoming/edit/${item.invoice_id}`}
                       >
                         <span className="material-symbols-outlined text-[18px] block">edit</span>
                       </Link>
                       <Link
                         className="actn-btns hover:bg-rose-50 hover:text-rose-600"
                         title={msg.get('invoice_incoming.delete') || 'Видалити'}
-                        href={`invoice-incoming/delete/${item.id}`}
+                        href={`invoice-incoming/delete/${item.invoice_id}`}
                       >
                         <span className="material-symbols-outlined text-[18px] block">delete</span>
                       </Link>

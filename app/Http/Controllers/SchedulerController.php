@@ -10,6 +10,8 @@ use App\Models\PriceCategory;
 use App\Models\Pricing;
 use App\Models\Scheduler;
 use App\Models\User;
+use App\Models\VisitScheduleStatus;
+use App\Services\CustomerService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -26,11 +28,14 @@ class SchedulerController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
+    protected CustomerService $customerService;
 
-    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->schemaService = $schemaService;
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
 
 
@@ -68,33 +73,13 @@ class SchedulerController extends Controller
             $startDate = $request->start_date
                 ? Carbon::parse($request->start_date)
                 : Carbon::today();
+            $statusesData = VisitScheduleStatus::orderBy('name')->get();
 
             $endDate = $request->end_date
                 ? Carbon::parse($request->end_date)
                 : Carbon::today()->addDays(2); // текущий + 2 = 3 дня
 
-            $customerSelectData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                // ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", 'pfu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
-                    $join->on('pfu.user_id', '=', 'u.id')
-                        ->where('pfu.filial_id', $filialId);
-                })
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar',
-                    'pfu.color',
-                    'pfu.avatar'
-                )
-                ->orderBy('u.last_name')
-                ->get();
+            $customerSelectData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
             $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
@@ -106,44 +91,9 @@ class SchedulerController extends Controller
             // Group users by role_name and format into groupedOptions
             App::setLocale($request->user()->locale);
 
-            $customerData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
-                    $join->on('pfu.user_id', '=', 'u.id')
-                        ->where('pfu.filial_id', $filialId);
-                })
-                ->leftJoin("clinic_{$clinicId}.roles as r", 'r.id', '=', 'pfu.role_id')
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar',
-                    'pfu.color',
-                    'pfu.avatar',
-                    'r.name as role_name'
-                )
-                ->orderBy('u.last_name')
-                ->get();
-            $assistantSelectData = DB::table('core.clinic_user as cu')
-                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                ->where('cu.clinic_id', $clinicId)
-                ->whereNull('pt.id') // 💥 вот ключевая строка
-                ->select(
-                    'u.id',
-                    DB::raw("CONCAT(u.last_name, ' ', u.first_name) as name"),
-                    'u.first_name',
-                    'u.last_name',
-                    'u.email',
-                    'cu.avatar'
-                )
-                ->orderBy('u.last_name')
-                ->get();
+            $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+            $assistantSelectData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+
 
             $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
                 return [
@@ -152,7 +102,8 @@ class SchedulerController extends Controller
                         return [
                             'id' => $user->id,
                             'name' => $user->first_name . ' ' . $user->last_name,
-                            'color' => $user->color
+                            'color' => $user->color,
+                            'role_name' => $user->role_name,
                         ];
                     })->values()->toArray()
                 ];
@@ -181,17 +132,18 @@ class SchedulerController extends Controller
                     'event_time_to',
                     'status_color',
                     'status_name',
-                    'u.first_name',
-                    'u.last_name',
-                    'ud.first_name AS doctor_name',
+                    // Данные пациента из таблицы users через patients
+                    'u.first_name AS patient_first_name',
+                    'u.last_name AS patient_last_name',
+                    // Данные доктора
                     'ud.first_name AS doctor_first_name',
                     'ud.last_name AS doctor_last_name',
                     'ct.name AS cabinet_name',
                 )
-                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'patient_id')
-                ->leftJoin("clinic_{$clinicId}.cabinets as ct", 'ct.id', '=', 'cabinet_id')
+                ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.id', '=', 'schedulers.patient_id')
+                ->leftJoin("clinic_{$clinicId}.cabinets as ct", 'ct.id', '=', 'schedulers.cabinet_id')
                 ->leftJoin('core.users as u', 'u.id', '=', 'pt.user_id')
-                ->leftJoin('core.users as ud', 'ud.id', '=', 'doctor_id')
+                ->leftJoin('core.users as ud', 'ud.id', '=', 'schedulers.doctor_id')
                 ->get();
 
             return Inertia::render('Scheduler/Index', [
@@ -207,6 +159,7 @@ class SchedulerController extends Controller
                 'currencyData' => $clinicData->currency->name,
                 'cabinetData' => $listCabinets,
                 'formData' => $formData,
+                'statusesData' => $statusesData
             ]);
         });
     }
@@ -256,31 +209,6 @@ class SchedulerController extends Controller
                 ->orderBy('u.last_name')
                 ->get();
 
-            // dd($customerSelectData);exit;
-            
-            // $customerSelectData = DB::select('
-            //     SELECT core.users.id,  (core.users.first_name || \' \' || core.users.last_name) AS name,
-            //         roles.name AS role_name
-            //     FROM core.users
-            //     LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = core.users.id
-            //     LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
-            //     WHERE clinic_filial_user.role_id != 20 
-            //     AND clinic_filial_user.clinic_id = ? AND clinic_filial_user.filial_id =?
-            //     ORDER BY name
-            // ', [$clinicData->id, $filialId]);
-            // dd($customerSelectData);exit;
-
-            // $assistantSelectData = DB::select('
-            //     SELECT core.users.id, core.users.file, core.users.color, (core.users.first_name || \' \' || core.users.last_name) AS name,
-            //         roles.name AS role_name
-            //     FROM core.users
-            //     LEFT JOIN clinic_filial_user ON clinic_filial_user.user_id = core.users.id
-            //     LEFT JOIN roles ON roles.id = clinic_filial_user.role_id
-            //     WHERE clinic_filial_user.role_id = 20 
-            //     AND clinic_filial_user.clinic_id = ?
-            //         AND clinic_filial_user.filial_id =?
-            //     ORDER BY name
-            // ', [$clinicData->id, $filialId]);
             $assistantSelectData = DB::table('core.clinic_user as cu')
                         ->join('core.users as u', 'cu.user_id', '=', 'u.id')
                         ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
@@ -296,37 +224,7 @@ class SchedulerController extends Controller
             )
             ->orderBy('u.last_name')
             ->get();
-            // dd($assistantSelectData);exit;
-            // $assistantSelectData = DB::table('core.clinic_user as cu')
-            //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-            //             ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-            //             ->where('cu.clinic_id', $clinicId)
-            //             ->whereNull('pt.id') // 💥 вот ключевая строка
-            //             ->select(
-            //                 'u.id',
-            //     'u.first_name',
-            //     'u.last_name',
-            //     'u.email',
-            //     'cu.avatar'
-            // )
-            // ->orderBy('u.last_name')
-            // ->get();
 
-
-            // $customerData = DB::table('users')
-            //     ->select([
-            //         'users.id',
-            //         'users.color',
-            //         'users.first_name',
-            //     'users.last_name',
-            //     'roles.name AS role_name'
-            // ])
-            // ->leftJoin('clinic_user', 'users.id', '=', 'clinic_user.user_id')
-            // ->leftJoin('roles', 'roles.id', '=', 'clinic_user.role_id')
-            // ->where('clinic_user.clinic_id', $clinicData->id)
-            // ->where('clinic_user.role_id', '!=', 20)
-            // ->orderBy('last_name')
-            // ->get();
             $customerData = DB::table('core.clinic_user as cu')
                         ->join('core.users as u', 'cu.user_id', '=', 'u.id')
                         ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
@@ -349,23 +247,6 @@ class SchedulerController extends Controller
             )
             ->orderBy('u.last_name')
             ->get();
-            // $customerData = DB::table('core.clinic_user as cu')
-            //             ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-            //             ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-            //             ->where('cu.clinic_id', $clinicId)
-            //             ->whereNull('pt.id') // 💥 вот ключевая строка
-            //             ->select(
-            //                 'u.id',
-            //     'u.first_name',
-            //     'u.last_name',
-            //     'u.email',
-            //     'cu.avatar'
-            // )
-            // ->orderBy('u.last_name')
-            // ->get();
-            
-            // dd($customerData);exit;
-
             $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
@@ -389,35 +270,12 @@ class SchedulerController extends Controller
                     })->values()->toArray()
                 ];
             })->values()->toArray();
-            $resources = DB::table('schedulers')
-                ->join('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-                ->join('core.users as doctor_user', 'doctor_user.id', '=', 'schedulers.doctor_id')
-                ->selectRaw("
-        DISTINCT
-        schedulers.cabinet_id,
-        schedulers.doctor_id,
-        CONCAT(schedulers.cabinet_id, '_', schedulers.doctor_id) as id,
-        CONCAT(cabinets.name, ' • ', doctor_user.first_name, ' ', doctor_user.last_name) as name
-    ")
-                ->get();
-//            dd($resources);exit;
-
-
         if ($request->session()->get('filial_id')) {
-//             dd(1);exit;
-//            $listCabinets = [];
             $listCabinets = DB::table('cabinets')
                 ->select(
                     'cabinets.id',
                     'cabinets.name AS cabinet_name'
                 );
-//            dd($listCabinets->get() );
-//             $listCabinets = DB::table('cabinets')
-//                 ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS resourceTitle')
-//                 ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'cabinets.filial_id')
-//                 ->where('cabinets.clinic_id', $clinicData->id)
-//                 ->where('cabinets.filial_id', $request->session()->get('filial_id'))
-//                 ->orderBy('name')->get();
         } else {
             $listCabinets = DB::table('cabinets')
                 ->select('cabinets.*', "clinic_filials.name AS filial_name", 'cabinets.id AS resourceId', 'cabinets.name AS title')
@@ -547,7 +405,6 @@ class SchedulerController extends Controller
                 ->where('schedulers.clinic_id', $clinicData->id)
                 ->whereBetween('event_date', [$weekStart, $weekEnd])
                 ->get();
-
 //            $eventsData1 = DB::table('schedulers')
 //                ->select('schedulers.*',
 //                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
@@ -598,14 +455,25 @@ class SchedulerController extends Controller
     public function fetchPatients(Request $request) {
         $qData = $request->all();
         return $this->withClinicSchema($request, function($clinicId) use ($qData) {
-            $patientsQueryResults = DB::table('patients')
-                ->select('patients.id', 'core.users.first_name', 'core.users.last_name')
-                ->leftJoin('core.users', 'core.users.id', '=', 'patients.user_id')
-                ->where(function($query) use ($qData) {
-                    $query->where('core.users.first_name', 'LIKE', '%' . $qData['strFind'] . '%')
-                          ->orWhere('core.users.last_name', 'LIKE', '%' . $qData['strFind'] . '%');
-                })
-                ->get();
+
+            $schema = 'clinic_' . $clinicId;
+            $search = $qData['strFind'];
+            $phone = null;
+            $segment = $qData['segment'] ?? null; // если у тебя есть фильтр по сегменту (например, 'debtors'), подставляй его сюда, иначе null
+
+            $patientsQueryResults = DB::select(
+                'SELECT * FROM core.patients_with_balance_ordering(?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $schema,    // 1. p_schema text
+                    null,       // 2. p_filial_id text
+                    $search,    // 3. p_patient_name text
+                    $phone,     // 4. p_phone text
+                    $segment,   // 5. p_segment text (вот этого пропавшего парня не хватало!)
+                    '50',       // 6. p_limit text
+                    '0'         // 7. p_offset text
+                ]
+            );
+
             return response()->json([
                 'items' => $patientsQueryResults
             ]);
@@ -656,31 +524,97 @@ class SchedulerController extends Controller
 
 
     public function fetchEvents(Request $request) {
-        $qData = $request->all();
-        $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
-        $eventsData = DB::table('schedulers')
-            ->select('schedulers.title', 'schedulers.event_date', 'schedulers.event_time_from',
-                'schedulers.event_time_to', 'users.color', 'schedulers.status_color', 'schedulers.status_name',
-                'schedulers.cabinet_id', 'schedulers.cabinet_id',
-                'schedulers.doctor_id AS id', 'cabinets.name AS cabinet_name',
-                'patients.first_name', 'patients.last_name'
-            )
-            ->leftJoin('users', 'users.id', '=', 'schedulers.doctor_id')
-            ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
-            ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
-            ->where('schedulers.clinic_id', $clinicData->id)
-            ->whereBetween('event_date', [$qData['start'], $qData['end']])
-            ->get();
+        return $this->withClinicSchema($request, function() use ($request) {
+            $qData = $request->all();
+            $clinicData = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+            $eventsData = DB::table('schedulers')
+                ->select(
+                // Основные данные события
+                    'schedulers.id AS event_id',
+                    'schedulers.title',
+                    'schedulers.description',
+                    'schedulers.priority',
+                    'schedulers.services',
+                    'schedulers.event_date',
+                    'schedulers.event_time_from',
+                    'schedulers.event_time_to',
+                    'schedulers.status_color',
+                    'schedulers.status_name',
 
-        $events = array();
-        foreach ($eventsData as $event) {
-            $event->startDate = date($event->event_date.' '.$event->event_time_from);
-            $event->endDate = date($event->event_date.' '.$event->event_time_to);
-            $events[] = (object) $event;
-        }
-        return response()->json([
-            'items' => $events
-        ]);
+                    // Кабинет (ресурс)
+                    'schedulers.cabinet_id',
+                    'schedulers.cabinet_id AS resourceId',
+                    'cabinets.name AS cabinet_name',
+
+                    // Данные ПАЦИЕНТА (schedulers.patient_id -> patients.id -> core.users)
+                    'schedulers.patient_id',
+                    'patient_user.first_name AS p_name',
+                    'patient_user.last_name AS pl_name',
+                    'patients.birthday',
+                    'patients.balance',
+                    'patients.discount',
+                    'patient_discount_statuses.name AS patient_status_name',
+                    'patient_discount_statuses.discount AS status_discount',
+
+                    // Данные ВРАЧА (doctor_id — это глобальный user_id)
+                    'schedulers.doctor_id',
+                    'doctor_user.first_name AS first_name',
+                    'doctor_user.last_name AS last_name',
+                    'core_clinic_user.avatar',          // Аватар теперь из core.clinic_user связи доктора с клиникой
+                    'clinic_filial_user.color',         // Цвет из свернутого подзапроса прав по филиалам
+
+                    // Компоненты даты и времени для фронтенда
+                    DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
+                    DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
+                    DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_from) AS hour_from'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_from) AS minute_from'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_from) AS second_from'),
+                    DB::raw('EXTRACT(HOUR FROM schedulers.event_time_to) AS hour_to'),
+                    DB::raw('EXTRACT(MINUTE FROM schedulers.event_time_to) AS minute_to'),
+                    DB::raw('EXTRACT(SECOND FROM schedulers.event_time_to) AS second_to'),
+                    DB::raw("CONCAT(schedulers.cabinet_id, '_', schedulers.doctor_id) AS resourceId"),
+                    DB::raw("CONCAT(cabinets.name, ' • ', doctor_user.first_name, ' ', doctor_user.last_name) AS resource_label")
+                )
+                // 1. Привязываем кабинет
+                ->leftJoin('cabinets', 'cabinets.id', '=', 'schedulers.cabinet_id')
+
+                // 2. СВЯЗЬ ПАЦИЕНТА
+                ->leftJoin('patients', 'patients.id', '=', 'schedulers.patient_id')
+                ->leftJoin('core.users AS patient_user', 'patient_user.id', '=', 'patients.user_id')
+                ->leftJoin('patient_discount_statuses', 'patients.status_id', '=', 'patient_discount_statuses.id')
+
+                // 3. СВЯЗЬ ВРАЧА
+                ->leftJoin('core.users AS doctor_user', 'doctor_user.id', '=', 'schedulers.doctor_id')
+
+                // Подтягиваем аватар из связи доктора с клиникой core.clinic_user (связь 1-к-1 в рамках клиники, дубликатов нет)
+                ->leftJoin('core.clinic_user AS core_clinic_user', function($join) use ($clinicData) {
+                    $join->on('core_clinic_user.user_id', '=', 'doctor_user.id')
+                        ->where('core_clinic_user.clinic_id', '=', $clinicData->id);
+                })
+
+                // Подтягиваем только цвет, сворачивая права в филиалах через DISTINCT ON (PostgreSQL)
+                // чтобы событие не дублировалось, если у врача есть права в 2+ филиалах
+                ->leftJoin(DB::raw('(
+        SELECT DISTINCT ON (user_id) user_id, color 
+        FROM clinic_filial_user 
+        WHERE clinic_id = ' . (int)$clinicData->id . '
+    ) AS clinic_filial_user'), 'clinic_filial_user.user_id', '=', 'doctor_user.id')
+
+                // Фильтры
+                ->where('schedulers.clinic_id', $clinicData->id)
+                ->whereBetween('event_date', [$qData['start'], $qData['end']])
+                ->get();
+            $events = array();
+            foreach ($eventsData as $event) {
+                $event->startDate = date($event->event_date.' '.$event->event_time_from);
+                $event->endDate = date($event->event_date.' '.$event->event_time_to);
+                $events[] = (object) $event;
+            }
+            return response()->json([
+                'items' => $events
+            ]);
+        });
     }
 
     /**
@@ -768,65 +702,61 @@ class SchedulerController extends Controller
     public function update(SchedulerUpdateRequest $request) {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
-            if (!$request->user()->canClinic('scheduler-edit')) {
-                // Здесь тоже лучше редиректить с ошибкой во flash, но если рендеришь — то ок
-                return Inertia::render('Scheduler/List', ['error' => 'Insufficient permissions']);
-            }
+            if ($request->user()->canClinic('scheduler-edit')) {
+                if ($request->id) {
+                    $scheduler = Scheduler::find($request->id);
+                    $scheduler->title = $request->title ?? 'Uuuuuu';
+                    $scheduler->event_date = $request->event_date;
+                    $scheduler->event_time_from = $request->event_time_from;
+                    $scheduler->event_time_to = $request->event_time_to;
+                    $scheduler->clinic_id = $clinic->id;
+                    $scheduler->cabinet_id = $request->cabinet_id;
+                    $scheduler->doctor_id = $request->doctor_id;
+                    $scheduler->patient_id = $request->patient_id;
+                    $scheduler->description = $request->comment ?? '';
 
-            if ($request->id) {
-                $scheduler = Scheduler::find($request->id);
-                $scheduler->title = $request->title;
+                    // Безпечно дістаємо дані зі статус-масиву
+                    $scheduler->status_name = $request->status_id['name'] ?? 'planned';
+                    $scheduler->status_color = $request->status_id['color'] ?? '#3B82F6';
 
-                // КСТАТИ: обрати внимание, у тебя тут опечатка в $request->fotmatted_date (пропущена r)
-                // Если во фронте ты передаешь event_date, то лучше юзать: $request->event_date
-                $scheduler->event_date = $request->event_date ?? $request->fotmatted_date;
+                    $scheduler->services = json_encode($request->services ?? []);
+                    $scheduler->save();
 
-                $scheduler->event_time_from = $request->event_time_from;
-                $scheduler->event_time_to = $request->event_time_to;
-                $scheduler->clinic_id = $clinic->id;
-                $scheduler->cabinet_id = $request->cabinet_id;
-                $scheduler->doctor_id = $request->doctor_id;
-                $scheduler->patient_id = $request->patientId;
-                $scheduler->description = $request->comment ? $request->comment : '';
-                $scheduler->status_name = $request->status["name"];
-                $scheduler->status_color = $request->status["color"];
-                $scheduler->services = json_encode($request->services);
-                $scheduler->save();
-
-                // МЕНЯЕМ ТУТ: Обычный редирект Inertia, чтобы не перезагружать страницу
-                return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
-            }
-            else {
-                if ($request->newPatientData) {
-                    // create patient
-                    $patient = new Patient();
-                    $patient->first_name = $request->newPatientData['firstName'];
-                    $patient->last_name = $request->newPatientData['lastName'];
-                    $patient->phone = $request->newPatientData['phone'];
-                    $patient->email = $request->newPatientData['email'] ? $request->newPatientData['email'] : $request->newPatientData['phone'];
-                    $patient->password = Hash::make($request->newPatientData['phone']);
-                    $patient->save();
-
-                    $patientId = $patient->id;
+                    return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
                 } else {
-                    $patientId = $request->patientId;
+                    if ($request->newPatientData) {
+                        // create patient
+                        $patient = new Patient();
+                        $patient->first_name = $request->newPatientData['firstName'];
+                        $patient->last_name = $request->newPatientData['lastName'];
+                        $patient->phone = $request->newPatientData['phone'];
+                        $patient->email = $request->newPatientData['email'] ? $request->newPatientData['email'] : $request->newPatientData['phone'];
+                        $patient->password = Hash::make($request->newPatientData['phone']);
+                        $patient->save();
+
+                        $patientId = $patient->id;
+                    } else {
+                        $patientId = $request->patientId;
+                    }
+                    $scheduler = new Scheduler();
+                    $scheduler->title = $request->title;
+                    $scheduler->event_date = $request->event_date;
+                    $scheduler->event_time_from = $request->event_time_from;
+                    $scheduler->event_time_to = $request->event_time_to;
+                    $scheduler->clinic_id = $clinic->id;
+                    $scheduler->cabinet_id = $request->cabinet_id["id"];
+                    $scheduler->doctor_id = $request->doctor_id["id"];
+                    $scheduler->patient_id = $patientId;
+                    $scheduler->description = $request->comment ? $request->comment : '';
+                    $scheduler->status_name = $request->status_id["name"];
+                    $scheduler->status_color = $request->status_id["color"];
+                    $scheduler->services = json_encode($request->services);
+                    $scheduler->save();
+                    // МЕНЯЕМ ТУТ: Обычный редирект Inertia
+                    return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
                 }
-                $scheduler = new Scheduler();
-                $scheduler->title = $request->title;
-                $scheduler->event_date = $request->event_date;
-                $scheduler->event_time_from = $request->event_time_from;
-                $scheduler->event_time_to = $request->event_time_to;
-                $scheduler->clinic_id = $clinic->id;
-                $scheduler->cabinet_id = $request->cabinet_id["id"];
-                $scheduler->doctor_id = $request->doctor_id["id"];
-                $scheduler->patient_id = $patientId;
-                $scheduler->description = $request->comment ? $request->comment : '';
-                $scheduler->status_name = $request->status_id["name"];
-                $scheduler->status_color = $request->status_id["color"];
-                $scheduler->services = json_encode($request->services);
-                $scheduler->save();
-                // МЕНЯЕМ ТУТ: Обычный редирект Inertia
-                return redirect()->route('scheduler.index')->with('success', 'Event created successfully');
+            } else {
+
             }
         });
     }

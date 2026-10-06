@@ -1,6 +1,5 @@
-// import InputLabel from '../../../Components/Form/InputLabel';
 import { useForm, usePage } from '@inertiajs/react';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -18,6 +17,7 @@ export default function Form({
   customerData,
   contactData,
   statusesData,
+  contactTypeData,
   photoPath = null,
 }) {
   const appLang = useSelector(appLangSelector);
@@ -27,12 +27,6 @@ export default function Form({
   });
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-image.png');
-
-  const [uploadedFile, setUploadedFile] = useState();
-
-  const onDrop = useCallback((acceptedFiles) => {
-    setUploadedFile(acceptedFiles);
-  }, []);
 
   const { data, setData, processing, post, recentlySuccessful, progress } = useForm({
     id: formData.id,
@@ -55,9 +49,9 @@ export default function Form({
     status_id: formData.status_id,
     notice: formData.notice,
     patient_id: formData.patient_id,
+    return_url: sessionStorage.getItem('patient_return_url') || route('patient.index'),
   });
   const { errors } = usePage().props;
-
 
   const handleChange = (e) => {
     const key = e.target.id;
@@ -383,7 +377,7 @@ export default function Form({
                       className="hidden"
                     />
                     <span className="material-symbols-outlined text-[18px]">female</span>
-                    Жіноча
+                    {msg.get('patient.gender.female')}
                   </label>
 
                   <label
@@ -399,7 +393,7 @@ export default function Form({
                       className="hidden"
                     />
                     <span className="material-symbols-outlined text-[18px]">male</span>
-                    Чоловіча
+                    {msg.get('patient.gender.male')}
                   </label>
                 </div>
               </div>
@@ -504,10 +498,10 @@ export default function Form({
                   name={'contact'}
                   values={data}
                   value={data.contact}
-                  options={contactData}
+                  options={contactTypeData}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-black"
                   label={null}
                 />
               </div>

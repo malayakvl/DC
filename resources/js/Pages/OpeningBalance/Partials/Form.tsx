@@ -27,6 +27,15 @@ export default function Form({
   formRowData = null,
   unitsData,
   className = '',
+}: {
+  clinicData: any;
+  storeData: any;
+  statusData: any;
+  customerData: any;
+  formData: any;
+  formRowData: any;
+  unitsData: any;
+  className: string;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -38,7 +47,7 @@ export default function Form({
   const invoiceItems = useSelector(invoiceItemsSelector);
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     doc_number: formData.doc_number ? formData.doc_number : '',
     doc_date: formData.doc_date,
     clinic_id: clinicData.id,
@@ -56,7 +65,7 @@ export default function Form({
   const { processing, recentlySuccessful } = useForm();
   const isPosted = formData.status === 'posted';
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -68,7 +77,7 @@ export default function Form({
     }
   };
 
-  const handleChangeCalendar = (data) => {
+  const handleChangeCalendar = (data: any) => {
     const key = 'doc_date';
     setValues((values) => ({
       ...values,
@@ -76,7 +85,7 @@ export default function Form({
     }));
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -85,14 +94,14 @@ export default function Form({
     }));
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (!values['doc_date']) {
       values['doc_date'] = new Date();
     }
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;
-    invoiceItems.forEach((_row) => {
+    invoiceItems.forEach((_row: any) => {
       if (!_row.product_id) {
         haveErrorInRow = true;
       }
@@ -264,7 +273,7 @@ export default function Form({
               {!isPosted && (
                 <tfoot>
                   <tr>
-                    <td colSpan="7">
+                    <td colSpan={7}>
                       <button
                         type="button"
                         className="btn-add-row pl-[10px] font-bold"

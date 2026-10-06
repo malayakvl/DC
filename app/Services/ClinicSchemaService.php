@@ -637,6 +637,10 @@ class ClinicSchemaService
                 notice TEXT,    
                 phone VARCHAR(50),
                 payment VARCHAR(255),
+                contact VARCHAR(50),
+                status_id BIGINT,
+                important_info TEXT,
+                gender VARCHAR(50),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

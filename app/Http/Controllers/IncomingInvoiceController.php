@@ -21,6 +21,7 @@ use App\Models\StoreMaterials;
 use App\Models\Supplier;
 use App\Models\Tax;
 use App\Models\Unit;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -35,11 +36,14 @@ class IncomingInvoiceController extends Controller
 {
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
+    protected CustomerService $customerService;
 
-    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->schemaService = $schemaService;
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
 
 
@@ -146,14 +150,9 @@ class IncomingInvoiceController extends Controller
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if ($request->user()->can('invoice-incoming-create')) {
-                // $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
+                $filialId = $request->session()->get('filial_id');
+                $storeData = $this->customerService->clinicStoresData($clinicId);
                 $currencyData = Currency::all();
                 $unitsData = Unit::all();
                 $taxData = Tax::all();
@@ -173,33 +172,7 @@ class IncomingInvoiceController extends Controller
                 }
                 $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
                 $producerData = Supplier::all();
-                
-                // $customerData = DB::table('core.clinic_user')
-                //     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                //     ->select(
-                //         'users.id',
-                //         'users.first_name',
-                //         'users.last_name',
-                //         'users.email'
-                //     )
-                //     ->where('clinic_user.clinic_id', $clinicId)
-                //     ->orderBy('users.last_name')
-                //     ->get();
-                $customerData = DB::table('core.clinic_user as cu')
-                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id') // 💥 вот ключевая строка
-                        ->select(
-                            'u.id',
-                            'u.first_name',
-                            'u.last_name',
-                            'u.email',
-                            'cu.avatar'
-                        )
-                        ->orderBy('u.last_name')
-                        ->get();
-
+                $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
 
                 return Inertia::render('InvoiceIncoming/Create', [
                     'clinicData' => $clinicData,
@@ -230,12 +203,7 @@ class IncomingInvoiceController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if ($request->user()->can('invoice-incoming-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
-                $storeData = DB::table('stores')
-                    ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
-                    ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
-                    ->where('stores.clinic_id', $request->session()->get('clinic_id'))
-                    ->orderBy('name')->get();
+                $storeData = $this->customerService->clinicStoresData($clinicId);
                 $typeData = array();
                 $unitsData = Unit::all();
                 $formData = Invoice::find($id);
@@ -252,18 +220,8 @@ class IncomingInvoiceController extends Controller
                 }
 
                 $producerData = Producer::all();
-                
-                $customerData = DB::table('core.clinic_user')
-                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-                    ->select(
-                        'users.id',
-                        'users.first_name',
-                        'users.last_name',
-                        'users.email'
-                    )
-                    ->where('clinic_user.clinic_id', $clinicId)
-                    ->orderBy('users.last_name')
-                    ->get();
+
+                $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $request->session()->get('filial_id'));
 
                 return Inertia::render('InvoiceIncoming/Edit', [
                     'clinicData' => $clinicData,
@@ -470,7 +428,6 @@ class IncomingInvoiceController extends Controller
             $storeId = $request->store_id;
 
             $totalAmount = 0;
-
             foreach ($request->rows as $row) {
                 $qty = $row['quantity'];      // количество в единицах материала
                 $factQty = $row['fact_qty'];  // фактический вес/объем

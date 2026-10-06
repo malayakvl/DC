@@ -56,9 +56,9 @@ export default function NoticeMenu() {
 
       {/* Выпадающее меню (Drop-down) */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 rounded-md bg-white border border-[#dadbdc] z-50 overflow-hidden">
           <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-100">Сповіщення</h3>
+            <h3 className="text-md font-semibold text-black">Сповіщення</h3>
             <span
               className="text-xs text-indigo-400 cursor-pointer hover:underline"
               onClick={() => setHasUnread(false)}
@@ -69,19 +69,19 @@ export default function NoticeMenu() {
 
           {/* Список сповіщень */}
           <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/50">
-            <div className="p-3 hover:bg-slate-800/50 transition-colors cursor-pointer">
-              <p className="text-xs text-slate-300 font-medium">Новий валідатор підключено</p>
+            <div className="p-3 hover:bg-[#f0fdfa] transition-colors cursor-pointer">
+              <p className="text-xs text-[#687384] font-medium">Новий валідатор підключено</p>
               <span className="text-[10px] text-slate-500">2 хвилини тому</span>
             </div>
 
-            <div className="p-3 hover:bg-slate-800/50 transition-colors cursor-pointer">
-              <p className="text-xs text-slate-300 font-medium">Змінився Stake у Solana Node</p>
-              <span className="text-[10px] text-slate-500">1 годину тому</span>
+            <div className="p-3 hover:bg-[#f0fdfa] transition-colors cursor-pointer">
+              <p className="text-xs text-[#687384] font-medium">Змінився Stake у Solana Node</p>
+              <span className="text-[10px] text-[#687384]">1 годину тому</span>
             </div>
           </div>
 
-          <div className="p-2 text-center bg-slate-950/40 border-t border-slate-800">
-            <button className="text-xs text-slate-400 hover:text-white transition-colors">
+          <div className="p-2 text-center bg-[#f0fdfa] border-t border-slate-800">
+            <button className="text-xs text-[#0d9488] hover:text-white transition-colors">
               Показати все
             </button>
           </div>

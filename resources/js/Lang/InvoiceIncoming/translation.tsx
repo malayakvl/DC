@@ -22,6 +22,7 @@ const lngInvoiceIncoming = {
     'change.title.list': 'Накладні переміщення',
     'title.total': 'Загалом',
     'title.description': 'Реєстр прибуткових накладних клініки, філіалів та салонів',
+    'create.title.description': 'Реквізити документа та умови постачання',
     'title.edit': 'Редагувати накладну',
     'title.view': 'Переглянути накладну',
     create: 'Створити накладну',

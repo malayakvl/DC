@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\ClinicUser;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -78,4 +79,46 @@ class CustomerService
             ], $data));
         }
     }
+
+    public function getEmploeeClinicFilialData($clinicId, $filialId) {
+        $customerData = DB::table('core.clinic_user as cu')
+            ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+            ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
+            ->leftJoin("clinic_{$clinicId}.clinic_filial_user as pfu", function ($join) use ($filialId) {
+                $join->on('pfu.user_id', '=', 'u.id')
+                    ->where('pfu.filial_id', $filialId);
+            })
+            ->leftJoin("clinic_{$clinicId}.roles as r", 'r.id', '=', 'pfu.role_id')
+            ->where('cu.clinic_id', $clinicId)
+            ->whereNull('pt.id') // 💥 вот ключевая строка
+            ->select(
+                'u.id',
+                DB::raw("CONCAT(u.first_name, ' ', u.last_name) as name"),
+                'u.first_name',
+                'u.last_name',
+                'u.email',
+                'cu.avatar',
+                'pfu.color',
+                'pfu.avatar',
+                'r.name as role_name'
+            )
+            ->orderBy('u.last_name')
+            ->get();
+
+        return $customerData;
+    }
+
+    public function clinicStoresData($clinicId): \Illuminate\Support\Collection
+    {
+        $storeData = DB::table('stores')
+            ->select('stores.*', 'users.first_name', 'users.last_name', 'clinic_filials.name AS filialName')
+            ->leftJoin('core.users', 'users.id', '=', 'stores.user_id')
+            ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'stores.filial_id')
+            ->where('stores.clinic_id', $clinicId)
+            ->orderBy('name')->get();
+
+        return $storeData;
+    }
+
+
 }

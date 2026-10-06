@@ -3,24 +3,31 @@ import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
 // import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
+import { getSchedulePeople } from './engine/schedulePeople';
 import { router } from '@inertiajs/react';
 import Lang from 'lang.js';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import {
-  pricePopupSelector,
   showEditPopupSelector,
   showSchedulePopupSelector,
   viewScheduleSelector,
+  schedulerViewSelector,
+  schedulerBaseDateSelector,
+  schedulerCabinetFilterSelector,
+  schedulerDoctorFilterSelector,
+  schedulerStatusSelector,
+  eventsDataSelector,
 } from '@/Redux/Scheduler/selectors';
 import SchedulerDayHeader from './components/SchedulerDayHeader';
+import SchedulerEventCard from './components/SchedulerEventCard';
 import SchedulerTimeColumn from './components/SchedulerTimeColumn';
 import { useSchedulerEvents } from './hooks/useSchedulerEvents';
 import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 
-const SLOT_HEIGHT = 30;
-const FREE_SLOT_BG = '#fbfdff';
+const SLOT_HEIGHT = 35;
+const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
 
 function getDays(baseDate: string, count: number, appLang: string) {
@@ -42,17 +49,22 @@ function getDays(baseDate: string, count: number, appLang: string) {
 export default function Index3Days({
   cabinetData,
   groupedOptions,
-  customerData,
   eventsData,
-  initialView = '3days',
-  allowViewSwitch = true,
+}: {
+  cabinetData: any;
+  groupedOptions: any;
+  eventsData: any;
 }) {
-  useSelector(pricePopupSelector);
-  const [baseDate, setBaseDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
-  const [view, setView] = useState(initialView);
+  const view = useSelector(schedulerViewSelector);
+  const baseCalendarDate = useSelector(schedulerBaseDateSelector);
   const appLang = useSelector(appLangSelector);
   const showEventPopup = useSelector(showSchedulePopupSelector);
   const editEventPopup = useSelector(showEditPopupSelector);
+  const eventsChangesData = useSelector(eventsDataSelector);
+  const cabinetFilterId = useSelector(schedulerCabinetFilterSelector);
+  const doctorFilterId = useSelector(schedulerDoctorFilterSelector);
+  const statusFilter = useSelector(schedulerStatusSelector);
+  const baseDate = useState(() => format(new Date(), 'yyyy-MM-dd'));
 
   // Рефы для блокировки кликов
   const isResizingRef = React.useRef(false);
@@ -81,43 +93,24 @@ export default function Index3Days({
     isDraggingRef
   );
 
-  const { doctorsTabOptions, assistantsTabOptions, othersTabOptions } = useMemo(() => {
-    let doctorsOptions: any[] = [];
-    let assistantsOptions: any[] = [];
-    let othersOptions: any[] = [];
-
-    groupedOptions?.forEach((group: any) => {
-      if (group.label === 'roles.doctor') {
-        doctorsOptions = [...doctorsOptions, ...(group.options || [])];
-      } else if (group.label === 'roles.assistant') {
-        assistantsOptions = [...assistantsOptions, ...(group.options || [])];
-      } else {
-        othersOptions = [...othersOptions, ...(group.options || [])];
-      }
-    });
-
-    return {
-      doctorsTabOptions: doctorsOptions,
-      assistantsTabOptions: assistantsOptions,
-      othersTabOptions: othersOptions,
-    };
-  }, [groupedOptions]);
-
   const currentTabPeople = useMemo(() => {
-    switch (tab) {
-      case 'patients':
-        return doctorsTabOptions;
-      case 'visits':
-        return assistantsTabOptions;
-      case 'plans':
-        return othersTabOptions;
-      default:
-        return doctorsTabOptions;
-    }
-  }, [tab, doctorsTabOptions, assistantsTabOptions, othersTabOptions]);
+    const people = getSchedulePeople(groupedOptions, tab);
 
-  const DOCTOR_WIDTH = 180;
-  const dayWidth = 70 + cabinetData.length * currentTabPeople.length * DOCTOR_WIDTH;
+    return doctorFilterId
+      ? people.filter((person) => String(person.id) === String(doctorFilterId))
+      : people;
+  }, [doctorFilterId, groupedOptions, tab]);
+
+  const visibleCabinets = useMemo(
+    () =>
+      cabinetFilterId
+        ? cabinetData.filter((cabinet: any) => String(cabinet.id) === String(cabinetFilterId))
+        : cabinetData,
+    [cabinetData, cabinetFilterId]
+  );
+
+  const DOCTOR_WIDTH = 320;
+  const dayWidth = 70 + visibleCabinets.length * currentTabPeople.length * DOCTOR_WIDTH;
   const headerTrackRef = useRef<HTMLDivElement | null>(null);
 
   const syncHeaderScroll = (event: React.UIEvent<HTMLDivElement>) => {
@@ -128,14 +121,15 @@ export default function Index3Days({
 
   const dayStep = view === 'day' ? 1 : 3;
   const days = useMemo(() => {
-    return getDays(baseDate, dayStep, appLang);
-  }, [baseDate, dayStep]);
+    return getDays(baseCalendarDate, dayStep, appLang);
+    //     return getDays(baseDate, dayStep, appLang);
+  }, [baseDate, dayStep, baseCalendarDate]);
 
   const timeSlots = useMemo(() => generateTimeSlots(8, 20, 15), []);
   const gridHeight = timeSlots.length * SLOT_HEIGHT;
 
   const [localEvents, setLocalEvents] = useState<SchedulerEvent[]>(() => {
-    return eventsData.map((event) => ({
+    return eventsData.map((event: any) => ({
       id: String(event.id),
       title: event.title,
       doctor_id: event.doctor_id,
@@ -148,7 +142,7 @@ export default function Index3Days({
       end: `${event.event_date}T${event.event_time_to}`,
       status_color: event.status_color,
       status_name: event.status_name,
-      patient_name: event.last_name + ' ' + event.first_name,
+      patient_name: event.patient_last_name + ' ' + event.patient_first_name,
       services: event.services,
       cabinet_name: event.cabinet_name,
       doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
@@ -156,10 +150,11 @@ export default function Index3Days({
   });
 
   useEffect(() => {
-    if (eventsData) {
+    if (eventsChangesData.length) {
+      console.log('Обновляем локальний стейт евентов полсе смени дати', eventsChangesData);
       setLocalEvents(
-        eventsData.map((event) => ({
-          id: String(event.id),
+        eventsChangesData.map((event: any) => ({
+          id: event.event_id,
           title: event.title,
           doctor_id: event.doctor_id,
           patient_id: event.patient_id,
@@ -171,14 +166,14 @@ export default function Index3Days({
           end: `${event.event_date}T${event.event_time_to}`,
           status_color: event.status_color,
           status_name: event.status_name,
-          patient_name: event.last_name + ' ' + event.first_name,
+          patient_name: event.pl_name + ' ' + event.p_name,
           services: event.services,
           cabinet_name: event.cabinet_name,
-          doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+          doctor_name: event.first_name + ' ' + event.last_name,
         }))
       );
     }
-  }, [eventsData]);
+  }, [eventsChangesData]);
 
   // ================= DRAG & DROP =================
   const handleDragStart = (e: React.MouseEvent, event: SchedulerEvent) => {
@@ -390,86 +385,109 @@ export default function Index3Days({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const PREVIEW_WIDTH = 340;
-  const PREVIEW_HEIGHT = 280;
+  // const hexToRgba = (hex, alpha = 0.15) => {
+  //   if (!hex) return 'rgba(59, 130, 246, 0.15)'; // фолбек на випадок відсутності кольору
+  //   let c = hex.replace('#', '');
+  //   if (c.length === 3) {
+  //     c = c
+  //       .split('')
+  //       .map((x) => x + x)
+  //       .join('');
+  //   }
+  //   const num = parseInt(c, 16);
+  //   return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+  // };
 
-  const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const margin = 12;
+  // const PREVIEW_WIDTH = 340;
+  // const PREVIEW_HEIGHT = 280;
 
-    let x = rect.right + margin;
-    let y = rect.top;
+  // const showPreview = (e: React.MouseEvent<HTMLDivElement>, event: any, services: any[]) => {
+  //   const rect = e.currentTarget.getBoundingClientRect();
+  //   const margin = 12;
+  //
+  //   let x = rect.right + margin;
+  //   let y = rect.top;
+  //
+  //   if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
+  //     x = rect.left - PREVIEW_WIDTH - margin;
+  //   }
+  //
+  //   if (x < margin) {
+  //     x = margin;
+  //   }
+  //
+  //   if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
+  //     y = window.innerHeight - PREVIEW_HEIGHT - margin;
+  //   }
+  //
+  //   if (y < margin) {
+  //     y = margin;
+  //   }
+  //   const _services = event ? JSON.parse(event.services) : [];
+  //   const previewTotal = event
+  //     ? _services.reduce(
+  //         (sum: number, service: any) =>
+  //           sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
+  //         0
+  //       )
+  //     : 0;
+  //   event.amount_total = previewTotal;
+  //
+  //   setHoverPreview({
+  //     x,
+  //     y,
+  //     event,
+  //     services,
+  //   });
+  // };
 
-    if (x + PREVIEW_WIDTH > window.innerWidth - margin) {
-      x = rect.left - PREVIEW_WIDTH - margin;
-    }
+  // const formatDuration = (from: string, to: string) => {
+  //   const [fh, fm] = from.split(':').map(Number);
+  //   const [th, tm] = to.split(':').map(Number);
+  //
+  //   const minutes = th * 60 + tm - (fh * 60 + fm);
+  //
+  //   const hours = Math.floor(minutes / 60);
+  //   const mins = minutes % 60;
+  //
+  //   if (hours === 0) return `${mins} хв`;
+  //   if (mins === 0) return `${hours} год`;
+  //
+  //   return `${hours} год ${mins} хв`;
+  // };
 
-    if (x < margin) {
-      x = margin;
-    }
+  // Функція для переведення поточного часу в пікселі від початку дня (наприклад, від 08:00)
+  const getCurrentTimeTop = () => {
+    const now = new Date();
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
 
-    if (y + PREVIEW_HEIGHT > window.innerHeight - margin) {
-      y = window.innerHeight - PREVIEW_HEIGHT - margin;
-    }
+    const startHour = 8; // Початок дня (08:00)
 
-    if (y < margin) {
-      y = margin;
-    }
-    const _services = event ? JSON.parse(event.services) : [];
-    const previewTotal = event
-      ? _services.reduce(
-          (sum, service) =>
-            sum + Number(service.total_price ?? service.price) * Number(service.qty ?? 1),
-          0
-        )
-      : 0;
-    event.amount_total = previewTotal;
+    const totalMinutesFromStart = (currentHours - startHour) * 60 + currentMinutes;
+    const topPixels = totalMinutesFromStart * (SLOT_HEIGHT / 15);
 
-    setHoverPreview({
-      x,
-      y,
-      event,
-      services,
-    });
+    // Додаємо зміщення шапки (приблизно 190px, які забракував хедер дня та кабінетів)
+    const HEADER_OFFSET = 190;
+
+    return {
+      top: topPixels + HEADER_OFFSET,
+      timeStr: format(now, 'HH:mm'),
+    };
   };
 
-  const formatDuration = (from: string, to: string) => {
-    const [fh, fm] = from.split(':').map(Number);
-    const [th, tm] = to.split(':').map(Number);
+  const [currentTimeInfo, setCurrentTimeInfo] = useState(getCurrentTimeTop());
 
-    const minutes = th * 60 + tm - (fh * 60 + fm);
-
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-
-    if (hours === 0) return `${mins} хв`;
-    if (mins === 0) return `${hours} год`;
-
-    return `${hours} год ${mins} хв`;
-  };
-
-  const formatPatientName = (name) => {
-    if (!name) return '';
-
-    const parts = name.trim().split(/\s+/);
-
-    if (parts.length === 1) {
-      return parts[0];
-    }
-
-    const surname = parts[0];
-
-    const initials = parts
-      .slice(1)
-      .map((part) => `${part.charAt(0)}.`)
-      .join(' ');
-
-    return `${surname} ${initials}`;
-  };
+  // Оновлюємо час щохвилини
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTimeInfo(getCurrentTimeTop());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div>
-
       {/* FIXED HEADER AREA */}
       <div
         style={{
@@ -481,6 +499,7 @@ export default function Index3Days({
           background: '#f1f5f9',
           marginBottom: '100px',
           borderBottom: 'solid 1px #d5d7d9',
+          position: 'relative',
         }}
       >
         {/* NAV */}
@@ -495,47 +514,7 @@ export default function Index3Days({
             borderBottom: '1px solid #e2e8f0',
             zIndex: showEventPopup || editEventPopup ? 0 : 100,
           }}
-        >
-          <div>
-            <button
-              className="btn-submit btn-prev"
-              onClick={() =>
-                setBaseDate((prev) => format(addDays(parseISO(prev), -dayStep), 'yyyy-MM-dd'))
-              }
-            >
-              {msg.get('scheduler.prev')}
-            </button>
-            <span style={{ margin: '0 12px', fontWeight: 600 }}>
-              {days[0].label} {days.length > 1 && ` → ${days[days.length - 1].label}`}
-            </span>
-            <button
-              className="btn-submit btn-prev"
-              onClick={() =>
-                setBaseDate((prev) => format(addDays(parseISO(prev), dayStep), 'yyyy-MM-dd'))
-              }
-            >
-              {msg.get('scheduler.next')}
-            </button>
-          </div>
-
-          {allowViewSwitch && (
-            <div>
-              <button
-                onClick={() => setView('day')}
-                style={{ marginRight: 8, opacity: view === 'day' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.day')}
-              </button>
-              <button
-                className="btn-submit"
-                onClick={() => setView('3days')}
-                style={{ opacity: view === '3days' ? 1 : 0.5 }}
-              >
-                {msg.get('scheduler.3days')}
-              </button>
-            </div>
-          )}
-        </div>
+        />
 
         {/* CONTAINER */}
         <div
@@ -577,7 +556,7 @@ export default function Index3Days({
                   <SchedulerDayHeader
                     day={day}
                     isToday={day.date === format(new Date(), 'yyyy-MM-dd')}
-                    cabinets={cabinetData}
+                    cabinets={visibleCabinets}
                     people={currentTabPeople}
                     doctorWidth={DOCTOR_WIDTH}
                     todayBg={TODAY_BG}
@@ -616,11 +595,47 @@ export default function Index3Days({
                     zIndex: showEventPopup || editEventPopup ? 0 : 40,
                   }}
                 >
+                  {/* 2. Встав лінію сюди: вона малюватиметься тільки для поточного дня */}
+                  {day.date === format(new Date(), 'yyyy-MM-dd') && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: `${currentTimeInfo.top}px`,
+                        left: 0,
+                        right: 0,
+                        height: '2px',
+                        backgroundColor: '#ff4d4f',
+                        zIndex: 45,
+                        pointerEvents: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: '10px',
+                          backgroundColor: '#f43f5e',
+                          color: '#fff',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                      >
+                        <span className="animated-ping" />
+                        Зараз {currentTimeInfo.timeStr}
+                      </div>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', flex: 1, position: 'relative' }}>
                     <SchedulerTimeColumn timeSlots={timeSlots} slotHeight={SLOT_HEIGHT} />
 
                     <div style={{ display: 'flex', flex: 1, height: gridHeight }}>
-                      {cabinetData.map((cab, cabIdx) => (
+                      {visibleCabinets.map((cab: any, cabIdx: any) => (
                         <div
                           key={cab.id}
                           style={{
@@ -628,7 +643,7 @@ export default function Index3Days({
                             display: 'flex',
                             height: '100%',
                             borderRight:
-                              cabIdx < cabinetData.length - 1 ? '2px solid #94a3b8' : 'none',
+                              cabIdx < visibleCabinets.length - 1 ? '2px solid #94a3b8' : 'none',
                           }}
                         >
                           {currentTabPeople.map((doc, docIdx) => {
@@ -636,13 +651,16 @@ export default function Index3Days({
                               (e) =>
                                 e.event_date === day.date &&
                                 e.cabinet_id === cab.id &&
-                                e.doctor_id === doc.id
+                                e.doctor_id === doc.id &&
+                                (!statusFilter || e.status_name === statusFilter)
                             );
 
                             return (
                               <div
                                 key={doc.id}
-                                onClick={(e) => handleCellClick(e, day.date, cab, doc, timeSlots)}
+                                onClick={(e) =>
+                                  handleCellClick(e, day.date, cab.id, doc.id, timeSlots)
+                                }
                                 data-column-type="doctor-cell"
                                 data-date={day.date}
                                 data-cabinet-id={cab.id}
@@ -655,280 +673,45 @@ export default function Index3Days({
                                   backgroundColor: FREE_SLOT_BG,
                                   cursor: 'pointer',
                                   borderRight:
-                                    docIdx < customerData.length - 1
+                                    docIdx < currentTabPeople.length - 1
                                       ? '1px solid #e2e8f0'
                                       : '1px solid #e2e8f0',
                                   backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.03) 1px, transparent 1px)`,
                                   backgroundSize: `100% ${SLOT_HEIGHT * 4}px, 100% ${SLOT_HEIGHT}px`,
                                 }}
                               >
+                                {/* Додаємо візуальний блок-затемнення для неробочого часу (наприклад, після 18:00) */}
+                                <div
+                                  style={{
+                                    position: 'absolute',
+                                    top: `${(18 - 8) * 4 * SLOT_HEIGHT}px`, // якщо день починається о 8:00, то 18:00 це через 10 годин (10 годин * 4 слоти на годину * SLOT_HEIGHT)
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.07)', // легке затемнення
+                                    pointerEvents: 'none', // щоб кліки все одно доходили до обробника, який видасть console.log('disable for click')
+                                    borderTop: '1px dashed #cbd5e1',
+                                  }}
+                                />
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
-                                  const compact = layout.height < 70;
-                                  // const medium = layout.height >= 70 && layout.height < 110;
-                                  const large = layout.height >= 110;
-
-                                  const services = (() => {
-                                    try {
-                                      return JSON.parse(event.services || '[]');
-                                    } catch {
-                                      return [];
-                                    }
-                                  })();
-
-                                  const servicesCount = services.length;
-
                                   return (
-                                    <div
+                                    <SchedulerEventCard
+                                      event={event}
                                       key={event.id}
-                                      onClick={(e) => handleEventClick(e, event)}
-                                      onMouseDown={(e) => handleDragStart(e, event)}
-                                      onMouseEnter={(e) => showPreview(e, event, services)}
-                                      onMouseLeave={() => {
-                                        setHoverPreview(null);
-                                      }}
-                                      className={`calendar-event ${compact ? 'compact' : ''}`}
-                                      style={{
-                                        position: 'absolute',
-                                        top: layout.top,
-                                        height: layout.height,
-                                        left: 4,
-                                        right: 4,
-                                        borderLeft: `4px solid ${event.status_color}`,
-                                      }}
-                                    >
-                                      <div className="calendar-event-body">
-                                        <div className="calendar-event-header">
-                                          <div className="calendar-event-patient">
-                                            {formatPatientName(event.patient_name)}
-                                            <span className="act-zone">
-                                              <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                  e.stopPropagation();
-                                                  e.preventDefault();
-
-                                                  router.visit(`/act/create?visit_id=${event.id}`);
-                                                }}
-                                                title="Створити акт"
-                                                style={{
-                                                  display: 'flex',
-                                                  alignItems: 'center',
-                                                  justifyContent: 'center',
-                                                  width: '20px',
-                                                  height: '20px',
-                                                  borderRadius: '4px',
-                                                  background: '#0ea5a4',
-                                                  color: '#fff',
-                                                  border: 'none',
-                                                  cursor: 'pointer',
-                                                  transition: 'all 0.2s',
-                                                  flexShrink: 0,
-                                                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                  e.currentTarget.style.background = '#0d9488';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                  e.currentTarget.style.background = '#0ea5a4';
-                                                }}
-                                              >
-                                                <svg
-                                                  width="11"
-                                                  height="11"
-                                                  viewBox="0 0 24 24"
-                                                  fill="none"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2.5"
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                >
-                                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                                  <polyline points="14 2 14 8 20 8"></polyline>
-                                                  <line x1="12" y1="18" x2="12" y2="12"></line>
-                                                  <line x1="9" y1="15" x2="15" y2="15"></line>
-                                                </svg>
-                                              </button>
-                                            </span>
-                                          </div>
-                                        </div>
-
-                                        <div className="calendar-event-services">
-                                          {servicesCount === 0 && (
-                                            <div className="calendar-event-service">
-                                              {event.title}
-                                            </div>
-                                          )}
-
-                                          {servicesCount === 1 && (
-                                            <div className="calendar-event-service">
-                                              🦷 {services[0].name}
-                                            </div>
-                                          )}
-
-                                          {servicesCount > 1 && large && (
-                                            <>
-                                              {services.slice(0, 3).map((service) => (
-                                                <div
-                                                  key={service.id}
-                                                  className="calendar-event-service"
-                                                >
-                                                  🦷 {service.name}
-                                                </div>
-                                              ))}
-
-                                              {services.length > 3 && (
-                                                <div className="calendar-event-more">
-                                                  +{services.length - 2} ще...
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-
-                                          {servicesCount > 1 && !large && (
-                                            <div className="calendar-event-more hover-target">
-                                              🦷 {servicesCount} послуги
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        {!compact && (
-                                          <div
-                                            className="calendar-event-footer"
-                                            style={{
-                                              display: 'flex',
-                                              justifyContent: 'space-between',
-                                              alignItems: 'center',
-                                              gap: '4px',
-                                              marginTop: 'auto',
-                                              width: '100%',
-                                              overflow: 'hidden',
-                                              paddingTop: '4px',
-                                              borderTop: '1px dashed rgba(0,0,0,0.08)',
-                                            }}
-                                          >
-                                            <div
-                                              className="calendar-event-time"
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '3px',
-                                                whiteSpace: 'nowrap',
-                                                fontSize: '10px',
-                                                flexShrink: 1,
-                                                minWidth: 0,
-                                                color: '#475569',
-                                              }}
-                                            >
-                                              <svg
-                                                width="11"
-                                                height="11"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                style={{ flexShrink: 0, minWidth: '11px' }}
-                                              >
-                                                <circle
-                                                  cx="12"
-                                                  cy="12"
-                                                  r="9"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2"
-                                                />
-                                                <path
-                                                  d="M12 7v5l3 2"
-                                                  stroke="currentColor"
-                                                  strokeWidth="2"
-                                                  strokeLinecap="round"
-                                                />
-                                              </svg>
-                                              <span>
-                                                {event.event_time_from}-{event.event_time_to}
-                                              </span>
-                                            </div>
-
-                                            <div
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                flexShrink: 0,
-                                              }}
-                                            >
-                                              <span
-                                                className="calendar-event-duration"
-                                                style={{
-                                                  whiteSpace: 'nowrap',
-                                                  fontSize: '10px',
-                                                  color: '#64748b',
-                                                }}
-                                              >
-                                                {formatDuration(
-                                                  event.event_time_from,
-                                                  event.event_time_to
-                                                )}
-                                              </span>
-
-                                              {/*<button*/}
-                                              {/*  type="button"*/}
-                                              {/*  onClick={(e) => {*/}
-                                              {/*    e.stopPropagation();*/}
-                                              {/*    e.preventDefault();*/}
-
-                                              {/*    router.visit(`/act/create?visit_id=${event.id}`);*/}
-                                              {/*  }}*/}
-                                              {/*  title="Створити акт"*/}
-                                              {/*  style={{*/}
-                                              {/*    display: 'flex',*/}
-                                              {/*    alignItems: 'center',*/}
-                                              {/*    justifyContent: 'center',*/}
-                                              {/*    width: '20px',*/}
-                                              {/*    height: '20px',*/}
-                                              {/*    borderRadius: '4px',*/}
-                                              {/*    background: '#0ea5a4',*/}
-                                              {/*    color: '#fff',*/}
-                                              {/*    border: 'none',*/}
-                                              {/*    cursor: 'pointer',*/}
-                                              {/*    transition: 'all 0.2s',*/}
-                                              {/*    flexShrink: 0,*/}
-                                              {/*    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',*/}
-                                              {/*  }}*/}
-                                              {/*  onMouseEnter={(e) => {*/}
-                                              {/*    e.currentTarget.style.background = '#0d9488';*/}
-                                              {/*  }}*/}
-                                              {/*  onMouseLeave={(e) => {*/}
-                                              {/*    e.currentTarget.style.background = '#0ea5a4';*/}
-                                              {/*  }}*/}
-                                              {/*>*/}
-                                              {/*  <svg*/}
-                                              {/*    width="11"*/}
-                                              {/*    height="11"*/}
-                                              {/*    viewBox="0 0 24 24"*/}
-                                              {/*    fill="none"*/}
-                                              {/*    stroke="currentColor"*/}
-                                              {/*    strokeWidth="2.5"*/}
-                                              {/*    strokeLinecap="round"*/}
-                                              {/*    strokeLinejoin="round"*/}
-                                              {/*  >*/}
-                                              {/*    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>*/}
-                                              {/*    <polyline points="14 2 14 8 20 8"></polyline>*/}
-                                              {/*    <line x1="12" y1="18" x2="12" y2="12"></line>*/}
-                                              {/*    <line x1="9" y1="15" x2="15" y2="15"></line>*/}
-                                              {/*  </svg>*/}
-                                              {/*</button>*/}
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-
-                                      <div
-                                        onMouseDown={(e) =>
-                                          handleResizeStart(e, event.id, event.end)
-                                        }
-                                        data-resize-handle
-                                        className="calendar-event-resize"
-                                      />
-                                    </div>
+                                      layout={layout}
+                                      onClick={(mouseEvent) => handleEventClick(mouseEvent, event)}
+                                      onMouseDown={(mouseEvent) =>
+                                        handleDragStart(mouseEvent, event)
+                                      }
+                                      onResizeStart={(mouseEvent) =>
+                                        handleResizeStart(mouseEvent, event.id, event.end)
+                                      }
+                                      statusLabel={msg.get(
+                                        'scheduler.statuses.' + event.status_name
+                                      )}
+                                    />
                                   );
                                 })}
                               </div>

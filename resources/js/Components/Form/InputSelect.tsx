@@ -1,7 +1,6 @@
 import InputLabel from './InputLabel';
 import React, { useEffect, useState, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
-import lngHeaders from '../../Lang/Datatable/translation';
 import lngDropdown from '../../Lang/Dropdown/translation';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
@@ -141,8 +140,8 @@ export default function InputSelect({
                   key={option.id || index}
                   className={`cursor-pointer py-2 px-3 rounded-lg text-sm transition flex items-center justify-between ${
                     isSelected
-                      ? 'bg-brand-50 text-brand-700 font-semibold'
-                      : 'text-slate-700 hover:bg-slate-100'
+                      ? 'bg-brand-50 text-[#64748b] font-semibold'
+                      : 'text-[#64748b] hover:bg-slate-100'
                   }`}
                   onClick={() => handleSelect(optValue)}
                 >
