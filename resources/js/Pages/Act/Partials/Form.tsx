@@ -1,4 +1,4 @@
-import { router, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../../hooks';
@@ -16,14 +16,14 @@ import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import { findActItemsAction } from '../../../Redux/Act';
 import axios from 'axios';
 
-const normaliseRow = (row) => {
+const normaliseRow = (row: any) => {
   const quantity = Number(row.quantity ?? row.qty ?? 1);
   const rawPrice = Number(row.price || row.base_price || 0);
 
   const rawComponents = Array.isArray(row.components) ? row.components : [];
   const groupedMap = new Map();
 
-  rawComponents.forEach((component) => {
+  rawComponents.forEach((component: any) => {
     const mId = component.material_id || component.product_id || component.id;
 
     let compQty = Number(component.base_quantity);
@@ -56,9 +56,9 @@ const normaliseRow = (row) => {
   };
 };
 
-const withBaseQuantities = (components, serviceQuantity = 1) => {
+const withBaseQuantities = (components: any, serviceQuantity = 1) => {
   const groupedMap = new Map();
-  (components || []).forEach((component) => {
+  (components || []).forEach((component: any) => {
     const mId = component.material_id || component.product_id || component.id;
 
     // Всегда вытаскиваем чистую базу: если бэкенд прислал общую сумму, делим на количество услуги
@@ -91,16 +91,24 @@ export default function Form({
   visitsData = [],
   formData,
   formRowData = [],
+}: {
+  clinicData: any;
+  statusData: any[];
+  patientsData: any[];
+  customerData: any[];
+  visitsData: any[];
+  formData: any;
+  formRowData: any[];
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
   });
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [_, setIsCalculating] = useState(false);
   const dispatch = useAppDispatch();
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     act_number: formData.act_number || '',
     act_date: formData.act_date || '',
     clinic_id: clinicData.id,
@@ -119,7 +127,7 @@ export default function Form({
   const fifoRequestId = useRef(0);
   const { processing, recentlySuccessful } = useForm();
 
-  const changeValue = (event) => {
+  const changeValue = (event: any) => {
     const key = event.target.id || event.target.name;
     const value = event.target.value;
     setValues((current) => ({ ...current, [key]: value }));
@@ -134,14 +142,14 @@ export default function Form({
     }));
   };
 
-  const handleChangeCalendar = (date) => {
+  const handleChangeCalendar = (date: any) => {
     setValues((current) => ({ ...current, act_date: date }));
   };
 
-  const makeRowsFromVisit = async (visit) => {
+  const makeRowsFromVisit = async (visit: any) => {
     const services = Array.isArray(visit.services) ? visit.services : [];
     const serviceRows = await Promise.all(
-      services.map(async (service) => {
+      services.map(async (service: any) => {
         const id = service.id || service.service_id;
         if (!id) return null;
 
@@ -164,30 +172,30 @@ export default function Form({
     return serviceRows.filter(Boolean);
   };
 
-  const chooseVisit = async (event) => {
-    const visitId = event.target.value;
-    setValues((current) => ({ ...current, visit_id: visitId }));
-    if (!visitId) return;
-    const visit = visitsData.find((item) => String(item.id) === String(visitId));
-    if (!visit) return;
-    setLoadingVisit(true);
-    try {
-      const visitRows = await makeRowsFromVisit(visit);
-      setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()]);
-      setValues((current) => ({
-        ...current,
-        visit_id: visitId,
-        patient_id: visit.patient_id || '',
-        doctor_id: visit.doctor_id || '',
-        act_date: `${visit.event_date || ''} ${visit.event_time_from || ''}`.trim(),
-      }));
-    } finally {
-      setLoadingVisit(false);
-    }
-  };
+  // const chooseVisit = async (event: any) => {
+  //   const visitId = event.target.value;
+  //   setValues((current) => ({ ...current, visit_id: visitId }));
+  //   if (!visitId) return;
+  //   const visit = visitsData.find((item) => String(item.id) === String(visitId));
+  //   if (!visit) return;
+  //   setLoadingVisit(true);
+  //   try {
+  //     const visitRows = await makeRowsFromVisit(visit);
+  //     setRows(visitRows.length ? visitRows.map(normaliseRow) : [emptyRow()]);
+  //     setValues((current) => ({
+  //       ...current,
+  //       visit_id: visitId,
+  //       patient_id: visit.patient_id || '',
+  //       doctor_id: visit.doctor_id || '',
+  //       act_date: `${visit.event_date || ''} ${visit.event_time_from || ''}`.trim(),
+  //     }));
+  //   } finally {
+  //     setLoadingVisit(false);
+  //   }
+  // };
 
   // Перевірка на дефіцит по всьому словнику fifo
-  const hasShortage = Object.values(fifo).some((item) => Number(item?.shortage_qty || 0) > 0);
+  // const hasShortage = Object.values(fifo).some((item) => Number(item?.shortage_qty || 0) > 0);
 
   useEffect(() => {
     if (formData.visit_id && !formRowData.length) {
@@ -210,126 +218,123 @@ export default function Form({
 
   // Единый стабильный эффект для запроса FIFO-превью без зацикливания
   // працює ідеально якщо міняємо загальну кількість процедур
-//   useEffect(() => {
-//     // Собираем список услуг из акта для отправки на бэкенд
-//     const services = rows
-//       .map((row, rowIndex) => {
-//         const serviceId = Number(row.product_id || row.service_id);
-//         const quantity = Number(row.quantity || row.qty || 1);
-//
-//         if (!serviceId) return null;
-//
-//         return {
-//           key: String(rowIndex),
-//           service_id: serviceId,
-//           quantity: quantity,
-//         };
-//       })
-//       .filter(Boolean);
-//     if (!services.length) {
-//       setFifo({});
-//       setFifoError('');
-//       return;
-//     }
-//
-//     const currentRequestId = ++fifoRequestId.current;
-//     const timer = window.setTimeout(async () => {
-//       try {
-//         // Отправляем список услуг, а не сырые материалы!
-//         const response = await axios.post('/act/fifo-preview', { services });
-//         if (currentRequestId !== fifoRequestId.current) return;
-//
-//         const fifoByComponent = Object.fromEntries(
-//           (response.data.items || []).map((item) => [item.key, item])
-//         );
-//         setFifo(fifoByComponent);
-//         setFifoError('');
-//       } catch (error) {
-//         if (currentRequestId !== fifoRequestId.current) return;
-//         setFifo({});
-//         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
-//       }
-//     }, 250);
-//
-//     return () => window.clearTimeout(timer);
-//   }, [
-//     JSON.stringify(
-//       rows.map((r) => ({
-//         id: r.product_id || r.service_id,
-//         q: r.quantity,
-//       }))
-//     ),
-//   ]);
+  //   useEffect(() => {
+  //     // Собираем список услуг из акта для отправки на бэкенд
+  //     const services = rows
+  //       .map((row, rowIndex) => {
+  //         const serviceId = Number(row.product_id || row.service_id);
+  //         const quantity = Number(row.quantity || row.qty || 1);
+  //
+  //         if (!serviceId) return null;
+  //
+  //         return {
+  //           key: String(rowIndex),
+  //           service_id: serviceId,
+  //           quantity: quantity,
+  //         };
+  //       })
+  //       .filter(Boolean);
+  //     if (!services.length) {
+  //       setFifo({});
+  //       setFifoError('');
+  //       return;
+  //     }
+  //
+  //     const currentRequestId = ++fifoRequestId.current;
+  //     const timer = window.setTimeout(async () => {
+  //       try {
+  //         // Отправляем список услуг, а не сырые материалы!
+  //         const response = await axios.post('/act/fifo-preview', { services });
+  //         if (currentRequestId !== fifoRequestId.current) return;
+  //
+  //         const fifoByComponent = Object.fromEntries(
+  //           (response.data.items || []).map((item) => [item.key, item])
+  //         );
+  //         setFifo(fifoByComponent);
+  //         setFifoError('');
+  //       } catch (error) {
+  //         if (currentRequestId !== fifoRequestId.current) return;
+  //         setFifo({});
+  //         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
+  //       }
+  //     }, 250);
+  //
+  //     return () => window.clearTimeout(timer);
+  //   }, [
+  //     JSON.stringify(
+  //       rows.map((r) => ({
+  //         id: r.product_id || r.service_id,
+  //         q: r.quantity,
+  //       }))
+  //     ),
+  //   ]);
 
+  //   useEffect(() => {
+  //     // Собираем список услуг из акта для отправки на бэкенд вместе с компонентами
+  //     const services = rows
+  //       .map((row, rowIndex) => {
+  //         const serviceId = Number(row.product_id || row.service_id);
+  //         const quantity = Number(row.quantity || row.qty || 1);
+  //
+  //         if (!serviceId) return null;
+  //
+  //         return {
+  //           key: String(rowIndex),
+  //           service_id: serviceId,
+  //           quantity: quantity,
+  //           // Передаємо також матеріали, якщо лікар змінював їх кількість вручну
+  //           components: (row.components || []).map((c) => ({
+  //             material_id: Number(c.material_id || c.product_id),
+  //             quantity:
+  //               c.quantity !== undefined && c.quantity !== ''
+  //                 ? Number(c.quantity)
+  //                 : Number(c.base_quantity || 0) * quantity,
+  //           })),
+  //         };
+  //       })
+  //       .filter(Boolean);
+  //
+  //     if (!services.length) {
+  //       setFifo({});
+  //       setFifoError('');
+  //       return;
+  //     }
+  //
+  //     const currentRequestId = ++fifoRequestId.current;
+  //     const timer = window.setTimeout(async () => {
+  //       try {
+  //         // Отправляем список услуг вместе с компонентами
+  //         const response = await axios.post('/act/fifo-preview', { services });
+  //         if (currentRequestId !== fifoRequestId.current) return;
+  //
+  //         const fifoByComponent = Object.fromEntries(
+  //           (response.data.items || []).map((item) => [item.key, item])
+  //         );
+  //         setFifo(fifoByComponent);
+  //         setFifoError('');
+  //       } catch (error) {
+  //         if (currentRequestId !== fifoRequestId.current) return;
+  //         setFifo({});
+  //         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
+  //       }
+  //     }, 250);
+  //
+  //     return () => window.clearTimeout(timer);
+  //   }, [
+  //     JSON.stringify(
+  //       rows.map((r) => ({
+  //         id: r.product_id || r.service_id,
+  //         q: r.quantity || r.qty,
+  //         // Додаємо в залежності компоненти, щоб тригерити перерахунок при зміні кількості матеріалу
+  //         comps: (r.components || []).map((c) => ({
+  //           id: c.material_id || c.product_id,
+  //           q: c.quantity,
+  //         })),
+  //       }))
+  //     ),
+  //   ]);
 
-//   useEffect(() => {
-//     // Собираем список услуг из акта для отправки на бэкенд вместе с компонентами
-//     const services = rows
-//       .map((row, rowIndex) => {
-//         const serviceId = Number(row.product_id || row.service_id);
-//         const quantity = Number(row.quantity || row.qty || 1);
-//
-//         if (!serviceId) return null;
-//
-//         return {
-//           key: String(rowIndex),
-//           service_id: serviceId,
-//           quantity: quantity,
-//           // Передаємо також матеріали, якщо лікар змінював їх кількість вручну
-//           components: (row.components || []).map((c) => ({
-//             material_id: Number(c.material_id || c.product_id),
-//             quantity:
-//               c.quantity !== undefined && c.quantity !== ''
-//                 ? Number(c.quantity)
-//                 : Number(c.base_quantity || 0) * quantity,
-//           })),
-//         };
-//       })
-//       .filter(Boolean);
-//
-//     if (!services.length) {
-//       setFifo({});
-//       setFifoError('');
-//       return;
-//     }
-//
-//     const currentRequestId = ++fifoRequestId.current;
-//     const timer = window.setTimeout(async () => {
-//       try {
-//         // Отправляем список услуг вместе с компонентами
-//         const response = await axios.post('/act/fifo-preview', { services });
-//         if (currentRequestId !== fifoRequestId.current) return;
-//
-//         const fifoByComponent = Object.fromEntries(
-//           (response.data.items || []).map((item) => [item.key, item])
-//         );
-//         setFifo(fifoByComponent);
-//         setFifoError('');
-//       } catch (error) {
-//         if (currentRequestId !== fifoRequestId.current) return;
-//         setFifo({});
-//         setFifoError(error.response?.data?.error || 'Не вдалося розрахувати FIFO-собівартість');
-//       }
-//     }, 250);
-//
-//     return () => window.clearTimeout(timer);
-//   }, [
-//     JSON.stringify(
-//       rows.map((r) => ({
-//         id: r.product_id || r.service_id,
-//         q: r.quantity || r.qty,
-//         // Додаємо в залежності компоненти, щоб тригерити перерахунок при зміні кількості матеріалу
-//         comps: (r.components || []).map((c) => ({
-//           id: c.material_id || c.product_id,
-//           q: c.quantity,
-//         })),
-//       }))
-//     ),
-//   ]);
-
-
-
-  const submit = (event) => {
+  const submit = (event: any) => {
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
     if (!values.patient_id || !validRows.length) return;
@@ -348,8 +353,8 @@ export default function Form({
       })),
     };
     console.log(payload);
-//     exit;
-//     router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
+    //     exit;
+    //     router.post(formData.id ? `/act/update?id=${formData.id}` : '/act/update', payload);
   };
 
   return (
@@ -440,7 +445,6 @@ export default function Form({
             <div className="flex flex-col gap-1.5">
               <div className="flex flex-col gap-1">
                 <InputCustomerSelect
-                  translatable={false}
                   name={'patient_id'}
                   values={values}
                   value={values.patient_id}
@@ -514,6 +518,7 @@ export default function Form({
           successMessage="Збережено успішно!"
           processing={processing}
           recentlySuccessful={recentlySuccessful}
+          onSave={undefined}
         />
       </form>
     </section>

@@ -42,7 +42,6 @@ const MaterialItem = ({
 }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
   const materialId = component.material_id;
-  const priceId = component.price_id;
   const errorMessage = actItemsError[materialId] || '';
   const [localVal, setLocalVal] = useState(
     component.quantity !== undefined && component.quantity !== '' && component.quantity !== null

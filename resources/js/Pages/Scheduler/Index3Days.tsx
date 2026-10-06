@@ -24,6 +24,10 @@ import { SchedulerEvent } from '@/Pages/SchedulerCopy/mock/data';
 const SLOT_HEIGHT = 35;
 const FREE_SLOT_BG = '#fff';
 const TODAY_BG = '#eef6ff';
+const COMPACT_EVENT_HEIGHT = 90;
+const EVENT_WITHOUT_FOOTER_CHROME = 62;
+const EVENT_WITH_FOOTER_CHROME = 84;
+const EVENT_SERVICE_LINE_HEIGHT = 18;
 
 function getDays(baseDate: string, count: number, appLang: string) {
   const start = parseISO(baseDate);
@@ -755,10 +759,8 @@ export default function Index3Days({
                                 {dayEvents.map((event) => {
                                   const layout = getEventLayout(event);
 
-                                  const compact = layout.height < 90;
-                                  // const medium = layout.height >= 70 && layout.height < 110;
-                                  const large = layout.height >= 110;
-                                  console.log('scheduler event', event);
+                                  const compact = layout.height < COMPACT_EVENT_HEIGHT;
+                                  const showPrice = layout.height >= 110;
 
                                   const services = (() => {
                                     // Если это уже массив, просто возвращаем его
@@ -780,13 +782,35 @@ export default function Index3Days({
                                   })();
 
                                   const servicesCount = services.length;
+                                  const serviceLineCapacity = compact
+                                    ? 1
+                                    : Math.max(
+                                        1,
+                                        Math.floor(
+                                          (layout.height -
+                                            (showPrice
+                                              ? EVENT_WITH_FOOTER_CHROME
+                                              : EVENT_WITHOUT_FOOTER_CHROME)) /
+                                            EVENT_SERVICE_LINE_HEIGHT
+                                        )
+                                      );
+                                  const visibleServicesCount =
+                                    servicesCount > serviceLineCapacity
+                                      ? Math.max(1, serviceLineCapacity - 1)
+                                      : servicesCount;
+                                  const hiddenServicesCount = Math.max(
+                                    0,
+                                    servicesCount - visibleServicesCount
+                                  );
+                                  const showInlineMore =
+                                    hiddenServicesCount > 0 && serviceLineCapacity === 1;
 
                                   return (
                                     <div
                                       key={event.id}
                                       onClick={(e) => handleEventClick(e, event)}
                                       onMouseDown={(e) => handleDragStart(e, event)}
-                                      className={`shadow-sm calendar-event ${compact ? 'compact' : ''}`}
+                                      className={`shadow-sm calendar-event scheduler-event-card ${compact ? 'compact' : ''}`}
                                       style={{
                                         position: 'absolute',
                                         top: layout.top,
@@ -794,26 +818,23 @@ export default function Index3Days({
                                         left: 4,
                                         right: 4,
                                         backgroundColor: getEventBackground(event.status_name),
-                                        border: `1px solid ${getEventBorder(event.status_name)}`, // рамка залишається насиченою
+                                        border: `1px solid ${getEventBorder(event.status_name)}`,
                                       }}
                                     >
-                                      <div className="calendar-event-body">
-                                        <div className="flex items-center justify-between gap-1">
-                                          <span className={`text-[11px] font-bold`}>
+                                      <div className="calendar-event-body scheduler-event-card__body">
+                                        <div className="scheduler-event-card__header">
+                                          <span className="scheduler-event-card__time">
                                             {event.event_time_from}-{event.event_time_to}
                                           </span>
-                                          <span
-                                            className={`event-status ${event.status_name} mr-[40px]`}
-                                          >
-                                            {msg.get('scheduler.statuses.' + event.status_name)}
-                                          </span>
-                                          <span className="act-zone">
+                                          <div className="scheduler-event-card__actions">
+                                            <span className={`event-status ${event.status_name}`}>
+                                              {msg.get('scheduler.statuses.' + event.status_name)}
+                                            </span>
                                             <button
                                               type="button"
                                               onClick={(e) => {
                                                 e.stopPropagation();
                                                 e.preventDefault();
-
                                                 router.visit(`/act/create?visit_id=${event.id}`);
                                               }}
                                               title="Створити акт"
@@ -823,57 +844,49 @@ export default function Index3Days({
                                                 description
                                               </span>
                                             </button>
-                                          </span>
+                                          </div>
                                         </div>
-                                        <div className="my-0.5 inline-block h-[18px]">
-                                          <h5 className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate p-0 m-0 mt-0.5">
-                                            <b>{formatPatientName(event.patient_name)}</b>
-                                          </h5>
+
+                                        <div className="scheduler-event-card__patient">
+                                          {formatPatientName(event.patient_name)}
                                         </div>
-                                        <div className="calendar-event-services">
+
+                                        <div className="scheduler-event-card__services">
                                           {servicesCount === 0 && (
-                                            <div className="calendar-event-service">
+                                            <div className="scheduler-event-card__service-name">
                                               {event.title}
                                             </div>
                                           )}
 
-                                          {servicesCount === 1 && (
-                                            <p
-                                              className={`text-[11px] text-[#524e4e] ${large ? 'break-words' : 'line-clamp-2'}`}
-                                            >
-                                              {services[0].name}
-                                            </p>
-                                          )}
-
-                                          {servicesCount > 1 && large && (
-                                            <>
-                                              {services.slice(0, 3).map((service: any) => (
-                                                <p
-                                                  key={service.id}
-                                                  className="text-[11px] text-[#524e4e] truncate"
-                                                >
+                                          {services
+                                            .slice(0, visibleServicesCount)
+                                            .map((service: any, index: number) => (
+                                              <div
+                                                className="scheduler-event-card__service-line"
+                                                key={service.id ?? `${event.id}-${index}`}
+                                              >
+                                                <span className="scheduler-event-card__service-name">
                                                   {service.name}
-                                                </p>
-                                              ))}
+                                                </span>
+                                                {showInlineMore &&
+                                                  index === visibleServicesCount - 1 && (
+                                                    <span className="scheduler-event-card__more scheduler-event-card__more--inline">
+                                                      +{hiddenServicesCount} ще
+                                                    </span>
+                                                  )}
+                                              </div>
+                                            ))}
 
-                                              {services.length > 3 && (
-                                                <div className="calendar-event-more">
-                                                  +{services.length - 2} ще...
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-
-                                          {servicesCount > 1 && !large && (
-                                            <div className="calendar-event-more hover-target">
-                                              {servicesCount} послуги
-                                            </div>
+                                          {hiddenServicesCount > 0 && !showInlineMore && (
+                                            <span className="scheduler-event-card__more">
+                                              +{hiddenServicesCount} ще
+                                            </span>
                                           )}
                                         </div>
 
-                                        {!compact && (
-                                          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100">
-                                            <span className="font-bold text-teal-800">3,200 ₴</span>
+                                        {showPrice && (
+                                          <div className="scheduler-event-card__footer">
+                                            <span>3,200 ₴</span>
                                           </div>
                                         )}
                                       </div>

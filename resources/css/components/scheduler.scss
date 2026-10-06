@@ -1425,20 +1425,15 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-
     padding:3px 8px;
-
-    background:#eef7ff;
-
-    color:#3b82f6;
-
-    border-radius:20px;
-
+    background:#fff;
+    color: #3e434b;
+    border-radius:5px;
     font-size:11px;
-
     cursor:default;
-
     position:relative;
+    margin-top:-15px;
+    font-weight: bold;
 }
 
 .calendar-event-footer{
@@ -1830,6 +1825,7 @@
 .act-zone {
     position: absolute;
     right: 5px;
+    top: 4px;
 }
 .calendar-header-viewport {
     border: solid 1px #dadbdc;
@@ -1849,6 +1845,9 @@
     font-weight: bold;
     @apply text-[10px] font-bold px-1.5 py-0.5 rounded ;
     border-radius: 0.25rem;
+    position: absolute;
+    right: 40px;
+    top: 5px;
 }
 .done {
     background: none;
@@ -1868,6 +1867,139 @@
 .act-btn {
     @apply w-6 h-6 rounded-md bg-white text-[12px] flex items-center justify-center hover:bg-white transition;
 }
+
+/* The event height is calculated from its duration. Keep its contents inside that
+   exact rectangle, rather than allowing flex items and inherited margins to grow it. */
+.scheduler-event-card {
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.scheduler-event-card .scheduler-event-card__body {
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.scheduler-event-card.compact .scheduler-event-card__body {
+    padding: 4px;
+    gap: 2px;
+    justify-content: flex-start;
+}
+
+.scheduler-event-card__header,
+.scheduler-event-card__actions,
+.scheduler-event-card__service-line {
+    display: flex;
+    align-items: center;
+}
+
+.scheduler-event-card__header {
+    min-height: 24px;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.scheduler-event-card__time {
+    min-width: 0;
+    color: #111827;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.scheduler-event-card__actions {
+    flex: 0 0 auto;
+    gap: 8px;
+}
+
+/* Override the legacy absolute positioning only for the new card layout. */
+.scheduler-event-card .event-status {
+    position: static;
+    top: auto;
+    right: auto;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.scheduler-event-card__patient,
+.scheduler-event-card__service-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scheduler-event-card__patient {
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 14px;
+}
+
+.scheduler-event-card__services {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.scheduler-event-card__service-line {
+    flex: 0 0 16px;
+    min-width: 0;
+    gap: 6px;
+    color: #524e4e;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.scheduler-event-card__service-name {
+    flex: 1 1 auto;
+}
+
+.scheduler-event-card__more {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 16px;
+    box-sizing: border-box;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: #fff;
+    color: #3e434b;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 12px;
+    white-space: nowrap;
+}
+
+.scheduler-event-card__more--inline {
+    flex: 0 0 auto;
+}
+
+.scheduler-event-card__footer {
+    flex: 0 0 18px;
+    color: #0f766e;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
 .doctor-cell {
     text-transform: uppercase;
 }

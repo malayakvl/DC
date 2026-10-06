@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import Lang from 'lang.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { findPatientsAction } from '@/Redux/Scheduler/actions';
 import { patientsDataSelector } from '@/Redux/Scheduler/selectors';
 import { setSchedulePatientIdAction } from '@/Redux/Scheduler';
 import { UserPlus, Mail, Phone, User } from 'lucide-react';
+import { useAppDispatch } from '../../hooks';
 
-export default function EventPatient({ editPatientData = null }) {
-  const dispatch = useDispatch();
+// 1. Описываем интерфейс для пропсов
+interface EventPatientProps {
+  editPatientData?: {
+    patient: any;
+    patient_id: any;
+  } | null;
+  values?: any; // если values тоже передаются извне
+}
+export default function EventPatient({ editPatientData = null }: EventPatientProps) {
+  // const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngScheduler,
@@ -17,7 +27,7 @@ export default function EventPatient({ editPatientData = null }) {
   });
   const patientsData = useSelector(patientsDataSelector);
   const [addPatient, setAddPatient] = useState(false);
-  const [patientData, setPatientData] = useState({
+  const [patientData, setPatientData] = useState<Record<string, any>>({
     firstName: '',
     lastName: '',
     email: '',
@@ -27,7 +37,7 @@ export default function EventPatient({ editPatientData = null }) {
   });
   const [showPatientsList, setShowPatientsList] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setPatientData((values) => ({
@@ -48,7 +58,7 @@ export default function EventPatient({ editPatientData = null }) {
 
     return (
       <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-        {patientsData.map((patient) => (
+        {patientsData.map((patient: any) => (
           <div
             key={patient.id}
             className="flex items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer transition border-b border-slate-100 last:border-none"

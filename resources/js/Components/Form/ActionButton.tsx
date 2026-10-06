@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export default function ActionButton({
   className = '',
@@ -6,6 +6,11 @@ export default function ActionButton({
   children = null,
   icon = null,
   ...props
+}: {
+  className?: string;
+  disabled?: boolean;
+  children?: ReactNode;
+  icon?: ReactNode;
 }) {
   return (
     <button

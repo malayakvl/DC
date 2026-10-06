@@ -7,11 +7,19 @@ export default function ListHeader({
   count,
   totalLabel,
   description,
-  // Пропси для кнопки (можуть бути або посилання, або клік)
   createHref,
   onCreateClick,
   createLabel,
   isCreateDisabled = false,
+}: {
+  title: string;
+  count: number;
+  totalLabel: any;
+  description: any;
+  createHref: any | null;
+  onCreateClick: any | null;
+  createLabel: any | null;
+  isCreateDisabled: boolean;
 }) {
   return (
     <section className="mb-6 mt-2">
@@ -50,14 +58,12 @@ export default function ListHeader({
                 </NavLink>
               ) : (
                 <ActionButton
-                  type="button"
-                  onClick={onCreateClick}
                   disabled={isCreateDisabled}
                   icon={
                     <span className="material-symbols-outlined text-[18px] mt-[-5px]">add</span>
                   }
                 >
-                  <span className="text-[13px]">{createLabel}</span>
+                  <span className="text-[13px]">{createLabel}!</span>
                 </ActionButton>
               )}
             </div>

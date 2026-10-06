@@ -12,12 +12,27 @@ export default function InputCustomerSelect({
   name,
   label,
   values,
+  value,
+  required,
   onChange,
   defaultValue = null,
   error = null,
   options = [],
   selectedLabelClass = '',
   ...props
+}: {
+  className?: string;
+  elId?: string;
+  name?: string;
+  label?: string;
+  values?: Record<string, any>;
+  value: any;
+  required: boolean;
+  onChange?: (value: any) => void;
+  defaultValue?: any[] | null;
+  error?: any[] | null;
+  options: any[] | null;
+  selectedLabelClass?: string;
 }) {
   const { errors: pageErrors } = usePage().props as any;
   const appLang = useSelector(appLangSelector);
@@ -26,7 +41,7 @@ export default function InputCustomerSelect({
     locale: appLang,
   });
 
-  const displayError = error || pageErrors[name];
+  const displayError = error || (name ? pageErrors[name] : undefined);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +56,8 @@ export default function InputCustomerSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const rawValue = defaultValue ?? values?.[name];
   let targetId = rawValue;
 

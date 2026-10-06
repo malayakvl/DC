@@ -10,7 +10,17 @@ import NavLink from '../../Components/Links/NavLink';
 import { Link } from '@inertiajs/react';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ clinicData, tree, services, currency }) {
+export default function List({
+  clinicData,
+  tree,
+  services,
+  currency,
+}: {
+  clinicData: any;
+  tree: any;
+  services: any;
+  currency: any;
+}) {
   useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -47,7 +57,7 @@ export default function List({ clinicData, tree, services, currency }) {
   };
 
   // Отправка формы создания категории
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     post('/service-category/update', {
       onSuccess: () => {
@@ -60,8 +70,8 @@ export default function List({ clinicData, tree, services, currency }) {
   // 🌟 Состояние для поиска
   const [searchQuery, setSearchQuery] = useState('');
 
-  const renderPriceBlock = (item) => {
-    const filteredServices = services[item.id]?.filter((_item) =>
+  const renderPriceBlock = (item: any) => {
+    const filteredServices = services[item.id]?.filter((_item: any) =>
       _item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -133,7 +143,7 @@ export default function List({ clinicData, tree, services, currency }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-800 text-sm">
-              {categoryServices.map((_item, index) => (
+              {categoryServices.map((_item: any, index: any) => (
                 <tr
                   key={_item.id}
                   className={`hover:bg-slate-50/60 transition-colors group ${index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'}`}
@@ -172,7 +182,14 @@ export default function List({ clinicData, tree, services, currency }) {
 
                   <td className="py-3.5 px-4 text-right">
                     <span className="font-bold text-slate-900 font-mono">
-                      {_item.total_price ? _item.total_price + ' ' + currency : 'Розрахувати'}
+                      {_item.total_price !== undefined &&
+                      _item.total_price !== null &&
+                      _item.price !== undefined &&
+                      _item.price !== null
+                        ? (Number(_item.total_price) + Number(_item.price)).toFixed(2) +
+                          ' ' +
+                          currency
+                        : 'Розрахувати'}
                     </span>
                   </td>
 
@@ -243,6 +260,7 @@ export default function List({ clinicData, tree, services, currency }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('service.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
             />
 
             {/* Инлайн-форма для добавления категории */}
@@ -294,7 +312,7 @@ export default function List({ clinicData, tree, services, currency }) {
             )}
 
             <div className="mt-6">
-              {tree?.map((item) => (
+              {tree?.map((item: any) => (
                 <React.Fragment key={item.id}>{renderPriceBlock(item)}</React.Fragment>
               ))}
             </div>

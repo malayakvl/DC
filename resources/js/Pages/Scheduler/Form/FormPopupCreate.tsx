@@ -1,7 +1,7 @@
 import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngScheduler from '../../../Lang/Scheduler/translation';
@@ -16,8 +16,8 @@ import InputMask from 'react-input-mask';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import InputText from '../../../Components/Form/InputText';
-import InputTextarea from '../../../Components/Form/InputTextarea';
 import InputSelect from '../../../Components/Form/InputSelect';
+import { useAppDispatch } from '../../../hooks';
 
 dayjs.extend(utc);
 import {
@@ -45,12 +45,22 @@ export default function SchedulerFormCreate({
   currency,
   serviceCategories,
   services,
+}: {
+  formData: any;
+  clinicData: any;
+  cabinetData: any;
+  customerData: any;
+  assistantData: any;
+  currency: any;
+  serviceCategories: any;
+  services?: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngScheduler,
     locale: appLang,
   });
+  const dispatch = useAppDispatch();
 
   const parsedTimePlus30 = () => {
     const time = timeStart;
@@ -60,7 +70,7 @@ export default function SchedulerFormCreate({
     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   };
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     title: formData.title,
     clinic_id: clinicData.id,
     cabinet_id: formData.cabinet_id,
@@ -79,7 +89,6 @@ export default function SchedulerFormCreate({
   const timeEnd = parsedTimePlus30();
   const patientId = useSelector(patientIdSelector);
   const eventStatus = useSelector(popupStatusSelector);
-  const dispatch = useDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showSchedulePopupSelector);
@@ -89,7 +98,7 @@ export default function SchedulerFormCreate({
     serviceCategories.length ? serviceCategories[0].id : null
   );
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     console.log(key, value);
@@ -100,7 +109,7 @@ export default function SchedulerFormCreate({
     console.log(values);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -109,7 +118,7 @@ export default function SchedulerFormCreate({
     }));
   };
 
-  const handleChangeTimeFrom = (value) => {
+  const handleChangeTimeFrom = (value: any) => {
     const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const isValid = regex.test(value);
     if (isValid) {
@@ -120,7 +129,7 @@ export default function SchedulerFormCreate({
     }
   };
 
-  const handleChangeTimeTo = (value) => {
+  const handleChangeTimeTo = (value: any) => {
     const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const isValid = regex.test(value);
     if (isValid) {
@@ -150,7 +159,7 @@ export default function SchedulerFormCreate({
     }));
   }, [eventDate, doctorId, eventStatus, cabinetId]);
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
 
     values['newPatientData'] = newPatientData;
@@ -179,7 +188,7 @@ export default function SchedulerFormCreate({
     });
   };
 
-  const renderService = (item) => {
+  const renderService = (item: any) => {
     return (
       <div
         key={item.id}
@@ -404,7 +413,9 @@ export default function SchedulerFormCreate({
         <div className="manipulation flex flex-col pt-2">
           {/* Блок выбранных услуг */}
           {popupServices && popupServices.length > 0 && (
-            <div className="mb-3 space-y-1">{popupServices.map((item) => renderService(item))}</div>
+            <div className="mb-3 space-y-1">
+              {popupServices.map((item: any) => renderService(item))}
+            </div>
           )}
 
           <button
@@ -422,7 +433,7 @@ export default function SchedulerFormCreate({
               <div className="w-full md:w-[240px] shrink-0 space-y-1">
                 <div className="text-xs font-bold text-slate-700 mb-2 px-1">Категорії</div>
                 <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
-                  {serviceCategories.map((category) => (
+                  {serviceCategories.map((category: any) => (
                     <button
                       key={category.id}
                       type="button"
@@ -450,52 +461,56 @@ export default function SchedulerFormCreate({
                   <div className="text-xs font-bold text-slate-700">Послуги</div>
                 </div>
                 <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1">
-                  {(services[selectedCategory] || []).length === 0 && (
+                  {(!selectedCategory || (services[selectedCategory] || []).length === 0) && (
                     <div className="text-xs text-slate-400 text-center py-4">
                       У даній категорії ще немає послуг
                     </div>
                   )}
 
-                  {(services[selectedCategory] || []).map((service) => {
-                    // Перевіряємо, чи ця послуга вже додана до списку обраних
-                    const isSelected = popupServices.some((item) => item.id === service.id);
+                  {((selectedCategory !== null && services[selectedCategory]) || []).map(
+                    (service: any) => {
+                      // Перевіряємо, чи ця послуга вже додана до списку обраних
+                      const isSelected = popupServices.some((item: any) => item.id === service.id);
 
-                    return (
-                      <div
-                        key={service.id}
-                        className="mt-2.5 p-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl shadow-2xs flex items-center justify-between gap-3"
-                      >
-                        {/* Название услуги */}
-                        <div className="text-xs font-semibold text-slate-900 truncate min-w-0 flex-1">
-                          {service.name}
-                        </div>
+                      return (
+                        <div
+                          key={service.id}
+                          className="mt-2.5 p-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl shadow-2xs flex items-center justify-between gap-3"
+                        >
+                          {/* Название услуги */}
+                          <div className="text-xs font-semibold text-slate-900 truncate min-w-0 flex-1">
+                            {service.name}
+                          </div>
 
-                        {/* Правая часть: Цена и кнопка добавления */}
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs font-mono text-slate-600 font-medium">
-                            {service.total_price} {currency}
-                          </span>
-                          <button
-                            type="button"
-                            className={`w-7 h-7 rounded-lg border flex items-center justify-center transition text-sm shadow-2xs cursor-pointer relative z-10 ${
-                              isSelected
-                                ? 'bg-teal-600 border-teal-600 text-white font-bold'
-                                : 'bg-white border-slate-200/80 text-teal-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 font-bold'
-                            }`}
-                            title={
-                              isSelected ? 'Вже додано (натисніть, щоб видалити)' : 'Додати послугу'
-                            }
-                            onClick={(e) => {
-                              e.stopPropagation(); // Защита от всплытия событий
-                              dispatch(setServicesAction(service));
-                            }}
-                          >
-                            {isSelected ? '✓' : '+'}
-                          </button>
+                          {/* Правая часть: Цена и кнопка добавления */}
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-xs font-mono text-slate-600 font-medium">
+                              {service.total_price} {currency}
+                            </span>
+                            <button
+                              type="button"
+                              className={`w-7 h-7 rounded-lg border flex items-center justify-center transition text-sm shadow-2xs cursor-pointer relative z-10 ${
+                                isSelected
+                                  ? 'bg-teal-600 border-teal-600 text-white font-bold'
+                                  : 'bg-white border-slate-200/80 text-teal-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 font-bold'
+                              }`}
+                              title={
+                                isSelected
+                                  ? 'Вже додано (натисніть, щоб видалити)'
+                                  : 'Додати послугу'
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation(); // Защита от всплытия событий
+                                dispatch(setServicesAction(service));
+                              }}
+                            >
+                              {isSelected ? '✓' : '+'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </div>
               </div>
             </div>

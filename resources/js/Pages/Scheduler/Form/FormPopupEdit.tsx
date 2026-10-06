@@ -1,7 +1,7 @@
 import { Transition } from '@headlessui/react';
 import { useForm, router } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngScheduler from '../../../Lang/Scheduler/translation';
@@ -34,6 +34,7 @@ import EventStatus from '../../../Components/Scheduler/EventStatus';
 import EventPatient from '../../../Components/Scheduler/EventPatient';
 import { setPopupAction, showOverlayAction } from '@/Redux/Layout';
 import { Trash, ListPlus } from 'lucide-react';
+import { useAppDispatch } from '../../../hooks';
 
 export default function SchedulerFormEdit({
   formData,
@@ -44,6 +45,15 @@ export default function SchedulerFormEdit({
   currency,
   serviceCategories,
   services,
+}: {
+  formData: any;
+  clinicData: any;
+  cabinetData: any;
+  customerData: any;
+  assistantData: any;
+  currency: any;
+  serviceCategories: any;
+  services?: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -52,12 +62,12 @@ export default function SchedulerFormEdit({
   });
   const currentEventData = useSelector(eventsDataSelector);
 
-  const formatDate = (date) => {
+  const formatDate = (date: any) => {
     if (!date) return '';
     return dayjs(date).format('DD.MM.YYYY');
   };
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     id: currentEventData.id || '',
     title: currentEventData.title || '',
     clinic_id: clinicData.id,
@@ -81,7 +91,7 @@ export default function SchedulerFormEdit({
   const timeEnd = currentEventData.event_time_to;
   const patientId = useSelector(patientIdSelector);
   const eventStatus = useSelector(popupStatusSelector);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const newPatientData = useSelector(newPatientDataSelector);
   const eventDate = useSelector(popupDateSelector);
   const showPopup = useSelector(showEditPopupSelector);
@@ -91,16 +101,7 @@ export default function SchedulerFormEdit({
     serviceCategories.length ? serviceCategories[0].id : null
   );
 
-  const handleChange = (e) => {
-    const key = e.target.id || e.target.name;
-    const value = e.target.value;
-    setValues((values) => ({
-      ...values,
-      [key]: value,
-    }));
-  };
-
-  const handleChangeTimeFrom = (value) => {
+  const handleChangeTimeFrom = (value: any) => {
     const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const isValid = regex.test(value);
     if (isValid) {
@@ -111,7 +112,7 @@ export default function SchedulerFormEdit({
     }
   };
 
-  const handleChangeTimeTo = (value) => {
+  const handleChangeTimeTo = (value: any) => {
     const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     const isValid = regex.test(value);
     if (isValid) {
@@ -144,7 +145,7 @@ export default function SchedulerFormEdit({
     }));
   }, [eventDate, doctorId, assistent, eventStatus, cabinetId]);
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
 
     values['newPatientData'] = newPatientData;
@@ -177,7 +178,7 @@ export default function SchedulerFormEdit({
     });
   };
 
-  const renderService = (item) => {
+  const renderService = (item: any) => {
     return (
       <div
         key={item.id}
@@ -261,7 +262,7 @@ export default function SchedulerFormEdit({
                       meeting_room
                     </span>
                     <span className="text-xs font-medium text-slate-900 truncate">
-                      {cabinetData.find((c) => c.id == values.cabinet_id)?.name ||
+                      {cabinetData.find((c: any) => c.id == values.cabinet_id)?.name ||
                         'Виберіть кабінет'}
                     </span>
                   </div>
@@ -282,7 +283,7 @@ export default function SchedulerFormEdit({
                       ЛК
                     </div>
                     <span className="text-xs font-medium text-slate-900 truncate">
-                      {customerData.find((d) => d.id == values.doctor_id)?.name ||
+                      {customerData.find((d: any) => d.id == values.doctor_id)?.name ||
                         'Виберіть лікаря'}
                     </span>
                   </div>
@@ -303,7 +304,8 @@ export default function SchedulerFormEdit({
                       АС
                     </div>
                     <span className="text-xs font-medium text-slate-900 truncate">
-                      {assistantData.find((a) => a.id == values.assistent_id)?.name || 'Не вибрано'}
+                      {assistantData.find((a: any) => a.id == values.assistent_id)?.name ||
+                        'Не вибрано'}
                     </span>
                   </div>
                   <span className="material-symbols-outlined text-slate-400 text-[18px] shrink-0">
@@ -382,7 +384,9 @@ export default function SchedulerFormEdit({
 
         <div className="manipulation flex flex-col pt-2">
           {popupServices && popupServices.length > 0 && (
-            <div className="mb-3 space-y-1">{popupServices.map((item) => renderService(item))}</div>
+            <div className="mb-3 space-y-1">
+              {popupServices.map((item: any) => renderService(item))}
+            </div>
           )}
 
           <button
@@ -400,7 +404,7 @@ export default function SchedulerFormEdit({
               <div className="w-full md:w-[240px] shrink-0 space-y-1">
                 <div className="text-xs font-bold text-slate-700 mb-2 px-1">Категорії</div>
                 <div className="space-y-1 max-h-[200px] overflow-y-auto pr-1">
-                  {serviceCategories.map((category) => (
+                  {serviceCategories.map((category: any) => (
                     <button
                       key={category.id}
                       type="button"
@@ -426,46 +430,51 @@ export default function SchedulerFormEdit({
               <div className="flex-1 space-y-2 bg-white p-3 rounded-xl border border-slate-200/60 shadow-2xs">
                 <div className="text-xs font-bold text-slate-700">Послуги</div>
                 <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1">
-                  {(services[selectedCategory] || []).length === 0 && (
+                  {(!selectedCategory || (services[selectedCategory] || []).length === 0) && (
                     <div className="text-xs text-slate-400 text-center py-4">
                       У даній категорії ще немає послуг
                     </div>
                   )}
 
-                  {(services[selectedCategory] || []).map((service) => {
-                    const isSelected = popupServices.some((item) => item.id === service.id);
+                  {((selectedCategory !== null && services[selectedCategory]) || []).map(
+                    (service: any) => {
+                      const isSelected = popupServices.some((item: any) => item.id === service.id);
 
-                    return (
-                      <div
-                        key={service.id}
-                        className="mt-2.5 p-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl shadow-2xs flex items-center justify-between gap-3"
-                      >
-                        <div className="text-xs font-semibold text-slate-900 truncate min-w-0 flex-1">
-                          {service.name}
-                        </div>
+                      return (
+                        <div
+                          key={service.id}
+                          className="mt-2.5 p-2 bg-[#f2f3ff] border border-slate-200/80 rounded-xl shadow-2xs flex items-center justify-between gap-3"
+                        >
+                          <div className="text-xs font-semibold text-slate-900 truncate min-w-0 flex-1">
+                            {service.name}
+                          </div>
 
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-xs font-mono text-slate-600 font-medium">
-                            {service.total_price ?? service.price} {currency}
-                          </span>
-                          <button
-                            type="button"
-                            className={`w-7 h-7 rounded-lg border flex items-center justify-center transition text-sm shadow-2xs cursor-pointer relative z-10 ${
-                              isSelected
-                                ? 'bg-teal-600 border-teal-600 text-white font-bold'
-                                : 'bg-white border-slate-200/80 text-teal-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 font-bold'
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              dispatch(setServicesAction(service));
-                            }}
-                          >
-                            {isSelected ? '✓' : '+'}
-                          </button>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-xs font-mono text-slate-600 font-medium">
+                              {(
+                                Number(service.total_price || 0) + Number(service.price || 0)
+                              ).toFixed(2)}{' '}
+                              {currency}
+                            </span>
+                            <button
+                              type="button"
+                              className={`w-7 h-7 rounded-lg border flex items-center justify-center transition text-sm shadow-2xs cursor-pointer relative z-10 ${
+                                isSelected
+                                  ? 'bg-teal-600 border-teal-600 text-white font-bold'
+                                  : 'bg-white border-slate-200/80 text-teal-700 hover:bg-teal-50 hover:text-teal-800 hover:border-teal-300 font-bold'
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                dispatch(setServicesAction(service));
+                              }}
+                            >
+                              {isSelected ? '✓' : '+'}
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    }
+                  )}
                 </div>
               </div>
             </div>
@@ -493,7 +502,7 @@ export default function SchedulerFormEdit({
             onClick={() => {
               dispatch(showScheduleEditPopupAction(false));
               dispatch(showOverlayAction(false));
-              dispatch(setPopupClass ? setPopupAction(false) : () => {});
+              // dispatch(setPopupClass ? setPopupAction(false) : () => {});
             }}
           >
             {msg.get('scheduler.close')}

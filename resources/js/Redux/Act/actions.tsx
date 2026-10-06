@@ -201,66 +201,12 @@ export const updateComponentQuantityAction: any = createAction(
             qty: newComponentQty,
             base_quantity: newComponentQty / serviceQty,
           };
-
         } catch (error) {
           console.error('Error validating component on backend, rolling back...', error);
           throw error;
         }
       } catch (error) {
         console.error('Error updating component quantity', error);
-        return null;
-      }
-    }
-);
-
-export const updateComponentQuantityAction1: any = createAction(
-  'act/UPDATE_COMPONENT_QUANTITY_NEW',
-  async (serviceId: number, materialId: number, qty: number, allInvoiceItems: any) =>
-    async (dispatch: any) => {
-      try {
-        console.log('serviceId:', serviceId, 'materialId:', materialId, 'Qty:', qty);
-        console.log(allInvoiceItems)
-        // 1. Копируем массив строк акта, чтобы не мутировать стейт напрямую
-        const currentItems = [...allInvoiceItems];
-        // 2. Находим саму услугу (процедуру) в общем списке по её ID (pricing_id или service_id)
-        const targetItemIndex = currentItems.findIndex(
-          (item: any) => item.pricing_id === serviceId || item.service_id === serviceId
-        );
-
-        if (targetItemIndex === -1) {
-          console.error('Service item not found in state');
-          return null;
-        }
-        const targetItem = currentItems[targetItemIndex];
-        const serviceQty = Number(targetItem.quantity || 1);
-        const newComponentQty = Number(qty);
-
-        // 3. Обновляем количество ТОЛЬКО для конкретного компонента внутри этой услуги
-        const updatedComponents = (targetItem.components || []).map((comp: any) => {
-          if (comp.material_id === materialId) {
-            const baseQty = newComponentQty / serviceQty; // пересчитываем базу на 1 ед. услуги
-            return {
-              ...comp,
-              base_quantity: baseQty,
-              quantity: newComponentQty,
-            };
-          }
-          return comp;
-        });
-
-        // Создаем обновленную копию услуги для отправки на бэкенд
-        const updatedTargetItem = {
-          ...targetItem,
-          components: updatedComponents,
-        };
-
-        // Подставляем обновленную услугу в массив для бэкенда
-        const itemsForBackend = [...currentItems];
-        itemsForBackend[targetItemIndex] = updatedTargetItem;
-        console.log('itemsForBackend', itemsForBackend);
-
-      } catch (error) {
-        console.error('Error fetching service items', error);
         return null;
       }
     }

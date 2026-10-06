@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
+import { format } from 'date-fns';
 
 import {
   setSchedulePopupDoctorAction,
@@ -61,153 +61,153 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [setCalendarDateAction]: {
-    next: (state, action) => ({
+  [setCalendarDateAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       filterBaseDate: action.payload,
     }),
   },
-  [setScheduleStatusFilterAction]: {
-    next: (state, action) => ({
+  [setScheduleStatusFilterAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       filterStatus: action.payload,
     }),
   },
-  [setTypeViewAction]: {
-    next: (state, action) => ({
+  [setTypeViewAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       filterTypeView: action.payload,
     }),
   },
-  [setEditEventAction]: {
-    next: (state, action) => ({
+  [setEditEventAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       editEvent: action.payload,
     }),
   },
-  [showSchedulePopupAction]: {
-    next: (state, action) => ({
+  [showSchedulePopupAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       showSchedulePopup: action.payload,
     }),
   },
-  [showScheduleEditPopupAction]: {
-    next: (state, action) => ({
+  [showScheduleEditPopupAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       showScheduleEditPopup: action.payload,
     }),
   },
-  [setScheduleEditEventAction]: {
-    next: (state, action) => ({
+  [setScheduleEditEventAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       eventsData: action.payload,
     }),
   },
-  [showPricePopupAction]: {
-    next: (state, action) => ({
+  [showPricePopupAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       showPricePopup: action.payload,
     }),
   },
-  [showScheduleErrorPopupAction]: {
-    next: (state, action) => ({
+  [showScheduleErrorPopupAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       showErrorSchedulePopup: action.payload,
     }),
   },
-  [setSchedulePopupDoctorAction]: {
-    next: (state, action) => ({
+  [setSchedulePopupDoctorAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       popupDoctorId: action.payload,
     }),
   },
-  [setScheduleTimeAction]: {
-    next: (state, action) => ({
+  [setScheduleTimeAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       timeStart: action.payload,
     }),
   },
-  [setScheduleDateAction]: {
-    next: (state, action) => ({
+  [setScheduleDateAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       dateStart: action.payload,
     }),
   },
-  [setSchedulePatientIdAction]: {
-    next: (state, action) => ({
+  [setSchedulePatientIdAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       patientId: action.payload,
     }),
   },
-  [setScheduleDoctorIdAction]: {
-    next: (state, action) => ({
+  [setScheduleDoctorIdAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       popupDoctorId: action.payload,
     }),
   },
-  [setScheduleAssistantIdAction]: {
-    next: (state, action) => ({
+  [setScheduleAssistantIdAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       popupAssistantId: action.payload,
     }),
   },
-  [setScheduleStatusAction]: {
-    next: (state, action) => ({
+  [setScheduleStatusAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       statusId: action.payload,
     }),
   },
-  [setNewPatientAction]: {
-    next: (state, action) => ({
+  [setNewPatientAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       newPatientData: action.payload,
     }),
   },
-  [fetchEventsAction]: {
-    next: (state, action) => ({
+  [fetchEventsAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       eventsData: action.payload,
     }),
   },
-  [fetchPeriodEventsAction]: {
-    next: (state, action) => ({
+  [fetchPeriodEventsAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       eventsData: action.payload,
     }),
   },
-  [findPatientsAction]: {
-    next: (state, action) => ({
+  [findPatientsAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       patientsData: action.payload,
     }),
   },
-  [setRemoteEventsAction]: {
-    next: (state, action) => ({
+  [setRemoteEventsAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       eventsData: action.payload,
     }),
   },
-  [initServicesAction]: {
-    next: (state, action) => ({
+  [initServicesAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       services: Array.isArray(action.payload) ? action.payload : [],
     }),
   },
-  [setServicesAction]: {
-    next: (state, action) => {
-      const exists = state.services.some((service) => service.id === action.payload.id);
+  [setServicesAction.toString()]: {
+    next: (state: any, action: any) => {
+      const exists = state.services.some((service: any) => service.id === action.payload.id);
       action.payload.qty = 1;
       return {
         ...state,
         services: exists
-          ? state.services.filter((service) => service.id !== action.payload.id) // удалить
+          ? state.services.filter((service: any) => service.id !== action.payload.id) // удалить
           : [...state.services, action.payload], // добавить
       };
     },
   },
-  [plusServiceAction]: {
-    next: (state, action) => {
-      const _s = state.services.map((item) =>
+  [plusServiceAction.toString()]: {
+    next: (state: any, action: any) => {
+      const _s = state.services.map((item: any) =>
         item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
       );
 
@@ -217,11 +217,11 @@ const ACTION_HANDLERS = {
       };
     },
   },
-  [minusServiceAction]: {
-    next: (state, action) => {
+  [minusServiceAction.toString()]: {
+    next: (state: any, action: any) => {
       const _s = state.services
-        .map((item) => (item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item))
-        .filter((item) => item.qty > 0);
+        .map((item: any) => (item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item))
+        .filter((item: any) => item.qty > 0);
       // const _s  = state.services.map(item =>
       //   item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
       // );
@@ -233,22 +233,22 @@ const ACTION_HANDLERS = {
       };
     },
   },
-  [setExistServicesAction]: {
-    next: (state, action) => {
+  [setExistServicesAction.toString()]: {
+    next: (state: any, action: any) => {
       return {
         ...state,
         services: action.payload, // добавить
       };
     },
   },
-  [updateSchedulerPeriodAction]: {
-    next: (state, action) => ({
+  [updateSchedulerPeriodAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       eventsData: action.payload,
     }),
   },
-  [setPopupCabinetAction]: {
-    next: (state, action) => ({
+  [setPopupCabinetAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       cabinetId: action.payload,
     }),
