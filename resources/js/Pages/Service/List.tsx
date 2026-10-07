@@ -68,7 +68,7 @@ export default function List({
   };
 
   // 🌟 Состояние для поиска
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery] = useState('');
 
   const renderPriceBlock = (item: any) => {
     const filteredServices = services[item.id]?.filter((_item: any) =>
@@ -259,7 +259,7 @@ export default function List({
               description={msg.get('service.title.description')}
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('service.create')}
-              isCreateDisabled={Boolean(editingItem?.id)}
+              isCreateDisabled={!!editingItem?.id}
               createHref={null}
             />
 

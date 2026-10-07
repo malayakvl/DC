@@ -4,6 +4,7 @@ import {
   setInvoiceTax,
   setInvoiceCurrency,
   setShowTableError,
+  clearFilters,
 } from './actions';
 
 const initialState = {
@@ -17,37 +18,32 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [setInvoiceItems]: {
-    next: (state, action) => ({
+  [setInvoiceItems.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       invoiceItems: action.payload,
     }),
   },
-  [setInvoiceTax]: {
-    next: (state, action) => ({
+  [setInvoiceTax.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       invoiceTax: action.payload,
     }),
   },
-  [setInvoiceCurrency]: {
-    next: (state, action) => ({
+  [setInvoiceCurrency.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       curreny: action.payload,
     }),
   },
-  [setShowTableError]: {
-    next: (state, action) => ({
+  [setShowTableError.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       showTableError: action.payload,
     }),
   },
 };
 
-export {
-  setInvoiceItems,
-  setInvoiceTax,
-  setInvoiceCurrency,
-  setShowTableError,
-};
+export { setInvoiceItems, setInvoiceTax, setInvoiceCurrency, setShowTableError, clearFilters };
 
 export default handleActions(ACTION_HANDLERS, initialState);

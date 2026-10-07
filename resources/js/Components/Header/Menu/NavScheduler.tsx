@@ -7,6 +7,15 @@ import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import { DoorOpen, Check, CalendarRange } from 'lucide-react';
 
+interface AuthProps {
+  auth: {
+    user?: {
+      roles?: Array<{ name: string }>;
+    };
+    can: Record<string, boolean>;
+  };
+  [key: string]: any;
+}
 export default function NavScheduler() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -14,19 +23,29 @@ export default function NavScheduler() {
     locale: appLang,
   });
   const { url } = usePage();
-  const permissions = usePage().props.auth.can;
+  const { auth } = usePage<AuthProps>().props;
+  const permissions = auth.can;
 
   let showMenuScheduler = false;
   if (permissions['schedule-all'] || permissions['store-all']) {
     showMenuScheduler = true;
   }
 
+  const activeRoutes = ['/scheduler'];
+  const isActive = activeRoutes.some((route) => url.startsWith(route));
+
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuScheduler) && (
+      {(auth.user?.roles?.[0]?.name === 'Admin' || showMenuScheduler) && (
         <Menu as="div" className="relative inline-block text-left">
-          <MenuButton className="top-nav flex flex-col items-center">
-            <span className="hidden md:block">{lng.get('menu.scheduler')}</span>
+          <MenuButton
+            className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
+              isActive
+                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+            }`}
+          >
+            <span className="text-[13px]">{lng.get('menu.scheduler')}</span>
           </MenuButton>
           <MenuItems
             transition

@@ -62,6 +62,9 @@ const lngInvoiceIncoming = {
     payment: 'Оплата накладної',
     provider: 'виробник',
     add_position: 'Додати позицію',
+    all_in_filter: 'Всі накладні',
+    postes_in_filter: 'Проведені',
+    new_in_filter: 'Не проведені',
   },
 };
 export default lngInvoiceIncoming;

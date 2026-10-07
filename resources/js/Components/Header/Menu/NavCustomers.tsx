@@ -7,6 +7,15 @@ import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import { UsersRound, ShieldCheck } from 'lucide-react';
 
+interface AuthProps {
+  auth: {
+    user?: {
+      roles?: Array<{ name: string }>;
+    };
+    can: Record<string, boolean>;
+  };
+  [key: string]: any;
+}
 export default function NavCustomers() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -15,18 +24,19 @@ export default function NavCustomers() {
   });
   //   const permissions = usePage().props.auth.can;
 
-  const { url, props } = usePage();
-  const permissions = props.auth.can;
+  const { url } = usePage();
+  const { auth } = usePage<AuthProps>().props;
+  const permissions = auth.can;
 
   const activeRoutes = ['/customers', '/roles'];
   const isActive = activeRoutes.some((route) => url.startsWith(route));
 
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || permissions['customer-all']) && (
+      {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
               isActive
                 ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'

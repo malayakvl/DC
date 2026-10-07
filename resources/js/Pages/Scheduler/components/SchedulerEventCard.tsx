@@ -24,6 +24,8 @@ const getEventBackground = (status?: string) => {
       return '#eff6ff';
     case 'inclicnic':
       return '#fffbeb';
+    case 'confirm':
+      return '#f4fefb';
     default:
       return '#f8fafc';
   }

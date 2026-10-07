@@ -1864,6 +1864,11 @@
     color: #9d5221;
     border: solid 1px #fef3c7;
 }
+.confirm {
+    background: #10B981;
+    color: #fff;
+    border: solid 1px #10B981;
+}
 .act-btn {
     @apply w-6 h-6 rounded-md bg-white text-[12px] flex items-center justify-center hover:bg-white transition;
 }

@@ -12,6 +12,7 @@ import {
   setupActStoreErrorAction,
   updateComponentQuantityAction,
 } from '../../../Redux/Act';
+import { useActFifoValidation } from '../hooks/useActFifoValidation';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -192,6 +193,9 @@ const MaterialItem = ({
 
 // eslint-disable-next-line react/display-name
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
+  // 🚀 Автоматична перевірка залишків
+  useActFifoValidation(rows, 'new');
+
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
   const requestId = useRef(0);

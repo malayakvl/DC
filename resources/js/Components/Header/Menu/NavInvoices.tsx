@@ -7,16 +7,26 @@ import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import { ClipboardList, FilePlus, FileMinus, FileCheck, ArrowLeftRight } from 'lucide-react';
 
+interface AuthProps {
+  auth: {
+    user?: {
+      roles?: Array<{ name: string }>;
+    };
+    can: Record<string, boolean>;
+  };
+  [key: string]: any;
+}
 export default function NavInvoices() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  const { url, props } = usePage();
+  const { url } = usePage();
+  const { auth } = usePage<AuthProps>().props;
+  const permissions = auth.can;
 
-  const permissions = usePage().props.auth.can;
-  const activeRoutes = ['/patients', '/patient-statuses'];
+  const activeRoutes = ['/invoice-incoming'];
   const isActive = activeRoutes.some((route) => url.startsWith(route));
   let showMenuInvoice = false;
 
@@ -31,10 +41,16 @@ export default function NavInvoices() {
   }
   return (
     <>
-      {(usePage().props.auth.user?.roles[0]?.name === 'Admin' || showMenuInvoice) && (
+      {(auth.user?.roles?.[0]?.name === 'Admin' || showMenuInvoice) && (
         <Menu as="div" className="relative inline-block text-left">
-          <MenuButton className="top-nav flex flex-col items-center">
-            <span className="hidden md:block">{lng.get('menu.invoices')}</span>
+          <MenuButton
+            className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
+              isActive
+                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+            }`}
+          >
+            <span className="text-[13px]">{lng.get('menu.invoices')}</span>
           </MenuButton>
           <MenuItems
             transition

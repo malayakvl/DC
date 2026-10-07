@@ -7,6 +7,15 @@ import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import { Package, Ruler, PackageSearch, Truck, Layers } from 'lucide-react';
 
+interface AuthProps {
+  auth: {
+    user?: {
+      roles?: Array<{ name: string }>;
+    };
+    can: Record<string, boolean>;
+  };
+  [key: string]: any;
+}
 export default function NavStores() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -14,18 +23,19 @@ export default function NavStores() {
     locale: appLang,
   });
 
-  const { url, props } = usePage();
-  const permissions = props.auth.can;
+  const { url } = usePage();
+  const { auth } = usePage<AuthProps>().props;
+  const permissions = auth.can;
 
   const activeRoutes = ['/units', '/producers', '/suppliers', '/material-categories', '/materials'];
   const isActive = activeRoutes.some((route) => url.startsWith(route));
 
   return (
     <>
-      {(props.auth.user?.roles[0]?.name === 'Admin' || permissions['store-all']) && (
+      {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['store-all']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-all cursor-pointer ${
               isActive
                 ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'

@@ -14,7 +14,17 @@ import ListHeader from '../../Components/Common/ListHeader';
 import Filters from './Partials/Filters';
 import Pagination from './Partials/Pagination';
 
-export default function List({ listData, filters, suppliers, paymentMethods }) {
+export default function List({
+  listData,
+  filters,
+  suppliers,
+  paymentMethods,
+}: {
+  listData: any;
+  filters: any;
+  suppliers: any[];
+  paymentMethods: any[];
+}) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const [showModal, setShowModal] = useState(false);
@@ -31,24 +41,12 @@ export default function List({ listData, filters, suppliers, paymentMethods }) {
     messages: lngDropdown,
     locale: appLang,
   });
-  const [values, setValues] = useState({
-    date_from: filters?.date_from || '',
-    date_to: filters?.date_to || '',
-    supplier_id: filters?.supplier_id || '',
-  });
+  // const [values, setValues] = useState({
+  //   date_from: filters?.date_from || '',
+  //   date_to: filters?.date_to || '',
+  //   supplier_id: filters?.supplier_id || '',
+  // });
 
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setValues((prev) => ({ ...prev, [name]: value }));
-//   };
-//
-//   const handleFilter = () => {
-//     router.get('/invoice-incoming', values, {
-//       preserveState: true,
-//       replace: true,
-//     });
-//   };
-console.log(listData);
   const sendRequest = useCallback(() => {
     // return dispatch(fetchItemsAction());
   }, [dispatch]);
@@ -92,14 +90,19 @@ console.log(listData);
               description={msg.get('invoice_incoming.title.description')}
               createHref="/invoice-incoming/create"
               createLabel={msg.get('invoice_incoming.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
             <Filters suppliersData={suppliers} />
 
             <Pagination listData={listData} />
 
             <section className="table-card">
-              <DataTable paginationType={PaginationType.INCOMINGINVOICES} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable
+                paginationType={PaginationType.INCOMINGINVOICES}
+                sendRequest={sendRequest}
+              >
+                {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
                     <td className="">{item.invoice_number}</td>
                     <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>

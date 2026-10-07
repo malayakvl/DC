@@ -13,22 +13,26 @@ import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
 import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
-import { Gauge } from 'lucide-react';
+
 export default function NavMenu() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  usePage().props.auth.user;
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  usePage().props.auth.can;
+
+  const { auth } = usePage().props as unknown as {
+    auth: {
+      user: any;
+      can: any;
+      role: string[] | any[];
+    };
+  };
 
   return (
     <>
       <div className="">
-        {usePage().props.auth.role.length > 0 && (
+        {auth.role.length > 0 && (
           <div className="md:mt-[-5px] md:mr-[20px]">
             <Menu as="div" className="relative top-menu-nav">
               <MenuButton className="top-nav flex flex-col items-center">
@@ -40,6 +44,8 @@ export default function NavMenu() {
 
             <NavPatients />
 
+            <NavScheduler />
+
             <NavStores />
 
             <NavServices />
@@ -49,8 +55,6 @@ export default function NavMenu() {
             <NavPayments />
 
             <NavReports />
-
-            <NavScheduler />
           </div>
         )}
       </div>

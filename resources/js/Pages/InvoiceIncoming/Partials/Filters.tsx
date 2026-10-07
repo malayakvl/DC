@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import lngAct from '../../../Lang/Act/translation';
-import InputText from '../../../Components/Form/InputText';
-import { router, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { actFiltersSelector, actClearFiltersSelector } from '@/Redux/Act/selectors';
-import { setFilters, clearFilters } from '@/Redux/InvoiceIncoming';
+import { clearFilters } from '../../../Redux/Incominginvoice';
 
-export default function Filters({ suppliersData }) {
+export default function Filters({ suppliersData }: { suppliersData: any }) {
   const appLang = useSelector(appLangSelector);
   const isClear = useSelector(actClearFiltersSelector);
-  const ref = React.useRef(null);
+  const ref = useRef<HTMLFormElement>(null);
   const dispatch = useAppDispatch();
   const filtersData = useSelector(actFiltersSelector);
   const { data, setData, post } = useForm(filtersData);
@@ -28,9 +27,9 @@ export default function Filters({ suppliersData }) {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const tabs = [
-    { id: 'all', label: 'Всі накладні', count: 0 },
-    { id: 'posted', label: 'Проведені', count: 0 },
-    { id: 'unposted', label: 'Не проведені', count: 0, isSpecial: true },
+    { id: 'all', label: msg.get('invoice_incoming.all_in_filter'), count: 0 },
+    { id: 'posted', label: msg.get('invoice_incoming.postes_in_filter'), count: 0 },
+    { id: 'unposted', label: msg.get('invoice_incoming.new_in_filter'), count: 0, isSpecial: true },
   ];
 
   const searchClear = () => {
@@ -86,14 +85,14 @@ export default function Filters({ suppliersData }) {
           <div className="lg:col-span-2">
             <select
               value={supplierId}
-              onChange={(e) => {
+              onChange={(e: any) => {
                 setSupplierId(e.target.value);
                 setData('supplier_id', e.target.value);
               }}
               className="w-full appearance-none py-2 pl-3 pr-8 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition cursor-pointer"
             >
               <option value="">Всі постачальники</option>
-              {suppliersData?.map((sup) => (
+              {suppliersData?.map((sup: any) => (
                 <option key={sup.id} value={sup.id}>
                   {sup.name}
                 </option>
