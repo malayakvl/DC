@@ -31,6 +31,17 @@ export default function Form({
   currencyData,
   unitsData,
   taxData,
+}: {
+  clinicData: any;
+  storeData: any;
+  statusData: any;
+  producerData: any;
+  customerData: any;
+  formData: any;
+  formRowData: any;
+  currencyData: any;
+  unitsData: any;
+  taxData: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -43,7 +54,7 @@ export default function Form({
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     invoice_number: formData.invoice_number ? formData.invoice_number : '',
     invoice_date: formData.invoice_date,
     clinic_id: clinicData.id,
@@ -61,7 +72,7 @@ export default function Form({
   const { processing, recentlySuccessful } = useForm();
   const isPosted = formData.status === 'posted';
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -70,7 +81,7 @@ export default function Form({
     }));
     if (key === 'tax_id') {
       // Ищем выбранный налог в переданном массиве taxData, чтобы узнать его реальный процент (например, 20, 7, 5, 0)
-      const selectedTax = taxData.find((tax) => String(tax.id) === String(value));
+      const selectedTax = taxData.find((tax: any) => String(tax.id) === String(value));
       const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
 
       // Диспатчим в стейт строку с процентом, например "tax_20" или просто число
@@ -81,13 +92,13 @@ export default function Form({
   // Синхронізуємо початкові рядки з бази у Redux стор при завантаженні форми редагування
   useEffect(() => {
     if (formData?.tax_id && taxData) {
-      const selectedTax = taxData.find((tax) => String(tax.id) === String(formData.tax_id));
+      const selectedTax = taxData.find((tax: any) => String(tax.id) === String(formData.tax_id));
       const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
       dispatch(setInvoiceTax(`tax_${rate}`));
     }
   }, [formData?.tax_id, taxData]);
 
-  const handleChangeCalendar = (data) => {
+  const handleChangeCalendar = (data: any) => {
     const key = 'invoice_date';
     setValues((values) => ({
       ...values,
@@ -95,7 +106,7 @@ export default function Form({
     }));
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -104,7 +115,7 @@ export default function Form({
     }));
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (!values['invoice_date']) {
       values['invoice_date'] = new Date();
@@ -112,7 +123,7 @@ export default function Form({
 
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;
-    invoiceItems.forEach((_row) => {
+    invoiceItems.forEach((_row: any) => {
       if (!_row.product_id) {
         haveErrorInRow = true;
       }
@@ -157,10 +168,13 @@ export default function Form({
 
   // Расчет общих итогов по документу для отображения в футере таблицы
   const totalWithoutTax = invoiceItems.reduce(
-    (acc, item) => acc + (parseFloat(item.total) || 0),
+    (acc: any, item: any) => acc + (parseFloat(item.total) || 0),
     0
   );
-  const totalTax = invoiceItems.reduce((acc, item) => acc + (parseFloat(item.tax_amount) || 0), 0);
+  const totalTax = invoiceItems.reduce(
+    (acc: any, item: any) => acc + (parseFloat(item.tax_amount) || 0),
+    0
+  );
   const totalWithTax = totalWithoutTax + totalTax;
 
   return (
@@ -383,7 +397,7 @@ export default function Form({
               {!isPosted && (
                 <tfoot>
                   <tr>
-                    <td colSpan="7" className="pt-3">
+                    <td colSpan={7} className="pt-3">
                       <button
                         type="button"
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-50 text-teal-700 text-xs font-bold hover:bg-teal-100 transition-colors"
@@ -431,6 +445,7 @@ export default function Form({
           successMessage={msg.get('material.saved') || 'Збережено успішно!'}
           processing={processing}
           recentlySuccessful={recentlySuccessful}
+          onSave={undefined}
         />
       </form>
     </section>

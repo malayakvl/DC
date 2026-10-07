@@ -63,6 +63,7 @@ export default function Store({ filials, stores }: BalanceProps) {
     messages: lngReport,
     locale: appLang,
   });
+  console.log('TUT')
   const { dateFrom, dateTo } = getCurrentWeekRange();
 
   const [values, setValues] = useState({

@@ -13,18 +13,16 @@ export interface AddDynamicInputFieldsRef {
 const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ({ formRowData = null, lastRow = null, unitsData, msg }, ref) => {
-    const [inputs, setInputs] = useState(formRowData);
     const dispatch = useAppDispatch();
-    const [, setHideFields] = useState(false);
     const serchResults = useAppSelector(searchResultMaterialsSelector);
-    const [numRow, setNumRow] = useState(0);
     const documentTax = useAppSelector(invoiceTaxSelector);
-    const [, setTaxPercent] = useState(0);
 
-    const handleAddInput = () => {
-      dispatch(setShowTableError(false));
-      setInputs([
-        ...inputs,
+    // Инициализируем стейт один раз (или дефолтной пустой строкой)
+    const [inputs, setInputs] = useState(() => {
+      if (formRowData && formRowData.length > 0) {
+        return formRowData;
+      }
+      return [
         {
           product_id: '',
           product: '',
@@ -32,35 +30,20 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           quantity: 1,
           pack_qty: 1,
           fact_qty: 1,
-          price: 0, // Чистая цена закупки от поставщика
-          mark_up: 0, // Наценка клиники (если нужна)
+          price: 0,
+          mark_up: 0,
           tax_amount: 0,
-          total: 0, // Итог = цена * количество
+          total: 0,
         },
-      ]);
-    };
-    useImperativeHandle(ref, () => ({
-      addRow: handleAddInput,
-    }));
+      ];
+    });
 
-    useEffect(() => {
-      if (formRowData && formRowData.length > 0) {
-        const taxData = documentTax ? documentTax.split('_') : [0, 0];
-        const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
-        setTaxPercent(taxRate);
-
-        const initialCalculated = formRowData.map((row) => {
-          const rowCopy = { ...row };
-          return calculateRowValues(rowCopy, taxRate);
-        });
-        console.log('initial calc', initialCalculated);
-        setInputs(initialCalculated);
-      }
-    }, [formRowData]);
+    const [, setHideFields] = useState(false);
+    const [numRow, setNumRow] = useState(0);
+    const [, setTaxPercent] = useState(0);
 
     // Универсальная функция пересчета суммы и налога для строки
-    const calculateRowValues = (row, taxRate) => {
-      // Исправляем: берем row.qty вместо row.quantity
+    const calculateRowValues = (row: any, taxRate: any) => {
       const qty = parseFloat(row.qty !== undefined ? row.qty : row.quantity) || 0;
       const factQty = parseFloat(row.fact_qty) || 0;
       const price = parseFloat(row.price) || 0;
@@ -72,18 +55,42 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       return row;
     };
 
-    const handleChange = (event, index, customName = null, customValue = null) => {
+    const handleAddInput = () => {
+      dispatch(setShowTableError(false));
+      const newInputs = [
+        ...inputs,
+        {
+          product_id: '',
+          product: '',
+          unit_id: '',
+          quantity: 1,
+          pack_qty: 1,
+          fact_qty: 1,
+          price: 0,
+          mark_up: 0,
+          tax_amount: 0,
+          total: 0,
+        },
+      ];
+      setInputs(newInputs);
+      dispatch(setInvoiceItems(newInputs));
+    };
+
+    useImperativeHandle(ref, () => ({
+      addRow: handleAddInput,
+    }));
+
+    const handleChange = (event: any, index: any, customName = null, customValue = null) => {
       dispatch(setShowTableError(false));
       const name = customName || event.target.name;
       const value = customValue !== null ? customValue : event.target.value;
 
-      const onChangeValue = [...inputs];
+      const onChangeValue = inputs.map((item: any, i: any) => (i === index ? { ...item } : item));
       onChangeValue[index][name] = value;
       setNumRow(index);
 
       if (name === 'product') {
-        if (value.length > 3) {
-          dispatch(emptyMaterialsAutocompleteAction());
+        if (value.length > 2) {
           dispatch(findServiceMaterialCalcAction(value));
         } else {
           dispatch(emptyMaterialsAutocompleteAction());
@@ -95,11 +102,13 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
 
       onChangeValue[index] = calculateRowValues(onChangeValue[index], taxRate);
+
       setInputs(onChangeValue);
+      dispatch(setInvoiceItems(onChangeValue));
     };
 
-    const handleQuantityChange = (index, delta) => {
-      const onChangeValue = [...inputs];
+    const handleQuantityChange = (index: any, delta: any) => {
+      const onChangeValue = inputs.map((item: any, i: any) => (i === index ? { ...item } : item));
       const row = onChangeValue[index];
       const currentQty = parseFloat(row.quantity) || 0;
       const newQty = Math.max(0.01, currentQty + delta);
@@ -110,12 +119,13 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
 
       onChangeValue[index] = calculateRowValues(row, taxRate);
       setInputs(onChangeValue);
+      dispatch(setInvoiceItems(onChangeValue));
     };
 
-    const handleDeleteInput = (index) => {
-      const newArray = [...inputs];
-      newArray.splice(index, 1);
+    const handleDeleteInput = (index: any) => {
+      const newArray = inputs.filter((_: any, i: any) => i !== index);
       setInputs(newArray);
+      dispatch(setInvoiceItems(newArray));
     };
 
     // Слушаем изменение налога в шапке документа и пересчитываем все строки
@@ -125,38 +135,39 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       setTaxPercent(taxRate);
 
       if (inputs && inputs.length > 0) {
-        const updatedInputs = inputs.map((item) => {
+        const updatedInputs = inputs.map((item: any) => {
           const rowCopy = { ...item };
           return calculateRowValues(rowCopy, taxRate);
         });
         setInputs(updatedInputs);
+        dispatch(setInvoiceItems(updatedInputs));
       }
     }, [documentTax]);
 
-    useEffect(() => {
-      dispatch(setInvoiceItems(inputs));
-    }, [inputs]);
-
-    const renderSearchProducerResult = (index) => {
+    const renderSearchProducerResult = (index: any) => {
       if (serchResults.length > 0 && numRow === index) {
         return (
           <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
             <ul className="py-1">
-              {serchResults.map((_res) => (
+              {serchResults.map((_res: any) => (
                 <li
                   key={_res.id}
                   className="px-4 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 cursor-pointer transition-colors flex justify-between items-center"
-                  onClick={() => {
-                    setHideFields(true);
-                    dispatch(emptyMaterialsAutocompleteAction());
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Предотвращаем потерю фокуса до клика
 
-                    // Берем чистую цену поставщика
+                    // Сначала гасим автокомплит в Redux, чтобы список пропал корректно
+                    dispatch(emptyMaterialsAutocompleteAction());
+                    setHideFields(true);
+
                     const basePrice = parseFloat(_res.price || _res.price_per_unit || 0);
                     const quantity = 1;
                     const taxData = documentTax ? documentTax.split('_') : [0, 0];
                     const taxRate = taxData[1] ? parseFloat(taxData[1]) : 0;
 
-                    const onChangeValue = [...inputs];
+                    const onChangeValue = inputs.map((item: any, i: any) =>
+                      i === index ? { ...item } : item
+                    );
                     onChangeValue[index].product = _res.name;
                     onChangeValue[index].product_id = _res.id;
                     onChangeValue[index].price = parseFloat(basePrice.toFixed(2));
@@ -170,7 +181,9 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                     onChangeValue[index].quantity = quantity;
 
                     onChangeValue[index] = calculateRowValues(onChangeValue[index], taxRate);
+
                     setInputs(onChangeValue);
+                    dispatch(setInvoiceItems(onChangeValue));
                   }}
                 >
                   <span className="font-medium">{_res.name}</span>
@@ -189,7 +202,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
 
     return (
       <>
-        {inputs.map((item, index) => (
+        {inputs.map((item: any, index: any) => (
           <tr
             key={index}
             className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
@@ -247,7 +260,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
               >
                 <option value="">Одиниця...</option>
-                {unitsData?.map((unit) => (
+                {unitsData?.map((unit: any) => (
                   <option key={unit.id} value={unit.id}>
                     {unit.name}
                   </option>

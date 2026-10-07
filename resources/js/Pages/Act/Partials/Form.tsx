@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../../hooks';
@@ -185,7 +185,7 @@ export default function Form({
     }
   }, []);
 
-  const submit = (event: any) => {
+  const submitOld = (event: any) => {
     event.preventDefault();
     const validRows = rows.filter((row) => row.product_id);
     if (!values.patient_id || !validRows.length) return;
@@ -206,6 +206,44 @@ export default function Form({
     };
 
     console.log(payload);
+  };
+
+  const submit = (event: any) => {
+    event.preventDefault();
+    const validRows = rows.filter((row) => row.product_id);
+    if (!values.patient_id || !validRows.length) return;
+
+    const payload = {
+      ...values,
+      rows: validRows.map((row) => {
+        const rowQty = Number(row.quantity) || 1;
+
+        return {
+          ...row,
+          quantity: rowQty,
+          price: Number(row.price),
+          total: Number(row.total),
+          components: (row.components || []).map((component) => {
+            // Норма компонента на 1 шт услуги * количество услуг в строке
+            const baseComponentQty = Number(component.quantity || 0);
+
+            return {
+              material_id: component.material_id || component.product_id,
+              unit_id: component.unit_id,
+              quantity: baseComponentQty * rowQty, // Умножаем на количество услуг!
+            };
+          }),
+        };
+      }),
+    };
+
+
+    // Отправка на бэкенд (например, через Inertia или axios)
+    if (!formData.id) {
+      router.post(`/act/update`, {
+        payload,
+      });
+    }
   };
 
   return (

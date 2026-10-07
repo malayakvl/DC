@@ -2,10 +2,21 @@ import React, { useState } from 'react';
 import InputTreeSelect from '../../../Components/Form/InputTreeSelect';
 import InputSelect from '../../../Components/Form/InputSelect';
 
-export const Filters = ({ categories, msg, totalItems, supplierData }) => {
+export const Filters = ({
+  categories,
+  msg,
+  totalItems,
+  supplierData,
+}: {
+  categories: any;
+  msg: any;
+  totalItems: number;
+  supplierData: any;
+}) => {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
   const [stockStatus, setStockStatus] = useState('all');
+  console.log(totalItems);
 
   const tabs = [
     { id: 'all', label: 'Всі матеріали', count: 142 },
@@ -82,7 +93,6 @@ export const Filters = ({ categories, msg, totalItems, supplierData }) => {
             </span>
           </div>
         </div>
-
       </div>
       {/* НИЖНІЙ РЯД: Пошук + Селекти Фільтрів */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-100">

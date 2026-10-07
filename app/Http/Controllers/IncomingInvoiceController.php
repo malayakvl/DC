@@ -261,92 +261,61 @@ class IncomingInvoiceController extends Controller
         }
     }
 
-    public function postIncomingInvoice(int $invoiceId): void
+    /**
+     * Откатить проведенный счет
+     */
+    private function rollbackIncomingInvoice(int $invoiceId): void
     {
         DB::transaction(function () use ($invoiceId) {
-
-            /** @var object $invoice */
-            $invoice = DB::table('invoices')->where('id', $invoiceId)->lockForUpdate()->first();
-
-            if (!$invoice) {
-                throw new \Exception('Invoice not found');
-            }
-
-            // 1️⃣ если уже была проведена — откатываем старый приход
-            if ($invoice->status === 'posted') {
-                $this->rollbackIncomingInvoice($invoiceId);
-            }
-
-            // 2️⃣ получаем строки накладной
-            $items = DB::table('invoice_items')
-                ->where('invoice_id', $invoiceId)
+            // 1️⃣ ПОЛУЧАЕМ ДВИЖЕНИЯ
+            $movements = DB::table('store_movements')
+                ->where('document_type', 'invoice')
+                ->where('document_id', $invoiceId)
+                ->lockForUpdate()
                 ->get();
 
-            if ($items->isEmpty()) {
-                throw new \Exception('Invoice has no items');
+            if ($movements->isEmpty()) {
+                throw new \Exception('Движения по счету не найдены');
             }
 
-            foreach ($items as $item) {
+            // 2️⃣ ДЛЯ КАЖДОГО ДВИЖЕНИЯ
+            foreach ($movements as $move) {
 
-                // защита
-                if ($item->fact_qty <= 0) {
-                    continue;
-                }
-
-                // 3️⃣ создаём партию
-                $batchId = DB::table('store_batches')->insertGetId([
-                    'store_id'        => $invoice->store_id,
-                    'material_id'     => $item->material_id,
-                    'supplier_id'     => $invoice->supplier_id,
-                    'invoice_id'      => $invoiceId,
-                    'arrived_at'      => $invoice->invoice_date,
-                    'qty'             => $item->qty,
-                    'qty_left'        => $item->qty,
-                    'fact_qty'        => $item->fact_qty,
-                    'fact_qty_left'   => $item->fact_qty,
-                    'price_per_unit'  => $item->total / max($item->fact_qty, 1),
-                    'created_at'      => now(),
-                ]);
-
-                // 4️⃣ обновляем баланс склада
-                DB::statement("
-                    INSERT INTO store_balances (store_id, material_id, qty, updated_at)
-                    VALUES (?, ?, ?, now())
-                    ON CONFLICT (store_id, material_id)
-                    DO UPDATE SET
-                        qty = store_balances.qty + EXCLUDED.qty,
-                        updated_at = now()
-                ", [
-                    $invoice->store_id,
-                    $item->material_id,
-                    $item->fact_qty
-                ]);
-
-                // 5️⃣ движение по складу
-                DB::table('store_movements')->insert([
-                    'store_id'      => $invoice->store_id,
-                    'material_id'   => $item->material_id,
-                    'batch_id'      => $batchId,
-                    'direction'     => 1, // приход
-                    'qty'           => $item->qty,
-                    'fact_qty'      => $item->fact_qty,
-                    'document_type' => 'invoice',
-                    'document_id'   => $invoiceId,
-                    'created_at'    => now(),
-                ]);
+                // Откатываем баланс
+                DB::table('store_balances')
+                    ->where('store_id', $move->store_id)
+                    ->where('material_id', $move->material_id)
+                    ->update([
+                        'qty'        => DB::raw('qty - ' . (float) $move->qty),
+                        'fact_qty'   => DB::raw('fact_qty - ' . (float) $move->fact_qty),
+                        'uses_left'  => DB::raw('COALESCE(uses_left, 0) - COALESCE(' . ($move->uses ?? 0) . ', 0)'),
+                        'updated_at' => now()
+                    ]);
             }
 
-            // 6️⃣ меняем статус накладной
+            // 3️⃣ УДАЛЯЕМ БАТЧИ
+            DB::table('store_batches')
+                ->where('invoice_id', $invoiceId)
+                ->delete();
+
+            // 4️⃣ УДАЛЯЕМ ДВИЖЕНИЯ
+            DB::table('store_movements')
+                ->where('document_type', 'invoice')
+                ->where('document_id', $invoiceId)
+                ->delete();
+
+            // 5️⃣ ВОЗВРАЩАЕМ СТАТУС
             DB::table('invoices')
                 ->where('id', $invoiceId)
                 ->update([
-                    'status'     => 'posted',
+                    'status'     => 'draft',
                     'updated_at' => now(),
                 ]);
+
         });
     }
 
-    private function rollbackIncomingInvoice(int $invoiceId): void
+    private function rollbackIncomingInvoiceOld(int $invoiceId): void
     {
         // 1️⃣ получаем движения
         $movements = DB::table('store_movements')

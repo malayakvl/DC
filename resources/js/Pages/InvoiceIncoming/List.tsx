@@ -28,7 +28,7 @@ export default function List({
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const [showModal, setShowModal] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentMethodId, setPaymentMethodId] = useState<number>(0);
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -46,10 +46,6 @@ export default function List({
   //   date_to: filters?.date_to || '',
   //   supplier_id: filters?.supplier_id || '',
   // });
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   const makePayment = (
     invoiceId: number,
@@ -98,10 +94,7 @@ export default function List({
             <Pagination listData={listData} />
 
             <section className="table-card">
-              <DataTable
-                paginationType={PaginationType.INCOMINGINVOICES}
-                sendRequest={sendRequest}
-              >
+              <DataTable paginationType={PaginationType.INCOMINGINVOICES}>
                 {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
                     <td className="">{item.invoice_number}</td>
@@ -137,7 +130,7 @@ export default function List({
                       ) : (
                         <a
                           href="#"
-                          onClick={(e) => {
+                          onClick={(e: any) => {
                             e.preventDefault();
                             setSelectedInvoice(item);
                             setPaymentAmount(
@@ -196,7 +189,7 @@ export default function List({
                         type="number"
                         className="input-text"
                         value={paymentAmount}
-                        onChange={(e) => setPaymentAmount(e.target.value)}
+                        onChange={(e: any) => setPaymentAmount(e.target.value)}
                       />
                     </div>
 

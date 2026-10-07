@@ -187,24 +187,6 @@ class ReportController extends Controller
             // These are display-only current batch balances. They let a user
             // expand a material in the report and see exactly which FIFO lots
             // form its available balance; no stock data is changed here.
-//            $batches = DB::table('store_batches as batch')
-//                ->join('materials as material', 'material.id', '=', 'batch.material_id')
-//                ->where('batch.store_id', $storeId)
-//                ->where('batch.qty_left', '>', 0)
-//                ->orderBy('batch.material_id')
-//                ->orderBy('batch.arrived_at')
-//                ->orderBy('batch.id')
-//                ->get([
-//                    'batch.id as batch_id',
-//                    'batch.material_id',
-//                    'material.name as material_name',
-//                    'batch.arrived_at',
-//                    'batch.qty',
-//                    'batch.qty_left',
-//                    'batch.fact_qty',
-//                    'batch.fact_qty_left',
-//                    'batch.price_per_unit',
-//                ]);
             $batches = DB::table('store_batches as batch')
                 ->join('materials as material', 'material.id', '=', 'batch.material_id')
                 ->where('batch.store_id', $storeId)

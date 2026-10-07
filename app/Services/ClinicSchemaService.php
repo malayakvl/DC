@@ -1039,6 +1039,7 @@ class ClinicSchemaService
                 store_id BIGINT NOT NULL,
                 material_id BIGINT NOT NULL,
                 supplier_id BIGINT,
+                producer_id BIGINT,
                 invoice_id BIGINT NOT NULL,
                 arrived_at DATE NOT NULL,
                 qty NUMERIC(12,4) NOT NULL,
@@ -1046,6 +1047,9 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,4) NOT NULL,
                 fact_qty_left NUMERIC(12,4) NOT NULL,
                 price_per_unit NUMERIC(12,4) NOT NULL,
+                
+                uses_total NUMERIC(12,4) NULLABLE,
+                uses_left NUMERIC(12,4) NULLABLE,
 
                 source_type VARCHAR(50) NOT NULL,
                 source_id BIGINT NOT NULL,
