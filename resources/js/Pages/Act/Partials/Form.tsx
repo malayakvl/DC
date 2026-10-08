@@ -1,5 +1,5 @@
 import { router, useForm } from '@inertiajs/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
@@ -122,9 +122,8 @@ export default function Form({
   );
 
   const [loadingVisit, setLoadingVisit] = useState(false);
-  const [fifo, setFifo] = useState({});
-  const [fifoError, setFifoError] = useState('');
-  const fifoRequestId = useRef(0);
+  const [fifo] = useState({});
+  const [fifoError] = useState('');
   const { processing, recentlySuccessful } = useForm();
 
   const changeValue = (event: any) => {
@@ -185,28 +184,28 @@ export default function Form({
     }
   }, []);
 
-  const submitOld = (event: any) => {
-    event.preventDefault();
-    const validRows = rows.filter((row) => row.product_id);
-    if (!values.patient_id || !validRows.length) return;
-
-    const payload = {
-      ...values,
-      rows: validRows.map((row) => ({
-        ...row,
-        quantity: Number(row.quantity),
-        price: Number(row.price),
-        total: Number(row.total),
-        components: (row.components || []).map((component) => ({
-          material_id: component.material_id || component.product_id,
-          unit_id: component.unit_id,
-          quantity: Number(row.quantity || 0),
-        })),
-      })),
-    };
-
-    console.log(payload);
-  };
+  // const submitOld = (event: any) => {
+  //   event.preventDefault();
+  //   const validRows = rows.filter((row) => row.product_id);
+  //   if (!values.patient_id || !validRows.length) return;
+  //
+  //   const payload = {
+  //     ...values,
+  //     rows: validRows.map((row) => ({
+  //       ...row,
+  //       quantity: Number(row.quantity),
+  //       price: Number(row.price),
+  //       total: Number(row.total),
+  //       components: (row.components || []).map((component) => ({
+  //         material_id: component.material_id || component.product_id,
+  //         unit_id: component.unit_id,
+  //         quantity: Number(row.quantity || 0),
+  //       })),
+  //     })),
+  //   };
+  //
+  //   console.log(payload);
+  // };
 
   const submit = (event: any) => {
     event.preventDefault();
@@ -237,7 +236,6 @@ export default function Form({
       }),
     };
 
-
     // Отправка на бэкенд (например, через Inertia или axios)
     if (!formData.id) {
       router.post(`/act/update`, {
@@ -253,8 +251,6 @@ export default function Form({
           title={formData?.id ? msg.get('act.title.edit') : msg.get('act.title.create')}
           description={msg.get('act.title.description')}
           backUrl="/acts"
-          processing={processing}
-          saveText={msg.get('act.save')}
         />
       </div>
 
@@ -273,10 +269,8 @@ export default function Form({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
               <InputText
-                required
                 name="act_number"
                 values={values}
-                value={values.act_number}
                 onChange={changeValue}
                 label="Номер акта"
                 className="filter-select-bordered w-full"

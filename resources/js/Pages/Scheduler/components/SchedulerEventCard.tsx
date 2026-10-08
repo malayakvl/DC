@@ -17,7 +17,6 @@ type SchedulerEventCardProps = {
 };
 
 const getEventBackground = (status?: string) => {
-  console.log(status);
   switch (status) {
     case 'done':
       return '#dbfaf6';
@@ -41,6 +40,33 @@ const getEventBackground = (status?: string) => {
       return '#faefc4';
     default:
       return '#f8fafc';
+  }
+};
+
+const getStatusBackground = (status?: string) => {
+  switch (status) {
+    case 'done':
+      return '#4e9795';
+    case 'planned':
+      return '#053d98';
+    case 'inclinic':
+      return '#ef7e34';
+    case 'incabinet':
+      return '#a984ec';
+    case 'confirm':
+      return '#10B981';
+    case 'deny':
+      return '#aaa7a8';
+    case 'noanswer':
+      return '#a1a09c';
+    case 'absent':
+      return '#8c8889';
+    case 'late':
+      return '#f42727';
+    case 'new':
+      return '#f1b55a';
+    default:
+      return '#818385';
   }
 };
 
@@ -113,8 +139,23 @@ export default function SchedulerEventCard({
           <span className="scheduler-event-card__time">
             {event.event_time_from}-{event.event_time_to}
           </span>
-          <div className="scheduler-event-card__actions">
-            <span className={`event-status ${event.status_name}`}>{statusLabel}</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Двойной бейдж: Статус + Цена */}
+            <div
+              className={`inline-flex items-center rounded-lg text-white text-[11px] font-semibold overflow-hidden shadow-sm`}
+            >
+              <span
+                style={{ backgroundColor: getStatusBackground(event.status_name) }}
+                className={`px-2 py-0.5`}
+              >
+                {statusLabel}
+              </span>
+              <span className="px-2 py-0.5 bg-white text-[#3d5afe] font-bold">
+                {event.service?.price ?? event.price ?? 0} ₴
+              </span>
+            </div>
+
+            {/* Кнопка создания акта */}
             <button
               type="button"
               onClick={(mouseEvent) => {
@@ -123,9 +164,9 @@ export default function SchedulerEventCard({
                 router.visit(`/act/create?visit_id=${event.id}`);
               }}
               title="Створити акт"
-              className="act-btn"
+              className="w-6 h-6 rounded-md bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest transition-colors"
             >
-              <span className="material-symbols-outlined text-[16px]">description</span>
+              <span className="material-symbols-outlined text-[15px]">description</span>
             </button>
           </div>
         </div>
