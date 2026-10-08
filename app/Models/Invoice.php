@@ -16,7 +16,8 @@ class Invoice extends Model
         'currency_id',
         'tax_id',
         'type_id',
-        'total_amount'
+        'total_amount',
+        'ttn'
     ];
 
 }

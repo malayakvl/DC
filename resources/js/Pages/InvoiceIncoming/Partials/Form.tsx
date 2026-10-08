@@ -68,6 +68,7 @@ export default function Form({
     currency_id: formData.currency_id,
     tax_id: formData.tax_id,
     rate: formData.rate,
+    ttn: formData.ttn,
   });
   const { processing, recentlySuccessful } = useForm();
   const isPosted = formData.status === 'posted';
@@ -145,6 +146,7 @@ export default function Form({
           currency_id: values.currency_id,
           type_id: values.type_id,
           tax_id: values.tax_id,
+          ttn: values.ttn,
           rows: invoiceItems,
         });
       } else {
@@ -160,6 +162,7 @@ export default function Form({
           currency_id: values.currency_id,
           type_id: values.type_id,
           tax_id: values.tax_id,
+          ttn: values.ttn,
           rows: invoiceItems,
         });
       }
@@ -188,8 +191,6 @@ export default function Form({
           }
           description={msg.get('invoice_incoming.title.description')}
           backUrl="/invoice-incoming"
-          processing={processing}
-          saveText={msg.get('invoice_incoming.save') || 'Зберегти зміни'}
         />
       </div>
       <form onSubmit={submit} className="space-y-4 py-6" encType="multipart/form-data">
@@ -207,7 +208,7 @@ export default function Form({
           </div>
 
           {/* Сетка полей (4 колонки, 2 ряда) */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* 1. Дата */}
             <div className="flex flex-col gap-1.5">
               <div className="w-full flex items-center justify-between">
@@ -236,6 +237,18 @@ export default function Form({
                 />
               </div>
             </div>
+            <div className="flex flex-col gap-1.5">
+              <div className="w-full flex items-center justify-between">
+                <InputText
+                  name={'ttn'}
+                  placeholder={''}
+                  values={values}
+                  onChange={handleChange}
+                  label={msg.get('invoice_incoming.ttn')}
+                  className="filter-select-bordered-bordered w-full"
+                />
+              </div>
+            </div>
 
             {/* 3. Статус */}
             <div className="flex flex-col gap-1.5">
@@ -253,40 +266,23 @@ export default function Form({
                 />
               </div>
             </div>
-
-            {/* 4. Поставщик */}
+            {/* 7. Валюта */}
             <div className="flex flex-col gap-1.5">
               <div className="w-full flex items-center justify-between">
                 <InputSelect
-                  translatable={false}
-                  name={'supplier_id'}
+                  name={'currency_id'}
                   className="filter-select-bordered w-full"
                   values={values}
-                  value={values.supplier_id}
-                  options={producerData}
+                  value={values.currency_id}
+                  options={currencyData}
                   onChange={handleChangeSelect}
                   required
-                  label={msg.get('invoice_incoming.producer')}
+                  label={msg.get('invoice_incoming.currency')}
                 />
               </div>
             </div>
-
-            {/* 5. Склад */}
-            <div className="flex flex-col gap-1.5 mt-[-15px]">
-              <div className="w-full flex items-center justify-between">
-                <InputSelect
-                  name={'store_id'}
-                  className="filter-select-bordered w-full"
-                  values={values}
-                  value={values.store_id}
-                  options={storeData}
-                  onChange={handleChangeSelect}
-                  required
-                  label={msg.get('invoice_incoming.store')}
-                />
-              </div>
-            </div>
-
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* 6. Налог (ПДВ) */}
             <div className="flex flex-col gap-1.5 mt-[-15px]">
               <div className="w-full flex items-center justify-between">
@@ -302,19 +298,33 @@ export default function Form({
                 />
               </div>
             </div>
+            {/* 4. Поставщик */}
+            <div className="flex flex-col gap-1.5 mt-[-15px]">
+              <InputSelect
+                translatable={false}
+                name={'supplier_id'}
+                className="filter-select-bordered w-full"
+                values={values}
+                value={values.supplier_id}
+                options={producerData}
+                onChange={handleChangeSelect}
+                required
+                label={msg.get('invoice_incoming.producer')}
+              />
+            </div>
 
-            {/* 7. Валюта */}
+            {/* 5. Склад */}
             <div className="flex flex-col gap-1.5 mt-[-15px]">
               <div className="w-full flex items-center justify-between">
                 <InputSelect
-                  name={'currency_id'}
+                  name={'store_id'}
                   className="filter-select-bordered w-full"
                   values={values}
-                  value={values.currency_id}
-                  options={currencyData}
+                  value={values.store_id}
+                  options={storeData}
                   onChange={handleChangeSelect}
                   required
-                  label={msg.get('invoice_incoming.currency')}
+                  label={msg.get('invoice_incoming.store')}
                 />
               </div>
             </div>
@@ -353,6 +363,9 @@ export default function Form({
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.factqty')}
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
+                    {msg.get('invoice_incoming.expire')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.price')}

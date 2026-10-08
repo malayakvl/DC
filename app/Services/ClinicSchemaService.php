@@ -963,6 +963,7 @@ class ClinicSchemaService
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
+                ttn VARCHAR(100),
                 total_amount NUMERIC(12,2) NOT NULL,
                 
                 total_net NUMERIC(14,2) NOT NULL DEFAULT 0,
@@ -991,6 +992,7 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
                 unit_id BIGINT,                      -- единица измерения материала
                 pack_unit_id BIGINT,                 -- единица упаковки
+                expiry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -1056,6 +1058,7 @@ class ClinicSchemaService
                 source_item_id BIGINT NOT NULL,
                 
                 total NUMERIC(12,4) NOT NULL,
+                expiry_date DATE NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

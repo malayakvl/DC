@@ -5,7 +5,6 @@ import Form from './Partials/Form';
 export default function Edit({
   clinicData,
   statusData,
-  typeData,
   customerData,
   producerData,
   storeData,
@@ -14,8 +13,18 @@ export default function Edit({
   currencyData,
   unitsData,
   taxData,
+}: {
+  clinicData: any;
+  statusData: any;
+  customerData: any;
+  producerData: any;
+  storeData: any;
+  formData: any;
+  formRowData: any;
+  currencyData: any;
+  unitsData: any;
+  taxData: any;
 }) {
-  console.log(unitsData);
   return (
     <AuthenticatedLayout header={<Head title="Invoice" />}>
       <Head title="Invoice" />
@@ -25,7 +34,6 @@ export default function Edit({
             <Form
               clinicData={clinicData}
               statusData={statusData}
-              typeData={typeData}
               customerData={customerData}
               producerData={producerData}
               storeData={storeData}
@@ -34,7 +42,6 @@ export default function Edit({
               currencyData={currencyData}
               taxData={taxData}
               unitsData={unitsData}
-              className="w-full"
             />
           </div>
         </div>

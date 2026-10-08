@@ -65,6 +65,18 @@ const lngInvoiceIncoming = {
     all_in_filter: 'Всі накладні',
     postes_in_filter: 'Проведені',
     new_in_filter: 'Не проведені',
+    expire: 'Придатен',
+    for_reading: 'Проведена (Тільки читання)',
+    print: 'Друк ордера',
+    document_blocked: 'Документ проведено • Редагування заблоковано',
+    document: 'Документ',
+    from: 'від',
+    store_income: 'Склад надходження',
+    ttn: 'ТТН',
+    text_accounter: 'Бухгалтерія',
+    sys_accounter: 'Системний облік',
+    doc_view_text: 'Проводка: Створена',
+    specification: 'Специфікація товарів та матеріалів',
   },
 };
 export default lngInvoiceIncoming;

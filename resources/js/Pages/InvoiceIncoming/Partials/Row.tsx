@@ -34,21 +34,21 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           mark_up: 0,
           tax_amount: 0,
           total: 0,
+          expiry_date: '',
         },
       ];
     });
-
     const [, setHideFields] = useState(false);
     const [numRow, setNumRow] = useState(0);
     const [, setTaxPercent] = useState(0);
 
     // Универсальная функция пересчета суммы и налога для строки
     const calculateRowValues = (row: any, taxRate: any) => {
-      const qty = parseFloat(row.qty !== undefined ? row.qty : row.quantity) || 0;
-      const factQty = parseFloat(row.fact_qty) || 0;
-      const price = parseFloat(row.price) || 0;
+      const qty = parseFloat(row.quantity) || 0; // количество упаковок
+      const price = parseFloat(row.price) || 0; // цена за упаковку
 
-      const total = qty * factQty * price;
+      // Считаем сумму: количество упаковок * цену упаковки
+      const total = qty * price;
 
       row.total = parseFloat(total.toFixed(2));
       row.tax_amount = taxRate ? parseFloat(((total * taxRate) / 100).toFixed(2)) : 0;
@@ -70,6 +70,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
           mark_up: 0,
           tax_amount: 0,
           total: 0,
+          expiry_date: '', // Добавлено поле для новых строк
         },
       ];
       setInputs(newInputs);
@@ -179,6 +180,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                       _res.weight ? _res.weight : 1
                     ).toFixed(2);
                     onChangeValue[index].quantity = quantity;
+                    // Оставляем expiry_date как было или дефолтным
 
                     onChangeValue[index] = calculateRowValues(onChangeValue[index], taxRate);
 
@@ -208,7 +210,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
             className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
           >
             {/* Назва матеріалу / Пошук */}
-            <td className="py-3 px-3 relative w-[650px]">
+            <td className="py-3 px-3 relative w-[500px]">
               <div className="flex flex-col gap-1">
                 <input
                   name="product"
@@ -275,6 +277,17 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 name="fact_qty"
                 type="text"
                 value={item.fact_qty || ''}
+                onChange={(event) => handleChange(event, index)}
+              />
+            </td>
+
+            {/* Термін придатності (Expiry Date) */}
+            <td className="py-3 px-3 text-center align-top pt-3">
+              <input
+                className="w-32 px-2 py-2 rounded-xl bg-slate-50 border border-slate-200 text-center text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white"
+                name="expiry_date"
+                type="date"
+                value={item.expiry_date || ''}
                 onChange={(event) => handleChange(event, index)}
               />
             </td>

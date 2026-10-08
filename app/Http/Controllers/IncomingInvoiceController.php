@@ -204,39 +204,61 @@ class IncomingInvoiceController extends Controller
             if ($request->user()->can('invoice-incoming-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $storeData = $this->customerService->clinicStoresData($clinicId);
+
                 $typeData = array();
                 $unitsData = Unit::all();
+                $storeName = '';
                 $formData = Invoice::find($id);
+                foreach ($storeData as $store) {
+                    if ($store->id == $formData->store_id) {
+                        $storeName = $store->name;
+                    }
+                }
                 $currencyData = Currency::all();
-                $taxData = Tax::all();
-                $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
+                $taxData = Tax::where('id', '=', $formData->tax_id)->first();
+                $rowData = InvoiceItems::select('invoice_items.*', 'invoice_items.qty as quantity', 'materials.name as product')
                     ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
                     ->where('invoice_id', $id)->get();
                 if (count($rowData) == 0) {
-
                     return Inertia::render('Exceptions/NoFound', [
                         'message' => 'No data found'
                     ]);
                 }
-
-                $producerData = Producer::all();
+                $producerData = Producer::where('id', '=', $formData->supplier_id)->first();
 
                 $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $request->session()->get('filial_id'));
+                if ($formData->status === 'posted') {
+                    return Inertia::render('InvoiceIncoming/View', [
+                        'clinicData' => $clinicData,
+                        'filialData' => $storeData,
+                        'formData' => $formData,
+                        'formRowData' => $rowData,
+                        'storeData' => $storeName,
+                        'customerData' => $customerData,
+                        'producerData' => $producerData,
+                        'statusData' => Invoices::INVOICE_STATUSES,
+                        'typeData' => $typeData,
+                        'currencyData' => $currencyData,
+                        'unitsData' => $unitsData,
+                        'taxData' => $taxData
+                    ]);
 
-                return Inertia::render('InvoiceIncoming/Edit', [
-                    'clinicData' => $clinicData,
-                    'filialData' => $storeData,
-                    'formData' => $formData,
-                    'formRowData' => $rowData,
-                    'storeData' => $storeData,
-                    'customerData' => $customerData,
-                    'producerData' => $producerData,
-                    'statusData' => Invoices::INVOICE_STATUSES,
-                    'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
-                ]);
+                } else {
+                    return Inertia::render('InvoiceIncoming/Edit', [
+                        'clinicData' => $clinicData,
+                        'filialData' => $storeData,
+                        'formData' => $formData,
+                        'formRowData' => $rowData,
+                        'storeData' => $storeData,
+                        'customerData' => $customerData,
+                        'producerData' => $producerData,
+                        'statusData' => Invoices::INVOICE_STATUSES,
+                        'typeData' => $typeData,
+                        'currencyData' => $currencyData,
+                        'unitsData' => $unitsData,
+                        'taxData' => $taxData
+                    ]);
+                }
 
             } else {
                 return Inertia::render('Layouts/NoPermission', [
