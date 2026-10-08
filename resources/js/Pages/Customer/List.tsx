@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import DataTable from '../../Components/Table/DataTable';
@@ -11,16 +11,11 @@ import lngCustomer from '../../Lang/Customer/translation';
 import ListHeader from '../../Components/Common/ListHeader';
 
 export default function List({ customerData }: { customerData: any }) {
-  const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
     locale: appLang,
   });
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
@@ -35,9 +30,11 @@ export default function List({ customerData }: { customerData: any }) {
               description={msg.get('customer.title.description')}
               createHref="customer/create"
               createLabel={msg.get('customer.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
             <section className="table-card">
-              <DataTable paginationType={PaginationType.CUSTOMERS} sendRequest={sendRequest}>
+              <DataTable paginationType={PaginationType.CUSTOMERS}>
                 {customerData?.map((item: any) => (
                   <tr
                     className="hover:bg-surface-container-low/40 transition-colors group"

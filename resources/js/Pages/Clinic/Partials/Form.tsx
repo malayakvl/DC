@@ -1,6 +1,4 @@
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
-import { router, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -11,7 +9,13 @@ import InputSelect from '../../../Components/Form/InputSelect';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import FormHeader from '../../../Components/Common/FormHeader';
 
-export default function ClinicForm({ clinicData, currencyData }) {
+export default function ClinicForm({
+  clinicData,
+  currencyData,
+}: {
+  clinicData: any;
+  currencyData: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngClinic,
@@ -31,15 +35,15 @@ export default function ClinicForm({ clinicData, currencyData }) {
       form: '',
     });
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     setData(e.target.id, e.target.value);
   };
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     setData(e.target.id, e.target.value);
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
 
     // Clear previous errors
@@ -60,7 +64,7 @@ export default function ClinicForm({ clinicData, currencyData }) {
     <section>
       <div className="flex flex-col gap-3 mt-2">
         <FormHeader
-          title={formData?.id ? msg.get('clinic.title.edit') : msg.get('clinic.title.create')}
+          title={msg.get('clinic.title.edit')}
           description={msg.get('clinic.title.description')}
           backUrl="/dashboard"
           processing={processing}
@@ -77,15 +81,13 @@ export default function ClinicForm({ clinicData, currencyData }) {
           name={'name'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.name')}
-          error={errors.name}
+          error={errors.name || null}
         />
         <InputText
           name={'address'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.address')}
           error={errors.address}
         />
@@ -93,7 +95,6 @@ export default function ClinicForm({ clinicData, currencyData }) {
           name={'uraddress'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.uraddress')}
           error={errors.uraddress}
         />
@@ -101,7 +102,6 @@ export default function ClinicForm({ clinicData, currencyData }) {
           name={'inn'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.inn')}
           error={errors.inn}
         />
@@ -109,7 +109,6 @@ export default function ClinicForm({ clinicData, currencyData }) {
           name={'edrpou'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.edrpou')}
           error={errors.edrpou}
         />
@@ -117,7 +116,6 @@ export default function ClinicForm({ clinicData, currencyData }) {
           name={'phone'}
           values={data}
           onChange={handleChange}
-          required
           label={msg.get('clinic.phone')}
           error={errors.phone}
         />
@@ -142,6 +140,7 @@ export default function ClinicForm({ clinicData, currencyData }) {
           successMessage={msg.get('clinic.saved') || 'Збережено успішно!'}
           processing={processing}
           recentlySuccessful={recentlySuccessful}
+          onSave={undefined}
         />
       </form>
     </section>

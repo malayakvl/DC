@@ -1,4 +1,3 @@
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
 import { Link, router, useForm } from '@inertiajs/react';
@@ -15,6 +14,11 @@ export default function Form({
   filialData,
   formData,
   className = '',
+}: {
+  clinicData: any;
+  filialData: any;
+  formData: any;
+  className?: string;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -29,27 +33,27 @@ export default function Form({
     clinic_id: clinicData.id,
   });
 
-  const { processing, recentlySuccessful, errors } = useForm();
+  const { processing, recentlySuccessful } = useForm();
 
-  const handleChangeSelect = e => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values: any) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const handleChange = e => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
-    setValues(values => ({
+    setValues((values) => ({
       ...values,
       [key]: value,
     }));
   };
 
-  const submit = e => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (formData.id) {
       router.post(`/cabinet/update?id=${formData.id}`, values);
@@ -65,17 +69,11 @@ export default function Form({
           <Link className="icon-back" href={'/cabinets'}>
             &nbsp;
           </Link>
-          {formData?.id
-            ? msg.get('cabinet.title.edit')
-            : msg.get('cabinet.title.create')}
+          {formData?.id ? msg.get('cabinet.title.edit') : msg.get('cabinet.title.create')}
         </h2>
       </header>
 
-      <form
-        onSubmit={submit}
-        className="mt-0 space-y-4"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
         <InputSelect
           name={'filial_id'}
           values={values}
@@ -104,16 +102,10 @@ export default function Form({
           label={msg.get('cabinet.place.count')}
         />
         <div className="flex items-center">
-          <Link
-            className="btn-back"
-            title={msg.get('cabinet.back')}
-            href={`/cabinets`}
-          >
+          <Link className="btn-back" title={msg.get('cabinet.back')} href={`/cabinets`}>
             {msg.get('cabinet.back')}
           </Link>
-          <PrimaryButton disabled={processing}>
-            {msg.get('cabinet.save')}
-          </PrimaryButton>
+          <PrimaryButton disabled={processing}>{msg.get('cabinet.save')}</PrimaryButton>
 
           <Transition
             show={recentlySuccessful}

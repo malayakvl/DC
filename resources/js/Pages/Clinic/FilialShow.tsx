@@ -6,7 +6,7 @@ import Lang from 'lang.js';
 import lngFilial from '../../Lang/Filial/translation';
 import React from 'react';
 
-export default function Create({ filialData }) {
+export default function Create({ filialData }: { filialData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngFilial,
@@ -25,7 +25,7 @@ export default function Create({ filialData }) {
                 <Link className="icon-back" href={'/filials'}>
                   &nbsp;
                 </Link>
-                {msg.get('filial.title.view')} "{filialData.name}"
+                {msg.get('filial.title.view')} &#34;{filialData.name}&#34;
               </h2>
             </header>
             <div className="mt-0 ml-4">

@@ -13,22 +13,32 @@ export default function InputText({
   type = 'text',
   error = null,
   ...props
+}: {
+  className?: string;
+  name?: string;
+  label?: string;
+  values?: any;
+  placeholder?: string;
+  showLabel?: boolean;
+  onChange?: (values: any) => void;
+  type?: any;
+  error?: any;
 }) {
   const { errors: pageErrors } = usePage().props;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const displayError = error || pageErrors[name];
-  if (type === ' date') {
-    console.log('I', value[name]);
-  }
+
   return (
     <div className={`relative w-full`}>
-      {showLabel && <InputLabel htmlFor={name} value={label} children={null} />}
+      {showLabel && <InputLabel htmlFor={name} value={label} />}
 
       <input
         id={name}
         name={name}
         onChange={onChange}
         type={type ? type : 'text'}
-        value={values[name]}
+        value={values[name || '']}
         placeholder={placeholder}
         className={'input-text ' + className}
         {...props}

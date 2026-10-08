@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, useForm, router, Link } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Head, useForm, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCabinet from '../../Lang/Cabinet/translation';
@@ -10,8 +10,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, filials = [] }) {
-  const dispatch = useDispatch();
+export default function List({ listData, filials = [] }: { listData: any; filials: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCabinet,
@@ -20,7 +19,7 @@ export default function List({ listData, filials = [] }) {
 
   // State для инлайн-формы
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
 
   // Inertia Form State
   const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
@@ -40,7 +39,7 @@ export default function List({ listData, filials = [] }) {
   };
 
   // Открыть форму на редактирование
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingItem(item);
     setData({
@@ -61,7 +60,7 @@ export default function List({ listData, filials = [] }) {
   };
 
   // Сохранение (Создание / Обновление)
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     post(route('cabinet.update'), {
       onSuccess: () => handleCloseForm(),
@@ -70,16 +69,6 @@ export default function List({ listData, filials = [] }) {
   };
 
   // Удаление кабинета
-  const handleDelete = (id) => {
-    if (confirm(msg.get('cabinet.confirm.delete') || 'Видалити цей кабінет?')) {
-      router.get(`/cabinet/delete/${id}`);
-    }
-  };
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
-
   return (
     <AuthenticatedLayout header={<Head title={msg.get('cabinet.title.list')} />}>
       <Head title={'Cabinets'} />
@@ -94,6 +83,7 @@ export default function List({ listData, filials = [] }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('cabinet.title.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
             />
 
             {/* Инлайн-форма */}
@@ -131,7 +121,7 @@ export default function List({ listData, filials = [] }) {
                       <option value="">
                         — {msg.get('cabinet.select.filial') || 'Оберіть філію'} —
                       </option>
-                      {filials.map((filial) => (
+                      {filials.map((filial: any) => (
                         <option key={filial.id} value={filial.id}>
                           {filial.name}
                         </option>
@@ -192,8 +182,8 @@ export default function List({ listData, filials = [] }) {
 
             {/* Таблиця */}
             <section className="table-card">
-              <DataTable paginationType={PaginationType.CABINETS} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.CABINETS}>
+                {listData?.map((item: any) => (
                   <tr className="hover:bg-slate-50/80 transition-colors" key={item.id}>
                     <td className="py-3 pl-4 font-medium text-slate-900">{item.name}</td>
                     <td className="py-3 text-slate-600">{item.filial_name}</td>

@@ -228,11 +228,9 @@ export default function Form({
               <div className="w-full flex items-center justify-between">
                 <InputText
                   name={'invoice_number'}
+                  placeholder={''}
                   values={values}
-                  dataValue={values.invoice_number}
-                  value={values.invoice_number}
                   onChange={handleChange}
-                  required
                   label={msg.get('invoice_incoming.number')}
                   className="filter-select-bordered-bordered w-full"
                 />

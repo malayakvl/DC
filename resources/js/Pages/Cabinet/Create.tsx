@@ -3,7 +3,15 @@ import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
 
-export default function Create({ clinicData, filialData, formData }) {
+export default function Create({
+  clinicData,
+  filialData,
+  formData,
+}: {
+  clinicData: any;
+  filialData: any;
+  formData: any;
+}) {
   return (
     <AuthenticatedLayout header={<Head title="Cabinets" />}>
       <Head title="Cabinets" />
