@@ -17,15 +17,28 @@ type SchedulerEventCardProps = {
 };
 
 const getEventBackground = (status?: string) => {
+  console.log(status);
   switch (status) {
     case 'done':
-      return '#f4f7fa';
+      return '#dbfaf6';
     case 'planned':
       return '#eff6ff';
-    case 'inclicnic':
+    case 'inclinic':
       return '#fffbeb';
+    case 'incabinet':
+      return '#ede5fb';
     case 'confirm':
-      return '#f4fefb';
+      return '#dffdf4';
+    case 'deny':
+      return '#f8dae6';
+    case 'noanswer':
+      return '#faf8f4';
+    case 'absent':
+      return '#eceaea';
+    case 'late':
+      return '#f8d0d0';
+    case 'new':
+      return '#faefc4';
     default:
       return '#f8fafc';
   }

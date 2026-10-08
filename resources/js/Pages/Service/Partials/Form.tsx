@@ -1,15 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, router, useForm } from '@inertiajs/react';
-import { Transition } from '@headlessui/react';
 import Lang from 'lang.js';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import lngServiceCategories from '../../../Lang/Services/translation';
 import AddDynamicInputFields, { AddDynamicInputFieldsRef } from '../Partials/Row';
 import { pricingItemsSelector, totalPriceItemsSelector } from '@/Redux/Service/selectors';
-import { Sliders, ArrowLeft } from 'lucide-react';
+import { Sliders } from 'lucide-react';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import FormHeader from '../../../Components/Common/FormHeader';
+import { router, useForm } from '@inertiajs/react';
 
 export default function Form({
   categoryData = null,
@@ -17,7 +16,12 @@ export default function Form({
   formRowData = null,
   formData,
   unitData,
-  className = '',
+}: {
+  categoryData: any;
+  clinicData: any;
+  formRowData: any;
+  formData: any;
+  unitData: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -34,11 +38,12 @@ export default function Form({
     clinic_id: clinicData?.id || '',
     category_id: formData?.category_id || '',
     price: formData?.price || '',
+    duration: formData?.duration || '',
   });
 
   const { processing, recentlySuccessful } = useForm();
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { id, name, value } = e.target;
     const key = id || name;
     setValues((prev) => ({
@@ -47,7 +52,7 @@ export default function Form({
     }));
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     const payload = {
       ...values,
@@ -65,11 +70,9 @@ export default function Form({
     <div className={`w-full mt-3`}>
       <div className="flex flex-col gap-3 mt-2">
         <FormHeader
-          title={formData?.id ? msg.get('service.title.edit') : msg.get('service.title.create')}
+          title={formData?.id ? msg.get('service.pricing.edit') : msg.get('service.pricing.create')}
           description={msg.get('service.title.description')}
           backUrl="/services"
-          processing={processing}
-          saveText={msg.get('service.save') || 'Зберегти зміни'}
         />
       </div>
       {/* Верхня навігація та хлібні крихти */}
@@ -84,13 +87,14 @@ export default function Form({
             </div>
             <h2 className="text-lg font-bold text-slate-900">Основні параметри послуги</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase">Назва послуги</label>
+              <label className="text-xs font-bold text-slate-700 uppercase">
+                {msg.get('service.name')}
+              </label>
               <input
                 id="name"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 text-slate-900 text-sm border border-slate-200 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-medium"
+                className="w-[450px] px-3.5 py-2.5 rounded-xl bg-slate-50 text-slate-900 text-sm border border-slate-200 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-medium"
                 type="text"
                 value={values.name}
                 onChange={handleChange}
@@ -99,7 +103,9 @@ export default function Form({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 uppercase">Категорія прайсу</label>
+              <label className="text-xs font-bold text-slate-700 uppercase">
+                {msg.get('service.category')}
+              </label>
               <select
                 id="category_id"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 text-slate-900 text-sm border border-slate-200 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-medium cursor-pointer"
@@ -107,8 +113,8 @@ export default function Form({
                 onChange={handleChange}
                 required
               >
-                <option value="">Оберіть категорію...</option>
-                {categoryData?.map((cat) => (
+                <option value="">{msg.get('service.select.category')}</option>
+                {categoryData?.map((cat: any) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
@@ -118,7 +124,7 @@ export default function Form({
 
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-bold text-slate-700 uppercase">
-                Базова ціна / послуги
+                {msg.get('service.base.price')}
               </label>
               <input
                 id="price"
@@ -126,6 +132,18 @@ export default function Form({
                 type="number"
                 step="0.01"
                 value={values.price}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-slate-700 uppercase">
+                {msg.get('service.duration')}
+              </label>
+              <input
+                id="duration"
+                className="w-[130px] px-3.5 py-2.5 rounded-xl bg-slate-50 text-slate-900 text-sm border border-slate-200 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 transition-all font-bold"
+                type="text"
+                value={values.duration}
                 onChange={handleChange}
               />
             </div>
@@ -220,6 +238,7 @@ export default function Form({
           successMessage={msg.get('service.saved') || 'Збережено успішно!'}
           processing={processing}
           recentlySuccessful={recentlySuccessful}
+          onSave={null}
         />
         {/* Футер із кнопками збереження */}
       </form>

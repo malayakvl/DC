@@ -741,10 +741,10 @@ class ActController extends Controller
             ]);
     }
 
-    protected function applyActFifo(int $storeId, int $actId): float
+    protected function applyActFifo(int $storeId, int $actId, int $clinicId): float
     {
         // Динамічно визначаємо схему поточної клініки (або беремо з трейта / сесії)
-        $schema = 'clinic_1';
+        $schema = 'clinic_'.$clinicId;
 
         $result = DB::selectOne(
             "SELECT core.apply_act_fifo(?, ?, ?) as total_cost",
@@ -760,11 +760,10 @@ class ActController extends Controller
 
     public function update(Request $request)
     {
-        return $this->withClinicSchema($request, function ($clinicId) use ($request) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
             if (!$request->user()->can('act-edit')) {
                 abort(403, 'No permission');
             }
-
             $data = $request->validate([
                 'payload' => ['required', 'array'], // проверяем, что сам payload существует
                 'payload.act_number' => ['required', 'string', 'max:50'],
@@ -793,7 +792,7 @@ class ActController extends Controller
                 return back()->withErrors(['error' => 'Для поточного філіалу не знайдено склад']);
             }
             try {
-                DB::transaction(function () use ($validatedPayload, $request, $filialId, $storeId) {
+                DB::transaction(function () use ($validatedPayload, $request, $filialId, $storeId, $clinicId) {
                     $act = $request->id
                         ? Act::whereKey($request->id)->lockForUpdate()->firstOrFail()
                         : new Act();
@@ -841,7 +840,7 @@ class ActController extends Controller
                     // 2. Якщо акт проведений — викликаємо FIFO-функцію на ВСІЙ акт одразу у базі даних
                     if ($act->status === 'posted') {
                         // Функція тепер приймає склад і ID акта, а все інше бере з таблиць act_items
-                        $this->applyActFifo($storeId, $act->id);
+                        $this->applyActFifo($storeId, $act->id, $clinicId);
 
                         // Перераховуємо загальну суму акта на основі актуальних даних після FIFO
                         $totalAmount = (float) ActItem::where('act_id', $act->id)->sum('total');
@@ -873,71 +872,71 @@ class ActController extends Controller
         }, $components);
     }
 
-    private function applyActFifo1(int $storeId, int $actId, int $actItemId, array $components): float
-    {
-        $materialTotalWithMarkup = 0.0;
-        foreach ($components as $component) {
-            $materialId = (int) $component['material_id'];
-            $remainingFactQty = round((float) $component['quantity'], 4);
-            if ($remainingFactQty <= 0) {
-                continue;
-            }
-            $componentCost = 0.0;
-
-            $batches = DB::table('store_batches')
-                ->where('store_id', $storeId)
-                ->where('material_id', $materialId)
-                ->where('fact_qty_left', '>', 0)
-                ->orderBy('arrived_at')
-                ->orderBy('id')
-                ->lockForUpdate()
-                ->get();
-            dd($batches);
-
-            foreach ($batches as $batch) {
-                if ($remainingFactQty <= 0) {
-                    dd('тут');
-                    break;
-                }
-                if ((float) $batch->qty <= 0 || (float) $batch->fact_qty <= 0) {
-                    throw new \Exception("Некоректна партія #{$batch->id} для material_id={$materialId}");
-                }
-
-                $deductFactQty = min($remainingFactQty, (float) $batch->fact_qty_left);
-                $deductQty = round($deductFactQty / ((float) $batch->fact_qty / (float) $batch->qty), 4);
-
-                DB::table('store_batches')->where('id', $batch->id)->update([
-                    'qty_left' => round((float) $batch->qty_left - $deductQty, 4),
-                    'fact_qty_left' => round((float) $batch->fact_qty_left - $deductFactQty, 4),
-                    'updated_at' => now(),
-                ]);
-                DB::table('store_movements')->insert([
-                    'store_id' => $storeId,
-                    'material_id' => $materialId,
-                    'batch_id' => $batch->id,
-                    'direction' => -1,
-                    'qty' => $deductQty,
-                    'fact_qty' => $deductFactQty,
-                    'price_per_unit' => $batch->price_per_unit,
-                    'document_type' => 'act',
-                    'document_id' => $actId,
-                    'act_item_id' => $actItemId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-                $componentCost += $deductFactQty * (float) $batch->price_per_unit;
-                $this->changeStoreBalance($storeId, $materialId, -$deductQty, -$deductFactQty);
-                $remainingFactQty = round($remainingFactQty - $deductFactQty, 4);
-            }
-
-            if ($remainingFactQty > 0) {
-                throw new \Exception("Недостатньо material_id={$materialId}: не вистачає {$remainingFactQty}");
-            }
-            $materialTotalWithMarkup += $componentCost * (1 + ((float) ($component['mark_up'] ?? 0) / 100));
-        }
-
-        return round($materialTotalWithMarkup, 4);
-    }
+//    private function applyActFifo1(int $storeId, int $actId, int $actItemId, array $components): float
+//    {
+//        $materialTotalWithMarkup = 0.0;
+//        foreach ($components as $component) {
+//            $materialId = (int) $component['material_id'];
+//            $remainingFactQty = round((float) $component['quantity'], 4);
+//            if ($remainingFactQty <= 0) {
+//                continue;
+//            }
+//            $componentCost = 0.0;
+//
+//            $batches = DB::table('store_batches')
+//                ->where('store_id', $storeId)
+//                ->where('material_id', $materialId)
+//                ->where('fact_qty_left', '>', 0)
+//                ->orderBy('arrived_at')
+//                ->orderBy('id')
+//                ->lockForUpdate()
+//                ->get();
+//            dd($batches);
+//
+//            foreach ($batches as $batch) {
+//                if ($remainingFactQty <= 0) {
+//                    dd('тут');
+//                    break;
+//                }
+//                if ((float) $batch->qty <= 0 || (float) $batch->fact_qty <= 0) {
+//                    throw new \Exception("Некоректна партія #{$batch->id} для material_id={$materialId}");
+//                }
+//
+//                $deductFactQty = min($remainingFactQty, (float) $batch->fact_qty_left);
+//                $deductQty = round($deductFactQty / ((float) $batch->fact_qty / (float) $batch->qty), 4);
+//
+//                DB::table('store_batches')->where('id', $batch->id)->update([
+//                    'qty_left' => round((float) $batch->qty_left - $deductQty, 4),
+//                    'fact_qty_left' => round((float) $batch->fact_qty_left - $deductFactQty, 4),
+//                    'updated_at' => now(),
+//                ]);
+//                DB::table('store_movements')->insert([
+//                    'store_id' => $storeId,
+//                    'material_id' => $materialId,
+//                    'batch_id' => $batch->id,
+//                    'direction' => -1,
+//                    'qty' => $deductQty,
+//                    'fact_qty' => $deductFactQty,
+//                    'price_per_unit' => $batch->price_per_unit,
+//                    'document_type' => 'act',
+//                    'document_id' => $actId,
+//                    'act_item_id' => $actItemId,
+//                    'created_at' => now(),
+//                    'updated_at' => now(),
+//                ]);
+//                $componentCost += $deductFactQty * (float) $batch->price_per_unit;
+//                $this->changeStoreBalance($storeId, $materialId, -$deductQty, -$deductFactQty);
+//                $remainingFactQty = round($remainingFactQty - $deductFactQty, 4);
+//            }
+//
+//            if ($remainingFactQty > 0) {
+//                throw new \Exception("Недостатньо material_id={$materialId}: не вистачає {$remainingFactQty}");
+//            }
+//            $materialTotalWithMarkup += $componentCost * (1 + ((float) ($component['mark_up'] ?? 0) / 100));
+//        }
+//
+//        return round($materialTotalWithMarkup, 4);
+//    }
 
     private function releaseActFifo(int $actId): void
     {

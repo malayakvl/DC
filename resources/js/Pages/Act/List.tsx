@@ -1,11 +1,10 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../Lang/Act/translation';
-import lngDropdown from '../../Lang/Dropdown/translation';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
@@ -14,20 +13,12 @@ import Pagination from './Partials/Pagination';
 import Filters from './Partials/Filters';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData }) {
-  const dispatch = useDispatch();
+export default function List({ listData }: { listData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngAct,
     locale: appLang,
   });
-  const msgDropdown = new Lang({
-    messages: lngDropdown,
-    locale: appLang,
-  });
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -42,6 +33,8 @@ export default function List({ listData }) {
               description={msg.get('act.title.description')}
               createHref="/act/create"
               createLabel={msg.get('act.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
 
             <Filters />
@@ -49,8 +42,8 @@ export default function List({ listData }) {
             <Pagination listData={listData} />
 
             <section className="table-card mt-4">
-              <DataTable paginationType={PaginationType.ACTS} sendRequest={sendRequest}>
-                {listData.data?.map((item, index) => (
+              <DataTable paginationType={PaginationType.ACTS}>
+                {listData.data?.map((item: any, index: any) => (
                   <tr
                     className={`hover:bg-slate-50/60 transition-colors group ${
                       index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'

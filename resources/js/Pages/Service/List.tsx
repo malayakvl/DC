@@ -30,7 +30,7 @@ export default function List({
 
   // State для инлайн-формы
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
 
   // Inertia Form State для категории услуг
   const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
@@ -87,43 +87,16 @@ export default function List({
         className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col transition-all duration-200 mb-6 border border-slate-200/80"
       >
         {/* Accordion Header */}
-        <div className="flex items-center justify-between p-6 bg-slate-100/80 cursor-pointer hover:bg-slate-100 transition-colors select-none border-b border-slate-200/80">
+        <div className="flex items-center justify-between py-0 px-4 bg-slate-100/80 cursor-pointer hover:bg-slate-100 transition-colors select-none border-b border-slate-200/80">
           <div className="flex items-center gap-3">
             <div>
               <div className="flex items-center gap-2.5">
-                <h2 className="text-lg font-bold text-slate-900">{item.name}</h2>
+                <h2 className="text-lg font-bold text-slate-900 px-0 m-0">{item.name}</h2>
                 <span className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-xs font-bold">
                   {categoryServices.length} {msg.get('service.title.total')}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">Категорія прайсу медичних послуг</p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-4 text-right">
-              <div className="flex flex-col">
-                <span className="text-xs text-slate-400">Сер. націнка</span>
-                <span className="text-sm text-slate-800 font-semibold">5.8x</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs text-slate-400">Сер. маржа</span>
-                <span className="text-sm text-teal-700 font-bold">81.9%</span>
-              </div>
-            </div>
-            <svg
-              className="w-5 h-5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
           </div>
         </div>
 
@@ -132,13 +105,10 @@ export default function List({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200/60">
-                <th className="py-3 px-4 font-bold">Код / Назва послуги</th>
+                <th className="py-3 px-4 font-bold text-center">Код</th>
+                <th className="py-3 px-4 font-bold">Назва послуги</th>
                 <th className="py-3 px-4 font-bold text-center">Тривалість</th>
-                <th className="py-3 px-4 font-bold text-right">Собівартість</th>
-                <th className="py-3 px-4 font-bold text-right">Націнка</th>
-                <th className="py-3 px-4 font-bold text-right">Ціна для пацієнта</th>
-                <th className="py-3 px-4 font-bold text-center">Маржа</th>
-                <th className="py-3 px-4 font-bold text-center">Техкарта</th>
+                <th className="py-3 px-4 font-bold text-right">Ціна</th>
                 <th className="py-3 px-4 font-bold text-right">Дії</th>
               </tr>
             </thead>
@@ -148,7 +118,10 @@ export default function List({
                   key={_item.id}
                   className={`hover:bg-slate-50/60 transition-colors group ${index % 2 === 1 ? 'bg-slate-50/30' : 'bg-white'}`}
                 >
-                  <td className="py-3.5 px-4">
+                  <td className="py-0.5 px-4 text-center">
+                    <span className="text-xs text-black">{_item.id}</span>
+                  </td>
+                  <td className="py-0.5 px-4">
                     <div className="flex items-center gap-3">
                       <div
                         className="w-2.5 h-2.5 rounded-full bg-teal-500 shrink-0"
@@ -161,26 +134,17 @@ export default function List({
                         >
                           {_item.name}
                         </Link>
-                        <span className="text-xs text-slate-400">Код: SRV-{_item.id}</span>
                       </div>
                     </div>
                   </td>
 
-                  <td className="py-3.5 px-4 text-center text-slate-500">
+                  <td className="py-0.5 px-4 text-center text-slate-500">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-xs">
-                      30 хв
+                      {_item.duration} {msg.get('service.min')}
                     </span>
                   </td>
 
-                  <td className="py-3.5 px-4 text-right text-slate-500 font-mono text-xs">
-                    {_item.cost_price ? _item.cost_price + ' ' + currency : '—'}
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right font-semibold text-slate-900 font-mono text-xs">
-                    {_item.markup ? _item.markup + 'x' : '5.0x'}
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-0.5 px-4 text-right">
                     <span className="font-bold text-slate-900 font-mono">
                       {_item.total_price !== undefined &&
                       _item.total_price !== null &&
@@ -193,37 +157,28 @@ export default function List({
                     </span>
                   </td>
 
-                  <td className="py-3.5 px-4 text-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 text-xs font-bold">
-                      80%
-                    </span>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-center">
-                    <Link
-                      href={`service/edit/${_item.id}`}
-                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
-                      title="Редагувати"
-                    >
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-teal-700 text-xs font-semibold">
-                        техкарта
-                      </span>
-                    </Link>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-0.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1.5">
+                      <Link
+                        href={`service/edit/${_item.id}`}
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                        title="Редагувати"
+                      >
+                        <span className="action-btn">
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </span>
+                      </Link>
                       <button
+                        className={'actn-btns'}
                         type="button"
                         onClick={() => {
                           if (confirm('Ви впевнені, що хочете видалити цю послугу?')) {
                             router.delete(`service/destroy/${_item.id}`);
                           }
                         }}
-                        className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors"
                         title="Видалити"
                       >
-                        ✕
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
                       </button>
                     </div>
                   </td>

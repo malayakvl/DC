@@ -32,6 +32,7 @@ const lngServiceCategories = {
     'title.edit': 'Редагувати категорію',
     'title.view': 'Переглянути Категорія',
     'pricing.edit': 'Редагувати послугу',
+    'pricing.create': 'Створити послугу',
     'title.total': 'Загалом',
     'title.description':
       'Налаштування нормативів списання матеріалів, розрахунок собівартості та ціноутворення',
@@ -56,6 +57,11 @@ const lngServiceCategories = {
     markup: 'Націнка %',
     unit: 'Од',
     'service.edit': 'Редагувати сервіс',
+    code: 'Код',
+    'select.category': 'Оберіть категорію...',
+    'base.price': 'Базова ціна / послуги',
+    duration: 'Тривалість',
+    min: 'хв',
   },
 };
 export default lngServiceCategories;

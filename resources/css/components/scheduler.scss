@@ -1869,6 +1869,42 @@
     color: #fff;
     border: solid 1px #10B981;
 }
+.absent {
+    background: #8c8889;
+    color: #fff;
+    border: solid 1px #8c8889;
+}
+.new {
+    background: #f1b55a;
+    color: #fff;
+    border: solid 1px #f1b55a;
+}
+.incabinet {
+    background: #a984ec;
+    color: #fff;
+    border: solid 1px #a984ec;
+}
+.inclinic {
+    background: #9f7f3b;
+    color: #fff;
+    border: solid 1px #9f7f3b;
+}
+.done {
+    background: #4e9795;
+    color: #fff;
+    border: solid 1px #4e9795;
+}
+.noanswer {
+    background: #a1a09c;
+    color: #fff;
+    border: solid 1px #a1a09c;
+}
+.late {
+    background: #f42727;
+    color: #fff;
+    border: solid 1px #f42727;
+}
+
 .act-btn {
     @apply w-6 h-6 rounded-md bg-white text-[12px] flex items-center justify-center hover:bg-white transition;
 }
