@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngInvoiceIncoming from '../../Lang/InvoiceIncoming/translation';
@@ -25,7 +25,6 @@ export default function List({
   suppliers: any[];
   paymentMethods: any[];
 }) {
-  const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const [showModal, setShowModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
@@ -41,11 +40,6 @@ export default function List({
     messages: lngDropdown,
     locale: appLang,
   });
-  // const [values, setValues] = useState({
-  //   date_from: filters?.date_from || '',
-  //   date_to: filters?.date_to || '',
-  //   supplier_id: filters?.supplier_id || '',
-  // });
 
   const makePayment = (
     invoiceId: number,
@@ -89,10 +83,9 @@ export default function List({
               isCreateDisabled={false}
               onCreateClick={null}
             />
-            <Filters suppliersData={suppliers} />
+            <Filters suppliersData={suppliers} totalCount={listData?.length || 0} />
 
             <Pagination listData={listData} />
-
             <section className="table-card">
               <DataTable paginationType={PaginationType.INCOMINGINVOICES}>
                 {listData?.map((item: any) => (
@@ -102,11 +95,11 @@ export default function List({
                     <td className="">
                       <span
                         className={`doc-status ${
-                          item.status === 'new' ? 'status-new' : 'status-posted'
+                          item.document_status === 'new' ? 'status-new' : 'status-posted'
                         }`}
                       >
                         <span className="status-dot"></span>
-                        {item.status === 'new' ? 'Новий' : 'Проведений'}
+                        {item.document_status === 'new' ? 'Новий' : 'Проведений'}
                       </span>
                     </td>
                     <td className="" style={{ textAlign: 'right' }}>
@@ -152,20 +145,38 @@ export default function List({
                     <td className="">{item.supplier_name}</td>
                     <td className="">{item.customer_name}</td>
                     <td className="text-right">
-                      <Link
-                        className="actn-btns"
-                        title={msg.get('invoice_incoming.edit') || 'Редагувати'}
-                        href={`invoice-incoming/edit/${item.invoice_id}`}
-                      >
-                        <span className="material-symbols-outlined text-[18px] block">edit</span>
-                      </Link>
-                      <Link
-                        className="actn-btns hover:bg-rose-50 hover:text-rose-600"
-                        title={msg.get('invoice_incoming.delete') || 'Видалити'}
-                        href={`invoice-incoming/delete/${item.invoice_id}`}
-                      >
-                        <span className="material-symbols-outlined text-[18px] block">delete</span>
-                      </Link>
+                      {item.document_status !== 'posted' ? (
+                        <>
+                          <Link
+                            className="actn-btns"
+                            title={msg.get('invoice_incoming.edit') || 'Редагувати'}
+                            href={`invoice-incoming/edit/${item.invoice_id}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px] block">
+                              edit
+                            </span>
+                          </Link>
+                          <Link
+                            className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                            title={msg.get('invoice_incoming.delete') || 'Видалити'}
+                            href={`invoice-incoming/delete/${item.invoice_id}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px] block">
+                              delete
+                            </span>
+                          </Link>
+                        </>
+                      ) : (
+                        <Link
+                          className="actn-btns"
+                          title={msg.get('invoice_incoming.edit') || 'Редагувати'}
+                          href={`invoice-incoming/edit/${item.invoice_id}`}
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">
+                            visibility
+                          </span>
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}

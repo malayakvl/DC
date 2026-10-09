@@ -9,7 +9,13 @@ import { useForm } from '@inertiajs/react';
 import { actFiltersSelector, actClearFiltersSelector } from '@/Redux/Act/selectors';
 import { clearFilters } from '../../../Redux/Incominginvoice';
 
-export default function Filters({ suppliersData }: { suppliersData: any }) {
+export default function Filters({
+  suppliersData,
+  totalCount,
+}: {
+  suppliersData: any;
+  totalCount: number;
+}) {
   const appLang = useSelector(appLangSelector);
   const isClear = useSelector(actClearFiltersSelector);
   const ref = useRef<HTMLFormElement>(null);
@@ -181,7 +187,7 @@ export default function Filters({ suppliersData }: { suppliersData: any }) {
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-500">
-              Знайдено: <strong className="text-slate-800 font-bold">0 накладних</strong>
+              Знайдено: <strong className="text-slate-800 font-bold">{totalCount} накладних</strong>
             </span>
             <button
               type="button"

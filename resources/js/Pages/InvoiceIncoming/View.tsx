@@ -93,7 +93,7 @@ export default function View({
             <span className="material-symbols-outlined text-[18px] text-teal-700">
               verified_user
             </span>
-            <span>{msg.get('invoice_imcoming.document_blocked')}</span>
+            <span>{msg.get('invoice_incoming.document_blocked')}</span>
           </div>
           <span className="hidden md:inline-block font-mono text-[11px] text-teal-700/80 bg-teal-100/60 px-2 py-0.5 rounded border border-teal-200">
             ID: #{formData?.id || 'TX-0000'}
@@ -173,12 +173,22 @@ export default function View({
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   <th className="py-3 px-4 w-12 text-center">№</th>
-                  <th className="py-3 px-4 min-w-[280px]">Товар / Номенклатура</th>
-                  <th className="py-3 px-3 text-center">Од. вим.</th>
-                  <th className="py-3 px-4 text-right">Кількість</th>
-                  <th className="py-3 px-4 min-w-[190px]">Термін придатності</th>
-                  <th className="py-3 px-4 text-right">Ціна</th>
-                  <th className="py-3 px-4 text-right">Сума</th>
+                  <th className="py-3 px-4 min-w-[280px]">
+                    {msg.get('invoice_incoming.h_nomenclatura')}
+                  </th>
+                  <th className="py-3 px-3 text-center">{msg.get('invoice_incoming.unit')}</th>
+                  <th className="py-3 px-4 text-right">{msg.get('invoice_incoming.qty')}</th>
+                  <th className="py-3 px-4 text-right">{msg.get('invoice_incoming.factqty')}</th>
+                  <th className="py-3 px-4 text-right">{msg.get('invoice_incoming.h_terms')}</th>
+                  <th className="py-3 px-4 text-right">
+                    {msg.get('invoice_incoming.price_per_unit')}
+                  </th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">
+                    {msg.get('invoice_incoming.price')}
+                  </th>
+                  <th className="py-3 px-4 text-right whitespace-nowrap">
+                    {msg.get('invoice_incoming.total')}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -199,22 +209,29 @@ export default function View({
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm">
                         {parseFloat(row.quantity || 0).toFixed(2)}
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm">
+                        {parseFloat(row.fact_qty || 0).toFixed(2)}
+                      </td>
+                      <td className="py-3.5 px-4 w-[70px]">
                         {row.expiry_date ? (
                           <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
                             <span className="material-symbols-outlined text-[14px] text-emerald-600">
                               event_available
                             </span>
-                            до {format(new Date(row.expiry_date), 'dd.MM.yyyy')}
+                            {msg.get('invoice_incoming.until')}{' '}
+                            {format(new Date(row.expiry_date), 'dd.MM.yyyy')}
                           </span>
                         ) : (
                           <span className="text-slate-400 text-xs">—</span>
                         )}
                       </td>
-                      <td className="py-3.5 px-4 text-right font-medium text-slate-700">
+                      <td className="py-3.5 px-4 text-right font-medium text-slate-700 whitespace-nowrap">
+                        {parseFloat(row.price_per_unit || 0).toFixed(2)} ₴
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-medium text-slate-700 whitespace-nowrap">
                         {parseFloat(row.price || 0).toFixed(2)} ₴
                       </td>
-                      <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm">
+                      <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm whitespace-nowrap">
                         {parseFloat(row.total || 0).toFixed(2)} ₴
                       </td>
                     </tr>
@@ -240,10 +257,10 @@ export default function View({
                   <span className="material-symbols-outlined text-teal-700 text-[20px]">
                     inventory
                   </span>
-                  Складський рух та аудит
+                  {msg.get('invoice_incoming.store_view')}
                 </h3>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Синхронізовано
+                  {msg.get('invoice_incoming.sync')}
                 </span>
               </div>
               <ul className="space-y-2 text-xs text-slate-600 font-medium pt-4">
@@ -251,13 +268,13 @@ export default function View({
                   <span className="material-symbols-outlined text-emerald-600 text-[16px]">
                     check_circle
                   </span>
-                  <span>Товар успішно додано у фізичні складські залишки.</span>
+                  <span>{msg.get('invoice_incoming.doc_footer_text')}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-emerald-600 text-[16px]">
                     check_circle
                   </span>
-                  <span>Терміни придатності зафіксовані в системі обліку партій.</span>
+                  <span>{msg.get('invoice_incoming.tems_text')}</span>
                 </li>
               </ul>
             </div>
@@ -270,10 +287,10 @@ export default function View({
                   <span className="material-symbols-outlined text-teal-700 text-[20px]">
                     account_balance_wallet
                   </span>
-                  Фінансовий підсумок
+                  {msg.get('invoice_incoming.fin_total_text')}
                 </h3>
                 <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                  Валюта: UAH (₴)
+                  {msg.get('invoice_incoming.currency')}: {currencyData.name} ({currencyData.symbol})
                 </span>
               </div>
               <div className="space-y-2.5 my-4">
@@ -283,7 +300,10 @@ export default function View({
                       ВСЬОГО ДО СПЛАТИ
                     </span>
                     <span className="text-2xl font-bold text-teal-900 tracking-tight leading-none mt-0.5 block">
-                      {formData?.total_amount || formData?.total || '0.00'} ₴
+                      {parseFloat(formData?.net_amount) + parseFloat(formData?.total_tax)} ₴
+                      <span className={'ml-3 inline-block text-[16px]'}>
+                        {taxData.name}:&nbsp;{formData?.total_tax}
+                      </span>
                     </span>
                   </div>
                   <div className="w-10 h-10 rounded-lg bg-teal-700 text-white flex items-center justify-center shadow-sm">

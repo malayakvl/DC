@@ -209,13 +209,9 @@ class IncomingInvoiceController extends Controller
                 $unitsData = Unit::all();
                 $storeName = '';
                 $formData = Invoice::find($id);
-                foreach ($storeData as $store) {
-                    if ($store->id == $formData->store_id) {
-                        $storeName = $store->name;
-                    }
-                }
+
                 $currencyData = Currency::all();
-                $taxData = Tax::where('id', '=', $formData->tax_id)->first();
+                $taxData = Tax::all();;
                 $rowData = InvoiceItems::select('invoice_items.*', 'invoice_items.qty as quantity', 'materials.name as product')
                     ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
                     ->where('invoice_id', $id)->get();
@@ -224,10 +220,19 @@ class IncomingInvoiceController extends Controller
                         'message' => 'No data found'
                     ]);
                 }
-                $producerData = Producer::where('id', '=', $formData->supplier_id)->first();
-
+                $producerData = Producer::all();
                 $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $request->session()->get('filial_id'));
                 if ($formData->status === 'posted') {
+                    $currencyData = Currency::all();
+                    $storeName = '';
+                    foreach ($storeData as $store) {
+                        if ($store->id == $formData->store_id) {
+                            $storeName = $store->name;
+                        }
+                    }
+                    $currencyData = Currency::where('id', '=', $formData->currency_id)->first();
+                    $producerData = Producer::where('id', '=', $formData->supplier_id)->first();
+                    $taxData = Tax::where('id', '=', $formData->tax_id)->first();
                     return Inertia::render('InvoiceIncoming/View', [
                         'clinicData' => $clinicData,
                         'filialData' => $storeData,
@@ -395,6 +400,7 @@ class IncomingInvoiceController extends Controller
             $invoice->document_type = 'income';
             $invoice->tax_id = $request->tax_id;
             $invoice->currency_id = $request->currency_id;
+            $invoice->ttn = $request->ttn;
             $rate = CurrencyExchange::where('currency_id', $request->currency_id)
                 ->orderBy('rate_date', 'DESC')
                 ->first();
@@ -417,7 +423,6 @@ class IncomingInvoiceController extends Controller
 
             // $producer = Producer::find($request->supplier_id);
             $storeId = $request->store_id;
-
             $totalAmount = 0;
             foreach ($request->rows as $row) {
                 $qty = $row['quantity'];      // количество в единицах материала
@@ -434,6 +439,7 @@ class IncomingInvoiceController extends Controller
                 $invoiceItem->total = $row['total'];
                 $invoiceItem->price_per_unit = $pricePerUnit;
                 $invoiceItem->unit_id = $row['unit_id'];
+                $invoiceItem->expiry_date = $row['expiry_date'];
                 $invoiceItem->save();
 
                 $totalAmount += $row['total'];

@@ -77,6 +77,15 @@ const lngInvoiceIncoming = {
     sys_accounter: 'Системний облік',
     doc_view_text: 'Проводка: Створена',
     specification: 'Специфікація товарів та матеріалів',
+    h_nomenclatura: 'Товар / Номенклатура',
+    h_terms: 'Термін придатності',
+    price_per_unit: 'Ціна за одиницю',
+    until: 'до',
+    store_view: 'Складський рух та аудит',
+    sync: 'Синхронізовано',
+    doc_footer_text: 'Товар успішно додано у фізичні складські залишки.',
+    tems_text: 'Терміни придатності зафіксовані в системі обліку партій.',
+    fin_total_text: 'Фінансовий підсумок',
   },
 };
 export default lngInvoiceIncoming;
