@@ -1,0 +1,24 @@
+.s-material-name {
+  @apply py-2.5 px-4 font-bold text-slate-700 text-sm uppercase tracking-wider text-[12px];
+  font-size: 12px;
+}
+.head-report {
+  @apply py-3.5 px-4;
+  font-size: 11px;
+}
+.document-name {
+  @apply font-bold text-teal-700 hover:underline hover:text-teal-900 flex items-center gap-1;
+  font-size: 12px;
+}
+.r-price {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[11px] text-slate-600 font-medium;
+}
+.r-expire-at {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/80 text-[11px] text-emerald-800 font-medium;
+  margin-left: 10px;
+}
+.r-doc-date {
+  color: black;
+  font-size: 12px;
+  font-family: "Sora", "Helvetica", "Arial", sans-serif;
+}

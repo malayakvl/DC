@@ -210,7 +210,6 @@ class ReportController extends Controller
                     'batch.source_id',
                     'batch.source_item_id',
                 ]);
-//            dd($movements);exit;
 
             return response()->json([
                 'movements' => $movements,

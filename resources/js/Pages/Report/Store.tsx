@@ -9,7 +9,6 @@ import PrimaryButton from '../../Components/Form/PrimaryButton';
 import InputText from '../../Components/Form/InputText';
 import InputSelect from '../../Components/Form/InputSelect';
 import { setDataLoadingAction } from '@/Redux/Layout';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
@@ -25,6 +24,19 @@ const formatDateSafe = (s?: string | null) => {
   const d = new Date(s);
   if (isNaN(d.getTime())) return s;
   return d.toLocaleString();
+};
+
+const formatExpiryDate = (s?: string | null) => {
+  if (!s) return '';
+  // Якщо дата приходить у форматі "YYYY-MM-DD" або з часом, розбиваємо її безпечно
+  const datePart = s.split('T')[0];
+  const parts = datePart.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}.${parts[1]}.${parts[0]}`; // Поверне у форматі ДД.ММ.РРРР
+  }
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return s;
+  return d.toLocaleDateString(); // Тільки дата без годин і хвилин
 };
 
 const fmtNum = (v: string | number | null | undefined) => {
@@ -43,7 +55,7 @@ const getCurrentWeekRange = () => {
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
 
-  const formatDate = (d) => {
+  const formatDate = (d: any) => {
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
@@ -63,7 +75,6 @@ export default function Store({ filials, stores }: BalanceProps) {
     messages: lngReport,
     locale: appLang,
   });
-  console.log('TUT')
   const { dateFrom, dateTo } = getCurrentWeekRange();
 
   const [values, setValues] = useState({
@@ -73,11 +84,12 @@ export default function Store({ filials, stores }: BalanceProps) {
     patient_id: '',
     store_id: '',
   });
-  const [storeError, setStoreError] = useState('');
-  const [reportResult, setReportResult] = useState([]);
-  const [batchesByMaterial, setBatchesByMaterial] = useState({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setStoreError] = useState('');
+  const [reportResult, setReportResult] = useState<any[]>([]);
+  const [batchesByMaterial, setBatchesByMaterial] = useState<Record<string, any[]>>({});
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -110,8 +122,9 @@ export default function Store({ filials, stores }: BalanceProps) {
       .then((res) => {
         setReportResult(res.data.movements || []);
 
-        const byMaterial = {};
-        (res.data.batches || []).forEach((batch) => {
+        const byMaterial: Record<string, any[]> = {};
+
+        (res.data.batches || []).forEach((batch: any) => {
           const materialKey = String(batch.material_id);
           byMaterial[materialKey] = [...(byMaterial[materialKey] || []), batch];
         });
@@ -119,7 +132,7 @@ export default function Store({ filials, stores }: BalanceProps) {
         setBatchesByMaterial(byMaterial);
         dispatch(setDataLoadingAction(false));
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error('Report generation failed:', err);
         dispatch(setDataLoadingAction(false));
       });
@@ -128,36 +141,39 @@ export default function Store({ filials, stores }: BalanceProps) {
   const renderReportResult = () => {
     if (!reportResult || reportResult.length === 0) return null;
 
-    // 1. Групуємо сирі рядки за матеріалом
-    const groups: any[] = [];
-    let currentGroup: any = null;
-    reportResult.forEach((item) => {
-      if (item.row_type === 'opening_balance') {
-        if (currentGroup) groups.push(currentGroup);
-        currentGroup = {
+    // 1. Групуємо сирі рядки за матеріалом (через словник за material_id)
+    const groupsMap: { [key: string]: any } = {};
+
+    reportResult.forEach((item: any) => {
+      const matKey = String(item.material_id);
+      if (!groupsMap[matKey]) {
+        groupsMap[matKey] = {
           material_id: item.material_id,
           material_name: item.material_name,
           category_name: item.category_name || 'Без категорії',
-          opening: Number(item.running_balance || 0),
+          opening: 0,
           items: [],
           totalIn: 0,
           totalOut: 0,
           closing: 0,
         };
+      }
+
+      const group = groupsMap[matKey];
+
+      if (item.row_type === 'opening_balance') {
+        group.opening += Number(item.running_balance || 0);
       } else if (item.row_type === 'movement') {
-        if (currentGroup) {
-          currentGroup.items.push(item);
-          const q = Number(item.qty || 0);
-          if (q > 0) currentGroup.totalIn += q;
-          else currentGroup.totalOut += Math.abs(q);
-        }
+        group.items.push(item);
+        const q = Number(item.qty || 0);
+        if (q > 0) group.totalIn += q;
+        else group.totalOut += Math.abs(q);
       } else if (item.row_type === 'closing_balance') {
-        if (currentGroup) {
-          currentGroup.closing = Number(item.running_balance || 0);
-        }
+        group.closing += Number(item.running_balance || 0);
       }
     });
-    if (currentGroup) groups.push(currentGroup);
+
+    const groups = Object.values(groupsMap);
 
     // 2. Групуємо матеріали за назвою категорії
     const categoriesMap: { [key: string]: any[] } = {};
@@ -174,12 +190,12 @@ export default function Store({ filials, stores }: BalanceProps) {
         <table className="w-full text-left border-collapse bg-white rounded-xl overflow-hidden shadow-sm">
           <thead>
             <tr className="bg-slate-100/60 text-slate-500 font-semibold text-sm uppercase tracking-wider">
-              <th className="py-3.5 px-4 min-w-[320px]">Матеріал / Документ</th>
-              <th className="py-3.5 px-3 min-w-[170px]">Дата / Час</th>
-              <th className="py-3.5 px-3 text-right min-w-[90px]">Поч. залишок</th>
-              <th className="py-3.5 px-3 text-right min-w-[90px]">Прихід</th>
-              <th className="py-3.5 px-3 text-right min-w-[90px]">Розхід</th>
-              <th className="py-3.5 px-3 text-right min-w-[100px]">Кінц. залишок</th>
+              <th className="head-report min-w-[320px]">Матеріал / Документ</th>
+              <th className="head-report w-[140px]">Дата / Час</th>
+              <th className="head-report text-right min-w-[90px]">Поч. залишок</th>
+              <th className="head-report text-right min-w-[90px]">Прихід</th>
+              <th className="head-report text-right min-w-[90px]">Розхід</th>
+              <th className="head-report text-right min-w-[100px]">Кінц. залишок</th>
             </tr>
           </thead>
           <tbody className="text-sm text-slate-900">
@@ -187,10 +203,7 @@ export default function Store({ filials, stores }: BalanceProps) {
               <React.Fragment key={`cat-${catIdx}`}>
                 {/* Заголовок категорії */}
                 <tr className="bg-slate-100/90 border-t border-slate-200">
-                  <td
-                    colSpan={6}
-                    className="py-2.5 px-4 font-bold text-slate-700 text-sm uppercase tracking-wider"
-                  >
+                  <td colSpan={6} className="s-material-name">
                     📁 {categoryName}
                   </td>
                 </tr>
@@ -224,14 +237,12 @@ export default function Store({ filials, stores }: BalanceProps) {
                       {/* Рядки рухів (документів) */}
                       {group.items.map((item: any, mIdx: number) => {
                         const qtyNum = Number(item.qty ?? 0);
-
-                        // Знаходимо відповідну партію/накладну для цього руху, щоб показати ціну, якщо це прихід або потрібно
+                        // Знаходимо відповідну партію/накладну для цього руху
                         const matchedBatch = materialBatches.find(
                           (batch: any) =>
                             batch.source_type === item.document_type &&
                             Number(batch.source_id) === Number(item.document_id)
                         );
-
                         return (
                           <tr
                             key={`mov-${mIdx}`}
@@ -243,30 +254,50 @@ export default function Store({ filials, stores }: BalanceProps) {
                                   subdirectory_arrow_right
                                 </span>
                                 <a
+                                  className="document-name"
                                   href="#"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    console.log(item.document_id);
+                                    if (item.document_type === 'balance') {
+                                      const url =
+                                        'http://localhost:8000/invoice-incoming/edit/' +
+                                        item.document_id;
+                                      window.open(url, '_blank');
+                                    }
                                   }}
-                                  className="inline-flex items-center gap-1 text-indigo-600 hover:underline font-semibold"
                                 >
-                                  <span className="material-symbols-outlined text-sm">
-                                    description
+                                  <span className="p-1 rounded bg-teal-50 text-teal-700">
+                                    <span className="material-symbols-outlined text-sm">
+                                      description
+                                    </span>
                                   </span>
                                   {item.document_type
                                     ? msg.get('report.document_type.' + item.document_type)
                                     : ''}
-                                  {item.document_id ? ' #' + item.document_id : ''}
+                                  {item.document_id ? ' #' + item.document_id : ''}{' '}
                                 </a>
                                 {matchedBatch && matchedBatch.price_per_unit && (
                                   <span className="ml-2 text-slate-500 font-normal">
-                                    (ціна: {fmtNum(matchedBatch.price_per_unit)} ₴)
+                                    <span className="r-price">
+                                      ціна: {fmtNum(matchedBatch.price_per_unit)} ₴
+                                    </span>
+                                    {item.expiry_date && (
+                                      <>
+                                        {' '}
+                                        <span className="r-expire-at">
+                                          ({msg.get('report.expire')}{' '}
+                                          {formatExpiryDate(item.expiry_date)})
+                                        </span>
+                                      </>
+                                    )}
                                   </span>
                                 )}
                               </div>
                             </td>
                             <td className="py-2.5 px-3 text-sm text-slate-500">
-                              {formatDateSafe(item.document_date)}
+                              <span className="r-doc-date">
+                                {formatDateSafe(item.document_date)}
+                              </span>
                             </td>
                             <td className="py-2.5 px-3 text-right text-slate-400 text-sm"></td>
                             <td className="py-2.5 px-3 text-right text-sm">
