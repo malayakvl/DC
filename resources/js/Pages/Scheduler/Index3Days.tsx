@@ -145,6 +145,7 @@ export default function Index3Days({
       services: event.services,
       cabinet_name: event.cabinet_name,
       doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+      total_price: event.total_price,
     }));
   });
 
@@ -169,6 +170,7 @@ export default function Index3Days({
           services: event.services,
           cabinet_name: event.cabinet_name,
           doctor_name: event.first_name + ' ' + event.last_name,
+          total_price: event.total_price,
         }))
       );
     }

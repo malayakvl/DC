@@ -150,8 +150,8 @@ export default function SchedulerEventCard({
               >
                 {statusLabel}
               </span>
-              <span className="px-2 py-0.5 bg-white text-[#3d5afe] font-bold">
-                {event.service?.price ?? event.price ?? 0} ₴
+              <span className="px-2 py-0.5 bg-white text-black font-bold">
+                {event.service?.total_price ?? event.total_price ?? 0} ₴
               </span>
             </div>
 

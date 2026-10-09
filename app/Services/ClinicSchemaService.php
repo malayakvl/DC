@@ -311,6 +311,7 @@ class ClinicSchemaService
                 services TEXT,
                 priority BOOLEAN,
                 assistent_id INTEGER,
+                total_price DECIMAL(10, 2),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

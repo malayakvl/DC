@@ -294,7 +294,7 @@ export default function Store({ filials, stores }: BalanceProps) {
                             <td className="py-2.5 px-3 text-right text-slate-400 text-sm"></td>
                             <td className="py-2.5 px-3 text-right text-sm">
                               {qtyNum > 0 && (
-                                <span className="text-emerald-600 font-semibold">
+                                <span className="inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60 whitespace-nowrap">
                                   {fmtNum(pkgNum)}{' '}
                                   {item.unit_name ? item.unit_name.toLowerCase() : 'од.'}
                                   {item.weight_unit_name
