@@ -43,12 +43,29 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     const [, setTaxPercent] = useState(0);
 
     // Универсальная функция пересчета суммы и налога для строки
-    const calculateRowValues = (row: any, taxRate: any) => {
+    const calculateRowValuesOld = (row: any, taxRate: any) => {
       const qty = parseFloat(row.quantity) || 0; // количество упаковок
       const price = parseFloat(row.price) || 0; // цена за упаковку
 
       // Считаем сумму: количество упаковок * цену упаковки
       const total = qty * price;
+
+      row.total = parseFloat(total.toFixed(2));
+      row.tax_amount = taxRate ? parseFloat(((total * taxRate) / 100).toFixed(2)) : 0;
+      return row;
+    };
+    const calculateRowValues = (row: any, taxRate: any) => {
+      const qty = parseFloat(row.quantity) || 1; // количество упаковок
+      const price = parseFloat(row.price) || 0; // цена за упаковку
+      const factQty = parseFloat(row.fact_qty) || 0; // фактическое количество
+      const packQty = parseFloat(row.pack_qty) || factQty || 1; // базовая фасовка из справочника
+
+      // Считаем коэффициент пропорции (сколько реально пришло по сравнению с базовой фасовкой)
+      // Умножаем на количество упаковок (qty)
+      const ratio = (factQty / packQty) * qty;
+
+      // Итоговая сумма зависит от базовой цены упаковки с учетом факта
+      const total = price * ratio;
 
       row.total = parseFloat(total.toFixed(2));
       row.tax_amount = taxRate ? parseFloat(((total * taxRate) / 100).toFixed(2)) : 0;

@@ -28,15 +28,14 @@ const formatDateSafe = (s?: string | null) => {
 
 const formatExpiryDate = (s?: string | null) => {
   if (!s) return '';
-  // Якщо дата приходить у форматі "YYYY-MM-DD" або з часом, розбиваємо її безпечно
   const datePart = s.split('T')[0];
   const parts = datePart.split('-');
   if (parts.length === 3) {
-    return `${parts[2]}.${parts[1]}.${parts[0]}`; // Поверне у форматі ДД.ММ.РРРР
+    return `${parts[2]}.${parts[1]}.${parts[0]}`;
   }
   const d = new Date(s);
   if (isNaN(d.getTime())) return s;
-  return d.toLocaleDateString(); // Тільки дата без годин і хвилин
+  return d.toLocaleDateString();
 };
 
 const fmtNum = (v: string | number | null | undefined) => {
@@ -84,7 +83,6 @@ export default function Store({ filials, stores }: BalanceProps) {
     patient_id: '',
     store_id: '',
   });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setStoreError] = useState('');
   const [reportResult, setReportResult] = useState<any[]>([]);
   const [batchesByMaterial, setBatchesByMaterial] = useState<Record<string, any[]>>({});
@@ -141,7 +139,6 @@ export default function Store({ filials, stores }: BalanceProps) {
   const renderReportResult = () => {
     if (!reportResult || reportResult.length === 0) return null;
 
-    // 1. Групуємо сирі рядки за матеріалом (через словник за material_id)
     const groupsMap: { [key: string]: any } = {};
 
     reportResult.forEach((item: any) => {
@@ -175,7 +172,6 @@ export default function Store({ filials, stores }: BalanceProps) {
 
     const groups = Object.values(groupsMap);
 
-    // 2. Групуємо матеріали за назвою категорії
     const categoriesMap: { [key: string]: any[] } = {};
     groups.forEach((group) => {
       const catName = group.category_name;
@@ -201,20 +197,17 @@ export default function Store({ filials, stores }: BalanceProps) {
           <tbody className="text-sm text-slate-900">
             {Object.entries(categoriesMap).map(([categoryName, materials], catIdx) => (
               <React.Fragment key={`cat-${catIdx}`}>
-                {/* Заголовок категорії */}
                 <tr className="bg-slate-100/90 border-t border-slate-200">
                   <td colSpan={6} className="s-material-name">
                     📁 {categoryName}
                   </td>
                 </tr>
 
-                {/* Товари всередині категорії */}
                 {materials.map((group, gIdx) => {
                   const materialBatches = batchesByMaterial?.[String(group.material_id)] || [];
 
                   return (
                     <React.Fragment key={`mat-${gIdx}`}>
-                      {/* Зведений рядок матеріалу */}
                       <tr className="hover:bg-slate-50/80 transition-colors bg-white border-t border-slate-100 font-medium">
                         <td className="py-3.5 px-4">
                           <div className="font-bold text-slate-900">{group.material_name}</div>
@@ -234,10 +227,9 @@ export default function Store({ filials, stores }: BalanceProps) {
                         </td>
                       </tr>
 
-                      {/* Рядки рухів (документів) */}
                       {group.items.map((item: any, mIdx: number) => {
                         const qtyNum = Number(item.qty ?? 0);
-                        // Знаходимо відповідну партію/накладну для цього руху
+                        const pkgNum = Number(item.package_qty ?? 1);
                         const matchedBatch = materialBatches.find(
                           (batch: any) =>
                             batch.source_type === item.document_type &&
@@ -303,14 +295,18 @@ export default function Store({ filials, stores }: BalanceProps) {
                             <td className="py-2.5 px-3 text-right text-sm">
                               {qtyNum > 0 && (
                                 <span className="text-emerald-600 font-semibold">
-                                  {fmtNum(qtyNum)}
+                                  {fmtNum(pkgNum)}{' '}
+                                  {item.unit_name ? item.unit_name.toLowerCase() : 'од.'}
+                                  {item.weight_unit_name
+                                    ? ` (${fmtNum(qtyNum)} ${item.weight_unit_name.toLowerCase()})`
+                                    : ''}
                                 </span>
                               )}
                             </td>
                             <td className="py-2.5 px-3 text-right text-sm">
                               {qtyNum < 0 && (
                                 <span className="text-rose-600 font-semibold">
-                                  {fmtNum(qtyNum)}
+                                  {fmtNum(pkgNum)} уп. ({fmtNum(qtyNum)})
                                 </span>
                               )}
                             </td>
