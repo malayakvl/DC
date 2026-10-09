@@ -137,14 +137,17 @@ class ActController extends Controller
                         ->where('store_id', $storeId)
                         ->where('material_id', $materialId)
                         ->where('fact_qty_left', '>', 0)
-                        ->orderBy('arrived_at')
-                        ->orderBy('id')
-                        ->get(['id', 'arrived_at', 'fact_qty_left', 'price_per_unit'])
-                        ->map(fn ($b) => [
-                            'id' => $b->id,
-                            'arrived_at' => $b->arrived_at,
-                            'fact_qty_left' => (float) $b->fact_qty_left,
-                            'price_per_unit' => (float) $b->price_per_unit,
+                        // 👇 Чіткий порядок: спочатку ближчий термін (FEFO), потім дата приходу, потім ID
+                        ->orderBy('expiry_date', 'asc')
+                        ->orderBy('arrived_at', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
+                        ->map(fn ($batch) => [
+                            'id' => $batch->id,
+                            'arrived_at' => $batch->arrived_at,
+                            'expiry_date' => $batch->expiry_date,
+                            'fact_qty_left' => (float) $batch->fact_qty_left,
+                            'price_per_unit' => (float) $batch->price_per_unit,
                         ])
                         ->all();
                 }
@@ -270,12 +273,15 @@ class ActController extends Controller
                         ->where('store_id', $storeId)
                         ->where('material_id', $materialId)
                         ->where('fact_qty_left', '>', 0)
-                        ->orderBy('arrived_at')
-                        ->orderBy('id')
-                        ->get(['id', 'arrived_at', 'fact_qty_left', 'price_per_unit'])
+                        // 👇 Чіткий порядок: спочатку ближчий термін (FEFO), потім дата приходу, потім ID
+                        ->orderBy('expiry_date', 'asc')
+                        ->orderBy('arrived_at', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
                         ->map(fn ($batch) => [
                             'id' => $batch->id,
                             'arrived_at' => $batch->arrived_at,
+                            'expiry_date' => $batch->expiry_date,
                             'fact_qty_left' => (float) $batch->fact_qty_left,
                             'price_per_unit' => (float) $batch->price_per_unit,
                         ])
@@ -285,7 +291,6 @@ class ActController extends Controller
                 // FIFO розрахунок по партіях зі складу
                 foreach ($availableByMaterial[$materialId] as &$batch) {
                     if ($remainingQty <= 0) {
-                        dd(1);
                         break;
                     }
 
@@ -370,66 +375,6 @@ class ActController extends Controller
 
 
 
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function indexOld(Request $request)
-    {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            $clinic = $request->user()->clinicByFilial($clinicId);
-            $arrStores = array();
-            if ($request->user()->roles[0]->name != 'Admin') {
-                // get stores filial
-                $filialId = $request->session()->get('filial_id');
-                $storesData = Store::where('filial_id', '=', $filialId)->get();
-                foreach ($storesData as $store) {
-                    $arrStores[] = $store->id;
-                }
-            }
-
-            if ($request->user()->roles[0]->name == 'Admin') {
-                $invoiceData = DB::table('invoices')
-                    ->select('invoices.*',
-                        'stores.name AS storeName',
-                        // 'invoice_statuses.name as statusName',
-                        // 'invoice_types.name as typeName',
-                        'users.name AS customerName',
-                        'suppliers.name AS supplierName'
-                    )
-                    ->leftJoin('stores', 'stores.id', '=', 'invoices.store_id')
-                    // ->leftJoin('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.status_id')
-                    // ->leftJoin('invoice_types', 'invoice_types.id', '=', 'invoices.type_id')
-                    ->leftJoin('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
-                    ->leftJoin('core.users', 'core.users.id', '=', 'invoices.customer_id')
-                    // ->where('invoices.clinic_id', $clinic->id)
-                    ->where('invoices.type_id', 1)
-                    ->orderBy('invoice_number', 'DESC')->get();
-            } else {
-                $invoiceData = DB::table('invoices')
-                    ->select('invoices.*',
-                        'stores.name AS storeName',
-                        // 'invoice_statuses.name as statusName',
-                        // 'invoice_types.name as typeName',
-                        'users.name AS customerName',
-                        'suppliers.name AS producerName'
-                    )
-                    ->leftJoin('stores', 'stores.id', '=', 'invoices.store_id')
-                    // ->leftJoin('invoice_statuses', 'invoice_statuses.id', '=', 'invoices.status_id')
-                    // ->leftJoin('invoice_types', 'invoice_types.id', '=', 'invoices.type_id')
-                    ->leftJoin('suppliers', 'suppliers.id', '=', 'invoices.supplier_id')
-                    ->leftJoin('core.users', 'core.users.id', '=', 'invoices.customer_id')
-                    ->whereIn('invoices.store_id', $arrStores)
-                    ->where('invoices.type_id', 1)
-                    // ->where('invoices.clinic_id', $clinic->id)
-                    ->orderBy('invoice_number', 'DESC')->get();
-            }
-            return Inertia::render('InvoiceIncoming/List', [
-                'clinicData' => $clinic,
-                'listData' => $invoiceData
-            ]);
-        });
-    }
 
     /**
      * Show the form for creating a new resource.

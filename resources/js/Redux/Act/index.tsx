@@ -10,6 +10,7 @@ import {
   updateComponentQuantityAction,
   syncAndRecalculateAct,
   setupActStoreErrorAction,
+  updateServiceComponentsFifo,
 } from './actions';
 
 const initialState = {
@@ -34,6 +35,55 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [updateComponentQuantityAction.toString()]: {
+    next: (state: any, action: any) => {
+      if (!action.payload) return state;
+      const { serviceId, components } = action.payload;
+
+      const updatedActItems = state.actItems.map((serviceItem: any) => {
+        const currentId = Number(
+          serviceItem.service_id || serviceItem.product_id || serviceItem.id
+        );
+        if (currentId === Number(serviceId)) {
+          return {
+            ...serviceItem,
+            // 🚀 Гарантированно создаем новый массив и новые объекты компонентов,
+            // чтобы React 100% увидел изменения и вызвал ререндер!
+            components: components.map((comp: any) => ({ ...comp })),
+          };
+        }
+        return serviceItem;
+      });
+
+      return {
+        ...state,
+        actItems: updatedActItems,
+      };
+    },
+  },
+  [updateServiceComponentsFifo.toString()]: {
+    next: (state: any, action: any) => {
+      const { serviceId, components } = action.payload;
+
+      const updatedActItems = state.actItems.map((serviceItem: any) => {
+        const currentId = Number(
+          serviceItem.service_id || serviceItem.product_id || serviceItem.id
+        );
+        if (currentId === Number(serviceId)) {
+          return {
+            ...serviceItem,
+            components: components,
+          };
+        }
+        return serviceItem;
+      });
+
+      return {
+        ...state,
+        actItems: updatedActItems,
+      };
+    },
+  },
   [setActItems.toString()]: {
     next: (state: any, action: any) => ({
       ...state,
@@ -121,6 +171,7 @@ export {
   updateServiceQuantityAction,
   syncAndRecalculateAct,
   setupActStoreErrorAction,
+  updateServiceComponentsFifo,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

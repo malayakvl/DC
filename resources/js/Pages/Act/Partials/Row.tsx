@@ -51,11 +51,23 @@ const MaterialItem = ({
   );
   const materialBatches = component.batches || [];
 
-  // Розрахунок собівартості на основі cost та кількості з компонента
-  const unitCost =
-    Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1) ||
-    Number(materialBatches[0]?.price_per_unit || 0);
 
+  // 🚀 Синхронизируем локальный инпут, если Redux обновил количество
+  React.useEffect(() => {
+    if (component.quantity !== undefined && component.quantity !== null) {
+      setLocalVal(String(component.quantity));
+    }
+  }, [component.quantity]);
+
+  // Розрахунок собівартості на основі cost та кількості з компонента
+  // const unitCost =
+  //   Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1) ||
+  //   Number(materialBatches[0]?.price_per_unit || 0);
+  // Розрахунок собівартості: спершу беремо ціну з актуальної партії по FEFO, і лише потім з компонентів
+  const unitCost =
+    materialBatches.length > 0
+      ? Number(materialBatches[0]?.price_per_unit || 0)
+      : Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1);
   const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
   const numericRequiredQty = Number(localVal) || 0;
 
