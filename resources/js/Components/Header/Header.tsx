@@ -2,15 +2,12 @@ import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeader from '../../Lang/Header/translation';
-import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import LangMenu from './LangMenu';
 import React from 'react';
 import ApplicationLogo from '@/Components/Header/ApplicationLogo';
 
-export default function Header({ auth }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  usePage().props.auth.user;
+export default function Header({ auth }: { auth: any }) {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -19,12 +16,12 @@ export default function Header({ auth }) {
 
   return (
     <>
-      <header className="">
+      <header className="fixed">
         <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
           <div className="relative flex w-full md:justify-between">
             <div>
               <Link href="/">
-                <ApplicationLogo className="block w-auto fill-current text-gray-800" />
+                <ApplicationLogo />
               </Link>
             </div>
             <nav className="w-nav">

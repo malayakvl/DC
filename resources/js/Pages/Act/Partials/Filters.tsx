@@ -1,178 +1,175 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAppDispatch } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import lngAct from '../../../Lang/Act/translation';
-import InputText from '../../../Components/Form/InputText';
-import { router, useForm } from '@inertiajs/react';
-import { actFiltersSelector, actClearFiltersSelector } from '@/Redux/Act/selectors';
-import { setFilters, clearFilters } from '@/Redux/Act';
-import PrimaryButton from '@/Components/Form/PrimaryButton';
+import { router } from '@inertiajs/react';
 
-export default function Filters() {
+interface TabOption {
+  id: string;
+  label: string;
+  count?: number;
+}
+
+interface ActFiltersProps {
+  filters?: {
+    search?: string;
+    filterDateFrom?: string;
+    filterDateTo?: string;
+    filterAmount?: string;
+    status?: string;
+  };
+  tabs?: TabOption[];
+  activeTab?: string;
+  onTabChange?: (tabId: string) => void;
+  totalCount?: number;
+}
+
+export default function Filters({
+  filters = {},
+  tabs = [
+    { id: 'all', label: 'Всі акти', count: 0 },
+    { id: 'completed', label: 'Проведені', count: 0 },
+    { id: 'uncompleted', label: 'Не проведені', count: 0 },
+  ],
+  activeTab = 'all',
+  onTabChange = () => {},
+  totalCount = 0,
+}: ActFiltersProps) {
   const appLang = useSelector(appLangSelector);
-  const isClear = useSelector(actClearFiltersSelector);
-  const ref = React.useRef<any>(null);
-  const dispatch = useAppDispatch();
-  const filtersData = useSelector(actFiltersSelector);
-  const { data, setData, post } = useForm(filtersData);
   const msg = new Lang({
     messages: { ...lngPatient, ...lngAct },
     locale: appLang,
   });
 
-  const handleChange = (e: any) => {
-    const key = e.target.id;
-    const value = e.target.value;
-    setData((values: any) => ({
-      ...values,
+  // Локальный стейт для полей формы
+  const [localFilters, setLocalFilters] = useState({
+    search: filters.search || '',
+    filterDateFrom: filters.filterDateFrom || '',
+    filterDateTo: filters.filterDateTo || '',
+    filterAmount: filters.filterAmount || '',
+    status: filters.status || '',
+  });
+
+  const handleChange = (key: string, value: any) => {
+    setLocalFilters((prev) => ({
+      ...prev,
       [key]: value,
     }));
-    filtersData[key] = value;
-    dispatch(setFilters(filtersData));
   };
 
-  const handleDateChange = (date: any, key: any) => {
-    setData((values: any) => ({
-      ...values,
-      [key]: date,
-    }));
-    filtersData[key] = date;
-    dispatch(setFilters(filtersData));
+  const handleApplyClick = () => {
+    const cleanedFilters = Object.fromEntries(
+      Object.entries(localFilters).filter(
+        ([_, value]) => value !== '' && value !== null && value !== undefined
+      )
+    );
+
+    router.get(window.location.pathname, cleanedFilters, {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true,
+    });
   };
 
-  const search = () => {
-    post(route('act.index'));
-  };
-
-  const searchClear = () => {
-    dispatch(clearFilters());
-    setData(() => ({
-      filterName: '',
-      filterAmount: '',
+  const handleResetClick = () => {
+    setLocalFilters({
+      search: '',
       filterDateFrom: '',
       filterDateTo: '',
-    }));
-    ref.current.reset();
+      filterAmount: '',
+      status: '',
+    });
+
+    router.get(
+      window.location.pathname,
+      {},
+      {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true,
+      }
+    );
   };
 
-  useEffect(() => {
-    if (isClear) {
-      post(route('act.index'));
-    }
-  }, [isClear]);
-
   return (
-    <form ref={ref} className="w-full mb-6">
-      <div className="">
-        <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-          {/* Верхній рядок: Сетка фильтров (Даты, Сумма и Кнопка поиска) */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-            {/* Дата с */}
-            <div className="md:col-span-3">
-              <InputText
-                type="date"
-                name="filterDateFrom"
-                label={msg.get('act.date_from')}
-                values={data}
-                onChange={(date) => handleDateChange(date, 'filterDateFrom')}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-              />
-            </div>
+    <div className="p-4 mb-6 rounded-2xl bg-white shadow-sm border border-slate-100 space-y-4">
+      {/* Верхній рядок: Пошук + Дати + Статус (дропдаун) + Кнопка */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-center">
+        {/* 1. Пошук */}
+        <div className="relative md:col-span-3">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+            <span className="material-symbols-outlined text-[20px]">search</span>
+          </span>
+          <input
+            type="text"
+            value={localFilters.search}
+            onChange={(e) => handleChange('search', e.target.value)}
+            placeholder="Пошук..."
+            className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 transition-colors"
+          />
+        </div>
 
-            {/* Дата по */}
-            <div className="md:col-span-3">
-              <InputText
-                type="date"
-                name="filterDateTo"
-                label={msg.get('act.date_to')}
-                values={data}
-                onChange={(date) => handleDateChange(date, 'filterDateTo')}
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-              />
-            </div>
+        {/* 2. Період дат (З - По) */}
+        <div className="flex items-center gap-1.5 md:col-span-4">
+          <input
+            type="date"
+            value={localFilters.filterDateFrom}
+            onChange={(e) => handleChange('filterDateFrom', e.target.value)}
+            className="w-full px-2 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 text-slate-700"
+          />
+          <span className="text-slate-400">—</span>
+          <input
+            type="date"
+            value={localFilters.filterDateTo}
+            onChange={(e) => handleChange('filterDateTo', e.target.value)}
+            className="w-full px-2 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 text-slate-700"
+          />
+        </div>
 
-            {/* Сумма */}
-            <div className="md:col-span-4">
-              <InputText
-                name="filterAmount"
-                values={data}
-                type="text"
-                className="w-full px-3.5 py-2 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition"
-                onChange={handleChange}
-                label={msg.get('act.total')}
-              />
-            </div>
+        {/* 3. Статус (Дропдаун замість суми) */}
+        <div className="md:col-span-3">
+          <select
+            value={localFilters.status}
+            onChange={(e) => handleChange('status', e.target.value)}
+            className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 transition-colors cursor-pointer text-slate-700"
+          >
+            <option value="">Всі статуси</option>
+            <option value="completed">Проведені</option>
+            <option value="uncompleted">Не проведені</option>
+          </select>
+        </div>
 
-            {/* Кнопка поиска */}
-            <div className="md:col-span-2 pt-5">
-              <PrimaryButton
-                type="button"
-                onClick={search}
-                className="w-full justify-center h-[38px] text-xs font-semibold"
-              >
-                {msg.get('act.filter')}
-              </PrimaryButton>
-            </div>
-          </div>
-
-          {/* Нижній рядок: Таби швидкого фільтру + Лічильник і очищення праворуч */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
-            {/* Таби швидкого перемикання */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
-              <button
-                type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-teal-600 text-white font-bold shadow-sm"
-              >
-                <span>Всі акти</span>
-                <span className="px-1.5 py-0.2 rounded-full transition-colors text-white font-bold">
-                  0
-                </span>
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 font-semibold"
-              >
-                <span>Проведені</span>
-                <span className="px-1.5 py-0.2 rounded-full transition-colors text-slate-600">
-                  0
-                </span>
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 font-semibold"
-              >
-                <span>Не проведені</span>
-                <span className="px-1.5 py-0.2 rounded-full transition-colors text-slate-600">
-                  0
-                </span>
-              </button>
-            </div>
-
-            {/* Права частина: Знайдено + Очистити фільтри */}
-            <div className="flex items-center gap-4 text-xs">
-              <span className="text-slate-500 font-medium">
-                Знайдено: <strong className="text-slate-800 font-bold">0 актів</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  searchClear();
-                  const reset = { filterDateFrom: '', filterDateTo: '', filterAmount: '' };
-                  setData(reset);
-                  router.get('/acts', reset);
-                }}
-                className="flex items-center gap-1.5 text-teal-700 hover:text-teal-800 font-semibold transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-                <span>{msg.get('act.reset')}</span>
-              </button>
-            </div>
-          </div>
+        {/* 4. Кнопка застосування */}
+        <div className="md:col-span-2">
+          <button type="button" onClick={handleApplyClick} className="filter-btn">
+            <span className="material-symbols-outlined text-[16px]">filter_alt</span>
+            {msg.get('act.filter') || 'Застосувати'}
+          </button>
         </div>
       </div>
-    </form>
+
+      {/* Нижній рядок: Чіпси-таби + Лічильник + Скидання */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
+        {/* Права частина: Знайдено + Очистити */}
+        <div className="flex items-center gap-4 text-xs ml-auto">
+          <span className="text-slate-500">
+            {msg.get('invoice_incoming.found_filter')}:{' '}
+            <strong className="text-slate-800">{totalCount}</strong>
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              handleResetClick();
+            }}
+            className="flex items-center gap-1 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">restart_alt</span>
+            {msg.get('invoice_incoming.clear_filter') || 'Очистити'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

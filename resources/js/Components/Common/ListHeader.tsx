@@ -50,7 +50,7 @@ export default function ListHeader({
             <div className="flex items-center shrink-0">
               {createHref ? (
                 <NavLink
-                  className="group relative inline-flex items-center justify-center gap-1.5 px-2 py-2 rounded-md bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-sm"
+                  className="group relative inline-flex items-center justify-center gap-1.5 px-2 py-2 rounded-md bg-orange-500 hover:bg-orange-700 text-white font-bold text-sm"
                   href={createHref}
                 >
                   <span className="material-symbols-outlined text-[18px]">add</span>

@@ -5,7 +5,6 @@ import Lang from 'lang.js';
 import lngHeader from '../Lang/Header/translation';
 import { useSelector } from 'react-redux';
 import {
-  appFilialSelector,
   appLangSelector,
   isShowOverlaySelector,
   isDataLoadingSelector,
@@ -17,17 +16,18 @@ import NoticeMenu from '../Components/Header/NoticeMenu';
 import { ToastContainer } from 'react-toastify';
 import Footer from '@/Components/Footer/Footer';
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, children }: { header: any; children: any }) {
   const appLang = useSelector(appLangSelector);
   const isLoading = useSelector(isDataLoadingSelector);
   new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  const filialData = useSelector(appFilialSelector);
   const showOverlay = useSelector(isShowOverlaySelector);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const user = usePage().props.auth.user;
   const handleNavCollapse = () => {
     setIsNavCollapsed(!isNavCollapsed);
@@ -36,12 +36,12 @@ export default function AuthenticatedLayout({ header, children }) {
   return (
     <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'visible' }}>
       {header && (
-        <header className="">
-          <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
+        <header>
+          <div className="flex px-4 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
             <div className="relative flex w-full">
               <div>
                 <Link href="/">
-                  <ApplicationLogo className="block w-auto fill-current text-gray-800" />
+                  <ApplicationLogo />
                 </Link>
               </div>
               <button className="navbar-toggler" type="button" onClick={handleNavCollapse}>
@@ -84,7 +84,7 @@ export default function AuthenticatedLayout({ header, children }) {
         </header>
       )}
 
-      <main className="pt-[60px]">
+      <main className="pt-[0px]">
         {/*<div className="teaser-container">Управляйте клінікою легко та ефективно</div>*/}
         <div className="mx-auto w-full px-1">
           <div>{children}</div>

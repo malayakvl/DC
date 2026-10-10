@@ -38,9 +38,6 @@ export default function Filters({
   producerData = [],
   storeData = [],
   customerData = [],
-  tabs = [],
-  activeTab,
-  onTabChange,
   totalCount = 0,
 }: InvoicesFiltersProps) {
   const appLang = useSelector(appLangSelector);
@@ -217,7 +214,7 @@ export default function Filters({
           <button
             type="button"
             onClick={handleApplyClick}
-            className="w-full px-4 py-2 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+            className="filter-btn"
           >
             <span className="material-symbols-outlined text-[16px]">filter_alt</span>
             Застосувати
@@ -228,36 +225,6 @@ export default function Filters({
       {/* Нижній рядок: Чіпси-статуси + Лічильник + Скидання */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
         {/* Чіпси статусів */}
-        <div className="flex flex-wrap items-center gap-2">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            let baseStyle =
-              'px-3 py-1.5 text-xs font-medium rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ';
-
-            if (isActive) {
-              baseStyle += 'bg-teal-600 text-white shadow-sm';
-            } else {
-              baseStyle += 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900';
-            }
-
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onTabChange(tab.id)}
-                className={baseStyle}
-              >
-                <span>{tab.label}</span>
-                {tab.count !== undefined && (
-                  <span className={`opacity-75 ${isActive ? 'text-white' : 'text-slate-500'}`}>
-                    ({tab.count})
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Права частина: Знайдено + Очистити */}
         <div className="flex items-center gap-4 text-xs ml-auto">
           <span className="text-slate-500">

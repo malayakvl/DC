@@ -6,20 +6,21 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import { Provider as ReduxProvider } from 'react-redux';
 import store from './Store/store';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { route as routeFn } from 'ziggy-js';
 
 declare global {
-  var route: typeof routeFn;
+  let route: typeof routeFn;
 }
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 createInertiaApp({
-  title: title => `${title} - ${appName}`,
-  resolve: name =>
-    resolvePageComponent(
-      `./Pages/${name}.tsx`,
-      import.meta.glob('./Pages/**/*.tsx')
-    ),
+  title: (title) => `${title} - ${appName}`,
+  resolve: (name) =>
+    resolvePageComponent(`./Pages/${name}.tsx`, import.meta.glob('./Pages/**/*.tsx')),
   setup({ el, App, props }) {
     const root = createRoot(el);
 

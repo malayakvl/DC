@@ -72,7 +72,7 @@ export default function List({
       <Head title={'Invoice Incoming'} />
       <div className="py-0">
         <div>
-          <div className="p-4 sm:p-4 mb-8 content-data bg-content">
+          <div className="p-4 sm:p-4 mb-0 content-data bg-content">
             <ListHeader
               title={msg.get('invoice_incoming.title.list')}
               count={listData?.length || 0}
@@ -100,9 +100,43 @@ export default function List({
               <DataTable paginationType={PaginationType.INCOMINGINVOICES}>
                 {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
-                    <td className="">
-                      {item.invoice_number}
-                      <small className={'block text-[11px] text-[#6ac8c7]'}>{item.ttn}</small>
+                    <td style={{ paddingLeft: '15px' }}>
+                      <span className="block">{item.invoice_number}</span>
+                      <div className="inline-flex items-center gap-1.5 mt-1 text-[11px] text-teal-700 font-mono bg-teal-50/80 px-1.5 py-0.5 rounded border border-teal-200/40 w-fit">
+                        <svg
+                          className="w-3 h-3 text-teal-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="1.8"
+                          ></path>
+                        </svg>
+                        <span>#{item.ttn}</span>
+                        <button
+                          className="hover:text-teal-900 transition-colors"
+                          title="Скопіювати штрихкод"
+                          type="button"
+                        >
+                          <svg
+                            className="w-2.5 h-2.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            ></path>
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                     <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
                     <td className="">
@@ -111,12 +145,39 @@ export default function List({
                           item.document_status === 'new' ? 'status-new' : 'status-posted'
                         }`}
                       >
-                        <span className="status-dot"></span>
+                        <span className="w-2 h-2 rounded-full bg-[#137870] group-hover/btn:scale-110 transition-transform"></span>
                         {item.document_status === 'new' ? 'Новий' : 'Проведений'}
                       </span>
                     </td>
                     <td className="" style={{ textAlign: 'right' }}>
-                      {item.total_amount} {item.currency_name}
+                      {(() => {
+                        const parts = Number(item.total_amount || 0)
+                          .toFixed(2)
+                          .split('.');
+                        const integerPart = Number(parts[0])
+                          .toLocaleString('en-US')
+                          .replace(/,/g, ' '); // разделение пробелами (например: 1 532)
+                        const decimalPart = parts[1];
+
+                        return (
+                          <>
+                            <div>
+                              <span className="text-base font-extrabold text-slate-900 tracking-tight tabular-nums group-hover:text-teal-900 transition-colors">
+                                {integerPart}
+                                <span className="text-slate-400 font-semibold">.{decimalPart}</span>
+                                {item.currency_name && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 tracking-wider">
+                                    {item.currency_name}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-medium text-slate-400 mt-0.5">
+                              {item.tax_name}: {item.total_tax}
+                            </span>
+                          </>
+                        );
+                      })()}
                     </td>
                     <td className="">
                       {Number(item.debt_amount) <= 0 ? (
@@ -129,7 +190,19 @@ export default function List({
                                 : 'status-paid'
                           }`}
                         >
-                          <span className="status-dot"></span>
+                          <svg
+                            className="w-3.5 h-3.5 text-rose-500 group-hover/btn:translate-x-0.5 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            ></path>
+                          </svg>
 
                           {msg.get('invoice_incoming.paid')}
                         </span>
@@ -150,7 +223,21 @@ export default function List({
                           className="pay-btn "
                           data-id={item.id}
                         >
-                          {msg.get('invoice_incoming.unpaid')}
+                          <span className="w-2 h-2 rounded-full bg-rose-500 group-hover/btn:scale-110 transition-transform"></span>
+                          <span>{msg.get('invoice_incoming.unpaid')}</span>
+                          <svg
+                            className="w-3.5 h-3.5 text-rose-500 group-hover/btn:translate-x-0.5 transition-transform"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                            ></path>
+                          </svg>
                         </a>
                       )}
                     </td>

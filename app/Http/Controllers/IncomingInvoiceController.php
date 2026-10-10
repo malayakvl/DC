@@ -94,20 +94,19 @@ class IncomingInvoiceController extends Controller
             // Логика выбора склада
             $storeIdParam = null;
             if ($request->user()->roles[0]->name !== 'Admin') {
-                // Если не админ, проверяем входит ли выбранный склад в его филиал,
-                // иначе берем первый доступный или оставляем ограничение
                 if ($selectedStoreId && in_array($selectedStoreId, $allowedStoreIds)) {
-                    $storeIdParam = $selectedStoreId;
+                    $storeIdParam = (int)$selectedStoreId;
                 } else {
-                    // Если склад не выбран или чужой, можно ограничить первыми доступными или оставить null
                     $storeIdParam = $allowedStoreIds[0] ?? null;
                 }
             } else {
-                // Админ может выбрать любой склад или оставить пустым (все)
-                $storeIdParam = $selectedStoreId;
-                $storesData = Store::all(); // Админу показываем вообще все склады в селекте
+                $storeIdParam = $selectedStoreId ? (int)$selectedStoreId : null;
+                $storesData = Store::all();
             }
-
+            // КРИТИЧЕСКИ ВАЖНО: оборачиваем склад в массив для bigint[]
+            $storeIdsArgument = $storeIdParam !== null ? [$storeIdParam] : null;
+            // Превращаем в формат массива PostgreSQL: '{1}' или NULL
+            $storeIdsPgArray = $storeIdParam !== null ? '{' . $storeIdParam . '}' : null;
             // Вызов функции (ровно 9 параметров)
             $invoiceData = DB::select("
             SELECT *
@@ -124,18 +123,16 @@ class IncomingInvoiceController extends Controller
             )
         ", [
                 $schema,
-                $storeIdParam,
+                $storeIdsPgArray,
                 $supplierId,
                 $dateFrom,
                 $dateTo,
                 $search,
                 $paymentStatus,
-                $limit,
-                $offset
+                (int)$limit,
+                (int)$offset
             ]);
-
             $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
-
             $paymentMethods = DB::select("
             SELECT 
                 pm.id,

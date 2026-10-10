@@ -907,6 +907,7 @@ class ClinicSchemaService
                 patient_id BIGINT NOT NULL,
                 doctor_id BIGINT,
                 visit_id BIGINT,
+                currency_id BIGINT,
 
                 total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
 

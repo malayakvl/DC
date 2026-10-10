@@ -3,22 +3,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
 
 export default function InputTreeSelect({
-  className = '',
-  elId = '',
-  name,
-  label,
-  values,
-  onChange,
-  options = [],
-  defaultTips = 'Select',
-  selectedLabelClass = '',
-  ...props
-}: {
+                                          className = '',
+                                          elId = '',
+                                          name,
+                                          label,
+                                          values = {}, // Ставим дефолтное значение пустой объект
+                                          onChange,
+                                          options = [],
+                                          defaultTips = 'Select',
+                                          selectedLabelClass = '',
+                                          ...props
+                                        }: {
   className?: string;
   elId?: string;
   name?: string;
   label?: string;
-  values?: any[];
+  values?: Record<string, any> | any; // Разрешаем передавать объект или любые данные
   onChange?: (value: any) => void;
   options?: any;
   defaultTips?: any;
@@ -40,7 +40,8 @@ export default function InputTreeSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedValue = (values as Record<string, any>)[name as string];
+  // Безопасно достаем значение, даже если values не передали
+  const selectedValue = values && name ? values[name] : undefined;
   const normalizedOptions = Array.isArray(options) ? options : (options as any)?.data || [];
 
   // Знаходимо поточну обрану категорію

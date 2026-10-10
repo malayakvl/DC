@@ -346,18 +346,23 @@ class ActController extends Controller
 
                     // Доктор
                     'doctor_user.first_name  as doctor_first_name',
-                    'doctor_user.last_name   as doctor_last_name'
+                    'doctor_user.last_name   as doctor_last_name',
+
+                    // currency
+                    'currencies.name as currency_name',
                 )
 
                 // --- пациент ---
                 ->leftJoin("clinic_{$clinicId}.patients as patients", 'patients.id', '=', 'acts.patient_id')
+                ->leftJoin("clinic_{$clinicId}.currencies as currencies", 'currencies.id', '=', 'acts.currency_id')
                 ->leftJoin('core.users as patient_user', 'patient_user.id', '=', 'patients.user_id')
 
                 // --- доктор ---
                 ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'acts.doctor_id')
                 ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
                 // --- Фільтр: тільки за сьогодні ---
-                ->whereDate('acts.act_date', today())
+//                ->whereDate('acts.act_date', today())
+//                ->where('acts.patient_id', 6268)
                 ->orderBy('acts.act_number', 'DESC');
 
 

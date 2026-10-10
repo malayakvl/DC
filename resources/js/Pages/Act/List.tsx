@@ -94,14 +94,41 @@ export default function List({ listData }: { listData: any }) {
                     </td>
 
                     {/* Сума загальна */}
-                    <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
-                      {item.total_amount}
+                    <td className="py-3.5 px-4">
+                      {(() => {
+                        const parts = Number(item.total_amount || 0)
+                          .toFixed(2)
+                          .split('.');
+                        const integerPart = Number(parts[0])
+                          .toLocaleString('en-US')
+                          .replace(/,/g, ' '); // разделение пробелами (например: 1 532)
+                        const decimalPart = parts[1];
+
+                        return (
+                          <>
+                            <div>
+                              <span className="text-base font-extrabold text-slate-900 tracking-tight tabular-nums group-hover:text-teal-900 transition-colors">
+                                {integerPart}
+                                <span className="text-slate-400 font-semibold">.{decimalPart}</span>
+                                {item.currency_name && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 tracking-wider">
+                                    {item.currency_name}
+                                  </span>
+                                )}
+                              </span>
+                              <span className="inline-block ml-2">
+                                <span className="paied-btn">{item.payment_amount}</span>
+                              </span>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </td>
 
                     {/* Сума оплати */}
-                    <td className="py-3.5 px-4 font-mono text-xs text-teal-700 font-semibold">
-                      {item.payment_amount}
-                    </td>
+                    {/*<td className="py-3.5 px-4 font-mono text-xs text-teal-700 font-semibold">*/}
+                    {/*  <span className="paied-btn">{item.payment_amount}</span>*/}
+                    {/*</td>*/}
 
                     {/* Дії */}
                     <td className="py-3.5 px-4 text-right">

@@ -3,22 +3,14 @@ body {
 }
 
 .top-header {
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 15px;
-  //   background: #0a0f1c;
-  position: relative;
   background: #FFFFFF;
   border-bottom: 1px solid #E2E8F0;
-  //background: #b6b6b8;
-  // background: linear-gradient(#465887, #0a0f1c) padding-box,
-  //   linear-gradient(135deg, #b74bd5, #00c6ff) border-box;
-  // box-shadow:
-  //   0 0 20px rgba(183, 75, 213, 0.6),
-  //   0 0 40px rgba(0, 198, 255, 0.4);
   z-index: 100;
-  //   box-shadow: 0 2px 20px rgba(183, 75, 213, 0.2);
 }
 
 /* Тонка градієнтна лінія зверху */
