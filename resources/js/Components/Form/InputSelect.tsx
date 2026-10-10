@@ -92,7 +92,7 @@ export default function InputSelect({
       <div
         id={elId || name}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full rounded-xl border bg-white text-slate-800 text-sm py-2.5 px-3.5 shadow-xs cursor-pointer flex items-center justify-between transition ${className} ${
+        className={`w-full rounded-xl border bg-white text-black text-sm py-2.5 px-3.5 shadow-xs cursor-pointer flex items-center justify-between transition ${className} ${
           displayError ? 'border-rose-500' : 'border-slate-300 hover:border-brand-500'
         }`}
         {...props}
@@ -118,7 +118,7 @@ export default function InputSelect({
           <ul>
             {/* Опція скидання вибору */}
             <li
-              className="cursor-pointer py-2 px-3 hover:bg-slate-100 rounded-lg text-sm text-slate-400 transition mb-1"
+              className="cursor-pointer py-2 px-3 hover:bg-slate-100 rounded-lg text-[13px] text-black transition mb-1"
               onClick={() => handleSelect('')}
             >
               {msg.get('dropdown.select')}
@@ -140,8 +140,8 @@ export default function InputSelect({
                   key={option.id || index}
                   className={`cursor-pointer py-2 px-3 rounded-lg text-sm transition flex items-center justify-between ${
                     isSelected
-                      ? 'bg-brand-50 text-[#64748b] font-semibold'
-                      : 'text-[#64748b] hover:bg-slate-100'
+                      ? 'bg-brand-50 text-[#6474ff] font-semibold'
+                      : 'text-[#000] hover:bg-slate-100'
                   }`}
                   onClick={() => handleSelect(optValue)}
                 >

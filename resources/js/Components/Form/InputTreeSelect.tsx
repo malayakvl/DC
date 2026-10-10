@@ -13,9 +13,19 @@ export default function InputTreeSelect({
   defaultTips = 'Select',
   selectedLabelClass = '',
   ...props
+}: {
+  className?: string;
+  elId?: string;
+  name?: string;
+  label?: string;
+  values?: any[];
+  onChange?: (value: any) => void;
+  options?: any;
+  defaultTips?: any;
+  selectedLabelClass?: string;
 }) {
   const { errors } = usePage().props as any;
-  const displayError = errors[name];
+  const displayError = name ? errors?.[name] : undefined;
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +40,7 @@ export default function InputTreeSelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const selectedValue = values?.[name];
+  const selectedValue = (values as Record<string, any>)[name as string];
   const normalizedOptions = Array.isArray(options) ? options : (options as any)?.data || [];
 
   // Знаходимо поточну обрану категорію
@@ -52,7 +62,7 @@ export default function InputTreeSelect({
       onChange(syntheticEvent);
     }
   };
-  console.log(className);
+
   return (
     <div className="relative" ref={dropdownRef}>
       {label && <InputLabel htmlFor={name} value={label} />}

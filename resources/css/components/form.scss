@@ -640,6 +640,7 @@ label.float-label {
     color: #000 !important;
     border: none !important;
     max-height: 34px !important;
+    min-width: 180px !important;
 }
 .filter-label-selected {
     @apply w-full text-xs font-medium  text-slate-700 cursor-pointer transition-all

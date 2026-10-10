@@ -86,6 +86,18 @@ const lngInvoiceIncoming = {
     doc_footer_text: 'Товар успішно додано у фізичні складські залишки.',
     tems_text: 'Терміни придатності зафіксовані в системі обліку партій.',
     fin_total_text: 'Фінансовий підсумок',
+    find_filter: 'Знайдено',
+    total_results_filter: 'накладних',
+    clear_filter: 'Очистити фільтри',
+    all_filter: 'Всі матеріали',
+    low_filter: 'Закінчуються',
+    in_storck_filter: 'В наявності',
+    tip_filter: 'Пошук за номером, ТТН, cумою...',
+    payment_status_filter: 'Статус оплати:',
+    payed_filter: 'Сплачені',
+    not_payed_filter: 'Несплачені',
+    part_payed_filter: 'Частково сплачені',
+    found_filter: 'Знайдено',
   },
 };
 export default lngInvoiceIncoming;

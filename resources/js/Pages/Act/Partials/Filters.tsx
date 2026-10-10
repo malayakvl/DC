@@ -14,7 +14,7 @@ import PrimaryButton from '@/Components/Form/PrimaryButton';
 export default function Filters() {
   const appLang = useSelector(appLangSelector);
   const isClear = useSelector(actClearFiltersSelector);
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
   const dispatch = useAppDispatch();
   const filtersData = useSelector(actFiltersSelector);
   const { data, setData, post } = useForm(filtersData);
@@ -23,10 +23,10 @@ export default function Filters() {
     locale: appLang,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
-    setData((values) => ({
+    setData((values: any) => ({
       ...values,
       [key]: value,
     }));
@@ -34,8 +34,8 @@ export default function Filters() {
     dispatch(setFilters(filtersData));
   };
 
-  const handleDateChange = (date, key) => {
-    setData((values) => ({
+  const handleDateChange = (date: any, key: any) => {
+    setData((values: any) => ({
       ...values,
       [key]: date,
     }));

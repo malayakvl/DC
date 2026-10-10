@@ -16,12 +16,12 @@ import Pagination from './Partials/Pagination';
 
 export default function List({
   listData,
-  filters,
+  storesData,
   suppliers,
   paymentMethods,
 }: {
   listData: any;
-  filters: any;
+  storesData: any;
   suppliers: any[];
   paymentMethods: any[];
 }) {
@@ -83,14 +83,27 @@ export default function List({
               isCreateDisabled={false}
               onCreateClick={null}
             />
-            <Filters suppliersData={suppliers} totalCount={listData?.length || 0} />
+            <Filters
+              producerData={suppliers}
+              totalCount={listData?.length || 0}
+              storeData={storesData}
+              customerData={[]}
+              tabs={[]}
+              activeTab={''}
+              onTabChange={() => {
+                throw new Error('Function not implemented.');
+              }}
+            />
 
             <Pagination listData={listData} />
             <section className="table-card">
               <DataTable paginationType={PaginationType.INCOMINGINVOICES}>
                 {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
-                    <td className="">{item.invoice_number}</td>
+                    <td className="">
+                      {item.invoice_number}
+                      <small className={'block text-[11px] text-[#6ac8c7]'}>{item.ttn}</small>
+                    </td>
                     <td className="">{format(new Date(item.invoice_date), 'dd.MM.yyyy HH:mm')}</td>
                     <td className="">
                       <span

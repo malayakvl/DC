@@ -1,5 +1,4 @@
 import React from 'react';
-import { router } from '@inertiajs/react';
 
 const COMPACT_EVENT_HEIGHT = 90;
 const PRICE_EVENT_HEIGHT = 110;
@@ -156,18 +155,19 @@ export default function SchedulerEventCard({
             </div>
 
             {/* Кнопка создания акта */}
-            <button
-              type="button"
+            <a
+              href={`/act/create?visit_id=${event.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={(mouseEvent) => {
                 mouseEvent.stopPropagation();
-                mouseEvent.preventDefault();
-                router.visit(`/act/create?visit_id=${event.id}`);
+                // preventDefault не нужен, иначе ссылка не откроется в новой вкладке
               }}
               title="Створити акт"
               className="w-6 h-6 rounded-md bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest transition-colors"
             >
               <span className="material-symbols-outlined text-[15px]">description</span>
-            </button>
+            </a>
           </div>
         </div>
 

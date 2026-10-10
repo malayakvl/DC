@@ -74,6 +74,100 @@ class IncomingInvoiceController extends Controller
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
+
+            // Получаем доступные склады для филиала
+            $filialId = $request->session()->get('filial_id');
+            $storesData = Store::where('filial_id', '=', $filialId)->get();
+            $allowedStoreIds = $storesData->pluck('id')->toArray();
+
+            $schema = 'clinic_'.$clinicId;
+            $limit = $request->limit ?? 20;
+            $offset = $request->offset ?? 0;
+
+            $dateFrom = $request->date_from ?: null;
+            $dateTo = $request->date_to ?: null;
+            $supplierId = $request->supplier_id ?: null;
+            $search = $request->search ?: null;
+            $paymentStatus = $request->payment_status ?: null;
+            $selectedStoreId = $request->store_id ?: null;
+
+            // Логика выбора склада
+            $storeIdParam = null;
+            if ($request->user()->roles[0]->name !== 'Admin') {
+                // Если не админ, проверяем входит ли выбранный склад в его филиал,
+                // иначе берем первый доступный или оставляем ограничение
+                if ($selectedStoreId && in_array($selectedStoreId, $allowedStoreIds)) {
+                    $storeIdParam = $selectedStoreId;
+                } else {
+                    // Если склад не выбран или чужой, можно ограничить первыми доступными или оставить null
+                    $storeIdParam = $allowedStoreIds[0] ?? null;
+                }
+            } else {
+                // Админ может выбрать любой склад или оставить пустым (все)
+                $storeIdParam = $selectedStoreId;
+                $storesData = Store::all(); // Админу показываем вообще все склады в селекте
+            }
+
+            // Вызов функции (ровно 9 параметров)
+            $invoiceData = DB::select("
+            SELECT *
+            FROM core.get_income_invoices_by_clinic(
+                ?, 
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+        ", [
+                $schema,
+                $storeIdParam,
+                $supplierId,
+                $dateFrom,
+                $dateTo,
+                $search,
+                $paymentStatus,
+                $limit,
+                $offset
+            ]);
+
+            $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
+
+            $paymentMethods = DB::select("
+            SELECT 
+                pm.id,
+                pm.name,
+                c.name as currency_name,
+                COALESCE(SUM(mm.direction * mm.amount), 0) as balance
+            FROM {$schema}.payment_methods pm
+            LEFT JOIN {$schema}.money_movements mm 
+                ON mm.account_id = pm.id
+            LEFT JOIN {$schema}.currencies c 
+                ON c.id = pm.currency_id
+            GROUP BY pm.id, pm.name, c.name
+            ORDER BY pm.name
+        ");
+
+            return Inertia::render('InvoiceIncoming/List', [
+                'clinicData' => $clinic,
+                'listData' => $invoiceData,
+                'suppliers' => $suppliers,
+                'paymentMethods' => $paymentMethods,
+                'storesData' => $storesData,
+                'filters' => $request->only([
+                    'search', 'store_id', 'supplier_id', 'payment_status', 'date_from', 'date_to'
+                ]),
+            ]);
+        });
+    }
+
+    public function indexOld(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $clinic = $request->user()->clinicByFilial($clinicId);
             $arrStores = array();
             if ($request->user()->roles[0]->name != 'Admin') {
                 // get stores filial
@@ -139,7 +233,8 @@ class IncomingInvoiceController extends Controller
                 'listData' => $invoiceData,
                 'suppliers' => $suppliers,
                 'paymentMethods' => $paymentMethods,
-                'filters' => $request->only(['date_from', 'date_to', 'supplier_id'])
+                'storesData' => $storesData,
+                'filters' => $request->only(['date_from', 'date_to', 'supplier_id', 'payment_method_id']),
             ]);
         });
     }
