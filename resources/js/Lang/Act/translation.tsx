@@ -70,6 +70,13 @@ const lngAct = {
     service: 'Послуга',
     batch_details: 'Деталізація партій',
     arrived: 'Прихід',
+    tip_filter: 'Пошук за номером, пацієнтом, cумою...',
+    payment_status_filter: 'Статус оплати:',
+    payed_filter: 'Сплачені',
+    not_payed_filter: 'Несплачені',
+    part_payed_filter: 'Частково сплачені',
+    found_filter: 'Знайдено',
+    clear_filter: 'Очистити фільтри',
   },
 };
 export default lngAct;

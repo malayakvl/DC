@@ -362,7 +362,7 @@ class ActController extends Controller
                 ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
                 // --- Фільтр: тільки за сьогодні ---
 //                ->whereDate('acts.act_date', today())
-//                ->where('acts.patient_id', 6268)
+                ->where('acts.id', 6468)
                 ->orderBy('acts.act_number', 'DESC');
 
 

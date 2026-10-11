@@ -51,11 +51,8 @@ export default function List({ listData }: { listData: any }) {
                     key={item.id}
                   >
                     {/* Номер акту */}
-                    <td className="py-3.5 px-4 font-semibold text-slate-900">
-                      <Link
-                        href={`act/edit/${item.id}`}
-                        className="hover:text-teal-700 transition-colors"
-                      >
+                    <td style={{ paddingLeft: '15px' }}>
+                      <Link href={`act/edit/${item.id}`} className="block">
                         {item.act_number}
                       </Link>
                     </td>
@@ -66,19 +63,13 @@ export default function List({ listData }: { listData: any }) {
                     </td>
 
                     {/* Статус */}
-                    <td className="py-3.5 px-4">
+                    <td className="">
                       <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
-                          item.status === 'new'
-                            ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
-                            : 'bg-teal-50 text-teal-800 border border-teal-200/60'
+                        className={`doc-status ${
+                          item.status === 'new' ? 'status-new' : 'status-posted'
                         }`}
                       >
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            item.status === 'new' ? 'bg-amber-500' : 'bg-teal-600'
-                          }`}
-                        ></span>
+                        <span className="w-2 h-2 rounded-full bg-[#137870] group-hover/btn:scale-110 transition-transform"></span>
                         {item.status === 'new' ? 'Новий' : 'Проведений'}
                       </span>
                     </td>
@@ -116,9 +107,9 @@ export default function List({ listData }: { listData: any }) {
                                   </span>
                                 )}
                               </span>
-                              <span className="inline-block ml-2">
-                                <span className="paied-btn">{item.payment_amount}</span>
-                              </span>
+                              {/*<span className="inline-block ml-2">*/}
+                              {/*  <span className="paied-btn">{item.payment_amount}</span>*/}
+                              {/*</span>*/}
                             </div>
                           </>
                         );
@@ -126,9 +117,48 @@ export default function List({ listData }: { listData: any }) {
                     </td>
 
                     {/* Сума оплати */}
-                    {/*<td className="py-3.5 px-4 font-mono text-xs text-teal-700 font-semibold">*/}
-                    {/*  <span className="paied-btn">{item.payment_amount}</span>*/}
-                    {/*</td>*/}
+                    <td className="py-3.5 px-4 text-xs text-teal-700 font-semibold">
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200/70 text-rose-700 shadow-xs">
+                          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+                          <span className="text-xs font-bold uppercase tracking-wide">Борг:</span>
+                          <span className="text-base font-extrabold tabular-nums tracking-tight">
+                            {parseFloat(item.total_amount) - parseFloat(item.payment_amount)}
+                          </span>
+                          <span className="text-xs font-bold text-rose-500">
+                            {item.currency_name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-slate-600 font-medium">
+                            Сплачено:{' '}
+                            <strong className="text-slate-800 font-bold tabular-nums">
+                              {item.payment_amount}
+                            </strong>{' '}
+                            UAH
+                          </span>
+                          <button
+                            className="group/btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold transition-all shadow-xs active:scale-[0.98]"
+                            type="button"
+                          >
+                            <span className="">Сплатити</span>
+                            <svg
+                              className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </td>
 
                     {/* Дії */}
                     <td className="py-3.5 px-4 text-right">

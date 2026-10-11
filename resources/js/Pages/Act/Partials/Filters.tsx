@@ -106,7 +106,7 @@ export default function Filters({
             type="text"
             value={localFilters.search}
             onChange={(e) => handleChange('search', e.target.value)}
-            placeholder="Пошук..."
+            placeholder={msg.get('act.tip_filter') || 'Пошук за номером, ТТН...'}
             className="w-full pl-10 pr-4 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 transition-colors"
           />
         </div>
@@ -155,7 +155,7 @@ export default function Filters({
         {/* Права частина: Знайдено + Очистити */}
         <div className="flex items-center gap-4 text-xs ml-auto">
           <span className="text-slate-500">
-            {msg.get('invoice_incoming.found_filter')}:{' '}
+            {msg.get('act.found_filter')}:{' '}
             <strong className="text-slate-800">{totalCount}</strong>
           </span>
           <button
@@ -166,7 +166,7 @@ export default function Filters({
             className="flex items-center gap-1 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-            {msg.get('invoice_incoming.clear_filter') || 'Очистити'}
+            {msg.get('act.clear_filter') || 'Очистити'}
           </button>
         </div>
       </div>

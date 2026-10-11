@@ -101,7 +101,9 @@ export default function List({
                 {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
                     <td style={{ paddingLeft: '15px' }}>
-                      <span className="block">{item.invoice_number}</span>
+                      <Link href={`invoice-incoming/edit/${item.invoice_id}`} className="block">
+                        {item.invoice_number}
+                      </Link>
                       <div className="inline-flex items-center gap-1.5 mt-1 text-[11px] text-teal-700 font-mono bg-teal-50/80 px-1.5 py-0.5 rounded border border-teal-200/40 w-fit">
                         <svg
                           className="w-3 h-3 text-teal-600"
