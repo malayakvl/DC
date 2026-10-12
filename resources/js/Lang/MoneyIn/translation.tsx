@@ -58,7 +58,18 @@ const lngMoneyIn = {
     account: 'Рахунок',
     amount: 'Сума',
     draft: 'Новий',
+    processed: 'Новий',
     posted: 'Проведений',
+    canceled: 'Відмінений',
+    found_filter: 'Знайдено',
+    apply: 'Застосувати',
+    tip_filter: 'Пошук за номером, cумою...',
+    find_filter: 'Знайдено',
+    total_results_filter: 'накладних',
+    clear_filter: 'Очистити фільтри',
+    payed_filter: 'Сплачені',
+    part_payed_filter: 'Частково сплачені',
+    filter_all_account: 'Всі каси / рахунки'
   },
 };
 export default lngMoneyIn;

@@ -63,7 +63,7 @@ export default function ListHeader({
                     <span className="material-symbols-outlined text-[18px] mt-[-5px]">add</span>
                   }
                 >
-                  <span className="text-[13px]">{createLabel}!</span>
+                  <span className="text-[13px]">{createLabel}</span>
                 </ActionButton>
               )}
             </div>

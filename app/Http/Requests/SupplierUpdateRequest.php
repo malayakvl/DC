@@ -41,6 +41,8 @@ class SupplierUpdateRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:500'],
+            'edrpou' => ['nullable', 'string', 'max:500'],
+            'bank_number' => ['nullable', 'string', 'max:500'],
             'clinic_id' => ['required', 'integer', 'exists:clinics,id'],
         ];
     }

@@ -7,26 +7,13 @@ use App\Http\Requests\MoneyInRequest;
 use App\Models\Clinic;
 use App\Models\ClinicFilial;
 use App\Models\Currency;
-use App\Models\CurrencyExchange;
-use App\Models\StoreBatches;
-use App\Models\StoreMovements;
-use App\Models\InvoiceItems;
-use App\Models\InvoiceStatus;
-use App\Models\InvoiceType;
-use App\Models\Material;
-use App\Models\Producer;
-use App\Models\Store;
 use App\Models\MoneyIn;
-use App\Models\StoreMaterials;
 use App\Models\PaymentMethod;
-use App\Models\Tax;
-use App\Models\Unit;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 use App\Services\AuditLogService;
 use App\Services\ClinicSchemaService;
 
@@ -36,10 +23,11 @@ class MoneyInController extends Controller
     protected AuditLogService $auditLogService;
     protected ClinicSchemaService $schemaService;
 
-    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService)
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
     {
         $this->schemaService = $schemaService;
         $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
     }
 
 
@@ -70,16 +58,7 @@ class MoneyInController extends Controller
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
-            $arrStores = array();
-            if ($request->user()->roles[0]->name != 'Admin') {
-                // get stores filial
-                $filialId = $request->session()->get('filial_id');
-                $storesData = Store::where('filial_id', '=', $filialId)->get();
-                foreach ($storesData as $store) {
-                    $arrStores[] = $store->id;
-                }
-            }
-
+            $filialId = $request->session()->get('filial_id');
             $schema = 'clinic_'.$clinicId;
             $limit = $request->limit ?? 20;
             $offset = $request->offset ?? 0;
@@ -106,118 +85,20 @@ class MoneyInController extends Controller
                 $offset
             ]);
 
-            $paymentsMethods = PaymentMethod::all();
-
+            $paymentMethods = PaymentMethod::all();
+            $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+            $currencies = Currency::all();
             return Inertia::render('MoneyIn/List', [
                 'clinicData' => $clinic,
-                'paymentsMethods' => $paymentsMethods,
+                'paymentMethods' => $paymentMethods,
                 'listData' => $invoiceData,
-                'filters' => $request->only(['date_from', 'date_to'])
+                'customerData' => $customerData,
+                'statusData' => Invoices::INVOICE_STATUSES,
+                'filters' => $request->only(['date_from', 'date_to']),
+                'currencyData' => $currencies,
             ]);
         });
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request): Response {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('invoice-incoming-create')) {
-                $clinicData = $request->user()->clinicByFilial($clinicId);
-                $currencyData = Currency::all();
-                $typeData = array();
-                $formData = new MoneyIn();
-                $lastInvoiceNum = DB::table('money_in')
-                    ->max('document_number');
-                if (!$lastInvoiceNum) {
-                    $num = 1;
-                } else {
-                    $maxNum = (explode('-', $lastInvoiceNum));
-                    if (intval($maxNum[1])) {
-                        $num = intval($maxNum[1]);
-                    }
-                    ++$num;
-                }
-                $formData->invoice_number = date("dmy").'-'.$paddedNumber = str_pad($num, 7, '0', STR_PAD_LEFT);;
-                $paymentsMethods = PaymentMethod::all();
-                
-                $customerData = DB::table('core.clinic_user as cu')
-                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id')
-                        ->select(
-                            'u.id',
-                            'u.first_name',
-                            'u.last_name',
-                            'u.email',
-                            'cu.avatar'
-                        )
-                        ->orderBy('u.last_name')
-                        ->get();
-
-
-                return Inertia::render('MoneyIn/Create', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData,
-                    'customerData' => $customerData,
-                    'paymentsMethodsData' => $paymentsMethods,
-                    'statusData' => Invoices::INVOICE_STATUSES,
-                    'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                ]);
-            } else {
-                return Inertia::render('Layouts/NoPermission', [
-                ]);
-            }
-        });
-
-        
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Request $request, $id) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
-            if ($request->user()->can('invoice-incoming-edit')) {
-                $clinicData = $request->user()->clinicByFilial($clinicId);
-                $typeData = array();
-                $formData = MoneyIn::find($id);
-                $currencyData = Currency::all();
-                $paymentsMethods = PaymentMethod::all();
-
-                $customerData = DB::table('core.clinic_user as cu')
-                        ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-                        ->leftJoin("clinic_{$clinicId}.patients as pt", 'pt.user_id', '=', 'u.id')
-                        ->where('cu.clinic_id', $clinicId)
-                        ->whereNull('pt.id')
-                        ->select(
-                            'u.id',
-                            'u.first_name',
-                            'u.last_name',
-                            'u.email',
-                            'cu.avatar'
-                        )
-                        ->orderBy('u.last_name')
-                        ->get();
-
-                return Inertia::render('MoneyIn/Edit', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData,
-                    'customerData' => $customerData,
-                    'paymentsMethodsData' => $paymentsMethods,
-                    'statusData' => Invoices::INVOICE_STATUSES,
-                    'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                ]);
-
-            } else {
-
-            }
-        });
-    }
-
 
     /**
      * Display the specified resource.
@@ -234,130 +115,6 @@ class MoneyInController extends Controller
         }
     }
 
-    public function postIncomingInvoice(int $invoiceId): void
-    {
-        DB::transaction(function () use ($invoiceId) {
-
-            /** @var object $invoice */
-            $invoice = DB::table('invoices')->where('id', $invoiceId)->lockForUpdate()->first();
-
-            if (!$invoice) {
-                throw new \Exception('Invoice not found');
-            }
-
-            // 1️⃣ если уже была проведена — откатываем старый приход
-            if ($invoice->status === 'posted') {
-                $this->rollbackIncomingInvoice($invoiceId);
-            }
-
-            // 2️⃣ получаем строки накладной
-            $items = DB::table('invoice_items')
-                ->where('invoice_id', $invoiceId)
-                ->get();
-
-            if ($items->isEmpty()) {
-                throw new \Exception('Invoice has no items');
-            }
-
-            foreach ($items as $item) {
-
-                // защита
-                if ($item->fact_qty <= 0) {
-                    continue;
-                }
-
-                // 3️⃣ создаём партию
-                $batchId = DB::table('store_batches')->insertGetId([
-                    'store_id'        => $invoice->store_id,
-                    'material_id'     => $item->material_id,
-                    'supplier_id'     => $invoice->supplier_id,
-                    'invoice_id'      => $invoiceId,
-                    'arrived_at'      => $invoice->invoice_date,
-                    'qty'             => $item->qty,
-                    'qty_left'        => $item->qty,
-                    'fact_qty'        => $item->fact_qty,
-                    'fact_qty_left'   => $item->fact_qty,
-                    'price_per_unit'  => $item->total / max($item->fact_qty, 1),
-                    'created_at'      => now(),
-                ]);
-
-                // 4️⃣ обновляем баланс склада
-                DB::statement("
-                    INSERT INTO store_balances (store_id, material_id, qty, updated_at)
-                    VALUES (?, ?, ?, now())
-                    ON CONFLICT (store_id, material_id)
-                    DO UPDATE SET
-                        qty = store_balances.qty + EXCLUDED.qty,
-                        updated_at = now()
-                ", [
-                    $invoice->store_id,
-                    $item->material_id,
-                    $item->fact_qty
-                ]);
-
-                // 5️⃣ движение по складу
-                DB::table('store_movements')->insert([
-                    'store_id'      => $invoice->store_id,
-                    'material_id'   => $item->material_id,
-                    'batch_id'      => $batchId,
-                    'direction'     => 1, // приход
-                    'qty'           => $item->qty,
-                    'fact_qty'      => $item->fact_qty,
-                    'document_type' => 'invoice',
-                    'document_id'   => $invoiceId,
-                    'created_at'    => now(),
-                ]);
-            }
-
-            // 6️⃣ меняем статус накладной
-            DB::table('invoices')
-                ->where('id', $invoiceId)
-                ->update([
-                    'status'     => 'posted',
-                    'updated_at' => now(),
-                ]);
-        });
-    }
-
-    private function rollbackIncomingInvoice(int $invoiceId): void
-    {
-        // 1️⃣ получаем движения
-        $movements = DB::table('store_movements')
-            ->where('document_type', 'invoice')
-            ->where('document_id', $invoiceId)
-            ->get();
-
-        foreach ($movements as $move) {
-
-            // 2️⃣ откатываем баланс
-            DB::table('store_balances')
-                ->where('store_id', $move->store_id)
-                ->where('material_id', $move->material_id)
-                ->update([
-                    'qty' => DB::raw('qty - ' . $move->fact_qty),
-                    'updated_at' => now()
-                ]);
-        }
-
-        // 3️⃣ удаляем партии
-        DB::table('store_batches')
-            ->where('invoice_id', $invoiceId)
-            ->delete();
-
-        // 4️⃣ удаляем движения
-        DB::table('store_movements')
-            ->where('document_type', 'invoice')
-            ->where('document_id', $invoiceId)
-            ->delete();
-
-        // 5️⃣ возвращаем статус
-        DB::table('invoices')
-            ->where('id', $invoiceId)
-            ->update([
-                'status'     => 'draft',
-                'updated_at' => now(),
-            ]);
-    }
 
 
     public function update(MoneyInRequest $request)
@@ -367,26 +124,26 @@ class MoneyInController extends Controller
             if (!$request->user()->can('invoice-incoming-edit')) {
                 abort(403, 'No permission');
             }
-            // Создаем или обновляем накладную
-            $invoice = $request->id ? MoneyIn::find($request->id) : new MoneyIn();
-            $invoice->fill($request->validated());
-            $invoice->document_number = $request->invoice_number;
-            $invoice->document_date = $request->invoice_date;
-            $invoice->status = $request->status; // draft / done
-            $invoice->currency_id = $request->currency_id;
-            $rate = CurrencyExchange::where('currency_id', $request->currency_id)
-                ->orderBy('rate_date', 'DESC')
+            $rate = Currency::where('name', $request->currency_id)
                 ->first();
-            // $invoice->currency_rate = $rate->rate_value ?? 1;
-            
-            // $invoice->payment_status = $request->payment_status ?? 'unpaid';
-            
-            $invoice->filial_id = $request->session()->get('filial_id') ?? 1; // использовать филиал из сессии
-            $invoice->amount = $request->amount ?? 0;
+            // Создаем или обновляем накладную
+            $moneyIn = $request->id ? MoneyIn::find($request->id) : new MoneyIn();
+            $moneyIn->fill($request->validated());
+            $moneyIn->document_number = $request->document_number;
+            $moneyIn->document_date = $request->document_date;
+            $moneyIn->customer_id = $request->customer_id;
+            $moneyIn->comment = $request->note;
+            $moneyIn->status = $request->status; // draft / done
+            $moneyIn->currency_id = $rate->id;
+            $moneyIn->filial_id = $request->session()->get('filial_id') ?? 1; // использовать филиал из сессии
+            $moneyIn->amount = $request->amount ?? 0;
+            try {
+                $moneyIn->save();
+            } catch (\Throwable $e) { // Указываем Throwable, чтобы поймать вообще любую ошибку/исключение
+                dd($e->getMessage()); // Выводим реальный текст ошибки, а не тупой dd(1)
+            }
 
-            $invoice->save();
-            $invoiceId = $invoice->id;
-            $invoice->save();
+            $invoiceId = $moneyIn->id;
 
             if ($request->status === 'posted') {
                 $schema = "clinic_{$clinicId}";
@@ -398,8 +155,6 @@ class MoneyInController extends Controller
                     $request->amount ?? 0,
                     1
                 ]);
-
-
             }
 
             return redirect()->route('money-in.index');

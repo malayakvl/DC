@@ -523,6 +523,8 @@ class ClinicSchemaService
                 contact_name VARCHAR(255),
                 email VARCHAR(255),
                 phone VARCHAR(50),
+                edrpou VARCHAR(50),
+                bank_number VARCHAR(50),
                 address TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

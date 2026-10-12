@@ -32,6 +32,7 @@ export default function List({
   const [paymentMethodId, setPaymentMethodId] = useState<number>(0);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [paymentAmountError, setPaymentAmountError] = useState(false);
+  const [paymentDocument, setPaymentDocument] = useState<any>(null);
   const msg = new Lang({
     messages: lngInvoiceIncoming,
     locale: appLang,
@@ -220,6 +221,7 @@ export default function List({
                             setPaymentMethodId(0);
                             setSelectedMethod(null);
                             setPaymentAmountError(false);
+                            setPaymentDocument(item);
                             setShowModal(true);
                           }}
                           className="pay-btn "
@@ -285,87 +287,336 @@ export default function List({
               </DataTable>
             </section>
             {showModal && (
-              <div id="paymentModal" className="fixed inset-0  flex items-center justify-center">
-                <div className="bg-white p-6 rounded-lg w-[450px]">
-                  <h2 className="text-[20px] font-semibold leading-tight">
-                    {msg.get('invoice_incoming.payment')} № {selectedInvoice?.invoice_number}
-                  </h2>
+              <div
+                id="paymentModal"
+                className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+              >
+                <div className="relative w-full max-w-[670px] bg-white rounded-2xl shadow-2xl overflow-hidden my-auto border border-gray-100 flex flex-col transition-all">
+                  {/* Top Color Accent */}
+                  <div className="h-1.5 w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600"></div>
+                  <div className="px-6 pt-5 flex items-center justify-between px-0 py-4 pt-0 border-b border-surface-container-low bg-surface-container-lowest">
+                    <div className="flex items-center gap-3">
+                      {/* Иконка оплаты с аккуратной плашкой */}
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/60">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5a1.5 1.5 0 011.5 1.5v9a1.5 1.5 0 01-1.5 1.5H3.75a1.5 1.5 0 01-1.5-1.5v-9a1.5 1.5 0 011.5-1.5zM3.75 9h16.5"
+                          />
+                        </svg>
+                      </div>
 
-                  <form id="paymentForm">
-                    <input type="hidden" id="invoiceId" />
-
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium text-white  ">
-                        {msg.get('invoice_incoming.amount')}
-                      </label>
-                      <input
-                        type="number"
-                        className="input-text"
-                        value={paymentAmount}
-                        onChange={(e: any) => setPaymentAmount(e.target.value)}
-                      />
+                      {/* Заголовок и подзаголовок */}
+                      <div>
+                        <h2 className="text-lg font-semibold text-gray-900 leading-tight mb-0 pb-0">
+                          {msg.get('invoice_incoming.payment')} № {selectedInvoice?.invoice_number}
+                        </h2>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {msg.get('invoice_incoming.payment_description')}
+                        </p>
+                      </div>
                     </div>
-
-                    <div className="mb-3">
-                      <label className="block text-sm font-medium text-white  ">
-                        {msg.get('invoice_incoming.payment_method')}
-                      </label>
-                      <select
-                        className="w-full input-text"
-                        value={paymentMethodId || ''}
-                        onChange={(e) => {
-                          const id = parseInt(e.target.value);
-                          setPaymentMethodId(id);
-                          setSelectedMethod(paymentMethods.find((method) => method.id === id));
-                        }}
-                      >
-                        <option value="" disabled>
-                          {msg.get('invoice_incoming.payment_method')}
-                        </option>
-
-                        {paymentMethods.map((method) => (
-                          <option key={method.id} value={method.id}>
-                            {method.name} {method.balance} {method.currency_name}
-                          </option>
-                        ))}
-                      </select>
-                      {paymentAmountError && (
-                        <span className="text-red-500">Недостатньо коштів на рахунку</span>
-                      )}
+                    <button
+                      type="button"
+                      className="w-9 h-9 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-700 flex items-center justify-center transition-colors"
+                      onClick={() => setShowModal(false)}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">close</span>
+                    </button>
+                  </div>
+                  <div className="px-6 pt-5">
+                    <div className="flex flex-col gap-space-xs mt-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                          <span className="w-4 h-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-bold">
+                            1
+                          </span>
+                          {msg.get('invoice_incoming.payment_supplier_title')}
+                        </span>
+                        <span className="text-sm text-label-sm text-outline">
+                          {msg.get('invoice_incoming.from')}{' '}
+                          {format(new Date(paymentDocument.invoice_date), 'dd.MM.yyyy HH:mm')}
+                        </span>
+                      </div>
+                      <div className="rounded-xl bg-[#f6f7ff] p-[16px] flex flex-col gap-space-sm border border-surface-container mt-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+                          <div className="flex items-center gap-space-sm">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-gray-900 text-base">
+                                  {paymentDocument.supplier_name}
+                                </span>
+                                <span className="text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+                                  ЄДРПОУ: 38492018
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                                <span className="material-symbols-outlined text-[15px] text-emerald-600">
+                                  inventory_2
+                                </span>
+                                <span>
+                                  Прихідна накладна <b>№ 091026-000002</b> • Склад: Центральний
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="h-px bg-gray-200 w-full mt-2"></div>
+                        <div className="grid grid-cols-3 gap-3 text-center pt-2">
+                          {/* Сума накладної */}
+                          <div className="flex flex-col items-center sm:items-start">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                              Сума накладної
+                            </span>
+                            <span className="text-base font-bold text-gray-900 mt-0.5">
+                              4,840.00{' '}
+                              <span className="text-xs text-gray-400 font-normal">UAH</span>
+                            </span>
+                          </div>
+                          {/* Вже сплачено */}
+                          <div className="flex flex-col items-center sm:items-start border-x border-gray-100 px-2">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                              Вже сплачено
+                            </span>
+                            <span className="text-base font-bold text-emerald-600 mt-0.5">
+                              2,840.00{' '}
+                              <span className="text-xs text-gray-400 font-normal">UAH</span>
+                            </span>
+                          </div>
+                          {/* Залишок / Борг */}
+                          <div className="flex flex-col items-center sm:items-start pl-1">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-rose-600 flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
+                              До сплати
+                            </span>
+                            <span className="text-base font-bold text-rose-600 mt-0.5">
+                              2,000.00{' '}
+                              <span className="text-xs text-rose-500 font-normal">UAH</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <input
-                      type="hidden"
-                      name="invoice_id"
-                      id="invoice_id"
-                      value={selectedInvoice?.id}
-                    />
-
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="bg-gray-500 text-white px-4 py-2 rounded w-full"
-                        onClick={() => setShowModal(false)}
+                    <div className="flex flex-col gap-2 mt-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                          <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] flex items-center justify-center font-bold">
+                            2
+                          </span>
+                          Сума до сплати
+                        </span>
+                        <span className="text-xs text-gray-400">Multi-currency Ready</span>
+                      </div>
+                      {/* Быстрые кнопки (чипсы) */}
+                      <div className="flex flex-wrap gap-2 mb-1">
+                        <button
+                          className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5"
+                          id="preset-saas-full"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined text-[15px]">check</span>
+                          Вся сума боргу (2,000 UAH)
+                        </button>
+                        <button
+                          className="px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition-all border border-gray-200"
+                          id="preset-saas-half"
+                          type="button"
+                        >
+                          50% боргу (1,000 UAH)
+                        </button>
+                      </div>
+                      {/* Поле ввода суммы и выбор валюты */}
+                      <div className="rounded-xl bg-gray-50 p-2 flex items-center gap-2 border border-gray-200 focus-within:ring-2 focus-within:ring-emerald-600 focus-within:bg-white transition-all">
+                        <div className="relative flex-1 flex items-center">
+                          <span
+                            className="text-emerald-600 font-bold text-xl pl-3 pointer-events-none"
+                            id="currency-symbol-display"
+                          >
+                            ₴
+                          </span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            className="w-full bg-gray-50 text-gray-900 font-bold text-lg px-3 py-2.5 rounded-lg border-0  focus:bg-white transition-all"
+                            value={paymentAmount}
+                            onChange={(e: any) => setPaymentAmount(e.target.value)}
+                            placeholder="0.00"
+                          />
+                        </div>
+                        <div className="relative shrink-0 pr-1">
+                          <select
+                            className="bg-white hover:bg-gray-50 text-gray-900 text-sm font-bold px-3 py-2 rounded-lg border border-gray-200 cursor-pointer appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-emerald-600 shadow-sm"
+                            id="saas-currency-selector"
+                          >
+                            <option selected value="UAH">
+                              UAH (₴)
+                            </option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                          </select>
+                          <span className="material-symbols-outlined text-[18px] text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                            expand_more
+                          </span>
+                        </div>
+                      </div>
+                      {/* Статус-бар */}
+                      <div
+                        className="flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-medium mt-0.5"
+                        id="saas-calc-feedback"
                       >
-                        Отмена
-                      </button>
-                      <button
-                        type="button"
-                        className="bg-purple-600 text-white px-4 py-2 rounded w-full"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          makePayment(
-                            selectedInvoice?.invoice_id,
-                            paymentMethodId,
-                            parseFloat(paymentAmount),
-                            selectedInvoice?.currency_id,
-                            selectedMethod
-                          );
-                        }}
-                      >
-                        Оплатить
-                      </button>
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="material-symbols-outlined text-[16px]"
+                            id="saas-feedback-icon"
+                          >
+                            check_circle
+                          </span>
+                          <span className="font-medium" id="saas-feedback-text">
+                            Повне закриття накладної (Залишок після оплати: 0.00 UAH)
+                          </span>
+                        </div>
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded"
+                          id="saas-feedback-tag"
+                        >
+                          Закрито 100%
+                        </span>
+                      </div>
                     </div>
-                  </form>
+                    <form id="paymentForm">
+                      <input type="hidden" id="invoiceId" value={selectedInvoice?.id} />
+                      {/* Сума до сплати */}
+                      <div className="flex flex-col gap-2 mt-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                            <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] flex items-center justify-center font-bold">
+                              3
+                            </span>
+                            {msg.get('invoice_incoming.payment_method')}
+                          </span>
+                          <span className="text-xs text-gray-400">Оберіть касу або рахунок</span>
+                        </div>
+                        {/* Компактная сетка карточек */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {paymentMethods
+                            .filter((method) => method.balance > 0) // <--- Оставляем только те, где есть деньги
+                            .map((method) => {
+                              const isSelected = paymentMethodId === method.id;
+                              const getIcon = (name: string) => {
+                                const lower = name.toLowerCase();
+                                if (
+                                  lower.includes('безгот') ||
+                                  lower.includes('iban') ||
+                                  lower.includes('банк')
+                                )
+                                  return 'account_balance';
+                                if (lower.includes('карт') || lower.includes('pos'))
+                                  return 'credit_card';
+                                if (
+                                  lower.includes('usd') ||
+                                  lower.includes('eur') ||
+                                  lower.includes('валют')
+                                )
+                                  return 'currency_exchange';
+                                return 'payments';
+                              };
+                              return (
+                                <button
+                                  key={method.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setPaymentMethodId(method.id);
+                                    setSelectedMethod(method);
+                                  }}
+                                  className={`px-3 py-2.5 rounded-xl border text-left transition-all flex items-center justify-between gap-2 ${
+                                    isSelected
+                                      ? 'bg-emerald-50/70 border-emerald-600 ring-1 ring-emerald-600 shadow-sm'
+                                      : 'bg-gray-50/60 hover:bg-gray-100 border-gray-200 text-gray-700'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <span
+                                      className={`material-symbols-outlined text-[20px] shrink-0 ${
+                                        isSelected ? 'text-emerald-600' : 'text-gray-400'
+                                      }`}
+                                    >
+                                      {getIcon(method.name)}
+                                    </span>
+                                    <span
+                                      className={`text-xs font-semibold truncate ${
+                                        isSelected ? 'text-gray-900' : 'text-gray-700'
+                                      }`}
+                                    >
+                                      {method.name}
+                                    </span>
+                                  </div>
+                                  <div
+                                    className={`text-xs font-bold shrink-0 ${
+                                      isSelected ? 'text-emerald-700' : 'text-gray-500'
+                                    }`}
+                                  >
+                                    {method.balance}{' '}
+                                    <span className="text-[10px] font-normal">
+                                      {method.currency_name}
+                                    </span>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                        </div>
+                        {paymentAmountError && (
+                          <span className="text-rose-500 text-xs mt-1 block font-medium">
+                            Недостатньо коштів на обраному рахунку
+                          </span>
+                        )}
+                      </div>
+                      {/* Кнопки дій */}
+                      <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-3 pb-4">
+                        <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+                          <span className="material-symbols-outlined text-emerald-600 text-[16px]">
+                            lock
+                          </span>
+                          <span className="text-gray-500 text-[11px]">
+                            Захищений запис у журнал
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
+                            onClick={() => setShowModal(false)}
+                          >
+                            Скасувати
+                          </button>
+                          <button
+                            type="submit"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              makePayment(
+                                selectedInvoice?.invoice_id,
+                                paymentMethodId,
+                                parseFloat(paymentAmount),
+                                selectedInvoice?.currency_id,
+                                selectedMethod
+                              );
+                            }}
+                            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all flex items-center gap-1.5"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">check</span>
+                            <span>Оприбуткувати</span>
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             )}

@@ -71,7 +71,7 @@ export default function Filters({
     // Очищаем объект от пустых значений, чтобы URL оставался чистым
     const cleanedFilters = Object.fromEntries(
       Object.entries(localFilters).filter(
-        ([_, value]) => value !== '' && value !== null && value !== undefined
+        ([, value]) => value !== '' && value !== null && value !== undefined
       )
     );
 
@@ -148,16 +148,10 @@ export default function Filters({
             onChange={(e) => handleChange('payment_status', e.target.value)}
             className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-teal-500 transition-colors cursor-pointer text-slate-700"
           >
-            <option value="">
-              {msg.get('invoice_incoming.payment_status_filter') || 'Статус оплати'}
-            </option>
-            <option value="paid">{msg.get('invoice_incoming.payed_filter') || 'Сплачено'}</option>
-            <option value="unpaid">
-              {msg.get('invoice_incoming.not_payed_filter') || 'Не сплачено'}
-            </option>
-            <option value="partially">
-              {msg.get('invoice_incoming.part_payed_filter') || 'Частково'}
-            </option>
+            <option value="">{msg.get('money_in.payment_status_filter') || 'Статус оплати'}</option>
+            <option value="paid">{msg.get('money_in.payed_filter') || 'Сплачено'}</option>
+            <option value="unpaid">{msg.get('money_in.not_payed_filter') || 'Не сплачено'}</option>
+            <option value="partially">{msg.get('money_in.part_payed_filter') || 'Частково'}</option>
           </select>
         </div>
 
@@ -211,20 +205,15 @@ export default function Filters({
 
         {/* Кнопка применения фильтров */}
         <div className="flex items-end">
-          <button
-            type="button"
-            onClick={handleApplyClick}
-            className="filter-btn"
-          >
+          <button type="button" onClick={handleApplyClick} className="filter-btn">
             <span className="material-symbols-outlined text-[16px]">filter_alt</span>
-            Застосувати
+            {msg.get('invoice_incoming.apply')}
           </button>
         </div>
       </div>
 
       {/* Нижній рядок: Чіпси-статуси + Лічильник + Скидання */}
       <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100">
-        {/* Чіпси статусів */}
         {/* Права частина: Знайдено + Очистити */}
         <div className="flex items-center gap-4 text-xs ml-auto">
           <span className="text-slate-500">

@@ -98,6 +98,9 @@ const lngInvoiceIncoming = {
     not_payed_filter: 'Несплачені',
     part_payed_filter: 'Частково сплачені',
     found_filter: 'Знайдено',
+    payment_description: 'Реєстрація платежу за накладну',
+    payment_supplier_title: 'Контекст оплати та поставщик',
+    apply: 'Застосувати',
   },
 };
 export default lngInvoiceIncoming;

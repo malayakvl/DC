@@ -57,6 +57,7 @@ export const TableHeaders = {
   ],
   [PaginationType.SUPPLIERS]: [
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.edrpou', className: '' },
     { titleKey: 'datatable.contactname', className: '' },
     { titleKey: 'datatable.contacts', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },

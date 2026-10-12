@@ -30,10 +30,13 @@ const lngSupplier = {
     'store.view': 'Дивитись',
     actions: 'Дії',
     back: 'Повернутись',
+    name_tips: 'Наприклад: ТОВ "Дент-Маркет"',
     ceo: 'Відповідальна особа',
     'title.description':
       'Керування постачальниками матеріалів та препаратів для складського обліку й закупівель',
     'title.total': 'загалом',
+    edrpou: 'ЄДРПОУ',
+    bank_number: 'Банк. рахунок',
   },
 };
 export default lngSupplier;
