@@ -1,6 +1,11 @@
 body {
   background: #fcfcfd;
 }
+.top-site-header {
+  position: fixed;
+  z-index: 9999;
+  width: 100%;
+}
 
 .top-header {
 

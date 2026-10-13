@@ -242,6 +242,71 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* LEFT COLUMN (8 cols) */}
             <div className="lg:col-span-8 space-y-6">
+              {/* Block B: Materials Alerts */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100 shrink-0">
+                      <span className="material-symbols-outlined text-[22px]">inventory_2</span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-lg font-bold text-slate-900">
+                          Критичні залишки матеріалів
+                        </h2>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">
+                          Потребують поповнення (3)
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        Автоматичний моніторинг витратних матеріалів
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200/60 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
+                        <th className="py-2 px-3">Матеріал</th>
+                        <th className="py-2 px-3">Категорія</th>
+                        <th className="py-2 px-3 text-center">Залишок</th>
+                        <th className="py-2 px-3 text-center">Поріг</th>
+                        <th className="py-2 px-3 text-right">Дія</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs">
+                      <tr className="hover:bg-slate-50 transition-colors">
+                        <td className="py-3 px-3">
+                          <span className="font-bold text-slate-800 block">
+                            ESSENTIA HiFlo Universal
+                          </span>
+                          <span className="text-slate-400 text-[11px]">
+                            Шприц 2 мл • Відтінок A2
+                          </span>
+                        </td>
+                        <td className="py-3 px-3">
+                          <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">
+                            Композити
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-center">
+                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-bold text-[11px]">
+                            2 шт
+                          </span>
+                        </td>
+                        <td className="py-3 px-3 text-center text-slate-400">4 шт</td>
+                        <td className="py-3 px-3 text-right">
+                          <button className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-600 hover:text-white font-semibold transition-colors">
+                            Замовити
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
               {/* Block A: Real-time schedule stream */}
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -436,72 +501,6 @@ export default function Dashboard() {
                     <span>Перейти до повного розкладу</span>
                     <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                   </a>
-                </div>
-              </div>
-
-              {/* Block B: Materials Alerts */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100 shrink-0">
-                      <span className="material-symbols-outlined text-[22px]">inventory_2</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-lg font-bold text-slate-900">
-                          Критичні залишки матеріалів
-                        </h2>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">
-                          Потребують поповнення (3)
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Автоматичний моніторинг витратних матеріалів
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200/60 text-slate-400 text-[11px] font-bold uppercase tracking-wider">
-                        <th className="py-2 px-3">Матеріал</th>
-                        <th className="py-2 px-3">Категорія</th>
-                        <th className="py-2 px-3 text-center">Залишок</th>
-                        <th className="py-2 px-3 text-center">Поріг</th>
-                        <th className="py-2 px-3 text-right">Дія</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-xs">
-                      <tr className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-3">
-                          <span className="font-bold text-slate-800 block">
-                            ESSENTIA HiFlo Universal
-                          </span>
-                          <span className="text-slate-400 text-[11px]">
-                            Шприц 2 мл • Відтінок A2
-                          </span>
-                        </td>
-                        <td className="py-3 px-3">
-                          <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px]">
-                            Композити
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <span className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-bold text-[11px]">
-                            2 шт
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-center text-slate-400">4 шт</td>
-                        <td className="py-3 px-3 text-right">
-                          <button className="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 hover:bg-teal-600 hover:text-white font-semibold transition-colors">
-                            Замовити
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>

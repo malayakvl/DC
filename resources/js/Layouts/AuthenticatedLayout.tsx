@@ -36,7 +36,7 @@ export default function AuthenticatedLayout({ header, children }: { header: any;
   return (
     <div className="min-h-screen" style={{ overflowY: showOverlay ? 'hidden' : 'visible' }}>
       {header && (
-        <header>
+        <header className="top-site-header">
           <div className="flex px-4 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
             <div className="relative flex w-full">
               <div>
@@ -84,7 +84,7 @@ export default function AuthenticatedLayout({ header, children }: { header: any;
         </header>
       )}
 
-      <main className="pt-[0px]">
+      <main className="pt-[70px]">
         {/*<div className="teaser-container">Управляйте клінікою легко та ефективно</div>*/}
         <div className="mx-auto w-full px-1">
           <div>{children}</div>
