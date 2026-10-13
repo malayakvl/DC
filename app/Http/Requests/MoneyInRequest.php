@@ -16,12 +16,13 @@ class MoneyInRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'invoice_number' => ['required', 'string', 'max:255'],
-            'invoice_date' => ['required', 'date'],
+            'document_number' => ['required', 'string', 'max:255'],
+            'document_date' => ['required', 'date'],
             'account_id' => ['required'],
-            'customer_id' => ['required'],
+            'amount' => ['required', 'numeric'],
             'status' => ['required'],
             'currency_id' => ['required'],
+            'customer_id' => ['required'],
         ];
     }
 }

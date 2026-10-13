@@ -11,7 +11,7 @@
     "noEmit": true,
     "skipLibCheck": true,
 
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "baseUrl": ".",
 
     "paths": {

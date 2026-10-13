@@ -5,6 +5,7 @@ export default function NoticeMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
+  // @ts-ignore
   const user = usePage().props.auth.user;
 
   // Закриття дропдауну при кліку зовні
@@ -20,7 +21,7 @@ export default function NoticeMenu() {
 
   return (
     <div
-      className={`relative inline-block text-left notice-block ${user?.current_filial ? 'filial-notice' : ''}`}
+      className={`inline-block text-left notice-block ${user?.current_filial ? 'filial-notice' : ''}`}
       ref={menuRef}
     >
       {/* Кнопка сповіщень */}

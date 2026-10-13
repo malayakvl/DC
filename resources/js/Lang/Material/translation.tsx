@@ -69,6 +69,12 @@ const lngMaterial = {
     filter_status_all: 'Статус залишку: Всі',
     filter_status_ok: 'В нормі',
     filter_status_low: 'Критичні',
+    clear_filters: 'Очистити фільтри',
+    find_filter: 'Знайдено',
+    total_results_filter: 'матеріалів',
+    all_filter: 'Всі матеріали',
+    low_filter: 'Закінчуються',
+    in_storck_filter: 'В наявності',
   },
 };
 export default lngMaterial;

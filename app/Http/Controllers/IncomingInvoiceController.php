@@ -73,73 +73,93 @@ class IncomingInvoiceController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            $clinic = $request->user()->clinicByFilial($clinicId);
-            $arrStores = array();
-            if ($request->user()->roles[0]->name != 'Admin') {
-                // get stores filial
-                $filialId = $request->session()->get('filial_id');
-                $storesData = Store::where('filial_id', '=', $filialId)->get();
-                foreach ($storesData as $store) {
-                    $arrStores[] = $store->id;
-                }
+            if (!$request->user()->canClinic('invoice-incoming-all')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
             }
+            $clinic = $request->user()->clinicByFilial($clinicId);
+
+            // Получаем доступные склады для филиала
+            $filialId = $request->session()->get('filial_id');
+            $storesData = Store::where('filial_id', '=', $filialId)->get();
+            $allowedStoreIds = $storesData->pluck('id')->toArray();
 
             $schema = 'clinic_'.$clinicId;
             $limit = $request->limit ?? 20;
             $offset = $request->offset ?? 0;
-            $dateFrom = $request->date_from;
-            $dateTo = $request->date_to;
-            $supplierId = $request->supplier_id;
 
-            $storeIds = null;
+            $dateFrom = $request->date_from ?: null;
+            $dateTo = $request->date_to ?: null;
+            $supplierId = $request->supplier_id ?: null;
+            $search = $request->search ?: null;
+            $paymentStatus = $request->payment_status ?: null;
+            $selectedStoreId = $request->store_id ?: null;
+
+            // Логика выбора склада
+            $storeIdParam = null;
             if ($request->user()->roles[0]->name !== 'Admin') {
-                $storeIds = $arrStores;
+                if ($selectedStoreId && in_array($selectedStoreId, $allowedStoreIds)) {
+                    $storeIdParam = (int)$selectedStoreId;
+                } else {
+                    $storeIdParam = $allowedStoreIds[0] ?? null;
+                }
+            } else {
+                $storeIdParam = $selectedStoreId ? (int)$selectedStoreId : null;
+                $storesData = Store::all();
             }
-
-            $storeIdsParam = $storeIds ? '{' . implode(',', $storeIds) . '}' : null;
+            // КРИТИЧЕСКИ ВАЖНО: оборачиваем склад в массив для bigint[]
+            $storeIdsArgument = $storeIdParam !== null ? [$storeIdParam] : null;
+            // Превращаем в формат массива PostgreSQL: '{1}' или NULL
+            $storeIdsPgArray = $storeIdParam !== null ? '{' . $storeIdParam . '}' : null;
+            // Вызов функции (ровно 9 параметров)
             $invoiceData = DB::select("
-                SELECT *
-                FROM core.get_income_invoices_by_clinic(
-                    ?, 
-                    ?::bigint[],
-                    ?,
-                    ?,
-                    ?,
-                    ?,
-                    ?
-                )
-            ", [
+            SELECT *
+            FROM core.get_income_invoices_by_clinic(
+                ?, 
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+        ", [
                 $schema,
-                $storeIdsParam,
+                $storeIdsPgArray,
                 $supplierId,
                 $dateFrom,
                 $dateTo,
-                $limit,
-                $offset
+                $search,
+                $paymentStatus,
+                (int)$limit,
+                (int)$offset
             ]);
             $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
-            
             $paymentMethods = DB::select("
-                SELECT 
-                    pm.id,
-                    pm.name,
-                    c.name as currency_name,
-                    COALESCE(SUM(mm.direction * mm.amount), 0) as balance
-                FROM {$schema}.payment_methods pm
-                LEFT JOIN {$schema}.money_movements mm 
-                    ON mm.account_id = pm.id
-                LEFT JOIN {$schema}.currencies c 
-                    ON c.id = pm.currency_id
-                GROUP BY pm.id, pm.name, c.name
-                ORDER BY pm.name
-            ");
+            SELECT 
+                pm.id,
+                pm.name,
+                c.name as currency_name,
+                COALESCE(SUM(mm.direction * mm.amount), 0) as balance
+            FROM {$schema}.payment_methods pm
+            LEFT JOIN {$schema}.money_movements mm 
+                ON mm.account_id = pm.id
+            LEFT JOIN {$schema}.currencies c 
+                ON c.id = pm.currency_id
+            GROUP BY pm.id, pm.name, c.name
+            ORDER BY pm.name
+        ");
 
             return Inertia::render('InvoiceIncoming/List', [
                 'clinicData' => $clinic,
                 'listData' => $invoiceData,
                 'suppliers' => $suppliers,
                 'paymentMethods' => $paymentMethods,
-                'filters' => $request->only(['date_from', 'date_to', 'supplier_id'])
+                'storesData' => $storesData,
+                'filters' => $request->only([
+                    'search', 'store_id', 'supplier_id', 'payment_status', 'date_from', 'date_to'
+                ]),
             ]);
         });
     }
@@ -149,6 +169,9 @@ class IncomingInvoiceController extends Controller
      */
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('invoice-incoming-create')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            }
             if ($request->user()->can('invoice-incoming-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $filialId = $request->session()->get('filial_id');
@@ -204,39 +227,66 @@ class IncomingInvoiceController extends Controller
             if ($request->user()->can('invoice-incoming-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $storeData = $this->customerService->clinicStoresData($clinicId);
+
                 $typeData = array();
                 $unitsData = Unit::all();
+                $storeName = '';
                 $formData = Invoice::find($id);
+
                 $currencyData = Currency::all();
-                $taxData = Tax::all();
-                $rowData = InvoiceItems::select('invoice_items.*', 'materials.name as product')
+                $taxData = Tax::all();;
+                $rowData = InvoiceItems::select('invoice_items.*', 'invoice_items.qty as quantity', 'materials.name as product')
                     ->leftJoin('materials', 'materials.id', '=', 'invoice_items.material_id')
                     ->where('invoice_id', $id)->get();
                 if (count($rowData) == 0) {
-
                     return Inertia::render('Exceptions/NoFound', [
                         'message' => 'No data found'
                     ]);
                 }
-
                 $producerData = Producer::all();
-
                 $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $request->session()->get('filial_id'));
+                if ($formData->status === 'posted') {
+                    $currencyData = Currency::all();
+                    $storeName = '';
+                    foreach ($storeData as $store) {
+                        if ($store->id == $formData->store_id) {
+                            $storeName = $store->name;
+                        }
+                    }
+                    $currencyData = Currency::where('id', '=', $formData->currency_id)->first();
+                    $producerData = Producer::where('id', '=', $formData->supplier_id)->first();
+                    $taxData = Tax::where('id', '=', $formData->tax_id)->first();
+                    return Inertia::render('InvoiceIncoming/View', [
+                        'clinicData' => $clinicData,
+                        'filialData' => $storeData,
+                        'formData' => $formData,
+                        'formRowData' => $rowData,
+                        'storeData' => $storeName,
+                        'customerData' => $customerData,
+                        'producerData' => $producerData,
+                        'statusData' => Invoices::INVOICE_STATUSES,
+                        'typeData' => $typeData,
+                        'currencyData' => $currencyData,
+                        'unitsData' => $unitsData,
+                        'taxData' => $taxData
+                    ]);
 
-                return Inertia::render('InvoiceIncoming/Edit', [
-                    'clinicData' => $clinicData,
-                    'filialData' => $storeData,
-                    'formData' => $formData,
-                    'formRowData' => $rowData,
-                    'storeData' => $storeData,
-                    'customerData' => $customerData,
-                    'producerData' => $producerData,
-                    'statusData' => Invoices::INVOICE_STATUSES,
-                    'typeData' => $typeData,
-                    'currencyData' => $currencyData,
-                    'unitsData' => $unitsData,
-                    'taxData' => $taxData
-                ]);
+                } else {
+                    return Inertia::render('InvoiceIncoming/Edit', [
+                        'clinicData' => $clinicData,
+                        'filialData' => $storeData,
+                        'formData' => $formData,
+                        'formRowData' => $rowData,
+                        'storeData' => $storeData,
+                        'customerData' => $customerData,
+                        'producerData' => $producerData,
+                        'statusData' => Invoices::INVOICE_STATUSES,
+                        'typeData' => $typeData,
+                        'currencyData' => $currencyData,
+                        'unitsData' => $unitsData,
+                        'taxData' => $taxData
+                    ]);
+                }
 
             } else {
                 return Inertia::render('Layouts/NoPermission', [
@@ -261,92 +311,61 @@ class IncomingInvoiceController extends Controller
         }
     }
 
-    public function postIncomingInvoice(int $invoiceId): void
+    /**
+     * Откатить проведенный счет
+     */
+    private function rollbackIncomingInvoice(int $invoiceId): void
     {
         DB::transaction(function () use ($invoiceId) {
-
-            /** @var object $invoice */
-            $invoice = DB::table('invoices')->where('id', $invoiceId)->lockForUpdate()->first();
-
-            if (!$invoice) {
-                throw new \Exception('Invoice not found');
-            }
-
-            // 1️⃣ если уже была проведена — откатываем старый приход
-            if ($invoice->status === 'posted') {
-                $this->rollbackIncomingInvoice($invoiceId);
-            }
-
-            // 2️⃣ получаем строки накладной
-            $items = DB::table('invoice_items')
-                ->where('invoice_id', $invoiceId)
+            // 1️⃣ ПОЛУЧАЕМ ДВИЖЕНИЯ
+            $movements = DB::table('store_movements')
+                ->where('document_type', 'invoice')
+                ->where('document_id', $invoiceId)
+                ->lockForUpdate()
                 ->get();
 
-            if ($items->isEmpty()) {
-                throw new \Exception('Invoice has no items');
+            if ($movements->isEmpty()) {
+                throw new \Exception('Движения по счету не найдены');
             }
 
-            foreach ($items as $item) {
+            // 2️⃣ ДЛЯ КАЖДОГО ДВИЖЕНИЯ
+            foreach ($movements as $move) {
 
-                // защита
-                if ($item->fact_qty <= 0) {
-                    continue;
-                }
-
-                // 3️⃣ создаём партию
-                $batchId = DB::table('store_batches')->insertGetId([
-                    'store_id'        => $invoice->store_id,
-                    'material_id'     => $item->material_id,
-                    'supplier_id'     => $invoice->supplier_id,
-                    'invoice_id'      => $invoiceId,
-                    'arrived_at'      => $invoice->invoice_date,
-                    'qty'             => $item->qty,
-                    'qty_left'        => $item->qty,
-                    'fact_qty'        => $item->fact_qty,
-                    'fact_qty_left'   => $item->fact_qty,
-                    'price_per_unit'  => $item->total / max($item->fact_qty, 1),
-                    'created_at'      => now(),
-                ]);
-
-                // 4️⃣ обновляем баланс склада
-                DB::statement("
-                    INSERT INTO store_balances (store_id, material_id, qty, updated_at)
-                    VALUES (?, ?, ?, now())
-                    ON CONFLICT (store_id, material_id)
-                    DO UPDATE SET
-                        qty = store_balances.qty + EXCLUDED.qty,
-                        updated_at = now()
-                ", [
-                    $invoice->store_id,
-                    $item->material_id,
-                    $item->fact_qty
-                ]);
-
-                // 5️⃣ движение по складу
-                DB::table('store_movements')->insert([
-                    'store_id'      => $invoice->store_id,
-                    'material_id'   => $item->material_id,
-                    'batch_id'      => $batchId,
-                    'direction'     => 1, // приход
-                    'qty'           => $item->qty,
-                    'fact_qty'      => $item->fact_qty,
-                    'document_type' => 'invoice',
-                    'document_id'   => $invoiceId,
-                    'created_at'    => now(),
-                ]);
+                // Откатываем баланс
+                DB::table('store_balances')
+                    ->where('store_id', $move->store_id)
+                    ->where('material_id', $move->material_id)
+                    ->update([
+                        'qty'        => DB::raw('qty - ' . (float) $move->qty),
+                        'fact_qty'   => DB::raw('fact_qty - ' . (float) $move->fact_qty),
+                        'uses_left'  => DB::raw('COALESCE(uses_left, 0) - COALESCE(' . ($move->uses ?? 0) . ', 0)'),
+                        'updated_at' => now()
+                    ]);
             }
 
-            // 6️⃣ меняем статус накладной
+            // 3️⃣ УДАЛЯЕМ БАТЧИ
+            DB::table('store_batches')
+                ->where('invoice_id', $invoiceId)
+                ->delete();
+
+            // 4️⃣ УДАЛЯЕМ ДВИЖЕНИЯ
+            DB::table('store_movements')
+                ->where('document_type', 'invoice')
+                ->where('document_id', $invoiceId)
+                ->delete();
+
+            // 5️⃣ ВОЗВРАЩАЕМ СТАТУС
             DB::table('invoices')
                 ->where('id', $invoiceId)
                 ->update([
-                    'status'     => 'posted',
+                    'status'     => 'draft',
                     'updated_at' => now(),
                 ]);
+
         });
     }
 
-    private function rollbackIncomingInvoice(int $invoiceId): void
+    private function rollbackIncomingInvoiceOld(int $invoiceId): void
     {
         // 1️⃣ получаем движения
         $movements = DB::table('store_movements')
@@ -404,6 +423,7 @@ class IncomingInvoiceController extends Controller
             $invoice->document_type = 'income';
             $invoice->tax_id = $request->tax_id;
             $invoice->currency_id = $request->currency_id;
+            $invoice->ttn = $request->ttn;
             $rate = CurrencyExchange::where('currency_id', $request->currency_id)
                 ->orderBy('rate_date', 'DESC')
                 ->first();
@@ -426,7 +446,6 @@ class IncomingInvoiceController extends Controller
 
             // $producer = Producer::find($request->supplier_id);
             $storeId = $request->store_id;
-
             $totalAmount = 0;
             foreach ($request->rows as $row) {
                 $qty = $row['quantity'];      // количество в единицах материала
@@ -443,6 +462,7 @@ class IncomingInvoiceController extends Controller
                 $invoiceItem->total = $row['total'];
                 $invoiceItem->price_per_unit = $pricePerUnit;
                 $invoiceItem->unit_id = $row['unit_id'];
+                $invoiceItem->expiry_date = $row['expiry_date'];
                 $invoiceItem->save();
 
                 $totalAmount += $row['total'];

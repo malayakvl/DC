@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import Lang from 'lang.js';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import lngScheduler from '../../Lang/Scheduler/translation';
 import { setScheduleStatusAction } from '@/Redux/Scheduler';
 import { SchedulerStatuses } from '@/Constants';
 import { ChevronDown } from 'lucide-react';
+import { useAppDispatch } from '@/hooks';
 
 export default function EventStatus({ defaultStatus = 'planned', defaultColor = '#4c95f5' }) {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const statuses = SchedulerStatuses;
   const [eventStatus, setEventStatus] = useState({
     name: defaultStatus,

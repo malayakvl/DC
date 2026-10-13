@@ -4,56 +4,48 @@ import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngHeaders from '../../Lang/Datatable/translation';
 import EmptyTable from '../../Components/Table/EmptyTable';
-import { TableHeaders } from '../../Constants';
+import { PaginationType, TableHeaders } from '../../Constants';
 import { setPaginationAction, setSwitchToggleAction } from '../../Redux/Layout';
-import { paginationSelectorFactory } from '../../Redux/Layout/selectors';
+// import { paginationSelectorFactory } from '../../Redux/Layout/selectors';
 
-export default function DataTable({ paginationType, children, switcherOnClick = null }) {
+export default function DataTable({
+  paginationType,
+  children,
+  switcherOnClick = null,
+}: {
+  paginationType?: PaginationType;
+  children?: React.ReactNode;
+  switcherOnClick?: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngHeaders,
     locale: appLang,
   });
   // const { PRODUCTS } = PaginationType;
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const switchAllHeader = false;
-  const [allChecked, setAllChecked] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const headers = TableHeaders[paginationType];
   const dispatch = useDispatch();
-  const { includes } = [paginationType];
-  const { limit, sort, column, offset, query, filters }: Layouts.Pagination = useSelector(
-    paginationSelectorFactory(paginationType)
-  );
-  const showIds: boolean = false;
+  // const { sort, column, offset, query, filters }: Layouts.Pagination = useSelector(
+  //   paginationSelectorFactory(paginationType)
+  // );
+  // const showIds: boolean = false;
   // showIds = includes(paginationType);
 
   const length = useMemo(
     () =>
-      headers.reduce((acc, item) => {
+      headers.reduce((acc: any, item: any) => {
         if (!item.subTitles?.length) return acc;
         return acc + item.subTitles.length;
       }, headers.length),
     [headers]
   );
-  const isTwoRowsHeader = useMemo(() => headers.some((i) => i.subTitles?.length), [headers]);
+  const isTwoRowsHeader = useMemo(() => headers.some((i: any) => i.subTitles?.length), [headers]);
 
-  const handleSwitchAction = (checked: boolean) => {
-    // dispatch(setSwitchToggleAction(true));
-    // dispatch(setSwitchHeaderAction(checked));
-    // // dispatch(setSwitchToggleAction(null));
-    // if (switcherRequest) {
-    //     switcherRequest();
-    // }
-  };
-
-  const handleAllChecked = () => {
-    // if (!allChecked) {
-    //     dispatch(checkAllIdsAction());
-    // } else {
-    //     dispatch(uncheckAllIdsAction());
-    // }
-    setAllChecked(!allChecked);
-  };
+  const handleSwitchAction = () => {};
 
   const setSort = useCallback(
     (event: React.SyntheticEvent): void => {
@@ -71,7 +63,7 @@ export default function DataTable({ paginationType, children, switcherOnClick = 
   );
 
   const renderTableHeader = () => {
-    const getTh = (item) => (
+    const getTh = (item: any) => (
       <th
         rowSpan={isTwoRowsHeader && !item.subTitles?.length ? 2 : 1}
         colSpan={item.subTitles?.length || 1}
@@ -85,7 +77,7 @@ export default function DataTable({ paginationType, children, switcherOnClick = 
               className="sr-only"
               checked={switchAllHeader}
               onChange={(e) => {
-                handleSwitchAction(e.target.checked);
+                handleSwitchAction();
 
                 if (switcherOnClick) {
                   switcherOnClick(e.target.checked);
@@ -140,7 +132,7 @@ export default function DataTable({ paginationType, children, switcherOnClick = 
         <tr role="row">{headers.map(getTh)}</tr>
         {isTwoRowsHeader && (
           <tr role="row">
-            {headers.map((item) => {
+            {headers.map((item: any) => {
               if (!item.subTitles?.length) return null;
               return item.subTitles.map(getTh);
             })}
@@ -154,7 +146,7 @@ export default function DataTable({ paginationType, children, switcherOnClick = 
     if (loading) {
       return <EmptyTable colSpan={length}>No record with selected criteria</EmptyTable>;
     }
-    if (children?.length) return children;
+    if (typeof children !== 'string' || children?.length) return children;
     return <EmptyTable colSpan={length}>{msg.get('datatable.emptyTable')}</EmptyTable>;
   };
 

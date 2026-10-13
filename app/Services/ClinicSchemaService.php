@@ -311,6 +311,7 @@ class ClinicSchemaService
                 services TEXT,
                 priority BOOLEAN,
                 assistent_id INTEGER,
+                total_price DECIMAL(10, 2),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -522,6 +523,8 @@ class ClinicSchemaService
                 contact_name VARCHAR(255),
                 email VARCHAR(255),
                 phone VARCHAR(50),
+                edrpou VARCHAR(50),
+                bank_number VARCHAR(50),
                 address TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -906,6 +909,7 @@ class ClinicSchemaService
                 patient_id BIGINT NOT NULL,
                 doctor_id BIGINT,
                 visit_id BIGINT,
+                currency_id BIGINT,
 
                 total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
 
@@ -963,6 +967,7 @@ class ClinicSchemaService
                 tax_id VARCHAR(100),
                 invoice_number VARCHAR(100),
                 invoice_date TIMESTAMP NOT NULL,
+                ttn VARCHAR(100),
                 total_amount NUMERIC(12,2) NOT NULL,
                 
                 total_net NUMERIC(14,2) NOT NULL DEFAULT 0,
@@ -991,6 +996,7 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,2) DEFAULT 0,   -- фактически получено
                 unit_id BIGINT,                      -- единица измерения материала
                 pack_unit_id BIGINT,                 -- единица упаковки
+                expiry_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -1039,6 +1045,7 @@ class ClinicSchemaService
                 store_id BIGINT NOT NULL,
                 material_id BIGINT NOT NULL,
                 supplier_id BIGINT,
+                producer_id BIGINT,
                 invoice_id BIGINT NOT NULL,
                 arrived_at DATE NOT NULL,
                 qty NUMERIC(12,4) NOT NULL,
@@ -1046,12 +1053,16 @@ class ClinicSchemaService
                 fact_qty NUMERIC(12,4) NOT NULL,
                 fact_qty_left NUMERIC(12,4) NOT NULL,
                 price_per_unit NUMERIC(12,4) NOT NULL,
+                
+                uses_total NUMERIC(12,4) NULLABLE,
+                uses_left NUMERIC(12,4) NULLABLE,
 
                 source_type VARCHAR(50) NOT NULL,
                 source_id BIGINT NOT NULL,
                 source_item_id BIGINT NOT NULL,
                 
                 total NUMERIC(12,4) NOT NULL,
+                expiry_date DATE NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

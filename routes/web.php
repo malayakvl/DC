@@ -204,8 +204,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/act/update', [ActController::class, 'update'])->name('act.updated');
 
     Route::get('/money-in', [MoneyInController::class, 'index'])->name('money-in.index');
-    Route::get('/money-in/create', [MoneyInController::class, 'create'])->name('money-in.create');
-    Route::get('/money-in/edit/{id}', [MoneyInController::class, 'edit'])->name('money-in.edit');
+    Route::get('/money-in/view/{id}', [MoneyInController::class, 'show'])->name('money-in.view');
     Route::post('/money-in/update', [MoneyInController::class, 'update'])->name('money-in.updated');
 
     Route::get('/money-out', [MoneyOutController::class, 'index'])->name('money-out.index');

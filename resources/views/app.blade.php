@@ -15,7 +15,7 @@
         <script src="https://kit.fontawesome.com/e82fc2fd78.js" crossorigin="anonymous"></script>
         @routes
         @viteReactRefresh
-        @vite(['resources/js/app.tsx', "resources/js/Pages/{$page['component']}.tsx"])
+        @vite(['resources/js/app.tsx'])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">

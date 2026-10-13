@@ -113,6 +113,18 @@ const lngRole = {
     'store-edit': 'Редагувати Слад',
     'store-view': 'Переглядати Слад',
 
+    'money-in-all': 'Прибуткові ордера',
+    'money-in-create': 'Створити ордер',
+    'money-in-edit': 'Редагувати ордер',
+    'money-in-delete': 'Видалити ордер',
+    'money-in-view': 'Переглянути ордер',
+
+    'money-out-all': 'Видаткові ордера',
+    'money-out-create': 'Створити ордер',
+    'money-out-edit': 'Редагувати ордер',
+    'money-out-delete': 'Видалити ордер',
+    'money-out-view': 'Переглянути ордер',
+
     'invoice-incoming-all': 'Прибуткові накладні',
     'invoice-incoming-create': 'Створити прибуткову',
     'invoice-incoming-edit': 'Редагувати прибуткову',
@@ -232,6 +244,8 @@ const lngRole = {
     role: 'Ролі',
     price: 'Прайсінг',
     cabinet: 'Кабінети',
+    'money-in': 'Прибуткові ордера',
+    'money-out': 'Видаткові ордера',
   },
 };
 export default lngRole;

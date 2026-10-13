@@ -176,6 +176,103 @@ export const updateComponentQuantityAction: any = createAction(
           const response = await axios.post('/act/fifo-preview', {
             services: [updatedTargetItem],
           });
+          const storeItems = response.data.items || [];
+
+          const hasDeficit = storeItems.some((fifoItem: any) => fifoItem.shortage_qty > 0);
+
+          if (hasDeficit) {
+            const deficitsMap = storeItems
+              .filter((i: any) => i.shortage_qty > 0)
+              .reduce((acc: any, i: any) => {
+                acc[i.material_id] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
+                return acc;
+              }, {});
+
+            dispatch(setupActStoreErrorAction(deficitsMap));
+            return null; // Дефіцит — стейт не чіпаємо
+          } else {
+            dispatch(setupActStoreErrorAction([]));
+          }
+
+          // Створюємо мапу результатів з fifo-preview по material_id
+          const fifoMap = new Map();
+          storeItems.forEach((item: any) => {
+            fifoMap.set(Number(item.material_id), item);
+          });
+
+          // Оновлюємо компоненти актуальними батчами, вартістю та залишками з FIFO
+          const fullyUpdatedComponents = updatedComponents.map((comp: any) => {
+            const mId = Number(comp.material_id || comp.product_id);
+            const fifoData = fifoMap.get(mId);
+
+            if (fifoData) {
+              return {
+                ...comp,
+                batches: fifoData.batches || [],
+                cost: fifoData.cost ?? 0,
+                available_qty: fifoData.available_qty ?? 0,
+                shortage_qty: fifoData.shortage_qty ?? 0,
+              };
+            }
+            return comp;
+          });
+
+          // 4. Повертаємо повноцінні дані для редюсера разом з батчами та цінами
+          return {
+            serviceId,
+            components: fullyUpdatedComponents,
+          };
+        } catch (error) {
+          console.error('Error validating component on backend, rolling back...', error);
+          throw error;
+        }
+      } catch (error) {
+        console.error('Error updating component quantity', error);
+        return null;
+      }
+    }
+);
+
+export const updateComponentQuantityOldAction: any = createAction(
+  'act/UPDATE_COMPONENT_QUANTITY_NEW',
+  async (serviceId: number, materialId: number, qty: number, targetServiceItem: any) =>
+    async (dispatch: any) => {
+      try {
+        console.log('serviceId:', serviceId, 'materialId:', materialId, 'Qty:', qty);
+        console.log('targetServiceItem:', targetServiceItem);
+
+        if (!targetServiceItem) {
+          console.error('Service item not found');
+          return null;
+        }
+
+        const serviceQty = Number(targetServiceItem.quantity || 1);
+        const newComponentQty = Number(qty);
+
+        // 1. Оновлюємо кількість тільки для потрібного компонента
+        const updatedComponents = (targetServiceItem.components || []).map((comp: any) => {
+          if (comp.material_id === materialId) {
+            const baseQty = newComponentQty / serviceQty;
+            return {
+              ...comp,
+              base_quantity: baseQty,
+              quantity: newComponentQty,
+            };
+          }
+          return comp;
+        });
+
+        // 2. Створюємо оновлену копію послуги для бекенду
+        const updatedTargetItem = {
+          ...targetServiceItem,
+          components: updatedComponents,
+        };
+
+        try {
+          // 3. Запит на бекенд для FIFO перевірки
+          const response = await axios.post('/act/fifo-preview', {
+            services: [updatedTargetItem],
+          });
           const storeItems = response.data.items;
 
           const hasDeficit = storeItems.some((fifoItem: any) => fifoItem.shortage_qty > 0);
@@ -225,6 +322,11 @@ export const syncAndRecalculateAct: any = createAction(
       // щоб UI міг вивести красиве повідомлення
     }
   }
+);
+
+export const updateServiceComponentsFifo = createAction(
+  'act/UPDATE_SERVICE_COMPONENTS_FIFO',
+  (serviceId: any, components: any) => ({ serviceId, components })
 );
 
 // export const syncAndRecalculateActOld = createAction(
