@@ -82,6 +82,7 @@ class IncomingInvoiceController extends Controller
             $filialId = $request->session()->get('filial_id');
             $storesData = Store::where('filial_id', '=', $filialId)->get();
             $allowedStoreIds = $storesData->pluck('id')->toArray();
+            $currencyData = Currency::all();
 
             $schema = 'clinic_'.$clinicId;
             $limit = $request->limit ?? 20;
@@ -157,6 +158,7 @@ class IncomingInvoiceController extends Controller
                 'suppliers' => $suppliers,
                 'paymentMethods' => $paymentMethods,
                 'storesData' => $storesData,
+                'currencyData' => $currencyData,
                 'filters' => $request->only([
                     'search', 'store_id', 'supplier_id', 'payment_status', 'date_from', 'date_to'
                 ]),

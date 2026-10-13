@@ -101,6 +101,15 @@ const lngInvoiceIncoming = {
     payment_description: 'Реєстрація платежу за накладну',
     payment_supplier_title: 'Контекст оплати та поставщик',
     apply: 'Застосувати',
+    doc_name: 'Прибуткова накладна',
+    doc_edrpou: 'ЄДРПОУ',
+    doc_store: 'Склад',
+    doc_amount: 'Сума накладної',
+    doc_already_pay: 'Вже сплачено',
+    doc_need_pay: 'До сплати',
+    doc_total_pay: 'Сума до сплати',
+    doc_all_pay: 'Вся сума боргу',
+    doc_half_pay: '50% боргу'
   },
 };
 export default lngInvoiceIncoming;

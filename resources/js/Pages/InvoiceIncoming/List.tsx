@@ -19,20 +19,28 @@ export default function List({
   storesData,
   suppliers,
   paymentMethods,
+  currencyData,
+  clinicData,
 }: {
   listData: any;
   storesData: any;
   suppliers: any[];
   paymentMethods: any[];
+  currencyData: any[];
+  clinicData: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const [showModal, setShowModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
-  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState(0);
   const [paymentMethodId, setPaymentMethodId] = useState<number>(0);
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [paymentAmountError, setPaymentAmountError] = useState(false);
   const [paymentDocument, setPaymentDocument] = useState<any>(null);
+  const [selectedTip, setSelectedTip] = useState('full');
+  const [currencyRate, setCurrencyRate] = useState(1);
+  const [currencyPayed, setCurrencyPayed] = useState('');
+
   const msg = new Lang({
     messages: lngInvoiceIncoming,
     locale: appLang,
@@ -61,10 +69,37 @@ export default function List({
         supplierId: selectedInvoice?.supplier_id,
       });
       setShowModal(false);
-      setPaymentAmount('');
+      setPaymentAmount(0);
       setPaymentMethodId(0);
       setSelectedMethod(null);
       setPaymentAmountError(false);
+      setCurrencyPayed('');
+    }
+  };
+
+  const fetchNbuRate = async (currency: any, invoiceDate: any) => {
+    if (currency.id === clinicData.currency_id) {
+      setCurrencyRate(1);
+      return;
+    }
+
+    // Превращаем дату из '2026-10-09' в '20261009' для НБУ
+    // Ообрезаем время (берем только дату 'YYYY-MM-DD') и убираем дефисы -> 'YYYYMMDD'
+    const cleanDate = invoiceDate ? invoiceDate.split(' ')[0].replaceAll('-', '') : '';
+
+    try {
+      const url = `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=${currency.name}&date=${cleanDate}&json`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setCurrencyRate(data[0].rate);
+        setPaymentAmount(Number((paymentAmount / data[0].rate).toFixed(2)));
+        // setExchangeRate(data[0].rate); // Успешно достали курс (например, 41.2500)
+      }
+    } catch (error) {
+      console.error('Помилка завантаження курсу НБУ:', error);
     }
   };
 
@@ -223,6 +258,7 @@ export default function List({
                             setPaymentAmountError(false);
                             setPaymentDocument(item);
                             setShowModal(true);
+                            setCurrencyPayed(item.currency_name);
                           }}
                           className="pay-btn "
                           data-id={item.id}
@@ -354,7 +390,8 @@ export default function List({
                                   {paymentDocument.supplier_name}
                                 </span>
                                 <span className="text-[11px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
-                                  ЄДРПОУ: 38492018
+                                  {msg.get('invoice_incoming.doc_edrpou')}:{' '}
+                                  {paymentDocument.supplier_edrpou}
                                 </span>
                               </div>
                               <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
@@ -362,7 +399,10 @@ export default function List({
                                   inventory_2
                                 </span>
                                 <span>
-                                  Прихідна накладна <b>№ 091026-000002</b> • Склад: Центральний
+                                  {msg.get('invoice_incoming.doc_name')}{' '}
+                                  <b>№ {paymentDocument.invoice_number}</b> •{' '}
+                                  {msg.get('invoice_incoming.doc_store')}:{' '}
+                                  {paymentDocument.store_name}{' '}
                                 </span>
                               </div>
                             </div>
@@ -373,32 +413,38 @@ export default function List({
                           {/* Сума накладної */}
                           <div className="flex flex-col items-center sm:items-start">
                             <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                              Сума накладної
+                              {msg.get('invoice_incoming.doc_amount')}
                             </span>
                             <span className="text-base font-bold text-gray-900 mt-0.5">
-                              4,840.00{' '}
-                              <span className="text-xs text-gray-400 font-normal">UAH</span>
+                              {paymentDocument.total_amount}{' '}
+                              <span className="text-xs text-gray-400 font-normal">
+                                {paymentDocument.currency_name}
+                              </span>
                             </span>
                           </div>
                           {/* Вже сплачено */}
                           <div className="flex flex-col items-center sm:items-start border-x border-gray-100 px-2">
                             <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                              Вже сплачено
+                              {msg.get('invoice_incoming.doc_already_pay')}
                             </span>
                             <span className="text-base font-bold text-emerald-600 mt-0.5">
-                              2,840.00{' '}
-                              <span className="text-xs text-gray-400 font-normal">UAH</span>
+                              {paymentDocument.paid_amount}{' '}
+                              <span className="text-xs text-gray-400 font-normal">
+                                {paymentDocument.currency_name}
+                              </span>
                             </span>
                           </div>
                           {/* Залишок / Борг */}
                           <div className="flex flex-col items-center sm:items-start pl-1">
                             <span className="text-[11px] font-semibold uppercase tracking-wider text-rose-600 flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"></span>
-                              До сплати
+                              {msg.get('invoice_incoming.doc_need_pay')}
                             </span>
                             <span className="text-base font-bold text-rose-600 mt-0.5">
-                              2,000.00{' '}
-                              <span className="text-xs text-rose-500 font-normal">UAH</span>
+                              {paymentDocument.total_amount - paymentDocument.paid_amount}{' '}
+                              <span className="text-xs text-rose-500 font-normal">
+                                {paymentDocument.currency_name}
+                              </span>
                             </span>
                           </div>
                         </div>
@@ -410,26 +456,43 @@ export default function List({
                           <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] flex items-center justify-center font-bold">
                             2
                           </span>
-                          Сума до сплати
+                          {msg.get('invoice_incoming.doc_total_pay')}
                         </span>
-                        <span className="text-xs text-gray-400">Multi-currency Ready</span>
                       </div>
                       {/* Быстрые кнопки (чипсы) */}
                       <div className="flex flex-wrap gap-2 mb-1">
                         <button
-                          className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5"
+                          onClick={() => {
+                            setPaymentAmount(paymentDocument.debt_amount);
+                            setSelectedTip('full');
+                          }} // подставляем весь остаток долга
+                          className={`invoice-tip ${selectedTip === 'full' ? 'selected' : ''}`}
                           id="preset-saas-full"
                           type="button"
                         >
-                          <span className="material-symbols-outlined text-[15px]">check</span>
-                          Вся сума боргу (2,000 UAH)
+                          {selectedTip === 'full' && (
+                            <span className="material-symbols-outlined text-[15px]">check</span>
+                          )}
+                          {msg.get('invoice_incoming.doc_all_pay')} (
+                          {Number(paymentDocument.debt_amount / currencyRate).toFixed(2)}{' '}
+                          {currencyPayed})
                         </button>
+
                         <button
-                          className="px-3 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition-all border border-gray-200"
+                          onClick={() => {
+                            setPaymentAmount(Number(paymentDocument.debt_amount / 2));
+                            setSelectedTip('half');
+                          }} // подставляем 50% от долга
+                          className={`invoice-tip ${selectedTip !== 'full' ? 'selected' : ''}`}
                           id="preset-saas-half"
                           type="button"
                         >
-                          50% боргу (1,000 UAH)
+                          {selectedTip !== 'full' && (
+                            <span className="material-symbols-outlined text-[15px]">check</span>
+                          )}
+                          {msg.get('invoice_incoming.doc_half_pay')} (
+                          {(paymentDocument.debt_amount / 2 / currencyRate).toFixed(2)}{' '}
+                          {currencyPayed})
                         </button>
                       </div>
                       {/* Поле ввода суммы и выбор валюты */}
@@ -439,7 +502,7 @@ export default function List({
                             className="text-emerald-600 font-bold text-xl pl-3 pointer-events-none"
                             id="currency-symbol-display"
                           >
-                            ₴
+                            {currencyPayed}
                           </span>
                           <input
                             type="number"
@@ -454,16 +517,53 @@ export default function List({
                           <select
                             className="bg-white hover:bg-gray-50 text-gray-900 text-sm font-bold px-3 py-2 rounded-lg border border-gray-200 cursor-pointer appearance-none pr-8 focus:outline-none focus:ring-1 focus:ring-emerald-600 shadow-sm"
                             id="saas-currency-selector"
+                            onChange={(e: any) => {
+                              const selectedId = e.target.value;
+                              // Находим выбранную валюту в массиве по ее id
+                              const foundCurrency = currencyData.find((c) => c.id == selectedId);
+
+                              if (foundCurrency) {
+                                setCurrencyPayed(foundCurrency.name);
+                                // Если это гривна (id = 1 или код UAH), курс всегда 1.
+                                // Иначе запрашиваем курс НБУ для foundCurrency.code (например, 'USD')
+                                fetchNbuRate(foundCurrency, paymentDocument.invoice_date);
+                              }
+                            }}
                           >
-                            <option selected value="UAH">
-                              UAH (₴)
-                            </option>
-                            <option value="EUR">EUR (€)</option>
-                            <option value="USD">USD ($)</option>
+                            {currencyData.map((currency: any, inxCurrency: number) => (
+                              <option
+                                key={inxCurrency}
+                                id={currency.name}
+                                value={currency.id}
+                                selected={currency.id === paymentDocument.currency_id}
+                              >
+                                {currency.name} ({currency.symbol})
+                              </option>
+                            ))}
                           </select>
                           <span className="material-symbols-outlined text-[18px] text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                             expand_more
                           </span>
+                        </div>
+                        {/* Если выбрана не гривна, показываем поле курса */}
+                        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                          <span className="text-xs text-gray-500 font-medium">Курс НБУ:</span>
+                          <input
+                            type="text"
+                            className="w-20 bg-transparent text-gray-900 border-0 font-bold text-sm focus:outline-none"
+                            value={currencyRate}
+                            onChange={(e) => {
+                              const newRate = Number(e.target.value);
+                              setCurrencyRate(Number(e.target.value));
+
+                              // Пересчитываем сумму оплаты от базовой суммы документа, если курс больше нуля
+                              if (newRate > 0) {
+                                setPaymentAmount(
+                                  Number((Number(paymentDocument.debt_amount) / newRate).toFixed(2))
+                                );
+                              }
+                            }}
+                          />
                         </div>
                       </div>
                       {/* Статус-бар */}
@@ -603,7 +703,7 @@ export default function List({
                               makePayment(
                                 selectedInvoice?.invoice_id,
                                 paymentMethodId,
-                                parseFloat(paymentAmount),
+                                Number(paymentAmount),
                                 selectedInvoice?.currency_id,
                                 selectedMethod
                               );
