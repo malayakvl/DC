@@ -67,6 +67,7 @@ export default function List({
         amount,
         currencyId,
         supplierId: selectedInvoice?.supplier_id,
+        currencyRate,
       });
       setShowModal(false);
       setPaymentAmount(0);
@@ -218,68 +219,85 @@ export default function List({
                       })()}
                     </td>
                     <td className="">
-                      {Number(item.debt_amount) <= 0 ? (
-                        <span
-                          className={`doc-status ${
-                            item.status === 'new'
-                              ? 'status-new'
-                              : item.status === 'posted'
-                                ? 'status-posted'
-                                : 'status-paid'
-                          }`}
-                        >
-                          <svg
-                            className="w-3.5 h-3.5 text-rose-500 group-hover/btn:translate-x-0.5 transition-transform"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M14 5l7 7m0 0l-7 7m7-7H3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                            ></path>
-                          </svg>
+                      {(() => {
+                        const total = Number(item.total_amount || 0);
+                        const paid = Number(item.paid_amount || 0);
+                        const debt = Number(item.debt_amount || 0);
 
-                          {msg.get('invoice_incoming.paid')}
-                        </span>
-                      ) : (
-                        <a
-                          href="#"
-                          onClick={(e: any) => {
-                            e.preventDefault();
-                            setSelectedInvoice(item);
-                            setPaymentAmount(
-                              item.debt_amount > 0 ? item.debt_amount : item.total_amount
-                            );
-                            setPaymentMethodId(0);
-                            setSelectedMethod(null);
-                            setPaymentAmountError(false);
-                            setPaymentDocument(item);
-                            setShowModal(true);
-                            setCurrencyPayed(item.currency_name);
-                          }}
-                          className="pay-btn "
-                          data-id={item.id}
-                        >
-                          <span className="w-2 h-2 rounded-full bg-rose-500 group-hover/btn:scale-110 transition-transform"></span>
-                          <span>{msg.get('invoice_incoming.unpaid')}</span>
-                          <svg
-                            className="w-3.5 h-3.5 text-rose-500 group-hover/btn:translate-x-0.5 transition-transform"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        // 1. Повністю оплачено
+                        if (debt <= 0) {
+                          return (
+                            <span className="doc-status status-paid">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                              <span>{msg.get('invoice_incoming.paid')}</span>
+                            </span>
+                          );
+                        }
+
+                        // 2. Часткова оплата (є і проплачена частина, і залишок)
+                        if (paid > 0 && debt > 0) {
+                          return (
+                            <a
+                              href="#"
+                              onClick={(e: any) => {
+                                e.preventDefault();
+                                setSelectedInvoice(item);
+                                setPaymentAmount(debt); // Підставляємо залишок боргу для доплати
+                                setPaymentMethodId(0);
+                                setSelectedMethod(null);
+                                setPaymentAmountError(false);
+                                setPaymentDocument(item);
+                                setShowModal(true);
+                                setCurrencyPayed(item.currency_name);
+                              }}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-semibold border border-amber-200/60 hover:bg-amber-100 transition-colors"
+                              data-id={item.id}
+                              title="Часткова оплата. Натисніть, щоб доплатити"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                              <span>
+                                Частково: {paid} / {total} {item.currency_name}
+                              </span>
+                            </a>
+                          );
+                        }
+
+                        // 3. Зовсім не сплачено
+                        return (
+                          <a
+                            href="#"
+                            onClick={(e: any) => {
+                              e.preventDefault();
+                              setSelectedInvoice(item);
+                              setPaymentAmount(debt > 0 ? debt : total);
+                              setPaymentMethodId(0);
+                              setSelectedMethod(null);
+                              setPaymentAmountError(false);
+                              setPaymentDocument(item);
+                              setShowModal(true);
+                              setCurrencyPayed(item.currency_name);
+                            }}
+                            className="pay-btn"
+                            data-id={item.id}
                           >
-                            <path
-                              d="M14 5l7 7m0 0l-7 7m7-7H3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                            ></path>
-                          </svg>
-                        </a>
-                      )}
+                            <span className="w-2 h-2 rounded-full bg-rose-500 group-hover/btn:scale-110 transition-transform"></span>
+                            <span>{msg.get('invoice_incoming.unpaid')}</span>
+                            <svg
+                              className="w-3.5 h-3.5 text-rose-500 group-hover/btn:translate-x-0.5 transition-transform"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                              ></path>
+                            </svg>
+                          </a>
+                        );
+                      })()}
                     </td>
                     <td className="">{item.store_name}</td>
                     <td className="">{item.supplier_name}</td>
@@ -567,28 +585,71 @@ export default function List({
                         </div>
                       </div>
                       {/* Статус-бар */}
-                      <div
-                        className="flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-medium mt-0.5"
-                        id="saas-calc-feedback"
-                      >
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className="material-symbols-outlined text-[16px]"
-                            id="saas-feedback-icon"
+                      {(() => {
+                        // Рахуємо залишок боргу з урахуванням курсу поточної валюти оплати
+                        const currentEnteredBase =
+                          Number(paymentAmount || 0) * Number(currencyRate || 1);
+                        const totalDebtBase = Number(paymentDocument?.debt_amount || 0);
+                        const remainingDebt = totalDebtBase - currentEnteredBase;
+
+                        // Визначаємо стан: повне закриття, часткова оплата чи переплата
+                        const isFullyPaid = remainingDebt <= 0.01; // невеликий поріг для округлень
+                        const isOverpaid = remainingDebt < -0.01;
+                        const absRemaining = Math.abs(remainingDebt).toFixed(2);
+                        const percentage =
+                          totalDebtBase > 0
+                            ? Math.min(Math.round((currentEnteredBase / totalDebtBase) * 100), 100)
+                            : 100;
+
+                        // Стилі залежно від стану
+                        let bgClass = 'bg-emerald-50 text-emerald-800 border-emerald-100';
+                        let iconName = 'check_circle';
+                        let iconColor = 'text-emerald-600';
+                        let badgeBg = 'bg-emerald-600 text-white';
+                        let badgeText = msg.get('invoice_incoming.badge_full');
+                        let messageText = `${msg.get('invoice_incoming.badge_full_tips')} ${paymentDocument.currency_name})`;
+
+                        if (isOverpaid) {
+                          bgClass = 'bg-indigo-50 text-indigo-900 border-indigo-100';
+                          iconName = 'account_balance_wallet';
+                          iconColor = 'text-indigo-600';
+                          badgeBg = 'bg-indigo-600 text-white';
+                          badgeText = msg.get('invoice_incoming.badge_overfull');
+                          messageText = `${msg.get('invoice_incoming.badge_overpay_tips')} ${absRemaining} ${paymentDocument.currency_name})`;
+                        } else if (!isFullyPaid) {
+                          bgClass = 'bg-amber-50 text-amber-900 border-amber-200';
+                          iconName = 'info';
+                          iconColor = 'text-amber-600';
+                          badgeBg = 'bg-amber-500 text-white';
+                          badgeText = `${msg.get('invoice_incoming.badge_payed')} ${percentage}%`;
+                          messageText = `${msg.get('invoice_incoming.badge_partpay_tips')} ${absRemaining} ${paymentDocument.currency_name})`;
+                        }
+
+                        return (
+                          <div
+                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border ${bgClass} text-xs font-medium mt-1 transition-all`}
+                            id="saas-calc-feedback"
                           >
-                            check_circle
-                          </span>
-                          <span className="font-medium" id="saas-feedback-text">
-                            Повне закриття накладної (Залишок після оплати: 0.00 UAH)
-                          </span>
-                        </div>
-                        <span
-                          className="text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded"
-                          id="saas-feedback-tag"
-                        >
-                          Закрито 100%
-                        </span>
-                      </div>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`material-symbols-outlined text-[18px] ${iconColor}`}
+                                id="saas-feedback-icon"
+                              >
+                                {iconName}
+                              </span>
+                              <span className="font-medium" id="saas-feedback-text">
+                                {messageText}
+                              </span>
+                            </div>
+                            <span
+                              className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeBg}`}
+                              id="saas-feedback-tag"
+                            >
+                              {badgeText}
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                     <form id="paymentForm">
                       <input type="hidden" id="invoiceId" value={selectedInvoice?.id} />
@@ -601,7 +662,9 @@ export default function List({
                             </span>
                             {msg.get('invoice_incoming.payment_method')}
                           </span>
-                          <span className="text-xs text-gray-400">Оберіть касу або рахунок</span>
+                          <span className="text-xs text-gray-400">
+                            {msg.get('invoice_incoming.doc_payment_method')}
+                          </span>
                         </div>
                         {/* Компактная сетка карточек */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -673,7 +736,8 @@ export default function List({
                         </div>
                         {paymentAmountError && (
                           <span className="text-rose-500 text-xs mt-1 block font-medium">
-                            Недостатньо коштів на обраному рахунку
+                            {msg.get('invoice_incoming.doc_error_amount')}
+                            {msg.get('invoice_incoming.doc_error_amount')}
                           </span>
                         )}
                       </div>
@@ -684,7 +748,7 @@ export default function List({
                             lock
                           </span>
                           <span className="text-gray-500 text-[11px]">
-                            Захищений запис у журнал
+                            {msg.get('invoice_incoming.protected_tips')}
                           </span>
                         </div>
 
@@ -694,7 +758,7 @@ export default function List({
                             className="px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
                             onClick={() => setShowModal(false)}
                           >
-                            Скасувати
+                            {msg.get('invoice_incoming.doc_cancel')}
                           </button>
                           <button
                             type="submit"
@@ -711,7 +775,7 @@ export default function List({
                             className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all flex items-center gap-1.5"
                           >
                             <span className="material-symbols-outlined text-[18px]">check</span>
-                            <span>Оприбуткувати</span>
+                            <span>{msg.get('invoice_incoming.doc_pay')}</span>
                           </button>
                         </div>
                       </div>

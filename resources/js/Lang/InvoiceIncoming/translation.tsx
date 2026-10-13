@@ -109,7 +109,18 @@ const lngInvoiceIncoming = {
     doc_need_pay: 'До сплати',
     doc_total_pay: 'Сума до сплати',
     doc_all_pay: 'Вся сума боргу',
-    doc_half_pay: '50% боргу'
+    doc_half_pay: '50% боргу',
+    badge_full: 'ЗАКРИТО 100%',
+    badge_overfull: 'ПЕРЕПЛАТА',
+    badge_payed: 'СПЛАЧЕНО',
+    badge_full_tips: 'Повне закриття накладної (Залишок після оплати: 0.00',
+    badge_overpay_tips: 'Переплата (Решта:',
+    badge_partpay_tips: 'Часткова оплата (Залишок боргу:',
+    doc_payment_method: 'Оберіть касу або рахунок',
+    doc_error_amount: 'Недостатньо коштів на обраному рахунку',
+    protected_tips: 'Захищений запис у журнал',
+    doc_cancel: 'Скасувати',
+    doc_pay: 'Оприбуткувати',
   },
 };
 export default lngInvoiceIncoming;
