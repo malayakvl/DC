@@ -24,7 +24,6 @@ import InputSelect from '../../../Components/Form/InputSelect';
 import StickyFormFooter from '../../../Components/Common/StickyFormFooter';
 import FormHeader from '../../../Components/Common/FormHeader';
 
-
 export default function Form({
   clinicData,
   formData,
@@ -32,6 +31,13 @@ export default function Form({
   unitsData,
   photoPath = null,
   currency,
+}: {
+  clinicData: any;
+  formData: any;
+  categoryData: any;
+  unitsData: any;
+  photoPath: any;
+  currency: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -60,7 +66,7 @@ export default function Form({
     file: null as File | null,
   });
 
-  const [_, setHideFields] = useState(false);
+  const [, setHideFields] = useState(false);
   const serchResults = useSelector(userSearchResultsSelector);
   const searchSizeResults = useSelector(sizeSearchResultsSelector);
   const categoryPercent = useSelector(categoryPercentSelector);
@@ -101,7 +107,7 @@ export default function Form({
         price_per_unit: calcPricePerUnit(retailValue, prev.weight),
       }));
     } else {
-      const _cat = categoryData.find((_d) => _d.id == data.category_id);
+      const _cat = categoryData.find((_d: any) => _d.id == data.category_id);
       if (_cat) dispatch(setPercentAction(parseFloat(_cat.percent).toFixed(2)));
     }
   }, [data.price]);
@@ -159,7 +165,7 @@ export default function Form({
     const value = e.target.value;
 
     if (key === 'unit_id') {
-      const unit = unitsData.find((u) => u.id == value);
+      const unit = unitsData.find((u: any) => u.id == value);
       setData((prev) => ({
         ...prev,
         unit_id: value,
@@ -188,7 +194,7 @@ export default function Form({
     setData(key as any, value);
   };
 
-  const calcPricePerUnit = (retailPrice, weight) => {
+  const calcPricePerUnit = (retailPrice: any, weight: any) => {
     const p = parseFloat(retailPrice);
     const w = parseFloat(weight);
 
@@ -210,7 +216,7 @@ export default function Form({
       return (
         <div className="absolute autocomplete z-20 bg-white border border-slate-200 rounded-xl shadow-lg mt-1 w-full max-h-48 overflow-y-auto p-1">
           <ul>
-            {serchResults.map((_res) => (
+            {serchResults.map((_res: any) => (
               <li
                 key={_res.id}
                 className="cursor-pointer py-1.5 px-3 hover:bg-slate-100 rounded-lg text-sm text-slate-700"
@@ -235,7 +241,7 @@ export default function Form({
       return (
         <div className="absolute autocomplete z-20 bg-white border border-slate-200 rounded-xl shadow-lg mt-1 w-full max-h-48 overflow-y-auto p-1">
           <ul>
-            {searchSizeResults.map((_res) => (
+            {searchSizeResults.map((_res: any) => (
               <li
                 key={_res.id}
                 className="cursor-pointer py-1.5 px-3 hover:bg-slate-100 rounded-lg text-sm text-slate-700"
@@ -262,8 +268,6 @@ export default function Form({
           title={formData?.id ? msg.get('material.title.edit') : msg.get('material.title.create')}
           description={msg.get('material.title.description')}
           backUrl="/materials"
-          processing={processing}
-          saveText={msg.get('material.save') || 'Зберегти зміни'}
         />
       </div>
       {/* Основна форма */}
@@ -379,8 +383,6 @@ export default function Form({
                     <InputText
                       name={'expected_uses'}
                       values={data}
-                      dataValue={data.expected_uses}
-                      value={data.expected_uses}
                       onChange={handleChange}
                       label={msg.get('material.expected_uses')}
                     />
@@ -407,10 +409,8 @@ export default function Form({
                     <InputTreeSelect
                       name={'category_id'}
                       values={data}
-                      value={data.category_id}
                       options={categoryData}
                       onChange={handleChangeSelect}
-                      required
                       label={msg.get('material.category')}
                     />
                   </div>
@@ -419,10 +419,7 @@ export default function Form({
                     <InputText
                       name={'name'}
                       values={data}
-                      dataValue={data.name}
-                      value={data.name}
                       onChange={handleChange}
-                      required
                       label={msg.get('material.name')}
                     />
                   </div>
@@ -431,10 +428,7 @@ export default function Form({
                     <InputText
                       name={'articul'}
                       values={data}
-                      dataValue={data.articul}
-                      value={data.articul}
                       onChange={handleChange}
-                      required
                       label={msg.get('material.articul')}
                     />
                   </div>
@@ -443,9 +437,7 @@ export default function Form({
                     <InputText
                       name={'producer'}
                       values={data}
-                      value={data.producer}
                       onChange={handleChangeProducer}
-                      required
                       label={msg.get('material.producer')}
                     />
                     {renderSearchProducerResult()}
@@ -477,7 +469,6 @@ export default function Form({
                     <InputText
                       name={'weight'}
                       values={data}
-                      value={data.weight}
                       onChange={handleChangeSize}
                       label={msg.get('material.size')}
                     />
@@ -513,10 +504,7 @@ export default function Form({
                     <InputText
                       name={'price'}
                       values={data}
-                      dataValue={data.price}
-                      value={data.price}
                       onChange={handleChangePrice}
-                      required
                       label={msg.get('material.price')}
                     />
                     <span className="absolute top-0 right-0 text-xs text-brand-600 font-semibold mt-1">
@@ -528,19 +516,13 @@ export default function Form({
                   <InputText
                     name={'retail_price'}
                     values={data}
-                    dataValue={data.retail_price}
-                    value={data.retail_price}
                     onChange={handleChangeRetailPrice}
-                    required
                     label={msg.get('material.retail_price')}
                   />
 
                   <InputText
                     name={'price_per_unit'}
                     values={data}
-                    dataValue={data.price_per_unit}
-                    value={data.price_per_unit}
-                    required
                     label={msg.get('material.price.per.unit')}
                   />
                 </div>
@@ -558,6 +540,7 @@ export default function Form({
             successMessage={msg.get('material.saved') || 'Збережено успішно!'}
             processing={processing}
             recentlySuccessful={recentlySuccessful}
+            onSave={submit}
           />
         </form>
       </div>

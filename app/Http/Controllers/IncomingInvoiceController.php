@@ -73,6 +73,9 @@ class IncomingInvoiceController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('invoice-incoming-all')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            }
             $clinic = $request->user()->clinicByFilial($clinicId);
 
             // Получаем доступные склады для филиала
@@ -166,6 +169,9 @@ class IncomingInvoiceController extends Controller
      */
     public function create(Request $request): Response {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('invoice-incoming-create')) {
+                return Inertia::render('Act/List', ['error' => 'Insufficient permissions']);
+            }
             if ($request->user()->can('invoice-incoming-create')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
                 $filialId = $request->session()->get('filial_id');

@@ -8,6 +8,8 @@ export const PERMISSION_CATEGORIES = [
   'invoice-outgoing',
   'invoice-change',
   'opening-balance',
+  'money-in',
+  'money-out',
   'material',
   'service',
   'producer',
@@ -112,4 +114,10 @@ export const DEFAULT_PERMISSIONS = [
   'role-create',
   'role-edit',
   'role-delete',
+
+  'money-in-create',
+  'money-in-view',
+  'money-in-edit',
+  'money-in-delete',
+  'money-in-all',
 ];

@@ -242,21 +242,37 @@ export default function List({
                   </td>
                   <td>{item.created_by}</td>
                   <td className="text-right flex items-center justify-end gap-1">
-                    <button
-                      type="button"
-                      className="actn-btns"
-                      title={msg.get('money_in.money_in.edit')}
-                      onClick={() => handleOpenEditModal(item)}
-                    >
-                      <span className="material-symbols-outlined text-[18px] block">edit</span>
-                    </button>
-                    <Link
-                      className="actn-btns hover:bg-rose-50 hover:text-rose-600"
-                      title={msg.get('filial.filial.delete') || 'Видалити'}
-                      href={`money-in/delete/${item.id}`}
-                    >
-                      <span className="material-symbols-outlined text-[18px] block">delete</span>
-                    </Link>
+                    {item.status !== 'posted' ? (
+                      <>
+                        <button
+                          type="button"
+                          className="actn-btns"
+                          title={msg.get('money_in.money_in.edit')}
+                          onClick={() => handleOpenEditModal(item)}
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">edit</span>
+                        </button>
+                        <Link
+                          className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                          title={msg.get('filial.filial.delete') || 'Видалити'}
+                          href={`money-in/delete/${item.id}`}
+                        >
+                          <span className="material-symbols-outlined text-[18px] block">
+                            delete
+                          </span>
+                        </Link>
+                      </>
+                    ) : (
+                      <Link
+                        className="actn-btns"
+                        title={msg.get('money_in.edit') || 'Редагувати'}
+                        href={`money-in/view/${item.id}`}
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">
+                          visibility
+                        </span>
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

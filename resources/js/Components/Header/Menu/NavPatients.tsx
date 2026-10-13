@@ -36,7 +36,7 @@ export default function NavPatients() {
             className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
               isActive
                 ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
             }`}
           >
             <span className="text-[13px]">{lng.get('menu.patients')}</span>
@@ -60,7 +60,7 @@ export default function NavPatients() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/patients')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <UsersRound className="w-5 h-5" />
@@ -89,7 +89,7 @@ export default function NavPatients() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/patient-statuses')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <CircleCheck className="w-5 h-5" />

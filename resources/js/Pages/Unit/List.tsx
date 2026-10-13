@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import React, { useCallback, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngUnit from '../../Lang/Unit/translation';
@@ -10,8 +10,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData }) {
-  const dispatch = useDispatch();
+export default function List({ listData }: { listData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngUnit,
@@ -19,13 +18,13 @@ export default function List({ listData }) {
   });
 
   // Стан для форми: null — закрита, 'create' — створення, або ID елемента — редагування
-  const [editingId, setEditingId] = useState(null);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingId, setEditingId] = useState<any>(null);
+  const [editingItem] = useState<any>(null);
 
-  const formRef = useRef(null);
+  const formRef = useRef<any>(null);
 
   // Inertia useForm
-  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
+  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm<any>({
     name: '',
     short_name: '',
     code: '',
@@ -49,7 +48,7 @@ export default function List({ listData }) {
   };
 
   // Відкриття форми для редагування з заповненням даних
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingId(item.id);
     setData({
@@ -69,7 +68,7 @@ export default function List({ listData }) {
     setEditingId(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     if (editingId === 'create') {
@@ -86,10 +85,6 @@ export default function List({ listData }) {
     }
   };
 
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
-
   return (
     <AuthenticatedLayout header={<Head title={'Unit'} />}>
       <Head title={'Unit'} />
@@ -103,7 +98,8 @@ export default function List({ listData }) {
               description={msg.get('unit.title.description')}
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('unit.create')}
-              isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
+              isCreateDisabled={editingItem?.id ? true : false}
             />
             {/* Єдина інлайн-форма для Створення та Редагування */}
             {editingId && (
@@ -207,8 +203,8 @@ export default function List({ listData }) {
             )}
 
             <section className="table-card">
-              <DataTable paginationType={PaginationType.UNITS} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.UNITS}>
+                {listData?.map((item: any) => (
                   <tr className="" key={item.id}>
                     <td>
                       <span className="pl-2">{item.name}</span>

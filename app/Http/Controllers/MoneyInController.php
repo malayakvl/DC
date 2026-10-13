@@ -57,6 +57,12 @@ class MoneyInController extends Controller
     public function index(Request $request)
     {
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            if (!$request->user()->canClinic('money-in-all')) {
+                return Inertia::render('Errors/Forbidden', [
+                    'error' => 'Insufficient permissions',
+                    'requiredPermission' => 'money-in',
+                ])->toResponse($request)->setStatusCode(403);
+            }
             $clinic = $request->user()->clinicByFilial($clinicId);
             $filialId = $request->session()->get('filial_id');
             $schema = 'clinic_'.$clinicId;
@@ -104,15 +110,31 @@ class MoneyInController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, $id) {
-        //
-        if ($request->user()->can('invoice-incoming-view')) {
-            $filial = ClinicFilial::find($id);
-            return Inertia::render('Store/FilialView', [
-                'filialData' => $filial,
-            ]);
-        } else {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if (!$request->user()->canClinic('money-in-all')) {
+                return Inertia::render('Errors/Forbidden', [
+                    'error' => 'Insufficient permissions',
+                    'requiredPermission' => 'money-in',
+                ])->toResponse($request)->setStatusCode(403);
+            }
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $typeData = array();
+            $filialId = $request->session()->get('filial_id');
+            $formData = MoneyIn::find($id);
+            $currencyData = Currency::where('id', '=', $formData->curreny_id);
+            $paymentsMethods = PaymentMethod::where('id', '=', $formData->account_id);
 
-        }
+            $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
+            return Inertia::render('MoneyIn/View', [
+                'clinicData' => $clinicData,
+                'formData' => $formData,
+                'customerData' => $customerData,
+                'paymentsMethodsData' => $paymentsMethods,
+                'statusData' => Invoices::INVOICE_STATUSES,
+                'typeData' => $typeData,
+                'currencyData' => $currencyData,
+            ]);
+        });
     }
 
 

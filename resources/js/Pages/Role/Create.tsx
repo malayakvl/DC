@@ -10,9 +10,8 @@ import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 import FormHeader from '../../Components/Common/FormHeader';
 
 // Расширенный хелпер для иконок модулей (категорий)
-const getCategoryIcon = (colName) => {
+const getCategoryIcon = (colName: any) => {
   const lower = colName.toLowerCase();
-  console.log(lower);
 
   // Склад и материалы / Storage
   switch (lower) {
@@ -24,6 +23,10 @@ const getCategoryIcon = (colName) => {
       return { icon: 'handshake', bg: 'bg-teal-500/15', text: 'text-teal-700' };
     case 'store':
       return { icon: 'storefront', bg: 'bg-teal-500/15', text: 'text-teal-700' };
+    case 'money-in':
+      return { icon: 'money', bg: 'bg-teal-500/15', text: 'text-teal-700' };
+    case 'money-out':
+      return { icon: 'money', bg: 'bg-teal-500/15', text: 'text-teal-700' };
     case 'invoice-incoming':
       return { icon: 'post_add', bg: 'bg-teal-500/15', text: 'text-teal-700' };
     case 'invoice-outgoing':
@@ -61,7 +64,7 @@ const getCategoryIcon = (colName) => {
 };
 
 // Хелпер для иконок прав (пермишенов)
-const getPermissionVisual = (permName) => {
+const getPermissionVisual = (permName: any) => {
   const lower = permName.toLowerCase();
   if (
     lower.includes('delete') ||
@@ -97,8 +100,15 @@ const getPermissionVisual = (permName) => {
   return { icon: 'visibility', color: 'text-teal-600', hoverGroup: 'group-hover:text-teal-700' };
 };
 
-export default function RoleForm({ roleData, permissionData, rolePermissions = [] }) {
-  const authUser = usePage().props.auth?.user;
+export default function RoleForm({
+  roleData,
+  permissionData,
+  rolePermissions = [],
+}: {
+  roleData: any;
+  permissionData: any;
+  rolePermissions: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngRole,
@@ -106,7 +116,7 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
   });
 
   const isEditing = Boolean(roleData);
-  const normalizedRolePermissions = rolePermissions.map((id) => parseInt(id));
+  const normalizedRolePermissions = rolePermissions.map((id: any) => parseInt(id));
 
   const { processing, recentlySuccessful } = useForm();
 
@@ -115,7 +125,7 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
     permissions: normalizedRolePermissions,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -124,7 +134,7 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
     }));
   };
 
-  const handlePermission = (el) => {
+  const handlePermission = (el: any) => {
     const tmpPermis = [...values.permissions];
     const permissionId = parseInt(el.id);
 
@@ -144,33 +154,33 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
     }));
   };
 
-  const setAllPermissions = (checkedState) => {
+  const setAllPermissions = (checkedState: any) => {
     if (checkedState) {
-      const allIds = permissionData.map((p) => parseInt(p.id));
+      const allIds = permissionData.map((p: any) => parseInt(p.id));
       setValues((values) => ({ ...values, permissions: allIds }));
     } else {
       setValues((values) => ({ ...values, permissions: [] }));
     }
   };
 
-  const toggleModuleGroup = (colName, checkedState) => {
-    const filteredPermissions = permissionData.filter((item) => item.name.includes(colName));
-    const targetIds = filteredPermissions.map((p) => parseInt(p.id));
+  const toggleModuleGroup = (colName: any, checkedState: any) => {
+    const filteredPermissions = permissionData.filter((item: any) => item.name.includes(colName));
+    const targetIds = filteredPermissions.map((p: any) => parseInt(p.id));
 
     setValues((prev) => {
       let updatedPermissions = [...prev.permissions];
       if (checkedState) {
-        targetIds.forEach((id) => {
+        targetIds.forEach((id: any) => {
           if (!updatedPermissions.includes(id)) updatedPermissions.push(id);
         });
       } else {
-        updatedPermissions = updatedPermissions.filter((id) => !targetIds.includes(id));
+        updatedPermissions = updatedPermissions.filter((id: any) => !targetIds.includes(id));
       }
       return { ...prev, permissions: updatedPermissions };
     });
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     const endpoint = isEditing ? `/role/update/${roleData.id}` : `/role/store`;
     router.post(endpoint, values);
@@ -190,8 +200,6 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
               title={roleData?.id ? msg.get('role.title.edit') : msg.get('role.title.create')}
               description={msg.get('role.title.description')}
               backUrl="/roles"
-              processing={processing}
-              saveText={msg.get('role.save') || 'Зберегти зміни'}
             />
             <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-6 border border-gray-100">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -266,17 +274,18 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {PERMISSION_CATEGORIES.map((colName) => {
                 const filteredPermissions =
-                  permissionData && permissionData.filter((item) => item.name.includes(colName));
+                  permissionData &&
+                  permissionData.filter((item: any) => item.name.includes(colName));
 
                 if (!filteredPermissions || filteredPermissions.length === 0) {
                   return null;
                 }
 
                 const categoryMeta = getCategoryIcon(colName);
-                const categoryPermissionIds = filteredPermissions.map((p) => parseInt(p.id));
+                const categoryPermissionIds = filteredPermissions.map((p: any) => parseInt(p.id));
                 const allModuleChecked =
                   categoryPermissionIds.length > 0 &&
-                  categoryPermissionIds.every((id) => values.permissions.includes(id));
+                  categoryPermissionIds.every((id: any) => values.permissions.includes(id));
 
                 return (
                   <div
@@ -315,7 +324,7 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
                     </div>
 
                     <div className="p-4 flex flex-col gap-2">
-                      {filteredPermissions.map((_p) => {
+                      {filteredPermissions.map((_p: any) => {
                         const permissionId = parseInt(_p.id);
                         const isChecked = values['permissions'].includes(permissionId);
                         const visual = getPermissionVisual(_p.name);
@@ -365,6 +374,7 @@ export default function RoleForm({ roleData, permissionData, rolePermissions = [
               successMessage={msg.get('role.saved') || 'Збережено успішно!'}
               processing={processing}
               recentlySuccessful={recentlySuccessful}
+              onSave={submit}
             />
           </form>
         </div>
