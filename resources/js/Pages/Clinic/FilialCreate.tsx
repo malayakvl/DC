@@ -3,7 +3,17 @@ import { Head } from '@inertiajs/react';
 import FilialForm from './Partials/FormFilial.js';
 import React from 'react';
 
-export default function Create({ clinicData, filialData, storeData, employeesData }) {
+export default function Create({
+  clinicData,
+  filialData,
+  storeData,
+  employeesData,
+}: {
+  clinicData: any;
+  filialData: any;
+  storeData: any;
+  employeesData: any;
+}) {
   return (
     <AuthenticatedLayout header={<Head title="Filial" />}>
       <Head title={'Filial Create'} />
@@ -16,7 +26,6 @@ export default function Create({ clinicData, filialData, storeData, employeesDat
               filialData={filialData}
               storeData={storeData}
               employeesData={employeesData}
-              className="max-w-xl"
             />
           </div>
         </div>

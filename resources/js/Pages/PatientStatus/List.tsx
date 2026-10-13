@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, useForm, router, Link } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Head, useForm, router } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngPatientStatus from '../../Lang/PatientStatus/translation';
@@ -10,8 +10,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData }) {
-  const dispatch = useDispatch();
+export default function List({ listData }: { listData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatientStatus,
@@ -20,7 +19,7 @@ export default function List({ listData }) {
 
   // State для инлайн-формы
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
 
   // Inertia Form State (настроено под поля name и discount для статуса пациента)
   const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
@@ -39,7 +38,7 @@ export default function List({ listData }) {
   };
 
   // Открыть форму на редактирование
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingItem(item);
     setData({
@@ -59,7 +58,7 @@ export default function List({ listData }) {
   };
 
   // Сохранение (Создание / Обновление отправляется на ваш метод update/store)
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     post(route('patient.status.update'), {
       onSuccess: () => handleCloseForm(),
@@ -68,15 +67,11 @@ export default function List({ listData }) {
   };
 
   // Удаление
-  const handleDelete = (id) => {
+  const handleDelete = (id: any) => {
     if (confirm(msg.get('status.confirm.delete') || 'Видалити цей статус?')) {
       router.get(`/patient-status/delete/${id}`);
     }
   };
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head title={msg.get('status.title.list')} />}>
@@ -92,6 +87,7 @@ export default function List({ listData }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('status.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
             />
 
             {/* Инлайн-форма */}
@@ -172,8 +168,8 @@ export default function List({ listData }) {
 
             {/* Таблица */}
             <section className="table-card">
-              <DataTable paginationType={PaginationType.PATIENTSTATUSES} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.PATIENTSTATUSES}>
+                {listData?.map((item: any) => (
                   <tr className="hover:bg-slate-50/80 transition-colors" key={item.id}>
                     <td className="py-3 pl-4 font-medium text-slate-900">
                       <span className="whitespace-nowrap pl-3">{item.name}</span>

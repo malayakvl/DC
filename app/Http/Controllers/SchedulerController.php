@@ -124,6 +124,7 @@ class SchedulerController extends Controller
                     'schedulers.id',
                     'title',
                     'schedulers.services',
+                    'schedulers.total_price',
                     'doctor_id',
                     'patient_id',
                     'cabinet_id',
@@ -340,6 +341,7 @@ class SchedulerController extends Controller
                     'schedulers.event_time_to',
                     'schedulers.status_color',
                     'schedulers.status_name AS event_status',
+                    'schedulers.total_price',
 
                     // Кабинет (ресурс)
                     'schedulers.cabinet_id',
@@ -496,7 +498,7 @@ class SchedulerController extends Controller
                     'schedulers.patient_id', 'schedulers.status_name AS event_status',
                     'users.first_name', 'users.last_name', 'schedulers.description', 'schedulers.services', 'users.birthday', 'users.dt_balance', 'users.id AS doctor_id',
                     'users.kt_balance', 'patient_discount_statuses.name AS status_name', 'patient_discount_statuses.discount AS status_discount', 'schedulers.id AS event_id',
-                    'patient_discount_statuses.discount', 'patient_discount_statuses.name AS patient_status_name',
+                    'patient_discount_statuses.discount', 'patient_discount_statuses.name AS patient_status_name', 'schedulers.total_price',
                     DB::raw('EXTRACT(YEAR FROM schedulers.event_date) AS year'),
                     DB::raw('EXTRACT(MONTH FROM schedulers.event_date) AS month'),
                     DB::raw('EXTRACT(DAY FROM schedulers.event_date) AS day'),
@@ -540,6 +542,7 @@ class SchedulerController extends Controller
                     'schedulers.event_time_to',
                     'schedulers.status_color',
                     'schedulers.status_name',
+                    'schedulers.total_price',
 
                     // Кабинет (ресурс)
                     'schedulers.cabinet_id',
@@ -703,6 +706,15 @@ class SchedulerController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request) {
             $clinic = $request->user()->clinicByFilial($clinicId);
             if ($request->user()->canClinic('scheduler-edit')) {
+                $totalPrice = 0;
+                if ($request->services && is_array($request->services)) {
+                    foreach ($request->services as $service) {
+                        $itemTotal = isset($service['total_price'])
+                            ? floatval($service['total_price'])
+                            : (floatval($service['price'] ?? 0) * intval($service['qty'] ?? 1));
+                        $totalPrice += $itemTotal;
+                    }
+                }
                 if ($request->id) {
                     $scheduler = Scheduler::find($request->id);
                     $scheduler->title = $request->title ?? 'Uuuuuu';
@@ -720,6 +732,8 @@ class SchedulerController extends Controller
                     $scheduler->status_color = $request->status_id['color'] ?? '#3B82F6';
 
                     $scheduler->services = json_encode($request->services ?? []);
+                    $scheduler->total_price = $totalPrice;
+
                     $scheduler->save();
 
                     return redirect()->route('scheduler.index')->with('success', 'Event updated successfully');
@@ -744,13 +758,13 @@ class SchedulerController extends Controller
                     $scheduler->event_time_from = $request->event_time_from;
                     $scheduler->event_time_to = $request->event_time_to;
                     $scheduler->clinic_id = $clinic->id;
-                    $scheduler->cabinet_id = $request->cabinet_id["id"];
-                    $scheduler->doctor_id = $request->doctor_id["id"];
-                    $scheduler->patient_id = $patientId;
+                    $scheduler->cabinet_id = is_array($request->cabinet_id) ? $request->cabinet_id["id"] : $request->cabinet_id;
+                    $scheduler->doctor_id = is_array($request->doctor_id) ? $request->doctor_id["id"] : $request->doctor_id;                    $scheduler->patient_id = $patientId;
                     $scheduler->description = $request->comment ? $request->comment : '';
                     $scheduler->status_name = $request->status_id["name"];
                     $scheduler->status_color = $request->status_id["color"];
                     $scheduler->services = json_encode($request->services);
+                    $scheduler->total_price = $totalPrice;
                     $scheduler->save();
                     // МЕНЯЕМ ТУТ: Обычный редирект Inertia
                     return redirect()->route('scheduler.index')->with('success', 'Event created successfully');

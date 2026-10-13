@@ -3,7 +3,15 @@ import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
 import React from 'react';
 
-export default function Edit({ clinicData, formData, filialData }) {
+export default function Edit({
+  clinicData,
+  formData,
+  filialData,
+}: {
+  clinicData: any;
+  formData: any;
+  filialData: any;
+}) {
   return (
     <AuthenticatedLayout header={<Head />}>
       <Head title={'Store'} />

@@ -7,6 +7,15 @@ import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
 import { Package, Ruler, PackageSearch, Truck, Layers } from 'lucide-react';
 
+interface AuthProps {
+  auth: {
+    user?: {
+      roles?: Array<{ name: string }>;
+    };
+    can: Record<string, boolean>;
+  };
+  [key: string]: any;
+}
 export default function NavStores() {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
@@ -14,21 +23,22 @@ export default function NavStores() {
     locale: appLang,
   });
 
-  const { url, props } = usePage();
-  const permissions = props.auth.can;
+  const { url } = usePage();
+  const { auth } = usePage<AuthProps>().props;
+  const permissions = auth.can;
 
   const activeRoutes = ['/units', '/producers', '/suppliers', '/material-categories', '/materials'];
   const isActive = activeRoutes.some((route) => url.startsWith(route));
 
   return (
     <>
-      {(props.auth.user?.roles[0]?.name === 'Admin' || permissions['store-all']) && (
+      {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['store-all']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-all cursor-pointer ${
               isActive
                 ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
             }`}
           >
             <span className="text-[13px]">{lng.get('menu.materials')}</span>
@@ -83,7 +93,7 @@ export default function NavStores() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/material-categories')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <Layers className="w-5 h-5" />
@@ -119,7 +129,7 @@ export default function NavStores() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/suppliers')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <Truck className="w-5 h-5" />
@@ -148,7 +158,7 @@ export default function NavStores() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/producers')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <PackageSearch className="w-5 h-5" />
@@ -177,7 +187,7 @@ export default function NavStores() {
                       className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
                         url.startsWith('/units')
                           ? 'bg-teal-600 text-white'
-                          : 'bg-slate-100 text-slate-600'
+                          : 'bg-slate-100 text-black'
                       }`}
                     >
                       <Ruler className="w-5 h-5" />

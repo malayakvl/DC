@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
@@ -9,9 +9,17 @@ import { PERMISSION_CATEGORIES } from '@/Constants/Permissions';
 import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 import FormHeader from '../../Components/Common/FormHeader';
 
-export default function Edit({ roleData, permissionData, rolePermissions }) {
+export default function Edit({
+  roleData,
+  permissionData,
+  rolePermissions,
+}: {
+  roleData: any;
+  permissionData: any;
+  rolePermissions: any;
+}) {
   useDispatch();
-  const authUser = usePage().props.auth.user;
+  // const authUser = usePage().props.auth.user;
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngRole,
@@ -19,7 +27,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   });
 
   // Перетворюємо всі ID дозволів на цілі числа для стабільності
-  const normalizedRolePermissions = rolePermissions.map((id) => parseInt(id));
+  const normalizedRolePermissions = rolePermissions.map((id: any) => parseInt(id));
 
   const [values, setValues] = useState({
     name: roleData.name,
@@ -28,7 +36,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
   const { processing, recentlySuccessful } = useForm();
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -37,7 +45,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
     }));
   };
 
-  const handlePermission = (el) => {
+  const handlePermission = (el: any) => {
     const tmpPermis = [...values.permissions];
     const permissionId = parseInt(el.id);
 
@@ -58,9 +66,9 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   };
 
   // Швидкий сценарій: увімкнути/вимкнути всі дозволи одразу
-  const setAllPermissions = (checkedState) => {
+  const setAllPermissions = (checkedState: any) => {
     if (checkedState) {
-      const allIds = permissionData.map((p) => parseInt(p.id));
+      const allIds = permissionData.map((p: any) => parseInt(p.id));
       setValues((values) => ({ ...values, permissions: allIds }));
     } else {
       setValues((values) => ({ ...values, permissions: [] }));
@@ -68,24 +76,24 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
   };
 
   // Масовий перемикач для конкретної категорії (модуля)
-  const toggleModuleGroup = (colName, checkedState) => {
-    const filteredPermissions = permissionData.filter((item) => item.name.includes(colName));
-    const targetIds = filteredPermissions.map((p) => parseInt(p.id));
+  const toggleModuleGroup = (colName: any, checkedState: any) => {
+    const filteredPermissions = permissionData.filter((item: any) => item.name.includes(colName));
+    const targetIds = filteredPermissions.map((p: any) => parseInt(p.id));
 
     setValues((prev) => {
       let updatedPermissions = [...prev.permissions];
       if (checkedState) {
-        targetIds.forEach((id) => {
+        targetIds.forEach((id: any) => {
           if (!updatedPermissions.includes(id)) updatedPermissions.push(id);
         });
       } else {
-        updatedPermissions = updatedPermissions.filter((id) => !targetIds.includes(id));
+        updatedPermissions = updatedPermissions.filter((id: any) => !targetIds.includes(id));
       }
       return { ...prev, permissions: updatedPermissions };
     });
   };
 
-  const getCategoryIcon = (colName) => {
+  const getCategoryIcon = (colName: any) => {
     const lower = colName.toLowerCase();
     console.log(lower);
 
@@ -99,6 +107,10 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
         return { icon: 'handshake', bg: 'bg-teal-500/15', text: 'text-teal-700' };
       case 'store':
         return { icon: 'storefront', bg: 'bg-teal-500/15', text: 'text-teal-700' };
+      case 'money-in':
+        return { icon: 'money', bg: 'bg-teal-500/15', text: 'text-teal-700' };
+      case 'money-out':
+        return { icon: 'money', bg: 'bg-teal-500/15', text: 'text-teal-700' };
       case 'invoice-incoming':
         return { icon: 'post_add', bg: 'bg-teal-500/15', text: 'text-teal-700' };
       case 'invoice-outgoing':
@@ -135,7 +147,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
     return { icon: 'grid_view', bg: 'bg-teal-500/15', text: 'text-teal-700' };
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     router.post(`/role/update/${roleData.id}`, values);
   };
@@ -150,8 +162,6 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
               title={roleData?.id ? msg.get('role.title.edit') : msg.get('role.title.create')}
               description={msg.get('role.title.description')}
               backUrl="/roles"
-              processing={processing}
-              saveText={msg.get('role.save') || 'Зберегти зміни'}
             />
             {/* Картка з базовими полями (Назва та Опис) */}
             <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-6 border border-gray-100">
@@ -235,9 +245,10 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
             {/* Матриця прав: Сітка категорій (модулів) */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {PERMISSION_CATEGORIES.map((colName) => {
+              {PERMISSION_CATEGORIES.map((colName: any) => {
                 const filteredPermissions =
-                  permissionData && permissionData.filter((item) => item.name.includes(colName));
+                  permissionData &&
+                  permissionData.filter((item: any) => item.name.includes(colName));
 
                 if (!filteredPermissions || filteredPermissions.length === 0) {
                   return null;
@@ -245,8 +256,8 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
                 // Перевіряємо чи вибрані всі дозволи в цій категорії для загального світчера
                 const categoryMeta = getCategoryIcon(colName);
-                const categoryPermissionIds = filteredPermissions.map((p) => parseInt(p.id));
-                const allModuleChecked = categoryPermissionIds.every((id) =>
+                const categoryPermissionIds = filteredPermissions.map((p: any) => parseInt(p.id));
+                const allModuleChecked = categoryPermissionIds.every((id: any) =>
                   values.permissions.includes(id)
                 );
 
@@ -290,7 +301,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
 
                     {/* Список дозволів усередині категорії */}
                     <div className="p-4 flex flex-col gap-2">
-                      {filteredPermissions.map((_p) => {
+                      {filteredPermissions.map((_p: any) => {
                         const permissionId = parseInt(_p.id);
                         const isChecked = values['permissions'].includes(permissionId);
 
@@ -328,7 +339,6 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
             </div>
 
             {/* Нижній блок збереження */}
-            {/* Master Action Footer Bar */}
             <StickyFormFooter
               backUrl="/roles"
               backLabel={msg.get('role.back') || 'Повернутись'}
@@ -337,6 +347,7 @@ export default function Edit({ roleData, permissionData, rolePermissions }) {
               successMessage={msg.get('role.saved') || 'Збережено успішно!'}
               processing={processing}
               recentlySuccessful={recentlySuccessful}
+              onSave={submit}
             />
           </form>
         </div>

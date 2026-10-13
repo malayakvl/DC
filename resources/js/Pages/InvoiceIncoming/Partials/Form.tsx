@@ -31,6 +31,17 @@ export default function Form({
   currencyData,
   unitsData,
   taxData,
+}: {
+  clinicData: any;
+  storeData: any;
+  statusData: any;
+  producerData: any;
+  customerData: any;
+  formData: any;
+  formRowData: any;
+  currencyData: any;
+  unitsData: any;
+  taxData: any;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
@@ -43,7 +54,7 @@ export default function Form({
   const documentTax = useSelector(invoiceTaxSelector);
   const showTableError = useSelector(tableErrorSelector);
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<Record<string, any>>({
     invoice_number: formData.invoice_number ? formData.invoice_number : '',
     invoice_date: formData.invoice_date,
     clinic_id: clinicData.id,
@@ -57,11 +68,12 @@ export default function Form({
     currency_id: formData.currency_id,
     tax_id: formData.tax_id,
     rate: formData.rate,
+    ttn: formData.ttn,
   });
   const { processing, recentlySuccessful } = useForm();
   const isPosted = formData.status === 'posted';
 
-  const handleChangeSelect = (e) => {
+  const handleChangeSelect = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -70,7 +82,7 @@ export default function Form({
     }));
     if (key === 'tax_id') {
       // Ищем выбранный налог в переданном массиве taxData, чтобы узнать его реальный процент (например, 20, 7, 5, 0)
-      const selectedTax = taxData.find((tax) => String(tax.id) === String(value));
+      const selectedTax = taxData.find((tax: any) => String(tax.id) === String(value));
       const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
 
       // Диспатчим в стейт строку с процентом, например "tax_20" или просто число
@@ -81,13 +93,13 @@ export default function Form({
   // Синхронізуємо початкові рядки з бази у Redux стор при завантаженні форми редагування
   useEffect(() => {
     if (formData?.tax_id && taxData) {
-      const selectedTax = taxData.find((tax) => String(tax.id) === String(formData.tax_id));
+      const selectedTax = taxData.find((tax: any) => String(tax.id) === String(formData.tax_id));
       const rate = selectedTax ? parseFloat(selectedTax.rate || selectedTax.percent || 0) : 0;
       dispatch(setInvoiceTax(`tax_${rate}`));
     }
   }, [formData?.tax_id, taxData]);
 
-  const handleChangeCalendar = (data) => {
+  const handleChangeCalendar = (data: any) => {
     const key = 'invoice_date';
     setValues((values) => ({
       ...values,
@@ -95,7 +107,7 @@ export default function Form({
     }));
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -104,7 +116,7 @@ export default function Form({
     }));
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (!values['invoice_date']) {
       values['invoice_date'] = new Date();
@@ -112,7 +124,7 @@ export default function Form({
 
     values['rows'] = invoiceItems;
     let haveErrorInRow = false;
-    invoiceItems.forEach((_row) => {
+    invoiceItems.forEach((_row: any) => {
       if (!_row.product_id) {
         haveErrorInRow = true;
       }
@@ -134,6 +146,7 @@ export default function Form({
           currency_id: values.currency_id,
           type_id: values.type_id,
           tax_id: values.tax_id,
+          ttn: values.ttn,
           rows: invoiceItems,
         });
       } else {
@@ -149,6 +162,7 @@ export default function Form({
           currency_id: values.currency_id,
           type_id: values.type_id,
           tax_id: values.tax_id,
+          ttn: values.ttn,
           rows: invoiceItems,
         });
       }
@@ -157,10 +171,13 @@ export default function Form({
 
   // Расчет общих итогов по документу для отображения в футере таблицы
   const totalWithoutTax = invoiceItems.reduce(
-    (acc, item) => acc + (parseFloat(item.total) || 0),
+    (acc: any, item: any) => acc + (parseFloat(item.total) || 0),
     0
   );
-  const totalTax = invoiceItems.reduce((acc, item) => acc + (parseFloat(item.tax_amount) || 0), 0);
+  const totalTax = invoiceItems.reduce(
+    (acc: any, item: any) => acc + (parseFloat(item.tax_amount) || 0),
+    0
+  );
   const totalWithTax = totalWithoutTax + totalTax;
 
   return (
@@ -174,8 +191,6 @@ export default function Form({
           }
           description={msg.get('invoice_incoming.title.description')}
           backUrl="/invoice-incoming"
-          processing={processing}
-          saveText={msg.get('invoice_incoming.save') || 'Зберегти зміни'}
         />
       </div>
       <form onSubmit={submit} className="space-y-4 py-6" encType="multipart/form-data">
@@ -193,7 +208,7 @@ export default function Form({
           </div>
 
           {/* Сетка полей (4 колонки, 2 ряда) */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {/* 1. Дата */}
             <div className="flex flex-col gap-1.5">
               <div className="w-full flex items-center justify-between">
@@ -214,12 +229,22 @@ export default function Form({
               <div className="w-full flex items-center justify-between">
                 <InputText
                   name={'invoice_number'}
+                  placeholder={''}
                   values={values}
-                  dataValue={values.invoice_number}
-                  value={values.invoice_number}
                   onChange={handleChange}
-                  required
                   label={msg.get('invoice_incoming.number')}
+                  className="filter-select-bordered-bordered w-full"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <div className="w-full flex items-center justify-between">
+                <InputText
+                  name={'ttn'}
+                  placeholder={''}
+                  values={values}
+                  onChange={handleChange}
+                  label={msg.get('invoice_incoming.ttn')}
                   className="filter-select-bordered-bordered w-full"
                 />
               </div>
@@ -241,40 +266,23 @@ export default function Form({
                 />
               </div>
             </div>
-
-            {/* 4. Поставщик */}
+            {/* 7. Валюта */}
             <div className="flex flex-col gap-1.5">
               <div className="w-full flex items-center justify-between">
                 <InputSelect
-                  translatable={false}
-                  name={'supplier_id'}
+                  name={'currency_id'}
                   className="filter-select-bordered w-full"
                   values={values}
-                  value={values.supplier_id}
-                  options={producerData}
+                  value={values.currency_id}
+                  options={currencyData}
                   onChange={handleChangeSelect}
                   required
-                  label={msg.get('invoice_incoming.producer')}
+                  label={msg.get('invoice_incoming.currency')}
                 />
               </div>
             </div>
-
-            {/* 5. Склад */}
-            <div className="flex flex-col gap-1.5 mt-[-15px]">
-              <div className="w-full flex items-center justify-between">
-                <InputSelect
-                  name={'store_id'}
-                  className="filter-select-bordered w-full"
-                  values={values}
-                  value={values.store_id}
-                  options={storeData}
-                  onChange={handleChangeSelect}
-                  required
-                  label={msg.get('invoice_incoming.store')}
-                />
-              </div>
-            </div>
-
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* 6. Налог (ПДВ) */}
             <div className="flex flex-col gap-1.5 mt-[-15px]">
               <div className="w-full flex items-center justify-between">
@@ -290,19 +298,33 @@ export default function Form({
                 />
               </div>
             </div>
+            {/* 4. Поставщик */}
+            <div className="flex flex-col gap-1.5 mt-[-15px]">
+              <InputSelect
+                translatable={false}
+                name={'supplier_id'}
+                className="filter-select-bordered w-full"
+                values={values}
+                value={values.supplier_id}
+                options={producerData}
+                onChange={handleChangeSelect}
+                required
+                label={msg.get('invoice_incoming.producer')}
+              />
+            </div>
 
-            {/* 7. Валюта */}
+            {/* 5. Склад */}
             <div className="flex flex-col gap-1.5 mt-[-15px]">
               <div className="w-full flex items-center justify-between">
                 <InputSelect
-                  name={'currency_id'}
+                  name={'store_id'}
                   className="filter-select-bordered w-full"
                   values={values}
-                  value={values.currency_id}
-                  options={currencyData}
+                  value={values.store_id}
+                  options={storeData}
                   onChange={handleChangeSelect}
                   required
-                  label={msg.get('invoice_incoming.currency')}
+                  label={msg.get('invoice_incoming.store')}
                 />
               </div>
             </div>
@@ -341,6 +363,9 @@ export default function Form({
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.factqty')}
+                  </th>
+                  <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
+                    {msg.get('invoice_incoming.expire')}
                   </th>
                   <th className="text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100 text-center pb-3">
                     {msg.get('invoice_incoming.price')}
@@ -383,7 +408,7 @@ export default function Form({
               {!isPosted && (
                 <tfoot>
                   <tr>
-                    <td colSpan="7" className="pt-3">
+                    <td colSpan={7} className="pt-3">
                       <button
                         type="button"
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-50 text-teal-700 text-xs font-bold hover:bg-teal-100 transition-colors"
@@ -431,6 +456,7 @@ export default function Form({
           successMessage={msg.get('material.saved') || 'Збережено успішно!'}
           processing={processing}
           recentlySuccessful={recentlySuccessful}
+          onSave={undefined}
         />
       </form>
     </section>

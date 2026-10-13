@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, useForm, Link } from '@inertiajs/react';
-import React, { useCallback, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Head, useForm } from '@inertiajs/react';
+import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCurrency from '../../Lang/Currrency/translation';
@@ -10,16 +10,15 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, clinicData }) {
-  const dispatch = useDispatch();
+export default function List({ listData, clinicData }: { listData: any; clinicData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCurrency,
     locale: appLang,
   });
 
-  const [editingId, setEditingId] = useState(null);
-  const formRef = useRef(null);
+  const [editingId, setEditingId] = useState<any>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
     name: '',
@@ -42,7 +41,7 @@ export default function List({ listData, clinicData }) {
     scrollToForm();
   };
 
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingId(item.id);
     console.log(item);
@@ -61,7 +60,7 @@ export default function List({ listData, clinicData }) {
     setEditingId(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     if (editingId === 'create') {
@@ -76,10 +75,6 @@ export default function List({ listData, clinicData }) {
       });
     }
   };
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head title={'Currencies'} />}>
@@ -97,6 +92,7 @@ export default function List({ listData, clinicData }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('currency.title.create') || 'Додати валюту'}
               isCreateDisabled={editingId === 'create'}
+              createHref={null}
             />
 
             {/* Компактна інлайн-форма */}
@@ -188,8 +184,8 @@ export default function List({ listData, clinicData }) {
 
             {/* Таблиця валют */}
             <section className="table-card">
-              <DataTable paginationType={PaginationType.CURRENCY} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.CURRENCY}>
+                {listData?.map((item: any) => (
                   <tr key={item.id}>
                     <td>
                       <span className="pl-3 font-medium text-slate-900">{item.name}</span>

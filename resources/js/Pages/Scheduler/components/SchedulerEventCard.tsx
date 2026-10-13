@@ -1,5 +1,4 @@
 import React from 'react';
-import { router } from '@inertiajs/react';
 
 const COMPACT_EVENT_HEIGHT = 90;
 const PRICE_EVENT_HEIGHT = 110;
@@ -19,13 +18,54 @@ type SchedulerEventCardProps = {
 const getEventBackground = (status?: string) => {
   switch (status) {
     case 'done':
-      return '#f4f7fa';
+      return '#dbfaf6';
     case 'planned':
       return '#eff6ff';
-    case 'inclicnic':
+    case 'inclinic':
       return '#fffbeb';
+    case 'incabinet':
+      return '#ede5fb';
+    case 'confirm':
+      return '#dffdf4';
+    case 'deny':
+      return '#f8dae6';
+    case 'noanswer':
+      return '#faf8f4';
+    case 'absent':
+      return '#eceaea';
+    case 'late':
+      return '#f8d0d0';
+    case 'new':
+      return '#faefc4';
     default:
       return '#f8fafc';
+  }
+};
+
+const getStatusBackground = (status?: string) => {
+  switch (status) {
+    case 'done':
+      return '#4e9795';
+    case 'planned':
+      return '#053d98';
+    case 'inclinic':
+      return '#ef7e34';
+    case 'incabinet':
+      return '#a984ec';
+    case 'confirm':
+      return '#10B981';
+    case 'deny':
+      return '#aaa7a8';
+    case 'noanswer':
+      return '#a1a09c';
+    case 'absent':
+      return '#8c8889';
+    case 'late':
+      return '#f42727';
+    case 'new':
+      return '#f1b55a';
+    default:
+      return '#818385';
   }
 };
 
@@ -98,20 +138,36 @@ export default function SchedulerEventCard({
           <span className="scheduler-event-card__time">
             {event.event_time_from}-{event.event_time_to}
           </span>
-          <div className="scheduler-event-card__actions">
-            <span className={`event-status ${event.status_name}`}>{statusLabel}</span>
-            <button
-              type="button"
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Двойной бейдж: Статус + Цена */}
+            <div
+              className={`inline-flex items-center rounded-lg text-white text-[11px] font-semibold overflow-hidden shadow-sm`}
+            >
+              <span
+                style={{ backgroundColor: getStatusBackground(event.status_name) }}
+                className={`px-2 py-0.5`}
+              >
+                {statusLabel}
+              </span>
+              <span className="px-2 py-0.5 bg-white text-black font-bold">
+                {event.service?.total_price ?? event.total_price ?? 0} ₴
+              </span>
+            </div>
+
+            {/* Кнопка создания акта */}
+            <a
+              href={`/act/create?visit_id=${event.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={(mouseEvent) => {
                 mouseEvent.stopPropagation();
-                mouseEvent.preventDefault();
-                router.visit(`/act/create?visit_id=${event.id}`);
+                // preventDefault не нужен, иначе ссылка не откроется в новой вкладке
               }}
               title="Створити акт"
-              className="act-btn"
+              className="w-6 h-6 rounded-md bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest transition-colors"
             >
-              <span className="material-symbols-outlined text-[16px]">description</span>
-            </button>
+              <span className="material-symbols-outlined text-[15px]">description</span>
+            </a>
           </div>
         </div>
 

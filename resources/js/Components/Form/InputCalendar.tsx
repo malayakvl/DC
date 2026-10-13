@@ -10,15 +10,22 @@ export default function InputCalendar({
   label,
   values,
   onChange,
-  type = 'text',
   ...props
+}: {
+  className?: string;
+  name: string;
+  label?: string;
+  values?: Record<string, any>;
+  onChange?: (value: any) => void;
 }) {
   const { errors } = usePage().props;
-  const [startDate, setStartDate] = useState(values[name] ? new Date(values[name]) : new Date());
+  const [startDate, setStartDate] = useState<any>(
+    values?.[name] ? new Date(values[name]) : new Date()
+  );
 
   return (
     <div className={`relative`}>
-      <InputLabel htmlFor={name} value={label} children={null} />
+      <InputLabel htmlFor={name} value={label} />
       <DatePicker
         id={name}
         name={name}
@@ -26,24 +33,10 @@ export default function InputCalendar({
         selected={startDate}
         onChange={(date: any) => {
           setStartDate(date);
-          onChange(date);
+          onChange?.(date);
         }}
         {...props}
       />
-      {/*<input*/}
-      {/*    id={name}*/}
-      {/*    onChange={onChange}*/}
-      {/*    onClick={() => {*/}
-      {/*        console.log('show calendar')*/}
-      {/*    }}*/}
-      {/*    type={type ? type : 'text'}*/}
-      {/*    value={values[name]}*/}
-
-      {/*    className={*/}
-      {/*        'input-text ' +*/}
-      {/*        className*/}
-      {/*    }*/}
-      {/*/>*/}
       {errors[name] && <div className="form-error">{errors[name]}</div>}
     </div>
   );

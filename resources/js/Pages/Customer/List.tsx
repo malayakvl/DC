@@ -1,27 +1,21 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import NavLink from '../../Components/Links/NavLink';
 import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ customerData }) {
-  const dispatch = useDispatch();
+export default function List({ customerData }: { customerData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
     locale: appLang,
   });
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head title="Customers" />}>
@@ -36,10 +30,12 @@ export default function List({ customerData }) {
               description={msg.get('customer.title.description')}
               createHref="customer/create"
               createLabel={msg.get('customer.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
             <section className="table-card">
-              <DataTable paginationType={PaginationType.CUSTOMERS} sendRequest={sendRequest}>
-                {customerData?.map((item) => (
+              <DataTable paginationType={PaginationType.CUSTOMERS}>
+                {customerData?.map((item: any) => (
                   <tr
                     className="hover:bg-surface-container-low/40 transition-colors group"
                     key={item.id}
@@ -88,9 +84,7 @@ export default function List({ customerData }) {
                         title={msg.get('customer.delete')}
                         href={`customer/delete/${item.id}`}
                       >
-                        <span className="material-symbols-outlined text-[18px] block">
-                          delete
-                        </span>
+                        <span className="material-symbols-outlined text-[18px] block">delete</span>
                       </Link>
                     </td>
                   </tr>

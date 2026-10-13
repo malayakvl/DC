@@ -6,8 +6,10 @@ export default function FormHeader({
   title,
   description,
   backUrl = '/patients',
-  processing,
-  saveText = 'Зберегти зміни',
+}: {
+  title: any;
+  description: any;
+  backUrl: any;
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -23,7 +25,7 @@ export default function FormHeader({
             <div>
               <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-2 mt-1">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h1>
                   {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
                 </div>
               </div>

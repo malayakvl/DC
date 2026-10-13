@@ -4,7 +4,7 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngLayouts from '../../../Lang/Layouts/translation';
 
-export default function Pagination({ listData }) {
+export default function Pagination({ listData }: { listData: any }) {
   const appLang = useSelector(appLangSelector);
   const msgLayouts = new Lang({
     messages: lngLayouts,
@@ -35,8 +35,8 @@ export default function Pagination({ listData }) {
 
         {/* Page Links */}
         {listData.links
-          .filter((link) => link.label !== 'Previous' && link.label !== 'Next')
-          .map((link) => (
+          .filter((link: any) => link.label !== 'Previous' && link.label !== 'Next')
+          .map((link: any) => (
             <a
               key={link.label}
               href={link.url || '#'}

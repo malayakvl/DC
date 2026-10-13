@@ -12,5 +12,7 @@ class Supplier extends Model
         'email',
         'phone',
         'address',
+        'bank_number',
+        'edrpou'
     ];
 }

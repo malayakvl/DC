@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { addDays, format, parseISO, differenceInMinutes } from 'date-fns';
-// import { cabinets, doctors, SchedulerEvent } from './_mock/data';
 import { generateTimeSlots } from './engine/timeEngine';
 import { getEventLayout } from './engine/eventLayout';
 import { getSchedulePeople } from './engine/schedulePeople';
@@ -146,6 +145,7 @@ export default function Index3Days({
       services: event.services,
       cabinet_name: event.cabinet_name,
       doctor_name: event.doctor_first_name + ' ' + event.doctor_last_name,
+      total_price: event.total_price,
     }));
   });
 
@@ -170,6 +170,7 @@ export default function Index3Days({
           services: event.services,
           cabinet_name: event.cabinet_name,
           doctor_name: event.first_name + ' ' + event.last_name,
+          total_price: event.total_price,
         }))
       );
     }

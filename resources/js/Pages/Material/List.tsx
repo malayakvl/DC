@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngMaterial from '../../Lang/Material/translation';
@@ -11,17 +11,22 @@ import { Link } from '@inertiajs/react';
 import { Filters } from './Partials/Filters';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, clinicData, categoryData, supplierData, currency }) {
-  const dispatch = useDispatch();
+export default function List({
+  listData,
+  categoryData,
+  supplierData,
+  currency,
+}: {
+  listData: any;
+  categoryData: any;
+  supplierData: any;
+  currency: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngMaterial,
     locale: appLang,
   });
-
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
 
   return (
     <AuthenticatedLayout header={<Head />}>
@@ -36,18 +41,19 @@ export default function List({ listData, clinicData, categoryData, supplierData,
               description={msg.get('material.title.description')}
               createHref="material/create"
               createLabel={msg.get('material.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
             <section className="table-card">
               <Filters
                 categories={categoryData}
-                clinicData={clinicData}
                 supplierData={supplierData}
                 msg={msg}
                 totalItems={listData.length}
               />
 
-              <DataTable paginationType={PaginationType.MATERIALS} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.MATERIALS}>
+                {listData?.map((item: any) => (
                   <tr className="hover:bg-slate-50/80 transition group" key={item.id}>
                     {/* Фото и название */}
                     <td className="py-3.5 px-4 align-middle">

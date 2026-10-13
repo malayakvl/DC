@@ -75,6 +75,8 @@ const lngReport = {
     'title.writeoff': 'Списання',
     'title.transfer': 'Переміщення',
     'title.closing.balance': 'Зал. на кінець',
+    'document_type.balance': 'Прибуткова накладна',
+    expire: 'придатен до',
   },
 };
 export default lngReport;

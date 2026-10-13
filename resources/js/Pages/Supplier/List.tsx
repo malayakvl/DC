@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import React, { useCallback, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngSupplier from '../../Lang/Supplier/translation';
@@ -10,26 +10,27 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, clinicData }) {
-  const dispatch = useDispatch();
+export default function List({ listData, clinicData }: { listData: any; clinicData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngSupplier,
     locale: appLang,
   });
 
-  const [editingId, setEditingId] = useState(null);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingId, setEditingId] = useState<any>(null);
+  const [editingItem] = useState<any>(null);
 
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   // useForm строго под поля твоей схемы suppliers
-  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
+  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm<any>({
     name: '',
     contact_name: '',
     phone: '',
     email: '',
     address: '',
+    bank_number: '',
+    edrpou: '',
   });
 
   const scrollToForm = () => {
@@ -45,7 +46,7 @@ export default function List({ listData, clinicData }) {
     scrollToForm();
   };
 
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingId(item.id);
     setData({
@@ -55,6 +56,8 @@ export default function List({ listData, clinicData }) {
       email: item.email || '',
       address: item.address || '',
       clinic_id: clinicData.id,
+      bank_number: item.bank_number || '',
+      edrpou: item.edurpou || '',
     });
     scrollToForm();
   };
@@ -65,7 +68,7 @@ export default function List({ listData, clinicData }) {
     setEditingId(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     if (editingId === 'create') {
@@ -81,10 +84,6 @@ export default function List({ listData, clinicData }) {
     }
   };
 
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
-
   return (
     <AuthenticatedLayout header={<Head title={'Suppliers'} />}>
       <Head title={'Suppliers'} />
@@ -99,6 +98,7 @@ export default function List({ listData, clinicData }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('supplier.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
             />
             {/* Компактная инлайн-форма на 2 строки */}
             {editingId && (
@@ -125,15 +125,15 @@ export default function List({ listData, clinicData }) {
                 <form onSubmit={handleSubmit} className="space-y-3">
                   {/* Строка 1: Название и Контактное лицо */}
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                    <div className="md:col-span-7">
+                    <div className="md:col-span-3">
                       <label className="block text-xs font-medium text-slate-600 mb-1">
-                        {msg.get('supplier.name')} *
+                        {msg.get('supplier.name')}
                       </label>
                       <input
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
-                        placeholder='Наприклад: ТОВ "Дент-Маркет"'
+                        placeholder={msg.get('supplier.name_tips')}
                         className="w-full px-3 py-1.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
                         autoFocus
                       />
@@ -141,8 +141,40 @@ export default function List({ listData, clinicData }) {
                         <span className="text-xs text-rose-500 mt-1 block">{errors.name}</span>
                       )}
                     </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                        {msg.get('supplier.edrpou')}
+                      </label>
+                      <input
+                        type="text"
+                        value={data.edrpou}
+                        onChange={(e) => setData('edrpou', e.target.value)}
+                        className="w-full px-3 py-1.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
+                        autoFocus
+                      />
+                      {errors.edrpou && (
+                        <span className="text-xs text-rose-500 mt-1 block">{errors.edrpou}</span>
+                      )}
+                    </div>
+                    <div className="md:col-span-4">
+                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                        {msg.get('supplier.bank_number')} *
+                      </label>
+                      <input
+                        type="text"
+                        value={data.bank_number}
+                        onChange={(e) => setData('bank_number', e.target.value)}
+                        className="w-full px-3 py-1.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none"
+                        autoFocus
+                      />
+                      {errors.bank_number && (
+                        <span className="text-xs text-rose-500 mt-1 block">
+                          {errors.bank_number}
+                        </span>
+                      )}
+                    </div>
 
-                    <div className="md:col-span-5">
+                    <div className="md:col-span-3">
                       <label className="block text-xs font-medium text-slate-600 mb-1">
                         {msg.get('supplier.contact_name')}
                       </label>
@@ -213,8 +245,8 @@ export default function List({ listData, clinicData }) {
 
             {/* Таблица поставщиков */}
             <section className="table-card">
-              <DataTable paginationType={PaginationType.SUPPLIERS} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.SUPPLIERS}>
+                {listData?.map((item: any) => (
                   <tr key={item.id}>
                     <td>
                       <div className="pl-2">
@@ -223,6 +255,52 @@ export default function List({ listData, clinicData }) {
                           <div className="text-xs text-slate-400 leading-tight">{item.address}</div>
                         )}
                       </div>
+                    </td>
+                    <td>
+                      {item.edrpou && (
+                        <span className="text-xs font-medium text-slate-700 block">
+                          {item.edrpou || '—'}
+                        </span>
+                      )}
+                      {item.bank_number && (
+                        <>
+                          <div className="inline-flex items-center gap-1.5 mt-1 text-[11px] text-teal-700 font-mono bg-teal-50/80 px-1.5 py-0.5 rounded border border-teal-200/40 w-fit">
+                            <svg
+                              className="w-3 h-3 text-teal-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="1.8"
+                                d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M12 3L2 8h20L12 3z"
+                              ></path>
+                            </svg>
+                            <span>{item.bank_number || '—'}</span>
+                            <button
+                              className="hover:text-teal-900 transition-colors"
+                              title="Скопіювати штрихкод"
+                              type="button"
+                            >
+                              <svg
+                                className="w-2.5 h-2.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                ></path>
+                              </svg>
+                            </button>
+                          </div>{' '}
+                        </>
+                      )}
                     </td>
                     <td>
                       <span className="text-xs font-medium text-slate-700">
