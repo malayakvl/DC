@@ -51,7 +51,6 @@ const MaterialItem = ({
   );
   const materialBatches = component.batches || [];
 
-
   // 🚀 Синхронизируем локальный инпут, если Redux обновил количество
   React.useEffect(() => {
     if (component.quantity !== undefined && component.quantity !== null) {
