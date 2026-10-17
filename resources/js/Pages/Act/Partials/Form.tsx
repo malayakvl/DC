@@ -186,60 +186,13 @@ export default function Form({
     }
   }, []);
 
-  // const submitOld = (event: any) => {
-  //   event.preventDefault();
-  //   const validRows = rows.filter((row) => row.product_id);
-  //   if (!values.patient_id || !validRows.length) return;
-  //
-  //   const payload = {
-  //     ...values,
-  //     rows: validRows.map((row) => ({
-  //       ...row,
-  //       quantity: Number(row.quantity),
-  //       price: Number(row.price),
-  //       total: Number(row.total),
-  //       components: (row.components || []).map((component) => ({
-  //         material_id: component.material_id || component.product_id,
-  //         unit_id: component.unit_id,
-  //         quantity: Number(row.quantity || 0),
-  //       })),
-  //     })),
-  //   };
-  //
-  //   console.log(payload);
-  // };
-
   const submit = (event: any) => {
     event.preventDefault();
-    console.log(actData);
 
     // const validRows = rows.filter((row) => row.product_id);
     const validRows = (actData || []).filter((r: any) => r.product_id || r.service_id);
     if (!values.patient_id || !validRows.length) return;
 
-    // const payload = {
-    //   ...values,
-    //   rows: validRows.map((row) => {
-    //     const rowQty = Number(row.quantity) || 1;
-    //
-    //     return {
-    //       ...row,
-    //       quantity: rowQty,
-    //       price: Number(row.price),
-    //       total: Number(row.total),
-    //       components: (row.components || []).map((component) => {
-    //         // Норма компонента на 1 шт услуги * количество услуг в строке
-    //         const baseComponentQty = Number(component.quantity || 0);
-    //
-    //         return {
-    //           material_id: component.material_id || component.product_id,
-    //           unit_id: component.unit_id,
-    //           quantity: baseComponentQty * rowQty, // Умножаем на количество услуг!
-    //         };
-    //       }),
-    //     };
-    //   }),
-    // };
     const payload = {
       ...values,
       rows: validRows.map((row: any) => ({

@@ -361,7 +361,7 @@ class ActController extends Controller
                 ->leftJoin('core.users as doctor_user', 'doctor_user.id', '=', 'acts.doctor_id')
                 ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
                 // --- Фільтр: тільки за сьогодні ---
-                ->whereDate('acts.act_date', today())
+//                ->whereDate('acts.act_date', today())
 //                ->where('acts.id', 9626)
                 ->orderBy('acts.act_number', 'DESC');
 
@@ -457,10 +457,96 @@ class ActController extends Controller
         });
     }
 
+    public function edit(Request $request, $id) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('act-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                $formData = Act::find($id);
+
+                // Підтягуємо послуги та прив'язані до акта матеріали
+                $rowData = ActItem::select('act_items.*', 'pricings.name as product')
+                    ->leftJoin('pricings', 'pricings.id', '=', 'act_items.service_id')
+                    ->where('act_id', $id)
+                    ->get();
+
+                // Збираємо назви матеріалів для виводу специфікації
+                $materialIds = [];
+                foreach ($rowData as $item) {
+                    $components = is_string($item->components) ? json_decode($item->components, true) : ($item->components ?? []);
+                    if (is_string($components)) $components = json_decode($components, true);
+
+                    foreach ($components as $comp) {
+                        if (!empty($comp['material_id'])) $materialIds[] = $comp['material_id'];
+                    }
+                }
+
+                $materialMap = !empty($materialIds) ? DB::table('materials')
+                    ->whereIn('id', array_unique($materialIds))
+                    ->pluck('name', 'id')
+                    ->toArray() : [];
+
+                $rowData->each(function ($item) use ($materialMap) {
+                    $components = is_string($item->components) ? json_decode($item->components, true) : ($item->components ?? []);
+                    if (is_string($components)) $components = json_decode($components, true);
+
+                    foreach ($components as &$comp) {
+                        $mId = $comp['material_id'] ?? null;
+                        if ($mId && isset($materialMap[$mId])) {
+                            $comp['product'] = $materialMap[$mId];
+                        }
+                    }
+                    $item->components = $components;
+                });
+
+                // Підтягуємо інформацію про пацієнта та лікаря для друкованої шапки
+                $patient = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->where('patients.id', $formData->patient_id)
+                    ->select('users.first_name', 'users.last_name', 'users.email')
+                    ->first();
+
+                $doctor = DB::table('core.users')
+                    ->where('id', $formData->doctor_id)
+                    ->select('first_name', 'last_name')
+                    ->first();
+
+                $props = [
+                    'clinicData' => $clinicData,
+                    'formData' => $formData,
+                    'formRowData' => $rowData,
+                    'patient' => $patient,
+                    'doctor' => $doctor,
+                ];
+
+                // 🚀 Якщо акт проведений — показуємо View (Тільки читання / Друк)
+                if ($formData->status === 'posted') {
+                    return Inertia::render('Act/View', $props);
+                }
+
+                // Якщо ні — режим редагування
+                $props['patientsData'] = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->select('users.first_name', 'users.last_name', 'patients.id')
+                    ->orderBy('users.last_name')->get();
+
+                $props['customerData'] = DB::table('core.clinic_user')
+                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                    ->select('users.id', 'users.first_name', 'users.last_name')
+                    ->where('clinic_user.clinic_id', $clinicId)->get();
+
+                $props['statusData'] = $this->actStatuses();
+
+                return Inertia::render('Act/Edit', $props);
+            } else {
+                return Inertia::render('Layouts/NoPermission', []);
+            }
+        });
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id) {
+    public function editOld(Request $request, $id) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if ($request->user()->can('act-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
@@ -534,15 +620,27 @@ class ActController extends Controller
                     ->orderBy('users.last_name')
                     ->get();
 
-                return Inertia::render('Act/Edit', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData,
-                    'patientsData'=> $patientsData,
-                    'formRowData' => $rowData,
-                    'customerData' => $customerData,
-                    'statusData' => $this->actStatuses(),
-                    'typeData' => $typeData,
-                ]);
+                if ($formData->status === 'posted') {
+                    return Inertia::render('Act/View', [
+                        'clinicData' => $clinicData,
+                        'formData' => $formData,
+                        'patientsData'=> $patientsData,
+                        'formRowData' => $rowData,
+                        'customerData' => $customerData,
+                        'statusData' => $this->actStatuses(),
+                        'typeData' => $typeData,
+                    ]);
+                } else {
+                    return Inertia::render('Act/Edit', [
+                        'clinicData' => $clinicData,
+                        'formData' => $formData,
+                        'patientsData'=> $patientsData,
+                        'formRowData' => $rowData,
+                        'customerData' => $customerData,
+                        'statusData' => $this->actStatuses(),
+                        'typeData' => $typeData,
+                    ]);
+                }
             } else {
                 return Inertia::render('Layouts/NoPermission', [
                 ]);

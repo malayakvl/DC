@@ -123,7 +123,9 @@ export default function List({ listData }: { listData: any }) {
                           <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
                           <span className="text-xs font-bold uppercase tracking-wide">Борг:</span>
                           <span className="text-base font-extrabold tabular-nums tracking-tight">
-                            {parseFloat(item.total_amount) - parseFloat(item.payment_amount)}
+                            {(
+                              Number(item.total_amount || 0) - Number(item.payment_amount || 0)
+                            ).toFixed(2)}
                           </span>
                           <span className="text-xs font-bold text-rose-500">
                             {item.currency_name}
@@ -133,9 +135,9 @@ export default function List({ listData }: { listData: any }) {
                           <span className="text-slate-600 font-medium">
                             Сплачено:{' '}
                             <strong className="text-slate-800 font-bold tabular-nums">
-                              {item.payment_amount}
+                              {Number(item.payment_amount || 0).toFixed(2)}
                             </strong>{' '}
-                            UAH
+                            {item.currency_name || 'UAH'}
                           </span>
                           <button
                             className="group/btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold transition-all shadow-xs active:scale-[0.98]"

@@ -1,21 +1,50 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Partials/Form';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useAppDispatch } from '../../hooks';
+import { setActItems } from '@/Redux/Act';
 
 export default function Edit({
   clinicData,
   statusData,
-  typeData,
   customerData,
   patientsData,
   formData,
   formRowData,
-  currencyData,
-  unitsData,
-  taxData,
+  visitsData,
+}: {
+  clinicData: any;
+  statusData: any;
+  customerData: any;
+  patientsData: any;
+  formData: any;
+  formRowData: any;
+  visitsData: any;
 }) {
-  console.log(unitsData);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (formData?.id && formRowData?.length > 0) {
+      // Очищаємо редьюсер перед завантаженням (щоб не наклалися дані з попереднього акта)
+      // dispatch(clearActItemsAction());
+
+      formRowData.forEach((row: any) => {
+        dispatch(
+          setActItems({
+            id: row.service_id,
+            service_id: row.service_id,
+            name: row.product,
+            price: Number(row.price || 0),
+            qty: Number(row.qty ?? row.quantity ?? 1),
+            quantity: Number(row.qty ?? row.quantity ?? 1),
+            components: row.components || [],
+          })
+        );
+      });
+    }
+  }, [formData?.id, formRowData]);
+
   return (
     <AuthenticatedLayout header={<Head title="Act" />}>
       <Head title="Act" />
@@ -23,16 +52,13 @@ export default function Edit({
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
             <Form
+              visitsData={visitsData}
               clinicData={clinicData}
               statusData={statusData}
-              typeData={typeData}
               customerData={customerData}
               patientsData={patientsData}
               formData={formData}
               formRowData={formRowData}
-              currencyData={currencyData}
-              unitsData={unitsData}
-              className="w-full"
             />
           </div>
         </div>

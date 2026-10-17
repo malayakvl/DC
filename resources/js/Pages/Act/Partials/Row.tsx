@@ -206,7 +206,7 @@ const MaterialItem = ({
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   // 🚀 Автоматична перевірка залишків
   useActFifoValidation(rows, 'new');
-
+  console.log('act rows', rows);
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
   const requestId = useRef(0);
