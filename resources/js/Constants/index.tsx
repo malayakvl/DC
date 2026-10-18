@@ -132,7 +132,7 @@ export const TableHeaders = {
     { titleKey: 'datatable.patient', className: '' },
     { titleKey: 'datatable.doctor', className: '' },
     { titleKey: 'datatable.amount', className: '' },
-    { titleKey: 'datatable.amount', className: '' },
+    { titleKey: 'datatable.payedamount', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],
   [PaginationType.CURRENCY]: [

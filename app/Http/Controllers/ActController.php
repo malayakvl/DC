@@ -363,7 +363,7 @@ class ActController extends Controller
                 // --- Фільтр: тільки за сьогодні ---
 //                ->whereDate('acts.act_date', today())
 //                ->where('acts.id', 9626)
-                ->orderBy('acts.act_number', 'DESC');
+                ->orderBy('acts.created_at', 'DESC');
 
 
             if ($request->user()->roles[0]->name !== 'Admin') {

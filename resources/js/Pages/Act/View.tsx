@@ -2,6 +2,11 @@ import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import React from 'react';
 import { format } from 'date-fns';
+import { appLangSelector } from '@/Redux/Layout/selectors';
+import Lang from 'lang.js';
+import lngAct from '../../Lang/Act/translation';
+import { useSelector } from 'react-redux';
+
 
 export default function View({
   clinicData,
@@ -19,12 +24,19 @@ export default function View({
   const handlePrint = () => {
     window.print();
   };
+  const appLang = useSelector(appLangSelector);
+  const msg = new Lang({
+    messages: lngAct,
+    locale: appLang,
+  });
 
   const totalAmountComponents = formRowData.reduce((acc, row) => acc + Number(row.total || 0), 0);
 
   return (
-    <AuthenticatedLayout header={<Head title={`Акт № ${formData.act_number}`} />}>
-      <Head title={`Акт № ${formData.act_number}`} />
+    <AuthenticatedLayout
+      header={<Head title={`${msg.get('act.view_title')} № ${formData.act_number}`} />}
+    >
+      <Head title={`${msg.get('act.view_title')} № ${formData.act_number}`} />
 
       {/* Стилі для друкованої сторінки */}
       <style>{`
@@ -59,10 +71,10 @@ export default function View({
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
             </Link>
             <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-              Акт виконаних робіт № {formData.act_number}
+              {msg.get('act.view_title')} № {formData.act_number}
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
                 <span className="material-symbols-outlined text-[16px]">lock</span>
-                Проведений (Тільки читання)
+                {msg.get('act.view_status')}
               </span>
             </h1>
           </div>
@@ -73,7 +85,7 @@ export default function View({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition shadow-2xs active:scale-[0.98] cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">print</span>
-            Друк акта
+            {msg.get('act.view_print')}
           </button>
         </div>
 
@@ -81,7 +93,7 @@ export default function View({
         <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200/60 flex items-center justify-between no-print">
           <div className="flex items-center gap-2.5 text-emerald-900 text-xs font-semibold">
             <span className="material-symbols-outlined text-emerald-600 text-[20px]">verified</span>
-            Документ проведено • Редагування заблоковано
+            {msg.get('act.view_verified')}
           </div>
           <span className="text-xs font-bold text-emerald-700">ID: #{formData.id}</span>
         </div>
@@ -94,11 +106,11 @@ export default function View({
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px]">description</span>
-                ДОКУМЕНТ
+                {msg.get('act.view_document')}
               </span>
               <div className="font-bold text-slate-900 text-sm">№ {formData.act_number}</div>
               <div className="text-xs text-slate-500">
-                від{' '}
+                {msg.get('act.view_from')}{' '}
                 {formData.act_date ? format(new Date(formData.act_date), 'dd.MM.yyyy HH:mm') : '-'}
               </div>
             </div>
@@ -107,7 +119,7 @@ export default function View({
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px]">person</span>
-                ПАЦІЄНТ
+                {msg.get('act.view_patient')}
               </span>
               <div className="font-bold text-slate-900 text-sm">
                 {patient ? `${patient.first_name} ${patient.last_name}` : '-'}
@@ -119,7 +131,7 @@ export default function View({
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px]">stethoscope</span>
-                ЛІКАР
+                {msg.get('act.view_doctor')}
               </span>
               <div className="font-bold text-slate-900 text-sm">
                 {doctor ? `${doctor.first_name} ${doctor.last_name}` : '-'}
@@ -130,14 +142,14 @@ export default function View({
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                 <span className="material-symbols-outlined text-[14px]">domain</span>
-                КЛІНІКА / КЛІНІЧНИЙ ОБЛІК
+                {msg.get('act.view_clinic')}
               </span>
               <div className="font-bold text-slate-900 text-sm">
                 {clinicData?.name || 'Основна клініка'}
               </div>
               <div className="text-xs text-emerald-600 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Проводка: Проведено
+                {msg.get('act.view_doc_status')}
               </div>
             </div>
           </div>
@@ -146,19 +158,19 @@ export default function View({
           <div className="bg-white rounded-2xl border border-slate-100 shadow-2xs overflow-hidden">
             <div className="p-5 border-b border-slate-100">
               <h3 className="font-bold text-slate-900 text-base">
-                Специфікація наданих послуг та матеріалів
+                {msg.get('act.view_doc_title')}
               </h3>
-              <p className="text-xs text-slate-400">Повний реєстр використаних ресурсів за актом</p>
+              <p className="text-xs text-slate-400">{msg.get('act.view_doc_description')}</p>
             </div>
 
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50/60 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   <th className="py-3 px-4 w-12 text-center">№</th>
-                  <th className="py-3 px-4">НАЗВА ПОСЛУГИ / МАТЕРІАЛИ</th>
-                  <th className="py-3 px-4 text-center">КІЛЬКІСТЬ</th>
-                  <th className="py-3 px-4 text-right">ЦІНА ЗА ОДИНИЦЮ</th>
-                  <th className="py-3 px-4 text-right">СУМА</th>
+                  <th className="py-3 px-4">{msg.get('act.view_service')}</th>
+                  <th className="py-3 px-4 text-center">{msg.get('act.view_qty')}</th>
+                  <th className="py-3 px-4 text-right">{msg.get('act.view_price')}</th>
+                  <th className="py-3 px-4 text-right">{msg.get('act.view_amount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
@@ -191,7 +203,7 @@ export default function View({
                           <td colSpan={5} className="py-2 px-4 bg-slate-50/30">
                             <div className="pl-6 space-y-1.5 border-l-2 border-teal-500/40 my-1">
                               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-                                Витрачені матеріали (FIFO списання):
+                                {msg.get('act.view_fifo_description')}:
                               </span>
                               {components.map((comp: any, cIdx: number) => (
                                 <div
@@ -222,11 +234,12 @@ export default function View({
             {/* Підсумок */}
             <div className="p-5 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
               <div className="text-xs text-slate-500 font-medium">
-                Всього послуг: <strong className="text-slate-800">{formRowData.length}</strong>
+                {msg.get('act.view_total_services')}:{' '}
+                <strong className="text-slate-800">{formRowData.length}</strong>
               </div>
               <div className="text-right">
                 <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">
-                  ВСОГО ДО СПЛАТИ
+                  {msg.get('act.view_total_pay')}
                 </span>
                 <span className="text-2xl font-black text-slate-900 tabular-nums">
                   {Number(formData.total_amount).toFixed(2)}{' '}
