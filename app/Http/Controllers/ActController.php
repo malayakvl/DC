@@ -362,8 +362,8 @@ class ActController extends Controller
                 ->leftJoin("clinic_{$clinicId}.payments as payments", 'payments.act_id', '=', 'acts.id')
                 // --- Фільтр: тільки за сьогодні ---
 //                ->whereDate('acts.act_date', today())
-                ->where('acts.id', 6468)
-                ->orderBy('acts.act_number', 'DESC');
+//                ->where('acts.id', 9626)
+                ->orderBy('acts.created_at', 'DESC');
 
 
             if ($request->user()->roles[0]->name !== 'Admin') {
@@ -457,10 +457,96 @@ class ActController extends Controller
         });
     }
 
+    public function edit(Request $request, $id) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if ($request->user()->can('act-edit')) {
+                $clinicData = $request->user()->clinicByFilial($clinicId);
+                $formData = Act::find($id);
+
+                // Підтягуємо послуги та прив'язані до акта матеріали
+                $rowData = ActItem::select('act_items.*', 'pricings.name as product')
+                    ->leftJoin('pricings', 'pricings.id', '=', 'act_items.service_id')
+                    ->where('act_id', $id)
+                    ->get();
+
+                // Збираємо назви матеріалів для виводу специфікації
+                $materialIds = [];
+                foreach ($rowData as $item) {
+                    $components = is_string($item->components) ? json_decode($item->components, true) : ($item->components ?? []);
+                    if (is_string($components)) $components = json_decode($components, true);
+
+                    foreach ($components as $comp) {
+                        if (!empty($comp['material_id'])) $materialIds[] = $comp['material_id'];
+                    }
+                }
+
+                $materialMap = !empty($materialIds) ? DB::table('materials')
+                    ->whereIn('id', array_unique($materialIds))
+                    ->pluck('name', 'id')
+                    ->toArray() : [];
+
+                $rowData->each(function ($item) use ($materialMap) {
+                    $components = is_string($item->components) ? json_decode($item->components, true) : ($item->components ?? []);
+                    if (is_string($components)) $components = json_decode($components, true);
+
+                    foreach ($components as &$comp) {
+                        $mId = $comp['material_id'] ?? null;
+                        if ($mId && isset($materialMap[$mId])) {
+                            $comp['product'] = $materialMap[$mId];
+                        }
+                    }
+                    $item->components = $components;
+                });
+
+                // Підтягуємо інформацію про пацієнта та лікаря для друкованої шапки
+                $patient = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->where('patients.id', $formData->patient_id)
+                    ->select('users.first_name', 'users.last_name', 'users.email')
+                    ->first();
+
+                $doctor = DB::table('core.users')
+                    ->where('id', $formData->doctor_id)
+                    ->select('first_name', 'last_name')
+                    ->first();
+
+                $props = [
+                    'clinicData' => $clinicData,
+                    'formData' => $formData,
+                    'formRowData' => $rowData,
+                    'patient' => $patient,
+                    'doctor' => $doctor,
+                ];
+
+                // 🚀 Якщо акт проведений — показуємо View (Тільки читання / Друк)
+                if ($formData->status === 'posted') {
+                    return Inertia::render('Act/View', $props);
+                }
+
+                // Якщо ні — режим редагування
+                $props['patientsData'] = DB::table('patients')
+                    ->join('core.users', 'core.users.id', '=', 'patients.user_id')
+                    ->select('users.first_name', 'users.last_name', 'patients.id')
+                    ->orderBy('users.last_name')->get();
+
+                $props['customerData'] = DB::table('core.clinic_user')
+                    ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
+                    ->select('users.id', 'users.first_name', 'users.last_name')
+                    ->where('clinic_user.clinic_id', $clinicId)->get();
+
+                $props['statusData'] = $this->actStatuses();
+
+                return Inertia::render('Act/Edit', $props);
+            } else {
+                return Inertia::render('Layouts/NoPermission', []);
+            }
+        });
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, $id) {
+    public function editOld(Request $request, $id) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             if ($request->user()->can('act-edit')) {
                 $clinicData = $request->user()->clinicByFilial($clinicId);
@@ -534,15 +620,27 @@ class ActController extends Controller
                     ->orderBy('users.last_name')
                     ->get();
 
-                return Inertia::render('Act/Edit', [
-                    'clinicData' => $clinicData,
-                    'formData' => $formData,
-                    'patientsData'=> $patientsData,
-                    'formRowData' => $rowData,
-                    'customerData' => $customerData,
-                    'statusData' => $this->actStatuses(),
-                    'typeData' => $typeData,
-                ]);
+                if ($formData->status === 'posted') {
+                    return Inertia::render('Act/View', [
+                        'clinicData' => $clinicData,
+                        'formData' => $formData,
+                        'patientsData'=> $patientsData,
+                        'formRowData' => $rowData,
+                        'customerData' => $customerData,
+                        'statusData' => $this->actStatuses(),
+                        'typeData' => $typeData,
+                    ]);
+                } else {
+                    return Inertia::render('Act/Edit', [
+                        'clinicData' => $clinicData,
+                        'formData' => $formData,
+                        'patientsData'=> $patientsData,
+                        'formRowData' => $rowData,
+                        'customerData' => $customerData,
+                        'statusData' => $this->actStatuses(),
+                        'typeData' => $typeData,
+                    ]);
+                }
             } else {
                 return Inertia::render('Layouts/NoPermission', [
                 ]);
@@ -691,21 +789,206 @@ class ActController extends Controller
             ]);
     }
 
-    protected function applyActFifo(int $storeId, int $actId, int $clinicId): float
+//    protected function applyActFifo(int $storeId, int $actId, int $clinicId): float
+//    {
+//        // Динамічно визначаємо схему поточної клініки (або беремо з трейта / сесії)
+//        $schema = 'clinic_'.$clinicId;
+//
+//        $result = DB::selectOne(
+//            "SELECT core.apply_act_fifo(?, ?, ?) as total_cost",
+//            [
+//                $schema,
+//                $storeId,
+//                $actId
+//            ]
+//        );
+//
+//        return (float) ($result->total_cost ?? 0);
+//    }
+    private function applyActFifo(int $storeId, int $actId, int $clinicId): float
     {
-        // Динамічно визначаємо схему поточної клініки (або беремо з трейта / сесії)
-        $schema = 'clinic_'.$clinicId;
+        $materialTotalWithMarkup = 0.0;
 
-        $result = DB::selectOne(
-            "SELECT core.apply_act_fifo(?, ?, ?) as total_cost",
-            [
-                $schema,
-                $storeId,
-                $actId
-            ]
-        );
+        $actItems = DB::table('act_items')->where('act_id',$actId)->get();
+        foreach ($actItems as$actItem) {
+//            $components = is_array($actItem->components) ? $actItem->components : json_decode($actItem->components, true);
+            $components = $actItem->components;
 
-        return (float) ($result->total_cost ?? 0);
+// Если это строка, расшифровываем её (иногда даже дважды, если экранирование двойное)
+            if (is_string($components)) {
+                $components = json_decode($components, true);
+            }
+            if (is_string($components)) {
+                $components = json_decode($components, true);
+            }
+
+            // На всякий случай страховка, если вдруг пустой/неверный формат
+            $components = is_array($components) ? $components : [];
+
+            foreach ($components as $component) {$materialId = (int) ($component['material_id'] ?? $component['product_id']);
+                $requiredQty = (float)$component['quantity']; // Скільки штук матеріалу або використань потрібно
+                if ($requiredQty <= 0) {
+                    continue;
+                }
+
+                $materialMeta = DB::table('materials')->where('id',$materialId)->first();
+                $isInstrument = (bool) ($materialMeta->is_instrument ?? false);
+                $expectedUses = (int) ($materialMeta->expected_uses ?? 0);
+
+                $componentCost = 0.0;
+                $remainingQty =$requiredQty;
+
+                // Вибираємо партії по FIFO (для звичайних матеріалів дивимося на fact_qty_left > 0, для інструментів де є uses_left > 0)
+                $batchesQuery = DB::table('store_batches')
+                    ->where('store_id', $storeId)
+                    ->where('material_id', $materialId);
+
+                if ($isInstrument) {
+                    $batchesQuery->where('uses_left', '>', 0); } else {$batchesQuery->where('fact_qty_left', '>', 0);
+                }
+
+                $batches =$batchesQuery
+                    ->orderBy('expiry_date', 'asc')
+                    ->orderBy('arrived_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($batches as $batch) {
+                    if ($remainingQty <= 0) {
+                        break;
+                    }
+
+                    if ($isInstrument) {
+                        // 📌 облік для інструментів (борів): списуємо використання у поле uses_left
+                        $availableUses = (float)$batch->uses_left;
+                        $deductUses = min($remainingQty,$availableUses);
+
+                        $newUsesLeft = max(0, $availableUses -$deductUses);
+
+                        DB::table('store_batches')->where('id', $batch->id)->update([
+                            'uses_left' => $newUsesLeft,
+                            'updated_at' => now(),
+                        ]);
+
+                        $rawUnitCost = (float)$batch->price_per_unit;
+                        $totalUses = (float) ($batch->uses_total > 0 ?$batch->uses_total : ($expectedUses > 0 ?$expectedUses : 1));
+                        $lineCost = ($rawUnitCost / $totalUses) *$deductUses;
+
+                        // Записуємо рух
+                        DB::table('store_movements')->insert([
+                            'store_id' => $storeId,
+                            'material_id' => $materialId,
+                            'batch_id' => $batch->id,
+                            'direction' => -1,
+                            'qty' => 0,
+                            'fact_qty' => 0,
+                            'price_per_unit' => $rawUnitCost,
+                            'document_type' => 'act',
+                            'document_id' => $actId,
+                            'act_item_id' => $actItem->id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $componentCost +=$lineCost;
+                        $remainingQty = round($remainingQty -$deductUses, 4);
+
+                    } else {
+                        // 📌 облік для звичайних матеріалів (Essentials): списуємо з fact_qty_left та qty_left
+                        $availableFactLeft = (float)$batch->fact_qty_left;
+                        $deductQty = min($remainingQty,$availableFactLeft);
+
+                        $ratio = ((float)$batch->fact_qty > 0) ? ((float) $batch->fact_qty / max((float)$batch->qty, 1)) : 1;
+                        $deductBaseQty = round($deductQty / max($ratio, 0.0001), 4);
+
+                        DB::table('store_batches')->where('id', $batch->id)->update([
+                            'qty_left' => round(max(0, (float) $batch->qty_left -$deductBaseQty), 4),
+                            'fact_qty_left' => round(max(0, (float) $batch->fact_qty_left -$deductQty), 4),
+                            'updated_at' => now(),
+                        ]);
+
+                        $lineCost = $deductQty * (float)$batch->price_per_unit;
+
+                        DB::table('store_movements')->insert([
+                            'store_id' => $storeId,
+                            'material_id' => $materialId,
+                            'batch_id' => $batch->id,
+                            'direction' => -1,
+                            'qty' => round($deductBaseQty, 4),
+                            'fact_qty' => round($deductQty, 4),
+                            'price_per_unit' =>$batch->price_per_unit,
+                            'document_type' => 'act',
+                            'document_id' => $actId,
+                            'act_item_id' => $actItem->id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $this->changeStoreBalance($storeId,$materialId, -$deductBaseQty, -$deductQty);
+
+                        $componentCost +=$lineCost;
+                        $remainingQty = round($remainingQty -$deductQty, 4);
+                    }
+                }
+
+                if ($remainingQty > 0) {
+                    throw new \Exception("Недостатньо матеріалу або ресурсів ID {$materialId} на складі: не вистачає {$remainingQty}");
+                }
+
+                $markup = (float) ($component['mark_up'] ?? 0);$materialTotalWithMarkup += $componentCost * (1 +$markup / 100);
+            }
+        }
+
+        return round($materialTotalWithMarkup, 4);
+    }
+
+    private function releaseActFifo(int $actId): void
+    {
+        $movements = DB::table('store_movements')
+            ->where('document_type', 'act')
+            ->where('document_id', $actId)
+            ->lockForUpdate()
+            ->get();
+
+        foreach ($movements as$movement) {
+            $batch = DB::table('store_batches')->where('id',$movement->batch_id)->lockForUpdate()->first();
+            if (!$batch) continue;
+
+            // Перевіряємо: якщо fact_qty і qty дорівнюють 0, значить це був інструмент (бор)
+            if ((float) $movement->fact_qty == 0 && (float)$movement->qty == 0) {
+                // Дізнаємося скільки використань було списано (можна порахувати по ціні або закласти збереження в рухи)
+                // Але оскільки ми не зберігали кількість використань окремо в movements, найпростіше:
+                // якщо це інструмент, зазвичай за 1 раз списується 1 використання (або дивимося скільки коштувало / price_per_unit)
+                // Або краще у applyActFifo в store_movements у поле `fact_qty` або `qty` записувати кількість списаних використань для інструмента!
+            }
+
+            // Давай зробимо універсальніше:
+            $materialMeta = DB::table('materials')->where('id',$movement->material_id)->first();
+            $isInstrument = (bool) ($materialMeta->is_instrument ?? false);
+
+            if ($isInstrument) {
+                // Повертаємо використання у uses_left (тут qty/fact_qty можна використати як кількість списаних uses)
+                $restoredUses = (float)$movement->fact_qty; // якщо в applyActFifo ми запишемо deductUses у fact_qty
+                DB::table('store_batches')->where('id', $movement->batch_id)->update([
+                    'uses_left' => DB::raw('LEAST(uses_total, uses_left + ' . $restoredUses . ')'),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                // Звичайний матеріал — повертаємо залишки
+                DB::table('store_batches')->where('id', $movement->batch_id)->update([
+                    'qty_left' => DB::raw('qty_left + ' . (float) $movement->qty),
+                    'fact_qty_left' => DB::raw('fact_qty_left + ' . (float) $movement->fact_qty),
+                    'updated_at' => now(),
+                ]);
+                $this->changeStoreBalance($movement->store_id,$movement->material_id, (float) $movement->qty, (float)$movement->fact_qty);
+            }
+        }
+
+        DB::table('store_movements')
+            ->where('document_type', 'act')
+            ->where('document_id', $actId)
+            ->delete();
     }
 
     public function update(Request $request)
@@ -888,28 +1171,7 @@ class ActController extends Controller
 //        return round($materialTotalWithMarkup, 4);
 //    }
 
-    private function releaseActFifo(int $actId): void
-    {
-        $movements = DB::table('store_movements')
-            ->where('document_type', 'act')
-            ->where('document_id', $actId)
-            ->lockForUpdate()
-            ->get();
 
-        foreach ($movements as $movement) {
-            DB::table('store_batches')->where('id', $movement->batch_id)->lockForUpdate()->update([
-                'qty_left' => DB::raw('qty_left + ' . (float) $movement->qty),
-                'fact_qty_left' => DB::raw('fact_qty_left + ' . (float) $movement->fact_qty),
-                'updated_at' => now(),
-            ]);
-            $this->changeStoreBalance($movement->store_id, $movement->material_id, (float) $movement->qty, (float) $movement->fact_qty);
-        }
-
-        DB::table('store_movements')
-            ->where('document_type', 'act')
-            ->where('document_id', $actId)
-            ->delete();
-    }
 
     private function changeStoreBalance(int $storeId, int $materialId, float $qtyDelta, float $factQtyDelta): void
     {

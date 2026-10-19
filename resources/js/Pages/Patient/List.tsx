@@ -10,7 +10,15 @@ import Pagination from './Partials/Pagination';
 import { Link } from '@inertiajs/react';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, currency, customerData }) {
+export default function List({
+  listData,
+  currency,
+  customerData,
+}: {
+  listData: any;
+  currency: any;
+  customerData: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
@@ -30,11 +38,13 @@ export default function List({ listData, currency, customerData }) {
               description={msg.get('patient.title.description')}
               createHref="patient/create"
               createLabel={msg.get('patient.title.create')}
+              isCreateDisabled={false}
+              onCreateClick={null}
             />
 
             <Filters listData={listData} customerData={customerData} />
 
-            <Pagination listData={listData} customerData={customerData} />
+            <Pagination listData={listData} />
 
             <div className="table-responsive">
               <table className="w-full text-left border-collapse">
@@ -51,7 +61,7 @@ export default function List({ listData, currency, customerData }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800 text-sm">
-                  {listData.data?.map((item) => {
+                  {listData.data?.map((item: any) => {
                     const debt = item.sum_acts - item.sum_payments;
                     const hasDebt = debt > 0;
 
@@ -74,7 +84,7 @@ export default function List({ listData, currency, customerData }) {
                                 {item.patient_name
                                   ?.split(' ')
                                   .slice(0, 2)
-                                  .map((n) => n[0])
+                                  .map((n: any) => n[0])
                                   .join('')}
                               </div>
                             )}
@@ -186,7 +196,7 @@ export default function List({ listData, currency, customerData }) {
                               <span className="material-symbols-outlined text-[15px]">
                                 upcoming
                               </span>
-                              {msg.get('patient.next')}: {item.last_visit || 'Не призначено'}
+                              {msg.get('patient.last_visit')}: {item.last_visit || 'Не призначено'}
                             </div>
                           </div>
                         </td>
@@ -233,7 +243,7 @@ export default function List({ listData, currency, customerData }) {
                               title="Зубна карта"
                             >
                               <span className="material-symbols-outlined text-[18px] block">
-                                medical_services
+                                dentistry
                               </span>
                             </Link>
 

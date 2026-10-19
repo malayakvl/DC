@@ -1099,7 +1099,9 @@ class ClinicSchemaService
                 tax_type SMALLINT DEFAULT 1,            -- 1 = Без ПДВ, 2 = ПДВ 20%, и т.д.
                 net_sum    numeric(14,2)  -- сумма без НДС
                 tax_sum    numeric(14,2)  -- сумма НДС  
-                currency_id BIGINT DEFAULT 1,          -- ссылка на валюту
+                currency_id BIGINT DEFAULT 1,  -- ссылка на валюту
+                currency_rate numeric(14,2), 
+                currency_amount numeric(14,2), 
                 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
