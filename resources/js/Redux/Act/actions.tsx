@@ -329,6 +329,32 @@ export const updateServiceComponentsFifo = createAction(
   (serviceId: any, components: any) => ({ serviceId, components })
 );
 
+// Структура порожнього рядка за замовчуванням
+export const emptyActRow = () => ({
+  service_id: '',
+  service: '',
+  quantity: 1,
+  price: 0,
+  base_price: 0,
+  total: 0,
+  components: [],
+});
+
+// Екшн додавання нового порожнього рядка
+export const addEmptyActRowAction = createAction('act/ADD_EMPTY_ROW');
+
+// Екшн оновлення конкретного рядка за індексом (наприклад, при виборі послуги чи зміни ціни/кількості)
+export const updateActRowAction = createAction(
+  'act/UPDATE_ROW_BY_INDEX',
+  (index: number, patch: any) => ({ index, patch })
+);
+
+// Екшн видалення рядка за індексом
+export const removeActRowAction = createAction(
+  'act/REMOVE_ROW_BY_INDEX',
+  (index: number) => index
+);
+
 // export const syncAndRecalculateActOld = createAction(
 //   'act/SYNC_AND_RECALCULATE_OLD',
 //   async ({ actItems, storeItems }, { rejectWithValue }) => {
