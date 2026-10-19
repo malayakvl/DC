@@ -77,6 +77,7 @@ const lngReport = {
     'title.closing.balance': 'Зал. на кінець',
     'document_type.balance': 'Прибуткова накладна',
     expire: 'придатен до',
+    'document_type.act': 'Акт виконаних робіт',
   },
 };
 export default lngReport;

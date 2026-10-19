@@ -82,6 +82,7 @@ class IncomingInvoiceController extends Controller
             $filialId = $request->session()->get('filial_id');
             $storesData = Store::where('filial_id', '=', $filialId)->get();
             $allowedStoreIds = $storesData->pluck('id')->toArray();
+            $currencyData = Currency::all();
 
             $schema = 'clinic_'.$clinicId;
             $limit = $request->limit ?? 20;
@@ -135,6 +136,7 @@ class IncomingInvoiceController extends Controller
                 (int)$limit,
                 (int)$offset
             ]);
+
             $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
             $paymentMethods = DB::select("
             SELECT 
@@ -157,6 +159,7 @@ class IncomingInvoiceController extends Controller
                 'suppliers' => $suppliers,
                 'paymentMethods' => $paymentMethods,
                 'storesData' => $storesData,
+                'currencyData' => $currencyData,
                 'filters' => $request->only([
                     'search', 'store_id', 'supplier_id', 'payment_status', 'date_from', 'date_to'
                 ]),
@@ -512,39 +515,56 @@ class IncomingInvoiceController extends Controller
             $schema = "clinic_{$clinicId}";
             $invoice = Invoice::find($request->invoiceId);
 
-            DB::table("{$schema}.supplier_movements")->insert([
-                'supplier_id'   => $invoice->supplier_id,
-                'document_type' => 'payment',
-                'document_id'   => $invoice->id,
-                'total_sum'     => $request->amount,
-                'net_sum'       => $request->amount,
-                'tax_sum'       => 0,
-                'currency_id'   => $invoice->currency_id,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
+            $amountInput = (float) $request->amount; // Сумма в валюте оплаты
+            $currencyRate = (float) $request->currency_rate ?: 1.0; // Курс (если пустой/нулевой, то 1)
 
-            $moneyOutId = DB::table("{$schema}.money_out")->insertGetId([
-                'document_number' => $invoice->invoice_number,
-                'document_date'   => $invoice->invoice_date,
-                'status'          => 'posted',
-                'filial_id'       => $invoice->filial_id,
-                'account_id'      => $request->paymentMethodId,
-                'customer_id'     => $request->user()->id,
-                'currency_id'     => $invoice->currency_id,
-                'amount'          => $request->amount,
-                'payed_document'  => 'invoice',
-                'payed_document_id' => $invoice->id,
-            ]);
+            // Считаем эквивалент в базовой валюте (для погашения долга по накладной)
+            $totalSumInBaseCurrency = $amountInput * $currencyRate;
 
-            DB::statement("SELECT core.add_money_movement(?, ?, ?, ?, ?, ?)", [
+            // Заворачиваем всё в транзакцию для безопасности данных
+            DB::transaction(function () use ($schema, $invoice, $request, $amountInput, $currencyRate, $totalSumInBaseCurrency) {
+
+                // 1. Запись в движение средств по поставщику
+                DB::table("{$schema}.supplier_movements")->insert([
+                    'supplier_id'     => $invoice->supplier_id,
+                    'document_type'   => 'payment',
+                    'document_id'     => $invoice->id,
+                    'total_sum'       => $totalSumInBaseCurrency,
+                    'net_sum'         => $totalSumInBaseCurrency,
+                    'tax_sum'         => 0,
+                    'currency_id'     => $request->currency_id,
+                    'currency_rate'   => $currencyRate,
+                    'currency_amount' => $amountInput,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+
+                // 2. Создание документа оттока денег
+                $moneyOutId = DB::table("{$schema}.money_out")->insertGetId([
+                    'document_number' => $invoice->invoice_number,
+                    'document_date'   => $invoice->invoice_date,
+                    'status'          => 'posted',
+                    'filial_id'       => $invoice->filial_id,
+                    'account_id'      => $request->paymentMethodId,
+                    'customer_id'     => $request->user()->id,
+                    'currency_id'     => $invoice->currency_id,
+                    'amount'          => $amountInput,
+                    'payed_document'  => 'invoice',
+                    'payed_document_id' => $invoice->id,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ]);
+
+                // 3. Вызов функции движения по кассе/счёту
+                DB::statement("SELECT core.add_money_movement(?, ?, ?, ?, ?, ?)", [
                     $schema,
                     $request->paymentMethodId,
                     'money_out',
                     $moneyOutId,
-                    $request->amount ?? 0,
+                    $amountInput,
                     -1
                 ]);
+            });
             
             return redirect()->back();
         });

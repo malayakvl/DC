@@ -11,6 +11,9 @@ import {
   syncAndRecalculateAct,
   setupActStoreErrorAction,
   updateServiceComponentsFifo,
+  addEmptyActRowAction,
+  updateActRowAction,
+  removeActRowAction,
 } from './actions';
 
 const initialState = {
@@ -158,6 +161,69 @@ const ACTION_HANDLERS = {
       };
     },
   },
+  // Додай ці три кейси всередину ACTION_HANDLERS:
+
+  [addEmptyActRowAction.toString()]: {
+    next: (state: any) => ({
+      ...state,
+      actItems: [
+        ...state.actItems,
+        {
+          service_id: '',
+          service: '',
+          quantity: 1,
+          price: 0,
+          base_price: 0,
+          total: 0,
+          components: [],
+        },
+      ],
+    }),
+  },
+  [updateActRowAction.toString()]: {
+    next: (state: any, action: any) => {
+      const { index, patch } = action.payload;
+      const updatedItems = [...state.actItems];
+      if (index >= 0 && index < updatedItems.length) {
+        const row = updatedItems[index];
+        const updatedRow = { ...row, ...patch };
+
+        // Автопересчет total, если изменилось quantity или price
+        const qty = Number(updatedRow.quantity) || 1;
+        const price = Number(updatedRow.price) || 0;
+        updatedRow.total = Number((qty * price).toFixed(2));
+
+        updatedItems[index] = updatedRow;
+      }
+      return {
+        ...state,
+        actItems: updatedItems,
+      };
+    },
+  },
+  [removeActRowAction.toString()]: {
+    next: (state: any, action: any) => {
+      const index = action.payload;
+      const updatedItems = state.actItems.filter((_: any, idx: number) => idx !== index);
+      return {
+        ...state,
+        actItems:
+          updatedItems.length > 0
+            ? updatedItems
+            : [
+                {
+                  service_id: '',
+                  service: '',
+                  quantity: 1,
+                  price: 0,
+                  base_price: 0,
+                  total: 0,
+                  components: [],
+                },
+              ],
+      };
+    },
+  },
 };
 
 export {
@@ -172,6 +238,9 @@ export {
   syncAndRecalculateAct,
   setupActStoreErrorAction,
   updateServiceComponentsFifo,
+  addEmptyActRowAction,
+  updateActRowAction,
+  removeActRowAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

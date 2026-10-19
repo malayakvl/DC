@@ -11,6 +11,9 @@ import {
   updateServiceQuantityAction,
   setupActStoreErrorAction,
   updateComponentQuantityAction,
+  addEmptyActRowAction,
+  updateActRowAction,
+  removeActRowAction,
 } from '../../../Redux/Act';
 import { useActFifoValidation } from '../hooks/useActFifoValidation';
 
@@ -51,7 +54,6 @@ const MaterialItem = ({
   );
   const materialBatches = component.batches || [];
 
-
   // 🚀 Синхронизируем локальный инпут, если Redux обновил количество
   React.useEffect(() => {
     if (component.quantity !== undefined && component.quantity !== null) {
@@ -59,10 +61,6 @@ const MaterialItem = ({
     }
   }, [component.quantity]);
 
-  // Розрахунок собівартості на основі cost та кількості з компонента
-  // const unitCost =
-  //   Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1) ||
-  //   Number(materialBatches[0]?.price_per_unit || 0);
   // Розрахунок собівартості: спершу беремо ціну з актуальної партії по FEFO, і лише потім з компонентів
   const unitCost =
     materialBatches.length > 0
@@ -128,7 +126,20 @@ const MaterialItem = ({
               }}
             />
           </div>
+          <div>
+            <button
+              type="button"
+              onClick={() =>
+                console.log('remove comonent')
+              }
+              className="w-8 h-8 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition cursor-pointer mx-auto"
+              title="Видалити рядок"
+            >
+              <span className="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+          </div>
         </div>
+
       </div>
 
       <div className="mt-2 pb-2 border-b border-slate-200 text-[13px] text-slate-500 flex flex-col gap-1">
@@ -144,12 +155,6 @@ const MaterialItem = ({
               {itemTotalCost.toFixed(2)} ₴
             </span>
           </div>
-          {/*{fifoItem?.shortage_qty > 0 && (*/}
-          {/*  <span className="text-red-500 font-medium">*/}
-          {/*    {msg.get('act.absent')}: {Number(fifoItem.shortage_qty).toFixed(2)}{' '}*/}
-          {/*    {component.unit_name}*/}
-          {/*  </span>*/}
-          {/*)}*/}
         </div>
 
         {batchesCount > 0 && (
@@ -207,7 +212,6 @@ const MaterialItem = ({
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   // 🚀 Автоматична перевірка залишків
   useActFifoValidation(rows, 'new');
-
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
   const requestId = useRef(0);
@@ -222,6 +226,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   const dispatch = useAppDispatch();
 
   const handleAddInput = () => {
+    console.log('add service');
     changeRows([...rows, emptyRow()]);
   };
 
@@ -306,12 +311,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
           Number(row.base_price || row.price || 0)
         );
 
-        // 2. Автоматично оновлюємо ціну в стейті, якщо вона ще не була змінена вручну або дорівнює базі
-        // React.useEffect(() => {
-        //   if (calculatedTotalCost > 0 && Number(row.price) !== calculatedTotalCost) {
-        //     updateRow(index, { price: Number(calculatedTotalCost.toFixed(2)) });
-        //   }
-        // }, [calculatedTotalCost]);
         return (
           <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
             {/* Назва послуги з автокомплітом та матеріалами */}
@@ -483,7 +482,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
               {index === rows.length - 1 && (
                 <button
                   type="button"
-                  onClick={() => changeRows([...rows, emptyRow()])}
+                  onClick={() => {
+                    changeRows([...rows, emptyRow()]);
+                    dispatch(addEmptyActRowAction());
+                  }}
                   className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 hover:bg-teal-100 flex items-center justify-center transition cursor-pointer mx-auto"
                   title="Додати рядок"
                 >

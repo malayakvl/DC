@@ -20,7 +20,6 @@ const lngPatient = {
   },
   'uk.patient': {
     'title.list': 'База пацієнтів',
-    'title.total': 'пацієнтів',
     'title.view': 'Перегляд',
     'title.create': 'Створити пацієнта',
     'title.edit': 'Редагувати пацієнта',
@@ -114,6 +113,7 @@ const lngPatient = {
     found: 'Знайдено',
     found_patients: 'пацієнтів',
     clear_filter: 'Очистити фільтри',
+    last_visit: 'Останній візит',
   },
 };
 export default lngPatient;

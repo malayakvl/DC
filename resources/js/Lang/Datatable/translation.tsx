@@ -68,6 +68,7 @@ const lngHeaders = {
     classification: 'Класифікація',
     contactname: 'Ім`я контакту',
     contacts: 'Контакти',
+    payedamount: 'Сплачено',
   },
 };
 export default lngHeaders;

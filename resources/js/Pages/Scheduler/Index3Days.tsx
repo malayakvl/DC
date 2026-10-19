@@ -597,7 +597,7 @@ export default function Index3Days({
                   }}
                 >
                   {/* 2. Встав лінію сюди: вона малюватиметься тільки для поточного дня */}
-                  {day.date === format(new Date(), 'yyyy-MM-dd') && (
+                  {day.date === format(new Date(), 'yyyy-MM-dd') && new Date().getHours() >= 8 && (
                     <div
                       style={{
                         position: 'absolute',
