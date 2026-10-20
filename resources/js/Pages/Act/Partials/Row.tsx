@@ -297,9 +297,13 @@ const ServiceMaterialsBlock = ({
       storeItems.forEach((item: any) => {
         const uniqueKey = `${item.service_id}_${item.material_id}`;
         fifoMap.set(uniqueKey, item);
-        if (item.shortage_qty > 0) {
+
+        // 🚀 Додаємо перевірку: дефіцит АБО повна відсутність на складі
+        if (Number(item.shortage_qty) > 0 || Number(item.available_qty) === 0) {
           deficitsMap[uniqueKey] =
-            `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
+            Number(item.available_qty) === 0
+              ? `Матеріал відсутній на складі`
+              : `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
         }
       });
 
@@ -497,7 +501,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   const selectService = async (service: any, index: number) => {
     const response = await axios.post('/service/findServiceItems', { serviceId: service.id });
     const rawItems = response.data.items || [];
-
     const groupedItemsMap = new Map();
     rawItems.forEach((item: any) => {
       const mId = item.material_id || item.id;
