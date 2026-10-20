@@ -198,6 +198,48 @@ class ActController extends Controller
         ];
     }
 
+    public function findMaterial(Request $request)
+    {
+        return $this->withClinicSchema($request, function () use ($request) {
+            $data = $request->validate([
+                'searchName' => ['required', 'string', 'min:1'],
+            ]);
+
+            $filialId = $request->session()->get('filial_id');
+            $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
+
+            if (!$storeId) {
+                return response()->json(['items' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
+            }
+
+            $searchName = trim($data['searchName']);
+
+            // Шукаємо матеріали по назві та підтягуємо сумарний залишок на складі або базову ціну
+            $materials = DB::table('materials')
+                ->where('name', 'like', "%{$searchName}%")
+                ->limit(20)
+                ->get(['id', 'name', 'price', 'is_instrument', 'expected_uses']);
+
+            // Опціонально: можемо збагатити загальним залишком на складі для зручності
+            $items = $materials->map(function ($material) use ($storeId) {
+                $totalStock = DB::table('store_batches')
+                    ->where('store_id', $storeId)
+                    ->where('material_id', $material->id)
+                    ->sum('fact_qty_left');
+
+                return [
+                    'id' => $material->id,
+                    'name' => $material->name,
+                    'price' => (float) ($material->price ?? 0),
+                    'is_instrument' => (bool) $material->is_instrument,
+                    'expected_uses' => (int) $material->expected_uses,
+                    'total_stock' => (float) $totalStock,
+                ];
+            });
+
+            return response()->json(['items' => $items]);
+        });
+    }
     /**
      * Read-only FIFO calculation for the act form.
      * It deliberately does not reserve or change batches: the form can be edited

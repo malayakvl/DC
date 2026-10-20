@@ -140,20 +140,18 @@ export const updateComponentQuantityAction: any = createAction(
   async (serviceId: number, materialId: number, qty: number, targetServiceItem: any) =>
     async (dispatch: any) => {
       try {
-        console.log('serviceId:', serviceId, 'materialId:', materialId, 'Qty:', qty);
-        console.log('targetServiceItem:', targetServiceItem);
-
         if (!targetServiceItem) {
           console.error('Service item not found');
           return null;
         }
 
+        const currentServiceId = Number(targetServiceItem.service_id || targetServiceItem.product_id || serviceId);
         const serviceQty = Number(targetServiceItem.quantity || 1);
         const newComponentQty = Number(qty);
 
-        // 1. Оновлюємо кількість тільки для потрібного компонента
+        // 1. Оновлюємо кількість компонента
         const updatedComponents = (targetServiceItem.components || []).map((comp: any) => {
-          if (comp.material_id === materialId) {
+          if (Number(comp.material_id || comp.product_id) === Number(materialId)) {
             const baseQty = newComponentQty / serviceQty;
             return {
               ...comp,
@@ -164,46 +162,42 @@ export const updateComponentQuantityAction: any = createAction(
           return comp;
         });
 
-        // 2. Створюємо оновлену копію послуги для бекенду
         const updatedTargetItem = {
           ...targetServiceItem,
           components: updatedComponents,
         };
 
         try {
-          // 3. Запит на бекенд для FIFO перевірки
+          // 2. Запит на бекенд для FIFO перевірки
           const response = await axios.post('/act/fifo-preview', {
             services: [updatedTargetItem],
           });
           const storeItems = response.data.items || [];
 
-          const hasDeficit = storeItems.some((fifoItem: any) => fifoItem.shortage_qty > 0);
+          // 3. Формуємо мапу помилок з СКЛАДЕНИМ КЛЮЧЕМ (serviceId_materialId)
+          const deficitsMap: Record<string, string> = {};
+          storeItems.forEach((i: any) => {
+            if (Number(i.shortage_qty) > 0) {
+              const uniqueKey = `${i.service_id}_${i.material_id}`;
+              deficitsMap[uniqueKey] = `Не вистачає ${Number(i.shortage_qty).toFixed(2)}`;
+            }
+          });
 
-          if (hasDeficit) {
-            const deficitsMap = storeItems
-              .filter((i: any) => i.shortage_qty > 0)
-              .reduce((acc: any, i: any) => {
-                acc[i.material_id] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
-                return acc;
-              }, {});
+          // Оновлюємо стейт помилок у Redux
+          dispatch(setupActStoreErrorAction(deficitsMap));
 
-            dispatch(setupActStoreErrorAction(deficitsMap));
-            return null; // Дефіцит — стейт не чіпаємо
-          } else {
-            dispatch(setupActStoreErrorAction([]));
-          }
-
-          // Створюємо мапу результатів з fifo-preview по material_id
+          // 4. Створюємо мапу результатов FIFO
           const fifoMap = new Map();
           storeItems.forEach((item: any) => {
             const uniqueKey = `${item.service_id}_${item.material_id}`;
             fifoMap.set(uniqueKey, item);
           });
 
-          // Оновлюємо компоненти актуальними батчами, вартістю та залишками з FIFO
+          // 5. Оновлюємо всі компоненти актуальними батчами та залишками
           const fullyUpdatedComponents = updatedComponents.map((comp: any) => {
             const mId = Number(comp.material_id || comp.product_id);
-            const fifoData = fifoMap.get(mId);
+            const uniqueKey = `${currentServiceId}_${mId}`;
+            const fifoData = fifoMap.get(uniqueKey);
 
             if (fifoData) {
               return {
@@ -217,13 +211,14 @@ export const updateComponentQuantityAction: any = createAction(
             return comp;
           });
 
-          // 4. Повертаємо повноцінні дані для редюсера разом з батчами та цінами
+          // 6. ПОВЕРТАЄМО оновлені дані в редюсер НЕЗАЛЕЖНО від наявності дефіциту,
+          // щоб UI оновив кількість і підсвітив дефіцитний матеріал червоним!
           return {
-            serviceId,
+            serviceId: currentServiceId,
             components: fullyUpdatedComponents,
           };
         } catch (error) {
-          console.error('Error validating component on backend, rolling back...', error);
+          console.error('Error validating component on backend:', error);
           throw error;
         }
       } catch (error) {
@@ -248,28 +243,33 @@ export const removeComponentAction: any = createAction(
 
         const storeItems = response.data.items || [];
 
-        // 2. Збираємо глобальні дефіцити по всьому акту
+        // 2. Збираємо глобальні дефіцити та нульові залишки по всьому акту
         const deficitsMap: Record<string, string> = {};
         storeItems.forEach((i: any) => {
-          if (Number(i.shortage_qty) > 0) {
-            const errorKey = `${i.service_id}_${i.material_id}`;
-            deficitsMap[errorKey] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
+          const errorKey = `${i.service_id}_${i.material_id}`;
+          if (Number(i.shortage_qty) > 0 || Number(i.available_qty) === 0) {
+            deficitsMap[errorKey] = Number(i.available_qty) === 0
+              ? `Матеріал відсутній на складі`
+              : `Не вистачає ${Number(i.shortage_qty).toFixed(2)}`;
           }
         });
 
         dispatch(setupActStoreErrorAction(deficitsMap));
 
-        // 3. Створюємо мапу результатів з fifo-preview для збагачення цін та партій
+        // 3. Створюємо мапу результатів з fifo-preview для збагачення цін та партій (складений ключ)
         const fifoMap = new Map();
         storeItems.forEach((item: any) => {
-          fifoMap.set(Number(item.material_id || item.product_id), item);
+          const uniqueKey = `${item.service_id}_${item.material_id}`;
+          fifoMap.set(uniqueKey, item);
         });
 
-        // 4. Повертаємо наш власний servicesPayload, але збагачуємо його актуальними цінами/батчами від FIFO, якщо вони є
+        // 4. Повертаємо наш власний servicesPayload, але збагачуємо його актуальними цінами/батчами від FIFO
         const enrichedServices = servicesPayload.map((service: any) => {
+          const sId = Number(service.service_id || service.product_id);
           const updatedComponents = (service.components || []).map((comp: any) => {
             const mId = Number(comp.material_id || comp.product_id);
-            const fifoData = fifoMap.get(mId);
+            const uniqueKey = `${sId}_${mId}`;
+            const fifoData = fifoMap.get(uniqueKey);
             if (fifoData) {
               return {
                 ...comp,

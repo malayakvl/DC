@@ -17,7 +17,6 @@ import {
   removeComponentAction,
 } from '../../../Redux/Act';
 import { useActFifoValidation } from '../hooks/useActFifoValidation';
-// import { removeComponentAction } from '@/Redux/Act/actions';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -60,14 +59,12 @@ const MaterialItem = ({
   const allActItems = useSelector(actItemsSelector);
   const materialBatches = component.batches || [];
 
-  // 🚀 Синхронизируем локальный инпут, если Redux обновил количество
   React.useEffect(() => {
     if (component.quantity !== undefined && component.quantity !== null) {
       setLocalVal(String(component.quantity));
     }
   }, [component.quantity]);
 
-  // Розрахунок собівартості: спершу беремо ціну з актуальної партії по FEFO, і лише потім з компонентів
   const unitCost =
     materialBatches.length > 0
       ? Number(materialBatches[0]?.price_per_unit || 0)
@@ -81,32 +78,18 @@ const MaterialItem = ({
     actRow: any,
     allItems: any
   ) => {
-    console.log(serviceId, materialId);
-    console.log(actRow);
-    console.log(allItems);
-
-    // 1. Фільтруємо компоненти всередині поточної послуги
     const updatedComponents = actRow.components.filter(
       (comp: any) => Number(comp.material_id || comp.product_id || comp.id) !== Number(materialId)
     );
 
-    // 2. Оновлюємо цей рядок у глобальному сторі за його service_id (або через загальний екшен)
     const updatedRow = {
       ...actRow,
       components: updatedComponents,
     };
 
-    // Якщо у тебе є екшен для оновлення конкретного рядка (наприклад, updateActRow або оновлення всього масиву actItems)
-    // const updatedItems = actItems.map((row: any) =>
-    //   Number(row.service_id || row.product_id) === Number(serviceId) ? updatedRow : row
-    // );
-
-    // Оновлюємо стейт акту
-    // console.log(updatedRows);
     dispatch(removeComponentAction(serviceId, updatedRow, allItems));
   };
 
-  // Загальна вартість матеріалу по партіях
   const itemTotalCost =
     materialBatches.length > 0
       ? materialBatches.reduce(
@@ -249,9 +232,209 @@ const MaterialItem = ({
   );
 };
 
+// 🚀 Компонент для управління блоком матеріалів і додавання в конкретній послузі
+const ServiceMaterialsBlock = ({
+  row,
+  index,
+  actItemsError,
+  dispatch,
+  msg,
+  actItemRows,
+}: {
+  row: any;
+  index: number;
+  actItemsError: any;
+  dispatch: any;
+  msg: any;
+  actItemRows: any;
+}) => {
+  const [materialSearchQuery, setMaterialSearchQuery] = useState('');
+  const [materialSearchResults, setMaterialSearchResults] = useState([]);
+  const [isAddingMaterialOpen, setIsAddingMaterialOpen] = useState(false);
+  const materialRequestId = useRef(0);
+
+  const searchMaterials = async (value: string) => {
+    setMaterialSearchQuery(value);
+    if (value.trim().length < 1) {
+      setMaterialSearchResults([]);
+      return;
+    }
+    const currentReq = ++materialRequestId.current;
+    const response = await axios.post('/material/find', { searchName: value });
+    if (currentReq === materialRequestId.current) {
+      setMaterialSearchResults(response.data.items || []);
+    }
+  };
+
+  const handleAddMaterialToService = async (material: any) => {
+    const newComponent = {
+      material_id: material.id,
+      product_id: material.id,
+      product: material.name,
+      quantity: 1,
+      base_quantity: 1,
+      price: material.price || 0,
+      cost: material.price || 0,
+      batches: [],
+    };
+
+    const updatedComponents = [...(row.components || []), newComponent];
+    const updatedRow = { ...row, components: updatedComponents };
+
+    const updatedAllServices = actItemRows.map((r: any, rIdx: number) =>
+      rIdx === index ? updatedRow : r
+    );
+
+    try {
+      const fifoResponse = await axios.post('/act/fifo-preview', {
+        services: updatedAllServices,
+      });
+
+      const storeItems = fifoResponse.data.items || [];
+      const fifoMap = new Map();
+      const deficitsMap: Record<string, string> = {};
+
+      storeItems.forEach((item: any) => {
+        const uniqueKey = `${item.service_id}_${item.material_id}`;
+        fifoMap.set(uniqueKey, item);
+        if (item.shortage_qty > 0) {
+          deficitsMap[uniqueKey] =
+            `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
+        }
+      });
+
+      dispatch(setupActStoreErrorAction(deficitsMap));
+
+      const finalComponents = updatedComponents.map((comp: any) => {
+        const sId = Number(row.service_id || row.product_id);
+        const mId = Number(comp.material_id || comp.product_id);
+        const uniqueKey = `${sId}_${mId}`;
+        const fifoData = fifoMap.get(uniqueKey);
+        if (fifoData) {
+          return {
+            ...comp,
+            batches: fifoData.batches || [],
+            cost: fifoData.cost ?? 0,
+            available_qty: fifoData.available_qty ?? 0,
+            shortage_qty: fifoData.shortage_qty ?? 0,
+          };
+        }
+        return comp;
+      });
+
+      const calculatedComponentsPrice = finalComponents.reduce(
+        (sum: number, item: any) => sum + Number(item.cost || 0),
+        0
+      );
+      const baseServicePrice = Number(row.base_price || row.price) || 0;
+      const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
+
+      dispatch(
+        updateActRowAction(index, {
+          ...updatedRow,
+          price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+          components: finalComponents,
+        })
+      );
+    } catch (error) {
+      console.error('Error adding material:', error);
+    }
+
+    setIsAddingMaterialOpen(false);
+    setMaterialSearchQuery('');
+    setMaterialSearchResults([]);
+  };
+
+  const totalCost = (row.components || []).reduce(
+    (sum: any, component: any) => sum + Number(component.cost || 0),
+    Number(row.base_price || row.price || 0)
+  );
+
+  return (
+    <div className="mt-2.5 p-3 bg-white text-slate-700">
+      <div className="bg-[#f0fdfa] py-2 px-2 font-semibold text-slate-800 mb-2 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 text-[16px]">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+            <span className="material-symbols-outlined text-[20px]">package_2</span>
+          </div>
+          {msg.get('act.materials.and.services')}
+        </div>
+        <div className="text-[14px] bg-white text-teal-700 px-2 py-0.5 rounded-md font-medium border border-teal-200/60">
+          {msg.get('act.total.payment')}
+          <strong className="font-bold">{totalCost.toFixed(2)} ₴</strong>
+        </div>
+      </div>
+
+      <ul className="list-none space-y-2">
+        {(row.components || []).map((component: any, componentIndex: number) => (
+          <MaterialItem
+            key={`comp-${component.material_id || componentIndex}`}
+            component={component}
+            actItemsError={actItemsError}
+            dispatch={dispatch}
+            invoiceItems={row}
+            msg={msg}
+          />
+        ))}
+
+        <li>
+          {!isAddingMaterialOpen ? (
+            <button
+              type="button"
+              onClick={() => setIsAddingMaterialOpen(true)}
+              className="btn-submit"
+            >
+              + {msg.get('act.add_material')}
+            </button>
+          ) : (
+            <div className="relative mt-2">
+              <input
+                type="text"
+                className="w-full px-3 py-1.5 rounded-xl bg-white text-[13px] border border-teal-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                placeholder={msg.get('act.tip_add_material')}
+                value={materialSearchQuery}
+                onChange={(e) => searchMaterials(e.target.value)}
+                autoFocus
+              />
+              {materialSearchResults.length > 0 && (
+                <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                  <ul className="py-1">
+                    {materialSearchResults.map((mat: any, mIdx: number) => (
+                      <li
+                        key={`mat-search-${mat.id || mIdx}`}
+                        className="px-3 py-2 text-xs text-slate-700 hover:bg-teal-50 hover:text-teal-900 cursor-pointer transition-colors flex justify-between items-center"
+                        onMouseDown={() => handleAddMaterialToService(mat)}
+                      >
+                        <span className="font-medium">{mat.name}</span>
+                        <span className="text-teal-600 font-semibold text-xs">
+                          {Number(mat.price || 0).toFixed(2)} ₴
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddingMaterialOpen(false);
+                  setMaterialSearchQuery('');
+                  setMaterialSearchResults([]);
+                }}
+                className="text-[11px] text-slate-400 hover:text-slate-600 mt-1 ml-1 cursor-pointer"
+              >
+                Скасувати
+              </button>
+            </div>
+          )}
+        </li>
+      </ul>
+    </div>
+  );
+};
+
 // eslint-disable-next-line react/display-name
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
-  // 🚀 Автоматична перевірка залишків
   useActFifoValidation(rows, 'new');
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
@@ -267,7 +450,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   const dispatch = useAppDispatch();
 
   const handleAddInput = () => {
-    console.log('add service');
     changeRows([...rows, emptyRow()]);
   };
 
@@ -290,8 +472,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   };
 
   const searchServices = async (value: any, index: any) => {
-    // updateRow(index, { product: value, product_id: '', components: [], price: 0, base_price: 0 });
-    // 🚀 Оновлюємо значення в Redux-редьюсері за індексом рядка
     dispatch(
       updateActRowAction(index, {
         service: value,
@@ -304,12 +484,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
 
     setActiveRow(index);
 
-    if (value.trim().length < 2) {
-      setResults([]);
-      return;
-    }
-
-    setActiveRow(index);
     if (value.trim().length < 2) {
       setResults([]);
       return;
@@ -340,7 +514,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
     const items = Array.from(groupedItemsMap.values());
     const baseServicePrice = Number(service.price) || 0;
 
-    // Створюємо новий об'єкт послуги
     const newServiceItem = {
       service_id: service.id,
       product_id: service.id,
@@ -352,13 +525,11 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
       components: items,
     };
 
-    // Формуємо ПОВНИЙ масив послуг для всього акту, замінюючи рядок на нову послугу
     const updatedAllServices = actItemRows.map((row: any, rIdx: number) =>
       rIdx === index ? newServiceItem : row
     );
 
     try {
-      // 🚀 Прямо тут відправляємо ВСІ послуги акту на фіфо-перевірку!
       const fifoResponse = await axios.post('/act/fifo-preview', {
         services: updatedAllServices,
       });
@@ -367,29 +538,20 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
       const fifoMap = new Map();
       const deficitsMap: Record<string, string> = {};
 
-      // storeItems.forEach((item: any) => {
-      //   const idKey = Number(item.material_id || item.product_id || item.id);
-      //   if (idKey) fifoMap.set(idKey, item);
-      //   if (Number(item.shortage_qty) > 0) {
-      //     deficitsMap[item.material_id] = `Не вистачає ${Number(item.shortage_qty).toFixed(2)}`;
-      //   }
-      // });
-      console.log('we here', storeItems)
       storeItems.forEach((item: any) => {
-        // Зберігаємо батчі/дані для конкретної пари послуги та матеріалу
         const uniqueKey = `${item.service_id}_${item.material_id}`;
         fifoMap.set(uniqueKey, item);
 
-        if (item.shortage_qty > 0) {
-          // Ключ помилки стає унікальним для кожного рядка послуги!
-          deficitsMap[uniqueKey] =
-            `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
+        // 🚀 Додаємо перевірку: якщо є дефіцит АБО якщо кількість на складі нульова
+        if (Number(item.shortage_qty) > 0 || Number(item.available_qty) === 0) {
+          deficitsMap[uniqueKey] = Number(item.available_qty) === 0
+            ? `Матеріал відсутній на складі`
+            : `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
         }
       });
 
       dispatch(setupActStoreErrorAction(deficitsMap));
 
-      // Збагачуємо компоненти нової послуги партіями
       const finalComponents = items.map((comp: any) => {
         const mId = Number(comp.material_id || comp.product_id);
         const fifoData = fifoMap.get(mId);
@@ -411,7 +573,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
 
       const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
 
-      // Фінально оновлюємо рядок у Redux вже збагаченими даними
       dispatch(
         updateActRowAction(index, {
           ...newServiceItem,
@@ -428,19 +589,12 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   };
 
   const handleRemoveService = (serviceId: number) => {
-    // Фільтруємо масив actItems у Redux, залишаючи все, крім потрібного ID
-    // const updatedRows = actItemRows.filter(
-    //   (row: any) => Number(row.service_id || row.product_id) !== Number(serviceId)
-    // );
-
-    // Оновлюємо стейт акту через редюсер
     dispatch(removeActRowAction(serviceId));
   };
 
   return (
     <>
       {actItemRows.map((row: any, index: number) => {
-        // 1. Рахуємо повну вартість (послуга + матеріали) на основі поточних компонентів
         const calculatedTotalCost = (row.components || []).reduce(
           (sum: any, component: any) => sum + Number(component.cost || 0),
           Number(row.base_price || row.price || 0)
@@ -448,7 +602,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
 
         return (
           <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
-            {/* Назва послуги з автокомплітом та матеріалами */}
             <td className="py-3 px-3 align-top w-full pl-0">
               <div className="relative">
                 <input
@@ -460,7 +613,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                   onChange={(event) => searchServices(event.target.value, index)}
                   onFocus={() => setActiveRow(index)}
                 />
-                {/* Випадаючий список пошуку послуг */}
                 {activeRow === index && results.length > 0 && (
                   <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                     <ul className="py-1">
@@ -480,56 +632,20 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                   </div>
                 )}
 
-                {/* Блок пов'язаних матеріалів (FIFO) */}
-                {(row.components || []).length > 0 &&
-                  (() => {
-                    const totalCost = row.components.reduce(
-                      (sum: any, component: any) => {
-                        // Беремо готову вартість з самого компонента або рахуємо за ціною і кількістю
-                        const componentTotal = component.cost;
-                        return sum + componentTotal;
-                      },
-                      Number(row.base_price || row.price || 0) // Базова ціна послуги + сума всіх матеріалів
-                    );
-
-                    return (
-                      <div className="mt-2.5 p-3 bg-white text-slate-700">
-                        <div className="bg-[#f0fdfa] py-2 px-2 font-semibold text-slate-800 mb-2 flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-[16px]">
-                            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
-                              <span className="material-symbols-outlined text-[20px]">
-                                package_2
-                              </span>
-                            </div>
-                            {msg.get('act.materials.and.services')}
-                          </div>
-                          <div className="text-[14px] bg-white text-teal-700 px-2 py-0.5 rounded-md font-medium border border-teal-200/60">
-                            {msg.get('act.total.payment')}
-                            <strong className="font-bold">{totalCost.toFixed(2)} ₴</strong>
-                          </div>
-                        </div>
-
-                        <ul className="list-none space-y-2">
-                          {row.components.map((component: any, componentIndex: number) => {
-                            return (
-                              <MaterialItem
-                                key={`comp-${component.material_id || componentIndex}`}
-                                component={component}
-                                actItemsError={actItemsError}
-                                dispatch={dispatch}
-                                invoiceItems={row}
-                                msg={msg}
-                              />
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    );
-                  })()}
+                {/* Блок пов'язаних матеріалів та додавання нових — з'являється тільки коли обрано послугу */}
+                {row.service_id && (
+                  <ServiceMaterialsBlock
+                    row={row}
+                    index={index}
+                    actItemsError={actItemsError}
+                    dispatch={dispatch}
+                    msg={msg}
+                    actItemRows={actItemRows}
+                  />
+                )}
               </div>
             </td>
 
-            {/* Кількість */}
             <td className="py-3 px-3 align-top w-qty">
               <div className="flex items-center justify-center">
                 <div className="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200">
@@ -578,7 +694,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
               </div>
             </td>
 
-            {/* Ціна */}
             <td className="py-3 px-3 align-top w-price">
               <input
                 className="w-full px-3 py-2 text-center rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition min-w-[150px]"
@@ -589,21 +704,18 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
               />
             </td>
 
-            {/* Сума */}
             <td className="py-3 px-3 align-top text-center font-semibold text-slate-800 text-xs w-price whitespace-nowrap">
               <div className="inline-block mt-[10px]">
                 {Number(calculatedTotalCost || 0).toFixed(2)} ₴
               </div>
             </td>
 
-            {/* Кнопка видалення рядка */}
             <td className="py-3 px-2 align-top w-btn text-center">
               {rows.length > 1 && (
                 <button
                   type="button"
                   onClick={() => {
                     handleRemoveService(row.service_id);
-                    // dispatch(removeActRowAction(index));
                   }}
                   className="w-8 h-8 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition cursor-pointer mx-auto"
                   title="Видалити рядок"
@@ -613,7 +725,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
               )}
             </td>
 
-            {/* Кнопка додавання нового рядка */}
             <td className="py-3 px-2 align-top w-btn text-center">
               {index === rows.length - 1 && (
                 <button
