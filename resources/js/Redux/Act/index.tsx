@@ -14,6 +14,7 @@ import {
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
+  removeComponentAction
 } from './actions';
 
 const initialState = {
@@ -128,11 +129,20 @@ const ACTION_HANDLERS = {
       ],
     }),
   },
-  [setupActStoreErrorAction.toString()]: {
+  [removeComponentAction.toString()]: {
     next: (state: any, action: any) => ({
       ...state,
-      actItemsError: action.payload,
+      actItems: action.payload.updatedServices,
     }),
+  },
+  [setupActStoreErrorAction.toString()]: {
+    next: (state: any, action: any) => {
+      return {
+        ...state,
+        // 🚀 Полностью перезаписываем ошибки актуальным состоянием с бэкенда
+        actItemsError: action.payload || {},
+      };
+    },
   },
   [updateServiceItemQtyAction.toString()]: {
     next: (state: any, action: any) => {
@@ -203,8 +213,13 @@ const ACTION_HANDLERS = {
   },
   [removeActRowAction.toString()]: {
     next: (state: any, action: any) => {
-      const index = action.payload;
-      const updatedItems = state.actItems.filter((_: any, idx: number) => idx !== index);
+      const serviceIdToRemove = action.payload;
+
+      // Фільтруємо масив, залишаючи все, окрім того, що має цей service_id (або product_id)
+      const updatedItems = state.actItems.filter(
+        (item: any) => Number(item.service_id || item.product_id) !== Number(serviceIdToRemove)
+      );
+
       return {
         ...state,
         actItems:
@@ -241,6 +256,7 @@ export {
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
+  removeComponentAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

@@ -14,8 +14,10 @@ import {
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
+  removeComponentAction,
 } from '../../../Redux/Act';
 import { useActFifoValidation } from '../hooks/useActFifoValidation';
+// import { removeComponentAction } from '@/Redux/Act/actions';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -46,12 +48,16 @@ const MaterialItem = ({
 }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
   const materialId = component.material_id;
-  const errorMessage = actItemsError[materialId] || '';
+  const serviceId = component.pricing_id;
+  const errorKey = `${serviceId}_${materialId}`;
+
+  const errorMessage = actItemsError[errorKey] || '';
   const [localVal, setLocalVal] = useState(
     component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
       ? String(component.quantity)
       : '0'
   );
+  const allActItems = useSelector(actItemsSelector);
   const materialBatches = component.batches || [];
 
   // 🚀 Синхронизируем локальный инпут, если Redux обновил количество
@@ -68,6 +74,37 @@ const MaterialItem = ({
       : Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1);
   const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
   const numericRequiredQty = Number(localVal) || 0;
+
+  const handleRemoveComponent = (
+    serviceId: number,
+    materialId: number,
+    actRow: any,
+    allItems: any
+  ) => {
+    console.log(serviceId, materialId);
+    console.log(actRow);
+    console.log(allItems);
+
+    // 1. Фільтруємо компоненти всередині поточної послуги
+    const updatedComponents = actRow.components.filter(
+      (comp: any) => Number(comp.material_id || comp.product_id || comp.id) !== Number(materialId)
+    );
+
+    // 2. Оновлюємо цей рядок у глобальному сторі за його service_id (або через загальний екшен)
+    const updatedRow = {
+      ...actRow,
+      components: updatedComponents,
+    };
+
+    // Якщо у тебе є екшен для оновлення конкретного рядка (наприклад, updateActRow або оновлення всього масиву actItems)
+    // const updatedItems = actItems.map((row: any) =>
+    //   Number(row.service_id || row.product_id) === Number(serviceId) ? updatedRow : row
+    // );
+
+    // Оновлюємо стейт акту
+    // console.log(updatedRows);
+    dispatch(removeComponentAction(serviceId, updatedRow, allItems));
+  };
 
   // Загальна вартість матеріалу по партіях
   const itemTotalCost =
@@ -129,9 +166,14 @@ const MaterialItem = ({
           <div>
             <button
               type="button"
-              onClick={() =>
-                console.log('remove comonent')
-              }
+              onClick={() => {
+                handleRemoveComponent(
+                  invoiceItems.service_id,
+                  component.material_id,
+                  invoiceItems,
+                  allActItems
+                );
+              }}
               className="w-8 h-8 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition cursor-pointer mx-auto"
               title="Видалити рядок"
             >
@@ -139,7 +181,6 @@ const MaterialItem = ({
             </button>
           </div>
         </div>
-
       </div>
 
       <div className="mt-2 pb-2 border-b border-slate-200 text-[13px] text-slate-500 flex flex-col gap-1">
@@ -249,7 +290,25 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   };
 
   const searchServices = async (value: any, index: any) => {
-    updateRow(index, { product: value, product_id: '', components: [], price: 0, base_price: 0 });
+    // updateRow(index, { product: value, product_id: '', components: [], price: 0, base_price: 0 });
+    // 🚀 Оновлюємо значення в Redux-редьюсері за індексом рядка
+    dispatch(
+      updateActRowAction(index, {
+        service: value,
+        service_id: '',
+        components: [],
+        price: 0,
+        base_price: 0,
+      })
+    );
+
+    setActiveRow(index);
+
+    if (value.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+
     setActiveRow(index);
     if (value.trim().length < 2) {
       setResults([]);
@@ -261,7 +320,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
     if (currentRequest === requestId.current) setResults(response.data.items || []);
   };
 
-  const selectService = async (service: any, index: any) => {
+  const selectService = async (service: any, index: number) => {
     const response = await axios.post('/service/findServiceItems', { serviceId: service.id });
     const rawItems = response.data.items || [];
 
@@ -271,35 +330,111 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
       if (mId && !groupedItemsMap.has(mId)) {
         groupedItemsMap.set(mId, {
           ...item,
+          material_id: mId,
+          product_id: mId,
           quantity: Number(item.quantity || item.base_quantity || 0),
+          base_quantity: Number(item.quantity || item.base_quantity || 0),
         });
       }
     });
     const items = Array.from(groupedItemsMap.values());
-
     const baseServicePrice = Number(service.price) || 0;
 
-    const calculatedComponentsPrice = items.reduce((sum, item) => {
-      return sum + Number(item.quantity || 0) * Number(item.price || 0);
-    }, 0);
-
-    const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
-
-    updateRow(index, {
+    // Створюємо новий об'єкт послуги
+    const newServiceItem = {
+      service_id: service.id,
       product_id: service.id,
+      service: service.name,
       product: service.name,
       base_price: baseServicePrice,
-      price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+      price: baseServicePrice,
       quantity: 1,
-      components: items.map((component) => ({
-        ...component,
-        quantity: Number(component.quantity || 0),
-        base_quantity: Number(component.quantity || 0),
-        user_edited: false,
-      })),
-    });
+      components: items,
+    };
+
+    // Формуємо ПОВНИЙ масив послуг для всього акту, замінюючи рядок на нову послугу
+    const updatedAllServices = actItemRows.map((row: any, rIdx: number) =>
+      rIdx === index ? newServiceItem : row
+    );
+
+    try {
+      // 🚀 Прямо тут відправляємо ВСІ послуги акту на фіфо-перевірку!
+      const fifoResponse = await axios.post('/act/fifo-preview', {
+        services: updatedAllServices,
+      });
+
+      const storeItems = fifoResponse.data.items || [];
+      const fifoMap = new Map();
+      const deficitsMap: Record<string, string> = {};
+
+      // storeItems.forEach((item: any) => {
+      //   const idKey = Number(item.material_id || item.product_id || item.id);
+      //   if (idKey) fifoMap.set(idKey, item);
+      //   if (Number(item.shortage_qty) > 0) {
+      //     deficitsMap[item.material_id] = `Не вистачає ${Number(item.shortage_qty).toFixed(2)}`;
+      //   }
+      // });
+      console.log('we here', storeItems)
+      storeItems.forEach((item: any) => {
+        // Зберігаємо батчі/дані для конкретної пари послуги та матеріалу
+        const uniqueKey = `${item.service_id}_${item.material_id}`;
+        fifoMap.set(uniqueKey, item);
+
+        if (item.shortage_qty > 0) {
+          // Ключ помилки стає унікальним для кожного рядка послуги!
+          deficitsMap[uniqueKey] =
+            `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
+        }
+      });
+
+      dispatch(setupActStoreErrorAction(deficitsMap));
+
+      // Збагачуємо компоненти нової послуги партіями
+      const finalComponents = items.map((comp: any) => {
+        const mId = Number(comp.material_id || comp.product_id);
+        const fifoData = fifoMap.get(mId);
+        if (fifoData) {
+          return {
+            ...comp,
+            batches: fifoData.batches || [],
+            cost: fifoData.cost ?? 0,
+            available_qty: fifoData.available_qty ?? 0,
+            shortage_qty: fifoData.shortage_qty ?? 0,
+          };
+        }
+        return comp;
+      });
+
+      const calculatedComponentsPrice = finalComponents.reduce((sum: number, item: any) => {
+        return sum + Number(item.cost || 0);
+      }, 0);
+
+      const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
+
+      // Фінально оновлюємо рядок у Redux вже збагаченими даними
+      dispatch(
+        updateActRowAction(index, {
+          ...newServiceItem,
+          price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+          components: finalComponents,
+        })
+      );
+    } catch (error) {
+      console.error('Error fetching fifo preview on select:', error);
+    }
+
     setResults([]);
     setActiveRow(null);
+  };
+
+  const handleRemoveService = (serviceId: number) => {
+    // Фільтруємо масив actItems у Redux, залишаючи все, крім потрібного ID
+    // const updatedRows = actItemRows.filter(
+    //   (row: any) => Number(row.service_id || row.product_id) !== Number(serviceId)
+    // );
+
+    // Оновлюємо стейт акту через редюсер
+    dispatch(removeActRowAction(serviceId));
   };
 
   return (
@@ -466,9 +601,10 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
               {rows.length > 1 && (
                 <button
                   type="button"
-                  onClick={() =>
-                    changeRows(rows.filter((_: any, rowIndex: number) => rowIndex !== index))
-                  }
+                  onClick={() => {
+                    handleRemoveService(row.service_id);
+                    // dispatch(removeActRowAction(index));
+                  }}
                   className="w-8 h-8 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition cursor-pointer mx-auto"
                   title="Видалити рядок"
                 >

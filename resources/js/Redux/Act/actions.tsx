@@ -1,5 +1,4 @@
 import { createAction } from 'redux-actions';
-
 import axios from 'axios';
 
 // Внутрішня функція розрахунку базових кількостей (щоб не тягнути імпорти з форми)
@@ -197,7 +196,8 @@ export const updateComponentQuantityAction: any = createAction(
           // Створюємо мапу результатів з fifo-preview по material_id
           const fifoMap = new Map();
           storeItems.forEach((item: any) => {
-            fifoMap.set(Number(item.material_id), item);
+            const uniqueKey = `${item.service_id}_${item.material_id}`;
+            fifoMap.set(uniqueKey, item);
           });
 
           // Оновлюємо компоненти актуальними батчами, вартістю та залишками з FIFO
@@ -232,7 +232,79 @@ export const updateComponentQuantityAction: any = createAction(
       }
     }
 );
+export const removeComponentAction: any = createAction(
+  'act/REMOVE_COMPONENT_SERVICE',
+  async (serviceId: number, updatedTargetItem: any, allActItems: any[]) =>
+    async (dispatch: any) => {
+      try {
+        // 1. Формуємо повний масив послуг, де замінюємо конкретну послугу на її оновлену версію (без видаленого компонента)
+        const servicesPayload = allActItems.map((row: any) =>
+          Number(row.service_id || row.product_id) === Number(serviceId) ? updatedTargetItem : row
+        );
 
+        const response = await axios.post('/act/fifo-preview', {
+          services: servicesPayload,
+        });
+
+        const storeItems = response.data.items || [];
+
+        // 2. Збираємо глобальні дефіцити по всьому акту
+        const deficitsMap: Record<string, string> = {};
+        storeItems.forEach((i: any) => {
+          if (Number(i.shortage_qty) > 0) {
+            const errorKey = `${i.service_id}_${i.material_id}`;
+            deficitsMap[errorKey] = `треба ${i.required_qty}, є лише ${i.available_qty}`;
+          }
+        });
+
+        dispatch(setupActStoreErrorAction(deficitsMap));
+
+        // 3. Створюємо мапу результатів з fifo-preview для збагачення цін та партій
+        const fifoMap = new Map();
+        storeItems.forEach((item: any) => {
+          fifoMap.set(Number(item.material_id || item.product_id), item);
+        });
+
+        // 4. Повертаємо наш власний servicesPayload, але збагачуємо його актуальними цінами/батчами від FIFO, якщо вони є
+        const enrichedServices = servicesPayload.map((service: any) => {
+          const updatedComponents = (service.components || []).map((comp: any) => {
+            const mId = Number(comp.material_id || comp.product_id);
+            const fifoData = fifoMap.get(mId);
+            if (fifoData) {
+              return {
+                ...comp,
+                batches: fifoData.batches || [],
+                cost: fifoData.cost ?? 0,
+                available_qty: fifoData.available_qty ?? 0,
+                shortage_qty: fifoData.shortage_qty ?? 0,
+              };
+            }
+            return comp;
+          });
+
+          const calculatedComponentsPrice = updatedComponents.reduce((sum: number, item: any) => {
+            return sum + Number(item.cost || 0);
+          }, 0);
+
+          const baseServicePrice = Number(service.base_price || service.price) || 0;
+          const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
+
+          return {
+            ...service,
+            components: updatedComponents,
+            price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+          };
+        });
+
+        return {
+          updatedServices: enrichedServices,
+        };
+      } catch (error) {
+        console.error('Error in removeComponentAction:', error);
+        return null;
+      }
+    }
+);
 export const updateComponentQuantityOldAction: any = createAction(
   'act/UPDATE_COMPONENT_QUANTITY_NEW',
   async (serviceId: number, materialId: number, qty: number, targetServiceItem: any) =>

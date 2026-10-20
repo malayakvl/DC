@@ -257,6 +257,7 @@ class ActController extends Controller
 
             foreach ($itemsToProcess as $need) {
                 $materialId = (int) $need['material_id'];
+                $serviceId = (int) $need['service_id'];
                 $requiredQty = round((float) $need['required_qty'], 0);
                 $remainingQty = $requiredQty;
                 $cost = 0.0;
@@ -315,6 +316,7 @@ class ActController extends Controller
 
                 $items[] = [
                     'material_id' => (int) $materialId,
+                    'service_id' => $serviceId,
                     'required_qty' => $requiredQty,
                     'available_qty' => round($requiredQty - $remainingQty, 4),
                     'shortage_qty' => max(0, $remainingQty),
