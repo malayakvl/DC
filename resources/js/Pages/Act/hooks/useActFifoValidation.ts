@@ -1,21 +1,19 @@
 import { useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAppDispatch } from '@/hooks';
-import { setupActStoreErrorAction, updateServiceComponentsFifo } from '@/Redux/Act'; // 👈 Подключаем наш экшен
+import { setupActStoreErrorAction, updateServiceComponentsFifo } from '@/Redux/Act';
 
 export function useActFifoValidation(rows: any[], actStatus: string) {
   const dispatch = useAppDispatch();
   const requestId = useRef(0);
 
   useEffect(() => {
-    // 🛑 Если акт уже проведен/закрыт — сразу выходим и очищаем ошибки
     const readonlyStatuses = ['completed', 'closed', 'cancelled'];
     if (readonlyStatuses.includes(actStatus)) {
       dispatch(setupActStoreErrorAction({}));
       return;
     }
 
-    // const validRows = (rows || []).filter((r) => r.product_id);
     const validRows = (rows || []).filter((r) => r.service_id || r.product_id);
     if (validRows.length === 0) {
       dispatch(setupActStoreErrorAction({}));
@@ -48,31 +46,24 @@ export function useActFifoValidation(rows: any[], actStatus: string) {
         if (currentReq !== requestId.current) return;
 
         const storeItems = response.data.items || [];
-        const deficitsMap: Record<string, string> = {};
+        const deficitsMap = response.data.deficits_map || {};
 
-        // Создаем мапу результатов из fifo-preview по material_id
-        const fifoMap = new Map();
-        storeItems.forEach((item: any) => {
-          // Зберігаємо батчі/дані для конкретної пари послуги та матеріалу
-          const uniqueKey = `${item.service_id}_${item.material_id}`;
-          fifoMap.set(uniqueKey, item);
-
-          if (item.shortage_qty > 0) {
-            // Ключ помилки стає унікальним для кожного рядка послуги!
-            deficitsMap[uniqueKey] =
-              `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
-          }
-        });
-console.log(deficitsMap);
-        // 1. Устанавливаем ошибки дефицита, если они есть
+        // 🚀 1. Встановлюємо мапу дефіцитів строго з бекенда
         dispatch(setupActStoreErrorAction(deficitsMap));
 
-        // 2. 🚀 Точечно обновляем компоненты в каждой услуге через Redux, сохраняя всю структуру и вчерашнюю логику quantities
+        // 🚀 2. Оновлюємо компоненти кожної послуги даними з бека
+        const fifoMap = new Map();
+        storeItems.forEach((item: any) => {
+          const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
+          fifoMap.set(uniqueKey, item);
+        });
+
         validRows.forEach((row: any) => {
-          const serviceId = row.product_id;
+          const serviceId = Number(row.service_id || row.product_id);
           const updatedComponents = (row.components || []).map((comp: any) => {
             const mId = Number(comp.material_id || comp.product_id);
-            const fifoData = fifoMap.get(mId);
+            const uniqueKey = `${serviceId}_${mId}`;
+            const fifoData = fifoMap.get(uniqueKey);
 
             if (fifoData) {
               return {
@@ -86,7 +77,6 @@ console.log(deficitsMap);
             return comp;
           });
 
-          // Отправляем в наш редюсер для обновления конкретной услуги
           dispatch(updateServiceComponentsFifo(serviceId, updatedComponents));
         });
       } catch (error) {

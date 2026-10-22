@@ -66,11 +66,13 @@ export default function List({ listData }: { listData: any }) {
                     <td className="">
                       <span
                         className={`doc-status ${
-                          item.status === 'new' ? 'status-new' : 'status-posted'
+                          item.status === 'draft' || item.status === 'new'
+                            ? 'status-new'
+                            : 'status-posted'
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-[#137870] group-hover/btn:scale-110 transition-transform"></span>
-                        {item.status === 'new' ? 'Новий' : 'Проведений'}
+                        {item.status === 'draft' || item.status === 'new' ? 'Новий' : 'Проведений'}
                       </span>
                     </td>
 
@@ -116,51 +118,51 @@ export default function List({ listData }: { listData: any }) {
                     {/* Сума оплати */}
                     <td className="py-3.5 px-4 text-xs text-teal-700 font-semibold">
                       <div className="flex flex-col items-center gap-2">
-                        {Number(item.total_amount || 0) - Number(item.payment_amount || 0) > 0 && (
+                        {item.status === 'posted' && Number(item.total_amount || 0) - Number(item.payment_amount || 0) > 0 && (
                           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200/70 text-rose-700 shadow-xs">
                             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
                             <span className="text-xs font-bold uppercase tracking-wide">
-                              {msg.get('act.credt')}:
-                            </span>
+          {msg.get('act.credt')}:
+        </span>
                             <span className="text-base font-extrabold tabular-nums tracking-tight">
-                              {(
-                                Number(item.total_amount || 0) - Number(item.payment_amount || 0)
-                              ).toFixed(2)}
-                            </span>
+          {(
+            Number(item.total_amount || 0) - Number(item.payment_amount || 0)
+          ).toFixed(2)}
+        </span>
                             <span className="text-xs font-bold text-rose-500">
-                              {item.currency_name}
-                            </span>
+          {item.currency_name}
+        </span>
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-slate-600 font-medium">
-                            <strong className="text-slate-800 font-bold tabular-nums">
-                              {Number(item.payment_amount || 0).toFixed(2)}
-                            </strong>{' '}
-                            {item.currency_name || 'UAH'}
-                          </span>
-                          {Number(item.total_amount || 0) - Number(item.payment_amount || 0) >
+      <span className="text-slate-600 font-medium">
+        <strong className="text-slate-800 font-bold tabular-nums">
+          {Number(item.payment_amount || 0).toFixed(2)}
+        </strong>{' '}
+        {item.currency_name || 'UAH'}
+      </span>
+                          {item.status === 'posted' && Number(item.total_amount || 0) - Number(item.payment_amount || 0) >
                             0 && (
-                            <button
-                              className="group/btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold transition-all shadow-xs active:scale-[0.98]"
-                              type="button"
-                            >
-                              <span className="">{msg.get('act.pay')}</span>
-                              <svg
-                                className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                              <button
+                                className="group/btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold transition-all shadow-xs active:scale-[0.98]"
+                                type="button"
                               >
-                                <path
-                                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                ></path>
-                              </svg>
-                            </button>
-                          )}
+                                <span className="">{msg.get('act.pay')}</span>
+                                <svg
+                                  className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                  ></path>
+                                </svg>
+                              </button>
+                            )}
                         </div>
                       </div>
                     </td>

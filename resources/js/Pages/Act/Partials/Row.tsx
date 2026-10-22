@@ -33,12 +33,12 @@ export interface ActRowsRef {
 }
 
 const MaterialItem = ({
-  component,
-  msg,
-  actItemsError,
-  dispatch,
-  invoiceItems,
-}: {
+                        component,
+                        msg,
+                        actItemsError,
+                        dispatch,
+                        invoiceItems,
+                      }: {
   component: any;
   msg: any;
   actItemsError: any;
@@ -46,11 +46,12 @@ const MaterialItem = ({
   invoiceItems: any;
 }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
-  const materialId = component.material_id;
-  const serviceId = component.pricing_id;
+  const materialId = component.material_id || component.product_id;
+  const serviceId = Number(invoiceItems?.service_id || invoiceItems?.product_id || 0);
   const errorKey = `${serviceId}_${materialId}`;
 
   const errorMessage = actItemsError[errorKey] || '';
+
   const [localVal, setLocalVal] = useState(
     component.quantity !== undefined && component.quantity !== '' && component.quantity !== null
       ? String(component.quantity)
@@ -67,10 +68,11 @@ const MaterialItem = ({
 
   const unitCost =
     materialBatches.length > 0
-      ? Number(materialBatches[0]?.price_per_unit || 0)
+      ? Number(materialBatches[0]?.price_with_markup || materialBatches[0]?.price_per_unit || 0)
       : Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1);
   const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
   const numericRequiredQty = Number(localVal) || 0;
+  const markup = Number(component.mark_up || 0);
 
   const handleRemoveComponent = (
     serviceId: number,
@@ -93,13 +95,13 @@ const MaterialItem = ({
   const itemTotalCost =
     materialBatches.length > 0
       ? materialBatches.reduce(
-          (acc: any, b: any) =>
-            acc +
-            (b.total !== undefined
-              ? Number(b.total)
-              : Number(b.quantity || 0) * Number(b.price_per_unit || 0)),
-          0
-        )
+        (acc: any, b: any) =>
+          acc +
+          (b.total !== undefined
+            ? Number(b.total)
+            : Number(b.quantity || 0) * Number(b.price_with_markup || b.price_per_unit || 0)),
+        0
+      )
       : unitCost * numericRequiredQty;
 
   const batchesCount = materialBatches.length;
@@ -168,12 +170,17 @@ const MaterialItem = ({
 
       <div className="mt-2 pb-2 border-b border-slate-200 text-[13px] text-slate-500 flex flex-col gap-1">
         <div className="flex items-center justify-between">
-          <div className="flex items-center justify-end gap-2 w-full">
-            <span className=" text-slate-400">
+          <div className="flex items-center justify-end gap-2 w-full text-[13px]">
+            <span className="text-slate-400">
               {Number(itemTotalCost ? itemTotalCost / Math.max(numericRequiredQty, 1) : 0).toFixed(
                 2
               )}{' '}
               <span className="text-[12px] text-slate-400 font-normal"> / од.</span>
+              {markup > 0 && (
+                <span className="ml-1 text-teal-600 font-medium text-[12px]">
+                  (націнка {markup}%)
+                </span>
+              )}
             </span>
             <span className="bg-slate-100 text-black px-1.5 py-0.5 rounded-md text-[12px] font-semibold">
               {itemTotalCost.toFixed(2)} ₴
@@ -218,7 +225,13 @@ const MaterialItem = ({
                     </div>
                     <span className="font-medium text-slate-800 text-[14px] font-metric-tabular text-slate-700 bg-white px-2 py-0.5 rounded shadow-2xs">
                       {Number(batch.quantity).toFixed(2)} ×{' '}
-                      {Number(batch.price_per_unit).toFixed(2)} ₴ ={' '}
+                      {Number(batch.price_with_markup || batch.price_per_unit).toFixed(2)} ₴{' '}
+                      {markup > 0 && (
+                        <span className="text-xs text-teal-600 font-normal ml-0.5">
+                          (з нац. {markup}%)
+                        </span>
+                      )}{' '}
+                      ={' '}
                       <span className={'font-bold'}>{Number(batch.total).toFixed(2)} ₴</span>
                     </span>
                   </div>
@@ -232,15 +245,14 @@ const MaterialItem = ({
   );
 };
 
-// 🚀 Компонент для управління блоком матеріалів і додавання в конкретній послузі
 const ServiceMaterialsBlock = ({
-  row,
-  index,
-  actItemsError,
-  dispatch,
-  msg,
-  actItemRows,
-}: {
+                                 row,
+                                 index,
+                                 actItemsError,
+                                 dispatch,
+                                 msg,
+                                 actItemRows,
+                               }: {
   row: any;
   index: number;
   actItemsError: any;
@@ -291,23 +303,15 @@ const ServiceMaterialsBlock = ({
       });
 
       const storeItems = fifoResponse.data.items || [];
-      const fifoMap = new Map();
-      const deficitsMap: Record<string, string> = {};
-
-      storeItems.forEach((item: any) => {
-        const uniqueKey = `${item.service_id}_${item.material_id}`;
-        fifoMap.set(uniqueKey, item);
-
-        // 🚀 Додаємо перевірку: дефіцит АБО повна відсутність на складі
-        if (Number(item.shortage_qty) > 0 || Number(item.available_qty) === 0) {
-          deficitsMap[uniqueKey] =
-            Number(item.available_qty) === 0
-              ? `Матеріал відсутній на складі`
-              : `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
-        }
-      });
+      const deficitsMap = fifoResponse.data.deficits_map || {};
 
       dispatch(setupActStoreErrorAction(deficitsMap));
+
+      const fifoMap = new Map();
+      storeItems.forEach((item: any) => {
+        const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
+        fifoMap.set(uniqueKey, item);
+      });
 
       const finalComponents = updatedComponents.map((comp: any) => {
         const sId = Number(row.service_id || row.product_id);
@@ -318,7 +322,9 @@ const ServiceMaterialsBlock = ({
           return {
             ...comp,
             batches: fifoData.batches || [],
+            mark_up: fifoData.mark_up ?? 0,
             cost: fifoData.cost ?? 0,
+            raw_cost: fifoData.raw_cost ?? 0,
             available_qty: fifoData.available_qty ?? 0,
             shortage_qty: fifoData.shortage_qty ?? 0,
           };
@@ -538,31 +544,26 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
       });
 
       const storeItems = fifoResponse.data.items || [];
-      const fifoMap = new Map();
-      const deficitsMap: Record<string, string> = {};
-
-      storeItems.forEach((item: any) => {
-        const uniqueKey = `${item.service_id}_${item.material_id}`;
-        fifoMap.set(uniqueKey, item);
-
-        // 🚀 Додаємо перевірку: якщо є дефіцит АБО якщо кількість на складі нульова
-        if (Number(item.shortage_qty) > 0 || Number(item.available_qty) === 0) {
-          deficitsMap[uniqueKey] = Number(item.available_qty) === 0
-            ? `Матеріал відсутній на складі`
-            : `Не вистачає ${Number(item.shortage_qty).toFixed(2)} ${item.unit_name || ''}`;
-        }
-      });
+      const deficitsMap = fifoResponse.data.deficits_map || {};
 
       dispatch(setupActStoreErrorAction(deficitsMap));
 
+      const fifoMap = new Map();
+      storeItems.forEach((item: any) => {
+        const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
+        fifoMap.set(uniqueKey, item);
+      });
+
       const finalComponents = items.map((comp: any) => {
         const mId = Number(comp.material_id || comp.product_id);
-        const fifoData = fifoMap.get(mId);
+        const fifoData = fifoMap.get(`${service.id}_${mId}`);
         if (fifoData) {
           return {
             ...comp,
             batches: fifoData.batches || [],
+            mark_up: fifoData.mark_up ?? 0,
             cost: fifoData.cost ?? 0,
+            raw_cost: fifoData.raw_cost ?? 0,
             available_qty: fifoData.available_qty ?? 0,
             shortage_qty: fifoData.shortage_qty ?? 0,
           };
@@ -605,7 +606,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
 
         return (
           <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
-            <td className="py-3 px-3 align-top w-full pl-0">
+            <td className="py-3 px-3 align-top w-full pl-0 md:w-[850px]">
               <div className="relative">
                 <input
                   name="product"
@@ -635,7 +636,6 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                   </div>
                 )}
 
-                {/* Блок пов'язаних матеріалів та додавання нових — з'являється тільки коли обрано послугу */}
                 {row.service_id && (
                   <ServiceMaterialsBlock
                     row={row}
@@ -655,7 +655,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                   <button
                     type="button"
                     onClick={() => {
-                      dispatch(setupActStoreErrorAction([]));
+                      dispatch(setupActStoreErrorAction({}));
                       dispatch(
                         updateServiceQuantityAction(
                           row.service_id,
@@ -698,13 +698,9 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
             </td>
 
             <td className="py-3 px-3 align-top w-price">
-              <input
-                className="w-full px-3 py-2 text-center rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition min-w-[150px]"
-                type="text"
-                min="0"
-                value={calculatedTotalCost}
-                onChange={(event) => updateRow(index, { price: event.target.value })}
-              />
+              <div className="px-3 py-2 text-center rounded-xl bg-slate-50/50 border border-slate-200 text-slate-900 text-xs font-semibold min-w-[150px] inline-block mt-[2px]">
+                {Number(calculatedTotalCost || 0).toFixed(2)} ₴
+              </div>
             </td>
 
             <td className="py-3 px-3 align-top text-center font-semibold text-slate-800 text-xs w-price whitespace-nowrap">

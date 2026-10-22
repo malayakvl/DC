@@ -261,15 +261,168 @@ class ActController extends Controller
             $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
 
             if (!$storeId) {
-                return response()->json(['items' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
+                return response()->json(['items' => [], 'deficits_map' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
+            }
+
+            $itemsToProcess = [];
+            $serviceMarkups = [];
+
+            foreach ($data['services'] as $serviceRow) {
+                $serviceId = (int) $serviceRow['service_id'];
+                $components = $serviceRow['components'] ?? [];
+
+                // Підтягуємо націнки для послуги з pricing_items
+                if (!isset($serviceMarkups[$serviceId])) {
+                    $serviceMarkups[$serviceId] = DB::table('pricing_items')
+                        ->where('pricing_id', $serviceId)
+                        ->pluck('mark_up', 'material_id')
+                        ->toArray();
+                }
+
+                foreach ($components as $comp) {
+                    $mId = (int) $comp['material_id'];
+                    $requiredForThisRow = (float) $comp['quantity'];
+                    $markup = (float) ($serviceMarkups[$serviceId][$mId] ?? 0);
+
+                    $itemsToProcess[] = [
+                        'service_id' => $serviceId,
+                        'material_id' => $mId,
+                        'required_qty' => $requiredForThisRow,
+                        'mark_up' => $markup,
+                    ];
+                }
+            }
+
+            if (empty($itemsToProcess)) {
+                return response()->json(['items' => [], 'deficits_map' => []]);
+            }
+
+            $materialIds = collect($itemsToProcess)->pluck('material_id')->unique()->all();
+            $materialsMeta = DB::table('materials')
+                ->whereIn('id', $materialIds)
+                ->get(['id', 'is_instrument', 'expected_uses', 'price'])
+                ->keyBy('id');
+
+            $availableByMaterial = [];
+            foreach ($materialIds as $materialId) {
+                $availableByMaterial[$materialId] = DB::table('store_batches')
+                    ->where('store_id', $storeId)
+                    ->where('material_id', $materialId)
+                    ->where('fact_qty_left', '>', 0)
+                    ->orderBy('expiry_date', 'asc')
+                    ->orderBy('arrived_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
+                    ->map(fn ($batch) => [
+                        'id' => $batch->id,
+                        'arrived_at' => $batch->arrived_at,
+                        'expiry_date' => $batch->expiry_date,
+                        'fact_qty_left' => (float) $batch->fact_qty_left,
+                        'price_per_unit' => (float) $batch->price_per_unit,
+                    ])
+                    ->all();
+            }
+
+            $items = [];
+            $deficitsMap = [];
+
+            foreach ($itemsToProcess as $need) {
+                $materialId = (int) $need['material_id'];
+                $serviceId = (int) $need['service_id'];
+                $compositeKey = "{$serviceId}_{$materialId}";
+                $requiredQty = round((float) $need['required_qty'], 4);
+                $remainingQty = $requiredQty;
+                $rawCost = 0.0;
+                $batches = [];
+
+                $materialMeta = $materialsMeta->get($materialId);
+                $isInstrument = $materialMeta->is_instrument ?? false;
+                $expectedUses = (int) ($materialMeta->expected_uses ?? 0);
+                $fallbackPrice = $materialMeta->price ?? 0;
+                $markup = (float) $need['mark_up'];
+
+                if (isset($availableByMaterial[$materialId])) {
+                    foreach ($availableByMaterial[$materialId] as &$batch) {
+                        if ($remainingQty <= 0) break;
+                        if ($batch['fact_qty_left'] <= 0) continue;
+
+                        $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                        $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
+                        $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
+
+                        $lineRawCost = $usedQty * $unitCost;
+                        $lineCostWithMarkup = $markup > 0 ? $lineRawCost * (1 + $markup / 100) : $lineRawCost;
+
+                        $batches[] = [
+                            'batch_id' => $batch['id'],
+                            'arrived_at' => $batch['arrived_at'],
+                            'quantity' => $usedQty,
+                            'price_per_unit' => round($unitCost, 4),
+                            'price_with_markup' => round($unitCost * (1 + $markup / 100), 4),
+                            'total' => round($lineCostWithMarkup, 4),
+                        ];
+
+                        $rawCost += $lineRawCost;
+                        $remainingQty = round($remainingQty - $usedQty, 4);
+                        $batch['fact_qty_left'] = round($batch['fact_qty_left'] - $usedQty, 4);
+                    }
+                    unset($batch);
+                }
+
+                $availableQty = round($requiredQty - $remainingQty, 4);
+                $shortageQty = max(0, $remainingQty);
+                $finalCost = $markup > 0 ? $rawCost * (1 + $markup / 100) : $rawCost;
+
+                if ($shortageQty > 0 || $availableQty == 0) {
+                    $deficitsMap[$compositeKey] = $availableQty == 0
+                        ? 'Матеріал відсутній на складі'
+                        : "Не вистачає " . number_format($shortageQty, 2, '.', '');
+                }
+
+                $items[] = [
+                    'composite_key' => $compositeKey,
+                    'material_id' => $materialId,
+                    'service_id' => $serviceId,
+                    'required_qty' => $requiredQty,
+                    'available_qty' => $availableQty,
+                    'shortage_qty' => $shortageQty,
+                    'raw_cost' => round($rawCost, 4),
+                    'mark_up' => $markup,
+                    'cost' => round($finalCost, 4),
+                    'batches' => $batches,
+                ];
+            }
+
+            return response()->json([
+                'items' => $items,
+                'deficits_map' => $deficitsMap,
+            ]);
+        });
+    }
+
+    public function fifoPreviewOld(Request $request)
+    {
+        return $this->withClinicSchema($request, function () use ($request) {
+            $data = $request->validate([
+                'services' => ['required', 'array'],
+                'services.*.service_id' => ['required', 'integer'],
+                'services.*.quantity' => ['required', 'numeric', 'min:0'],
+                'services.*.components' => ['nullable', 'array'],
+                'services.*.components.*.material_id' => ['required', 'integer'],
+                'services.*.components.*.quantity' => ['required', 'numeric', 'min:0'],
+            ]);
+
+            $filialId = $request->session()->get('filial_id');
+            $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
+
+            if (!$storeId) {
+                return response()->json(['items' => [], 'deficits_map' => [], 'error' => 'Для поточного філіалу не знайдено склад'], 422);
             }
 
             $itemsToProcess = [];
 
-            // Проходимо по кожній послузі з акта
             foreach ($data['services'] as $serviceRow) {
                 $serviceId = (int) $serviceRow['service_id'];
-                $serviceQty = (float) $serviceRow['quantity'];
                 $components = $serviceRow['components'] ?? [];
                 foreach ($components as $comp) {
                     $mId = (int) $comp['material_id'];
@@ -282,92 +435,116 @@ class ActController extends Controller
                     ];
                 }
             }
-            if (empty($itemsToProcess)) {
-                return response()->json(['items' => []]);
-            }
-//            dd($itemsToProcess);
 
-            // Підтягуємо метадані матеріалів
+            if (empty($itemsToProcess)) {
+                return response()->json(['items' => [], 'deficits_map' => []]);
+            }
+
+            // Підтягуємо метадані матеріалів (без неіснуючої колонки 'unit')
             $materialIds = collect($itemsToProcess)->pluck('material_id')->unique()->all();
             $materialsMeta = DB::table('materials')
                 ->whereIn('id', $materialIds)
                 ->get(['id', 'is_instrument', 'expected_uses', 'price'])
                 ->keyBy('id');
 
-            $items = [];
+            // Попередньо завантажуємо актуальні партії по складах для кожного матеріалу
             $availableByMaterial = [];
+            foreach ($materialIds as $materialId) {
+                $availableByMaterial[$materialId] = DB::table('store_batches')
+                    ->where('store_id', $storeId)
+                    ->where('material_id', $materialId)
+                    ->where('fact_qty_left', '>', 0)
+                    ->orderBy('expiry_date', 'asc')
+                    ->orderBy('arrived_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
+                    ->map(fn ($batch) => [
+                        'id' => $batch->id,
+                        'arrived_at' => $batch->arrived_at,
+                        'expiry_date' => $batch->expiry_date,
+                        'fact_qty_left' => (float) $batch->fact_qty_left,
+                        'price_per_unit' => (float) $batch->price_per_unit,
+                    ])
+                    ->all();
+            }
+
+            $items = [];
+            $deficitsMap = [];
 
             foreach ($itemsToProcess as $need) {
                 $materialId = (int) $need['material_id'];
                 $serviceId = (int) $need['service_id'];
-                $requiredQty = round((float) $need['required_qty'], 0);
+                $compositeKey = "{$serviceId}_{$materialId}";
+                $requiredQty = round((float) $need['required_qty'], 4);
                 $remainingQty = $requiredQty;
                 $cost = 0.0;
                 $batches = [];
-
 
                 $materialMeta = $materialsMeta->get($materialId);
                 $isInstrument = $materialMeta->is_instrument ?? false;
                 $expectedUses = (int) ($materialMeta->expected_uses ?? 0);
                 $fallbackPrice = $materialMeta->price ?? 0;
 
-                if (!isset($availableByMaterial[$materialId])) {
-                    $availableByMaterial[$materialId] = DB::table('store_batches')
-                        ->where('store_id', $storeId)
-                        ->where('material_id', $materialId)
-                        ->where('fact_qty_left', '>', 0)
-                        // 👇 Чіткий порядок: спочатку ближчий термін (FEFO), потім дата приходу, потім ID
-                        ->orderBy('expiry_date', 'asc')
-                        ->orderBy('arrived_at', 'asc')
-                        ->orderBy('id', 'asc')
-                        ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
-                        ->map(fn ($batch) => [
-                            'id' => $batch->id,
-                            'arrived_at' => $batch->arrived_at,
-                            'expiry_date' => $batch->expiry_date,
-                            'fact_qty_left' => (float) $batch->fact_qty_left,
-                            'price_per_unit' => (float) $batch->price_per_unit,
-                        ])
-                        ->all();
-                }
+                // FIFO розрахунок зі списанням із глобального масиву залишків у пам'яті
+                if (isset($availableByMaterial[$materialId])) {
+                    foreach ($availableByMaterial[$materialId] as &$batch) {
+                        if ($remainingQty <= 0) {
+                            break;
+                        }
 
-                // FIFO розрахунок по партіях зі складу
-                foreach ($availableByMaterial[$materialId] as &$batch) {
-                    if ($remainingQty <= 0) {
-                        break;
+                        if ($batch['fact_qty_left'] <= 0) {
+                            continue;
+                        }
+
+                        $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                        $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
+                        $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
+
+                        $lineCost = round($usedQty * $unitCost, 4);
+
+                        $batches[] = [
+                            'batch_id' => $batch['id'],
+                            'arrived_at' => $batch['arrived_at'],
+                            'quantity' => $usedQty,
+                            'price_per_unit' => round($unitCost, 4),
+                            'total' => $lineCost,
+                        ];
+
+                        $cost += $lineCost;
+                        $remainingQty = round($remainingQty - $usedQty, 4);
+
+                        // Зменшуємо залишок партії, щоб наступні послуги її вже не брали повністю або частково
+                        $batch['fact_qty_left'] = round($batch['fact_qty_left'] - $usedQty, 4);
                     }
-
-                    $usedQty = min($remainingQty, $batch['fact_qty_left']);
-                    $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit']  : $fallbackPrice;
-
-                    $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
-                    $lineCost = round($usedQty * $unitCost, 4);
-
-                    $batches[] = [
-                        'batch_id' => $batch['id'],
-                        'arrived_at' => $batch['arrived_at'],
-                        'quantity' => $usedQty,
-                        'price_per_unit' => round($unitCost, 4),
-                        'total' => $lineCost,
-                    ];
-                    $cost += $lineCost;
-                    $remainingQty = round($remainingQty - $usedQty, 4);
-                    $batch['fact_qty_left'] = round($batch['fact_qty_left'] - $usedQty, 4);
+                    unset($batch);
                 }
-                unset($batch);
+
+                $availableQty = round($requiredQty - $remainingQty, 4);
+                $shortageQty = max(0, $remainingQty);
+
+                // Формуємо текст помилки дефіциту прямо на бекенді
+                if ($shortageQty > 0 || $availableQty == 0) {
+                    $deficitsMap[$compositeKey] = $availableQty == 0
+                        ? 'Матеріал відсутній на складі'
+                        : "Не вистачає " . number_format($shortageQty, 2, '.', '');
+                }
 
                 $items[] = [
-                    'material_id' => (int) $materialId,
+                    'composite_key' => $compositeKey,
+                    'material_id' => $materialId,
                     'service_id' => $serviceId,
                     'required_qty' => $requiredQty,
-                    'available_qty' => round($requiredQty - $remainingQty, 4),
-                    'shortage_qty' => max(0, $remainingQty),
+                    'available_qty' => $availableQty,
+                    'shortage_qty' => $shortageQty,
                     'cost' => round($cost, 4),
                     'batches' => $batches,
                 ];
             }
 
-            return response()->json(['items' => $items]);
+            return response()->json([
+                'items' => $items,
+                'deficits_map' => $deficitsMap,
+            ]);
         });
     }
 
@@ -833,22 +1010,6 @@ class ActController extends Controller
             ]);
     }
 
-//    protected function applyActFifo(int $storeId, int $actId, int $clinicId): float
-//    {
-//        // Динамічно визначаємо схему поточної клініки (або беремо з трейта / сесії)
-//        $schema = 'clinic_'.$clinicId;
-//
-//        $result = DB::selectOne(
-//            "SELECT core.apply_act_fifo(?, ?, ?) as total_cost",
-//            [
-//                $schema,
-//                $storeId,
-//                $actId
-//            ]
-//        );
-//
-//        return (float) ($result->total_cost ?? 0);
-//    }
     private function applyActFifo(int $storeId, int $actId, int $clinicId): float
     {
         $materialTotalWithMarkup = 0.0;
@@ -1062,7 +1223,6 @@ class ActController extends Controller
 
             // После успешной валидации данные можно забрать через $data['payload']
             $validatedPayload = $data['payload'];
-
             $filialId = (int) $request->session()->get('filial_id');
             $storeId = DB::table('stores')->where('filial_id', $filialId)->value('id');
             if (!$storeId) {
@@ -1112,7 +1272,7 @@ class ActController extends Controller
                         // Попередній підрахунок суми для не-posted або як базовий
                         $totalAmount += (float) $row['total'];
                     }
-                    $totalAmount = $calculatedData['total_amount'];
+//                    $totalAmount = $calculatedData['total_amount'];
 
                     // 2. Якщо акт проведений — викликаємо FIFO-функцію на ВСІЙ акт одразу у базі даних
                     if ($act->status === 'posted') {
@@ -1124,7 +1284,6 @@ class ActController extends Controller
                     }
 
                     $act->total_amount = round($totalAmount, 2);
-                    $act->total_amount = $calculatedData['total_amount'];
                     $act->save();
                 });
 
