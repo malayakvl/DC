@@ -1,22 +1,28 @@
-import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
 import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
-import { actItemsSelector, actDeficitsErrorSelector } from '../../../Redux/Act/selectors';
+import {
+  actItemsSelector,
+  actDeficitsErrorSelector,
+  rowUpdateSelector,
+} from '../../../Redux/Act/selectors';
 import { useAppDispatch } from '../../../hooks';
 import {
-  updateServiceQuantityAction,
   setupActStoreErrorAction,
   updateComponentQuantityAction,
+  updateComponentMarkupAction,
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
   removeComponentAction,
+  setRowUpdated,
 } from '../../../Redux/Act';
-import { useActFifoValidation } from '../hooks/useActFifoValidation';
+// import { useActFifoValidation } from '../hooks/useActFifoValidation';
+import { validateActRows } from '../functions/validateActRows';
 
 export const emptyRow = () => ({
   product_id: '',
@@ -33,17 +39,19 @@ export interface ActRowsRef {
 }
 
 const MaterialItem = ({
-                        component,
-                        msg,
-                        actItemsError,
-                        dispatch,
-                        invoiceItems,
-                      }: {
+  component,
+  msg,
+  actItemsError,
+  dispatch,
+  invoiceItems,
+  onMarkupChange,
+}: {
   component: any;
   msg: any;
   actItemsError: any;
   dispatch: any;
   invoiceItems: any;
+  onMarkupChange: (materialId: any, total: number) => void;
 }) => {
   const [isBatchesOpen, setIsBatchesOpen] = useState(false);
   const materialId = component.material_id || component.product_id;
@@ -57,6 +65,11 @@ const MaterialItem = ({
       ? String(component.quantity)
       : '0'
   );
+
+  const [localMarkup, setLocalMarkup] = useState(
+    component.mark_up !== undefined && component.mark_up !== null ? String(component.mark_up) : '0'
+  );
+
   const allActItems = useSelector(actItemsSelector);
   const materialBatches = component.batches || [];
 
@@ -66,13 +79,41 @@ const MaterialItem = ({
     }
   }, [component.quantity]);
 
-  const unitCost =
-    materialBatches.length > 0
-      ? Number(materialBatches[0]?.price_with_markup || materialBatches[0]?.price_per_unit || 0)
-      : Number(component.cost || 0) / Math.max(Number(component.available_qty || 1), 1);
+  // React.useEffect(() => {
+  //   if (component.mark_up !== undefined && component.mark_up !== null) {
+  //     setLocalMarkup(String(component.mark_up));
+  //   }
+  // }, [component.mark_up]);
+
   const isInst = component.is_instrument && Number(component.expected_uses || 0) > 0;
   const numericRequiredQty = Number(localVal) || 0;
-  const markup = Number(component.mark_up || 0);
+  const markup = Number(localMarkup) || 0;
+
+  // Якщо матеріал відсутній на складі (є помилка дефіциту), його вартість 0
+  const isOutOfStock = Boolean(errorMessage);
+
+  const baseUnitCost =
+    materialBatches.length > 0
+      ? Number(materialBatches[0]?.price_per_unit || materialBatches[0]?.price || 0)
+      : Number(component.raw_cost || 0) /
+        Math.max(Number(component.available_qty || numericRequiredQty || 1), 1);
+
+  const effectiveUnitCost = isOutOfStock ? 0 : baseUnitCost * (1 + markup / 100);
+
+  const itemTotalCost = isOutOfStock
+    ? 0
+    : materialBatches.length > 0 && materialBatches.some((b: any) => b.total !== undefined)
+      ? materialBatches.reduce(
+          (acc: any, b: any) =>
+            acc +
+            Number(b.quantity || 0) * Number(b.price_per_unit || b.price || 0) * (1 + markup / 100),
+          0
+        )
+      : effectiveUnitCost * numericRequiredQty;
+
+  // React.useEffect(() => {
+  //   onMarkupChange(materialId, itemTotalCost);
+  // }, [itemTotalCost, materialId]);
 
   const handleRemoveComponent = (
     serviceId: number,
@@ -88,21 +129,10 @@ const MaterialItem = ({
       ...actRow,
       components: updatedComponents,
     };
+    alert(1);
 
     dispatch(removeComponentAction(serviceId, updatedRow, allItems));
   };
-
-  const itemTotalCost =
-    materialBatches.length > 0
-      ? materialBatches.reduce(
-        (acc: any, b: any) =>
-          acc +
-          (b.total !== undefined
-            ? Number(b.total)
-            : Number(b.quantity || 0) * Number(b.price_with_markup || b.price_per_unit || 0)),
-        0
-      )
-      : unitCost * numericRequiredQty;
 
   const batchesCount = materialBatches.length;
 
@@ -171,17 +201,37 @@ const MaterialItem = ({
       <div className="mt-2 pb-2 border-b border-slate-200 text-[13px] text-slate-500 flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-end gap-2 w-full text-[13px]">
-            <span className="text-slate-400">
-              {Number(itemTotalCost ? itemTotalCost / Math.max(numericRequiredQty, 1) : 0).toFixed(
-                2
-              )}{' '}
-              <span className="text-[12px] text-slate-400 font-normal"> / од.</span>
-              {markup > 0 && (
-                <span className="ml-1 text-teal-600 font-medium text-[12px]">
-                  (націнка {markup}%)
-                </span>
-              )}
+            <span className="text-slate-400 flex items-center gap-1.5">
+              {/* Себестоимость закупка за единицу */}
+              <span>{Number(baseUnitCost).toFixed(2)}</span>
+              <span className="text-[12px] text-slate-400 font-normal">/ од. закупка</span>
+
+              <span className="inline-flex items-center gap-1 ml-2 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
+                <span className="text-[11px] text-slate-500">націнка:</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="w-12 text-center text-xs font-semibold bg-white border border-slate-300 rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-teal-500 text-slate-800"
+                  value={localMarkup}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setLocalMarkup(val);
+                    const numericMarkup = val === '' ? 0 : Number(val);
+
+                    dispatch(
+                      updateComponentMarkupAction(
+                        invoiceItems.service_id,
+                        materialId,
+                        numericMarkup,
+                        allActItems
+                      )
+                    );
+                  }}
+                />
+                <span className="text-[11px] text-slate-500">%</span>
+              </span>
             </span>
+
             <span className="bg-slate-100 text-black px-1.5 py-0.5 rounded-md text-[12px] font-semibold">
               {itemTotalCost.toFixed(2)} ₴
             </span>
@@ -205,37 +255,42 @@ const MaterialItem = ({
 
             {isBatchesOpen && (
               <div className="mt-1.5 pl-3 border-l-2 border-teal-500/30 space-y-1 text-slate-600">
-                {materialBatches.map((batch: any, bIndex: number) => (
-                  <div
-                    key={`batch-${bIndex}`}
-                    className="flex items-center justify-between mt-2.5 pl-3 pr-4 py-1.5 bg-slate-50/80 rounded-xl space-y-2"
-                  >
-                    <div>
-                      <span className="text-slate-300">└─</span>
-                      <span className="material-symbols-outlined text-[16px] text-teal-600">
-                        inventory
-                      </span>
-                      <span className="font-label-md font-semibold text-slate-800 text-[14px] ml-2">
-                        {msg.get('act.batch')} #{batch.batch_id}
-                      </span>{' '}
-                      <span className="text-slate-400 font-body-sm">
-                        ({msg.get('act.arrived')}{' '}
-                        {batch.arrived_at ? batch.arrived_at.substring(0, 10) : ''})
+                {materialBatches.map((batch: any, bIndex: number) => {
+                  const incomingPrice = Number(batch.price_per_unit || batch.price || 0);
+                  // Чітка ціна за одиницу з урахуванням націнки
+                  const unitPriceWithoutMarkup = incomingPrice;
+                  const batchTotalWithoutMarkup =
+                    Number(batch.quantity || 0) * unitPriceWithoutMarkup;
+
+                  return (
+                    <div
+                      key={`batch-${bIndex}`}
+                      className="flex items-center justify-between mt-2.5 pl-3 pr-4 py-1.5 bg-slate-50/80 rounded-xl space-y-2"
+                    >
+                      <div>
+                        <span className="text-slate-300">└─</span>
+                        <span className="material-symbols-outlined text-[16px] text-teal-600">
+                          inventory
+                        </span>
+                        <span className="font-label-md font-semibold text-slate-800 text-[14px] ml-2">
+                          {msg.get('act.batch')} #{batch.batch_id}
+                        </span>{' '}
+                        <span className="text-slate-400 font-body-sm">
+                          ({msg.get('act.arrived')}{' '}
+                          {batch.arrived_at ? batch.arrived_at.substring(0, 10) : ''})
+                        </span>
+                      </div>
+                      {/* Математично правильна формула: Кількість × Ціна з націнкою = Загальна сума партії */}
+                      <span className="font-medium text-slate-800 text-[14px] font-metric-tabular text-slate-700 bg-white px-2 py-0.5 rounded shadow-2xs">
+                        {Number(batch.quantity).toFixed(2)} × {unitPriceWithoutMarkup.toFixed(2)} ₴
+                        ={' '}
+                        <span className="font-bold ml-1">
+                          {batchTotalWithoutMarkup.toFixed(2)} ₴
+                        </span>
                       </span>
                     </div>
-                    <span className="font-medium text-slate-800 text-[14px] font-metric-tabular text-slate-700 bg-white px-2 py-0.5 rounded shadow-2xs">
-                      {Number(batch.quantity).toFixed(2)} ×{' '}
-                      {Number(batch.price_with_markup || batch.price_per_unit).toFixed(2)} ₴{' '}
-                      {markup > 0 && (
-                        <span className="text-xs text-teal-600 font-normal ml-0.5">
-                          (з нац. {markup}%)
-                        </span>
-                      )}{' '}
-                      ={' '}
-                      <span className={'font-bold'}>{Number(batch.total).toFixed(2)} ₴</span>
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -246,24 +301,30 @@ const MaterialItem = ({
 };
 
 const ServiceMaterialsBlock = ({
-                                 row,
-                                 index,
-                                 actItemsError,
-                                 dispatch,
-                                 msg,
-                                 actItemRows,
-                               }: {
+  row,
+  index,
+  actItemsError,
+  dispatch,
+  msg,
+  actItemRows,
+  unmaterialServiceCost,
+}: {
   row: any;
   index: number;
   actItemsError: any;
   dispatch: any;
   msg: any;
   actItemRows: any;
+  unmaterialServiceCost: any;
 }) => {
   const [materialSearchQuery, setMaterialSearchQuery] = useState('');
   const [materialSearchResults, setMaterialSearchResults] = useState([]);
   const [isAddingMaterialOpen, setIsAddingMaterialOpen] = useState(false);
+  const [componentTotals, setComponentTotals] = useState<Record<string, number>>({});
   const materialRequestId = useRef(0);
+  const handleComponentTotalChange = (materialId: any, total: number) => {
+    setComponentTotals((prev) => ({ ...prev, [materialId]: total }));
+  };
 
   const searchMaterials = async (value: string) => {
     setMaterialSearchQuery(value);
@@ -285,6 +346,7 @@ const ServiceMaterialsBlock = ({
       product: material.name,
       quantity: 1,
       base_quantity: 1,
+      mark_up: 0,
       price: material.price || 0,
       cost: material.price || 0,
       batches: [],
@@ -298,6 +360,8 @@ const ServiceMaterialsBlock = ({
     );
 
     try {
+      console.log('Check 2');
+
       const fifoResponse = await axios.post('/act/fifo-preview', {
         services: updatedAllServices,
       });
@@ -322,7 +386,7 @@ const ServiceMaterialsBlock = ({
           return {
             ...comp,
             batches: fifoData.batches || [],
-            mark_up: fifoData.mark_up ?? 0,
+            mark_up: fifoData.mark_up ?? comp.mark_up ?? 0,
             cost: fifoData.cost ?? 0,
             raw_cost: fifoData.raw_cost ?? 0,
             available_qty: fifoData.available_qty ?? 0,
@@ -336,7 +400,7 @@ const ServiceMaterialsBlock = ({
         (sum: number, item: any) => sum + Number(item.cost || 0),
         0
       );
-      const baseServicePrice = Number(row.base_price || row.price) || 0;
+      const baseServicePrice = Number(row.base_price || 0);
       const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
 
       dispatch(
@@ -355,10 +419,48 @@ const ServiceMaterialsBlock = ({
     setMaterialSearchResults([]);
   };
 
-  const totalCost = (row.components || []).reduce(
-    (sum: any, component: any) => sum + Number(component.cost || 0),
-    Number(row.base_price || row.price || 0)
-  );
+  // 🛠 ЗАЛУЧУЄМО ТІЛЬКИ ТЕ, ЩО РЕАЛЬНО Є В ROW.COMPONENTS (без старих залишків price)
+  const serviceBasePrice = Number(row.base_price || 0);
+
+  const materialsTotal = (row.components || []).reduce((sum: number, component: any) => {
+    const mId = component.material_id || component.product_id;
+    const serviceId = Number(row.service_id || row.product_id || 0);
+    const errorKey = `${serviceId}_${mId}`;
+
+    if (actItemsError[errorKey]) {
+      return sum; // Ігноруємо дефіцитний матеріал
+    }
+
+    if (componentTotals[mId] !== undefined) {
+      return sum + componentTotals[mId];
+    }
+
+    const batches = component.batches || [];
+    const markup = Number(component.mark_up || 0);
+    const qty = Number(component.quantity || 0);
+
+    const baseUnitCost =
+      batches.length > 0
+        ? Number(batches[0]?.price_per_unit || batches[0]?.price || 0)
+        : Number(component.raw_cost || component.cost || 0) /
+          Math.max(Number(component.available_qty || qty || 1), 1);
+
+    const compTotal =
+      batches.length > 0 && batches.some((b: any) => b.total !== undefined)
+        ? batches.reduce(
+            (acc: any, b: any) =>
+              acc +
+              Number(b.quantity || 0) *
+                Number(b.price_per_unit || b.price || 0) *
+                (1 + markup / 100),
+            0
+          )
+        : baseUnitCost * (1 + markup / 100) * qty;
+
+    return sum + compTotal;
+  }, 0);
+
+  const totalCost = serviceBasePrice + materialsTotal;
 
   return (
     <div className="mt-2.5 p-3 bg-white text-slate-700">
@@ -384,6 +486,7 @@ const ServiceMaterialsBlock = ({
             dispatch={dispatch}
             invoiceItems={row}
             msg={msg}
+            onMarkupChange={handleComponentTotalChange}
           />
         ))}
 
@@ -445,11 +548,13 @@ const ServiceMaterialsBlock = ({
 
 // eslint-disable-next-line react/display-name
 const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
-  useActFifoValidation(rows, 'new');
+  // useActFifoValidation(rows, 'new');
   const [results, setResults] = useState([]);
   const [activeRow, setActiveRow] = useState<number | null>(null);
   const requestId = useRef(0);
   const appLang = useSelector(appLangSelector);
+  const rowUpdateTrigger = useSelector(rowUpdateSelector);
+
   const msg = new Lang({
     messages: { ...lngInvoiceIncoming, ...lngAct },
     locale: appLang,
@@ -458,6 +563,12 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   const actItemsError = useSelector(actDeficitsErrorSelector);
   const changeRows = (nextRows: any) => onChange(nextRows);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    console.log('here we call row validation', actItemRows);
+
+    validateActRows(rows, 'new', dispatch, 1);
+  }, [rows]);
 
   const handleAddInput = () => {
     changeRows([...rows, emptyRow()]);
@@ -595,14 +706,27 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
   const handleRemoveService = (serviceId: number) => {
     dispatch(removeActRowAction(serviceId));
   };
+  console.log('selector rows', actItemRows);
+
+
+  useEffect(() => {
+    if (rowUpdateTrigger) {
+      validateActRows(actItemRows, 'updateRowQty', dispatch, 1);
+      dispatch(setRowUpdated(false));
+    }
+  }, [rowUpdateTrigger]);
+
+  const updateRowQty = (rows: any, qty: number) => {
+    console.log('update rowQty', qty);
+    console.log('update rowQty', actItemRows);
+    // validateActRows(actItemRows, 'updateRowQty', dispatch);
+  };
 
   return (
     <>
       {actItemRows.map((row: any, index: number) => {
-        const calculatedTotalCost = (row.components || []).reduce(
-          (sum: any, component: any) => sum + Number(component.cost || 0),
-          Number(row.base_price || row.price || 0)
-        );
+        // 🛠 Єдиний правильний розрахунок суми для рядка таблиці та блоку матеріалів
+        const calculatedTotalCost = Number(row.total || 0);
 
         return (
           <tr key={`row-${index}`} className="border-b border-slate-100 last:border-none">
@@ -644,6 +768,7 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                     dispatch={dispatch}
                     msg={msg}
                     actItemRows={actItemRows}
+                    unmaterialServiceCost={calculatedTotalCost} // 👈 Передаємо готову суму сюди
                   />
                 )}
               </div>
@@ -657,12 +782,17 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                     onClick={() => {
                       dispatch(setupActStoreErrorAction({}));
                       dispatch(
-                        updateServiceQuantityAction(
-                          row.service_id,
-                          Math.max(Number(row.quantity || 1) - 1, 1),
-                          actItemRows
-                        )
+                        updateActRowAction(index, {
+                          quantity: Math.max(Number(row.quantity || 1) - 1, 1),
+                        })
                       );
+                      // dispatch(
+                      //   updateServiceQuantityAction(
+                      //     row.service_id,
+                      //     Math.max(Number(row.quantity || 1) - 1, 1),
+                      //     actItemRows
+                      //   )
+                      // );
                     }}
                     className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-2xs cursor-pointer"
                   >
@@ -681,13 +811,19 @@ const ActRows = forwardRef<ActRowsRef, any>(({ rows, onChange }, ref) => {
                   <button
                     type="button"
                     onClick={() => {
+                      dispatch(setupActStoreErrorAction({}));
                       dispatch(
-                        updateServiceQuantityAction(
-                          row.service_id,
-                          Number(row.quantity || 1) + 1,
-                          actItemRows
-                        )
+                        updateActRowAction(index, { quantity: Number(row.quantity || 1) + 1 })
                       );
+                      dispatch(setRowUpdated(true));
+                      // updateRowQty(rows, Number(row.quantity || 1) + 1);
+                      // dispatch(
+                      //   updateServiceQuantityAction(
+                      //     row.service_id,
+                      //     Number(row.quantity || 1) + 1,
+                      //     actItemRows
+                      //   )
+                      // );
                     }}
                     className="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors text-xs font-bold shadow-2xs cursor-pointer"
                   >

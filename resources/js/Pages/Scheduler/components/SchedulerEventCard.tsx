@@ -37,6 +37,8 @@ const getEventBackground = (status?: string) => {
       return '#f8d0d0';
     case 'new':
       return '#faefc4';
+    case 'posted':
+      return '#2dd4bf';
     default:
       return '#f8fafc';
   }

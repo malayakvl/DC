@@ -29,6 +29,13 @@ const lngDashboard = {
     select_filial: 'Оберіть філію для входу',
     available_filials: 'Доступні філії',
     select_role: 'Оберіть роль для входу',
+    new_patient_title: 'Швидка реєстрація картки',
+    new_visit: 'Записати на прийом',
+    new_visit_title: 'Вибір лікаря та крісла',
+    new_act: 'Створити рахунок / Акт',
+    new_act_title: 'Формування рахунку за послуги',
+    dashboard_title: 'Панель керування клінікою',
+    dashboard_work: 'Клініка працює у штатному режимі',
   },
 };
 export default lngDashboard;

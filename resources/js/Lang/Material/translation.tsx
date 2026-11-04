@@ -75,6 +75,8 @@ const lngMaterial = {
     all_filter: 'Всі матеріали',
     low_filter: 'Закінчуються',
     in_storck_filter: 'В наявності',
+    apply: 'Застосувати',
+    all_suppliers: 'Всі постачальники'
   },
 };
 export default lngMaterial;

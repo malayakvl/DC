@@ -212,7 +212,7 @@ export default function View({
                       <td className="py-3.5 px-4 text-right font-bold text-slate-900 text-sm">
                         {parseFloat(row.fact_qty || 0).toFixed(2)}
                       </td>
-                      <td className="py-3.5 px-4 w-[70px]">
+                      <td className="py-3.5 px-4 w-[90px]">
                         {row.expiry_date ? (
                           <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
                             <span className="material-symbols-outlined text-[14px] text-emerald-600">

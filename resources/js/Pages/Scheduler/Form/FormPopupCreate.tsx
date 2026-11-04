@@ -260,10 +260,7 @@ export default function SchedulerFormCreate({
           <InputText
             name={'title'}
             values={values}
-            dataValue={values.title}
-            value={values.title}
             onChange={handleChange}
-            required
             className={'w-full scheduler-select'}
             label={msg.get('scheduler.form.title')}
           />

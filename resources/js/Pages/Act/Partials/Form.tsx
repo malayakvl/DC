@@ -5,7 +5,6 @@ import { useAppDispatch } from '../../../hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngAct from '../../../Lang/Act/translation';
-import lngInvoiceIncoming from '../../../Lang/InvoiceIncoming/translation';
 import InputText from '../../../Components/Form/InputText';
 import InputSelect from '../../../Components/Form/InputSelect';
 import InputCalendar from '../../../Components/Form/InputCalendar';
@@ -102,7 +101,7 @@ export default function Form({
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
-    messages: { ...lngInvoiceIncoming, ...lngAct },
+    messages: lngAct,
     locale: appLang,
   });
 
@@ -270,7 +269,7 @@ export default function Form({
                 onChange={handleChangeSelect}
                 required
                 className="filter-select-bordered w-full"
-                label={msg.get('invoice_incoming.status')}
+                label={msg.get('act.status')}
               />
             </div>
 
@@ -310,7 +309,7 @@ export default function Form({
                 options={customerData}
                 onChange={handleChangeSelect}
                 required
-                label={msg.get('invoice_incoming.person')}
+                label={msg.get('act.person')}
               />
             </div>
           </div>

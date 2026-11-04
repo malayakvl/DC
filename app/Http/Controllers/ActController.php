@@ -312,12 +312,13 @@ class ActController extends Controller
                     ->orderBy('expiry_date', 'asc')
                     ->orderBy('arrived_at', 'asc')
                     ->orderBy('id', 'asc')
-                    ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit'])
+                    ->get(['id', 'arrived_at', 'expiry_date', 'fact_qty_left', 'price_per_unit', 'uses_left'])
                     ->map(fn ($batch) => [
                         'id' => $batch->id,
                         'arrived_at' => $batch->arrived_at,
                         'expiry_date' => $batch->expiry_date,
                         'fact_qty_left' => (float) $batch->fact_qty_left,
+                        'uses_left' => (float) $batch->uses_left,
                         'price_per_unit' => (float) $batch->price_per_unit,
                     ])
                     ->all();
@@ -343,10 +344,17 @@ class ActController extends Controller
 
                 if (isset($availableByMaterial[$materialId])) {
                     foreach ($availableByMaterial[$materialId] as &$batch) {
-                        if ($remainingQty <= 0) break;
-                        if ($batch['fact_qty_left'] <= 0) continue;
-
-                        $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                        if ($remainingQty <= 0) {
+                            break;
+                        }
+                        if ($batch['fact_qty_left'] <= 0) {
+                            continue;
+                        }
+                        if ($isInstrument) {
+                            $usedQty = min($remainingQty, $batch['fact_qty_left']*$batch['uses_left']);
+                        } else {
+                            $usedQty = min($remainingQty, $batch['fact_qty_left']);
+                        }
                         $rawUnitCost = $batch['price_per_unit'] > 0 ? $batch['price_per_unit'] : $fallbackPrice;
                         $unitCost = ($isInstrument && $expectedUses > 0) ? ($rawUnitCost / $expectedUses) : $rawUnitCost;
 
@@ -360,6 +368,8 @@ class ActController extends Controller
                             'price_per_unit' => round($unitCost, 4),
                             'price_with_markup' => round($unitCost * (1 + $markup / 100), 4),
                             'total' => round($lineCostWithMarkup, 4),
+                            'uses_left' => $isInstrument ? $batch['uses_left'] : 1,
+                            'is_instrument' => $isInstrument,
                         ];
 
                         $rawCost += $lineRawCost;
@@ -755,7 +765,7 @@ class ActController extends Controller
                     ->select('users.id', 'users.first_name', 'users.last_name')
                     ->where('clinic_user.clinic_id', $clinicId)->get();
 
-                $props['statusData'] = $this->actStatuses();
+                $props['statusData'] = Invoices::INVOICE_STATUSES;
 
                 return Inertia::render('Act/Edit', $props);
             } else {
@@ -1308,74 +1318,6 @@ class ActController extends Controller
         }, $components);
     }
 
-//    private function applyActFifo1(int $storeId, int $actId, int $actItemId, array $components): float
-//    {
-//        $materialTotalWithMarkup = 0.0;
-//        foreach ($components as $component) {
-//            $materialId = (int) $component['material_id'];
-//            $remainingFactQty = round((float) $component['quantity'], 4);
-//            if ($remainingFactQty <= 0) {
-//                continue;
-//            }
-//            $componentCost = 0.0;
-//
-//            $batches = DB::table('store_batches')
-//                ->where('store_id', $storeId)
-//                ->where('material_id', $materialId)
-//                ->where('fact_qty_left', '>', 0)
-//                ->orderBy('arrived_at')
-//                ->orderBy('id')
-//                ->lockForUpdate()
-//                ->get();
-//            dd($batches);
-//
-//            foreach ($batches as $batch) {
-//                if ($remainingFactQty <= 0) {
-//                    dd('тут');
-//                    break;
-//                }
-//                if ((float) $batch->qty <= 0 || (float) $batch->fact_qty <= 0) {
-//                    throw new \Exception("Некоректна партія #{$batch->id} для material_id={$materialId}");
-//                }
-//
-//                $deductFactQty = min($remainingFactQty, (float) $batch->fact_qty_left);
-//                $deductQty = round($deductFactQty / ((float) $batch->fact_qty / (float) $batch->qty), 4);
-//
-//                DB::table('store_batches')->where('id', $batch->id)->update([
-//                    'qty_left' => round((float) $batch->qty_left - $deductQty, 4),
-//                    'fact_qty_left' => round((float) $batch->fact_qty_left - $deductFactQty, 4),
-//                    'updated_at' => now(),
-//                ]);
-//                DB::table('store_movements')->insert([
-//                    'store_id' => $storeId,
-//                    'material_id' => $materialId,
-//                    'batch_id' => $batch->id,
-//                    'direction' => -1,
-//                    'qty' => $deductQty,
-//                    'fact_qty' => $deductFactQty,
-//                    'price_per_unit' => $batch->price_per_unit,
-//                    'document_type' => 'act',
-//                    'document_id' => $actId,
-//                    'act_item_id' => $actItemId,
-//                    'created_at' => now(),
-//                    'updated_at' => now(),
-//                ]);
-//                $componentCost += $deductFactQty * (float) $batch->price_per_unit;
-//                $this->changeStoreBalance($storeId, $materialId, -$deductQty, -$deductFactQty);
-//                $remainingFactQty = round($remainingFactQty - $deductFactQty, 4);
-//            }
-//
-//            if ($remainingFactQty > 0) {
-//                throw new \Exception("Недостатньо material_id={$materialId}: не вистачає {$remainingFactQty}");
-//            }
-//            $materialTotalWithMarkup += $componentCost * (1 + ((float) ($component['mark_up'] ?? 0) / 100));
-//        }
-//
-//        return round($materialTotalWithMarkup, 4);
-//    }
-
-
-
     private function changeStoreBalance(int $storeId, int $materialId, float $qtyDelta, float $factQtyDelta): void
     {
         DB::statement(
@@ -1420,146 +1362,7 @@ class ActController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function updateOld(InvoiceUpdateRequest $request) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
 
-            //         if ($request->id) {
-            //             $data = $request;
-            //         } else {
-            //             $data = $request->values;
-            //         }
-            //         if ($request->user()->can('invoice-incoming-edit')) {
-            //             if ($request->id) {
-            //                 $invoice = Invoice::find($data->id);
-            //                 // invoice was issued and we need to remove materials from store and remove operation
-            //             }
-            //             else {
-            //                 $invoice = new Invoice();
-            //             }
-            // //            dd($request);exit;
-            //             $invoice->fill($request->validated());
-            //             $invoice->invoice_number = $request->invoice_number;
-            //             $invoice->invoice_date = $request->invoice_date;
-            //             $invoice->status_id = $request->status_id;
-            //             $invoice->type_id = 1;
-            //             $invoice->tax_id = $request->tax_id;
-            //             $invoice->currency_id = $request->currency_id;
-            //             $invoice->save();
-            //             if (!$request->id) {
-            //                 $invoiceId = $invoice->id;
-            //             } else {
-            //                 $invoiceId = $request->id;
-            //                 DB::table('invoice_items')->where('invoice_id', $invoiceId)->delete();
-            //             }
-            //             $producer = Producer::find($request->producer_id);
-            //             $store = Store::find($request->store_id);
-            //             if ($request->status_id === 2) {
-            //                 DB::table('document_operations')
-            //                     ->where('document_id', $invoiceId)
-            //                     ->where('document_type', 'invoice')
-            //                     ->delete();
-            //             }
-            //             $total = 0;
-            //             foreach ($request->rows as $row) {
-            //                 $invoiceItem = new InvoiceItems();
-            //                 $invoiceItem->invoice_id = $invoiceId;
-            //                 $invoiceItem->product_id = $row["product_id"];
-            //                 $invoiceItem->unit_id = $row["unit_id"];
-            //                 $invoiceItem->fact_qty = $row["fact_qty"];
-            //                 $invoiceItem->price_per_unit = $row["total"]/$row["fact_qty"];
-            //                 $invoiceItem->quantity = $row["quantity"];
-            //                 $invoiceItem->price = $row["price"];
-            //                 $invoiceItem->total = $row["total"];
-            //                 $total = $total + $row["total"];
-            //                 $invoiceItem->save();
-            //                 if (intval($request->status_id) === 2) {
-            //                     $documentOperation  = new DocumentOperations();
-            //                     $documentOperation->operation_date = $request->invoice_date;
-            //                     $documentOperation->operation_number = $request->invoice_number;
-            //                     $documentOperation->document_id = $invoiceId;
-            //                     $documentOperation->document_type = 'iinv';
-            //                     $documentOperation->operation_dt = '281';
-            //                     $documentOperation->subconto_dt = json_encode(array(
-            //                         'store_id' => $request->store_id,
-            //                         'store_name' => $store->name,
-            //                         'product_id' => $row["product_id"],
-            //                         'product_name' => $row['product'],
-            //                         'producer_id' => $producer->id,
-            //                         'producer_name' => $producer->name,
-            //                         'fact_qty' => $row['fact_qty'],
-            //                         'qty' => $row['quantity'],
-            //                         'price_per_unit' => number_format(($row['total']/$row['fact_qty']), 2)
-            //                     ));
-            //                     // get weight if exist
-            //                     $material = Material::find($row["product_id"]);
-            // //                    DB::select('
-            // //                        INSERT INTO store_materials AS sm (store_id, material_id, producer_id, quantity, weight, unit_id)
-            // //                        VALUES ('.$request->store_id.', '.$row["product_id"].', '.$material->producer_id.',
-            // //                        '.$row["quantity"].', '.($row['fact_qty']). ', '.($material->weightunit_id ? $material->weightunit_id :$material->unit_id).')
-            // //                        ON CONFLICT ON CONSTRAINT store_materials_pkey
-            // //                        DO UPDATE SET
-            // //                        weight = sm.weight  + ' .$row["fact_qty"]. ',
-            // //                        quantity = sm.quantity + ' .$row["quantity"]. ';
-            // //                    ');
-            //                     $storeMaterials = new StoreMaterials();
-            //                     $storeMaterials->doc_date = $request->invoice_date;
-            //                     $storeMaterials->document_type = 'iinv';
-            //                     $storeMaterials->document_id = $invoiceId;
-            //                     $storeMaterials->store_id = $request->store_id;
-            //                     $storeMaterials->material_id = $row["product_id"];
-            //                     $storeMaterials->qty = $row["quantity"];
-            //                     $storeMaterials->store_qty = $row["quantity"];
-            //                     $storeMaterials->unit_id = $material->unit_id;
-            //                     $storeMaterials->fact_qty = $row['fact_qty'];
-            //                     $storeMaterials->store_fact_qty = $row['fact_qty'];
-            //                     $storeMaterials->fact_unit_id = $material->weightunit_id;
-            //                     $storeMaterials->price_per_unit = number_format(($row['total']/$row['fact_qty']), 2);
-            //                     $storeMaterials->producer_id = $request->producer_id;
-            //                     $storeMaterials->save();
-
-            // //                    DB::select('
-            // //                        INSERT INTO store_materials AS sm (doc_date, store_id, material_id, qty, unit_id, fact_qty, fact_unit_id, price_per_unit, producer_id)
-            // //                        VALUES (\''.$request->invoice_date. '\',  '.$request->store_id.', '.$row["product_id"].',
-            // //                        '.$row["quantity"].', ' .$material->unit_id. ', '. $row['fact_qty'].',
-            // //                        ' .$material->weightunit_id. ',
-            // //                        '.number_format(($row['total']/$row['fact_qty']), 2).',
-            // //                        ' .$request->producer_id. '
-            // //                    ');
-
-            //                     $documentOperation->operation_kt = '631';
-            //                     $documentOperation->subconto_kt = json_encode(array(
-            //                         'producer_id' => $request->producer_id,
-            //                         'producer_name' => $producer->name
-            //                     ));
-            // //                    $documentOperation->amount = $row["quantity"]*floatval($row["price"]);
-            //                     $documentOperation->amount = $row["total"];
-            //                     $documentOperation->quantity = $row["quantity"];
-            //                     $documentOperation->comment = 'income_products';
-            //                     $documentOperation->save();
-            //                 }
-            //             }
-            //             // create operations
-            //             if (intval($request->status_id) === 2) {
-            //                 $documentOperation  = new DocumentOperations();
-            //                 $documentOperation->operation_date = $request->invoice_date;
-            //                 $documentOperation->operation_number = $request->invoice_number;
-            //                 $documentOperation->document_id = $invoiceId;
-            //                 $documentOperation->document_type = 'iinv';
-            //                 $documentOperation->operation_dt = '6442';
-            //                 $documentOperation->subconto_dt = json_encode(array('name' => 'nds'));
-            //                 $documentOperation->operation_kt = '631';
-            //                 $documentOperation->subconto_kt = json_encode(array('producer_id' => $request->producer_id, 'name' => $producer->name));
-            //                 $documentOperation->amount = $total*20/100;
-            //                 $documentOperation->quantity = 0;
-            //                 $documentOperation->comment = 'nds';
-            //                 $documentOperation->save();
-            //             }
-
-            //             return Redirect::route('invoice.incoming.index');
-            //         }
-        });
-
-    }
 
     /**
      * Remove the specified resource from storage.

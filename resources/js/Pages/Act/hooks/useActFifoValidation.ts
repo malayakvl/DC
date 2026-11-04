@@ -6,7 +6,6 @@ import { setupActStoreErrorAction, updateServiceComponentsFifo } from '@/Redux/A
 export function useActFifoValidation(rows: any[], actStatus: string) {
   const dispatch = useAppDispatch();
   const requestId = useRef(0);
-
   useEffect(() => {
     const readonlyStatuses = ['completed', 'closed', 'cancelled'];
     if (readonlyStatuses.includes(actStatus)) {
@@ -41,7 +40,6 @@ export function useActFifoValidation(rows: any[], actStatus: string) {
             };
           }),
         };
-
         const response = await axios.post('/act/fifo-preview', payload);
         if (currentReq !== requestId.current) return;
 
@@ -57,7 +55,7 @@ export function useActFifoValidation(rows: any[], actStatus: string) {
           const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
           fifoMap.set(uniqueKey, item);
         });
-
+        let materialsCost = 0;
         validRows.forEach((row: any) => {
           const serviceId = Number(row.service_id || row.product_id);
           const updatedComponents = (row.components || []).map((comp: any) => {
@@ -66,6 +64,8 @@ export function useActFifoValidation(rows: any[], actStatus: string) {
             const fifoData = fifoMap.get(uniqueKey);
 
             if (fifoData) {
+              materialsCost += fifoData.cost ?? 0;
+
               return {
                 ...comp,
                 batches: fifoData.batches || [],
@@ -76,8 +76,12 @@ export function useActFifoValidation(rows: any[], actStatus: string) {
             }
             return comp;
           });
+          // Базова ціна самої послуги
+          const baseServicePrice = Number(row.base_price || 0);
+          // Фінальна ціна = база послуги + сума всіх матеріалів/компонентів
+          const finalServicePrice = baseServicePrice + materialsCost;
 
-          dispatch(updateServiceComponentsFifo(serviceId, updatedComponents));
+          dispatch(updateServiceComponentsFifo(serviceId, updatedComponents, finalServicePrice));
         });
       } catch (error) {
         console.error('FIFO validation error:', error);

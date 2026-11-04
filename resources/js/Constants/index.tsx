@@ -190,9 +190,10 @@ export const SchedulerStatuses = [
   { name: 'postponed', color: '#17abab' },
   { name: 'noanswer', color: '#ff5722' },
   { name: 'late', color: '#ff21ed' },
-  { name: 'inclicnic', color: '#2971ba' },
+  { name: 'inclinic', color: '#2971ba' },
   { name: 'incabinet', color: '#188c0b' },
   { name: 'decline', color: '#222223' },
+  { name: 'posted', color: '#222223' },
 ];
 
 export const excludeToothEffect = [

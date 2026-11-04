@@ -7,3 +7,4 @@ export const tableErrorSelector = (state: any) => state.act.showTableError;
 export const actFiltersSelector = (state: any) => state.act.filters;
 export const actClearFiltersSelector = (state: any) => state.act.isClear;
 export const actDeficitsErrorSelector = (state: any) => state.act.actItemsError;
+export const rowUpdateSelector = (state: any) => state.act.rowUpdated;

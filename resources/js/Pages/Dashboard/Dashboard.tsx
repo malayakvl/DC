@@ -1,12 +1,13 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngDashboard from '../../Lang/Dashboard/translation';
+import { format, parseISO } from 'date-fns';
 
-export default function Dashboard() {
+export default function Dashboard({ visitCount }: { visitCount: number }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngDashboard,
@@ -22,12 +23,14 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-slate-900">Панель керування клінікою</h1>
+                <h1 className="text-xl font-bold text-slate-900">
+                  {msg.get('dashboard.dashboard_title')}
+                </h1>
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                 <span className="text-sm text-slate-500 font-medium">Центральне відділення №1</span>
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200/50">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>Клініка працює у штатному режимі</span>
+                  <span>{msg.get('dashboard.dashboard_work')}</span>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-slate-500 text-sm flex-wrap">
@@ -35,7 +38,7 @@ export default function Dashboard() {
                   <span className="material-symbols-outlined text-[18px] text-teal-600">
                     calendar_today
                   </span>
-                  <span>Понеділок, 12 жовтня 2026</span>
+                  <span>{format(parseISO('2026-11-04'), 'yyyy-MM-dd')}</span>
                 </div>
                 <span className="inline-block w-1 h-1 rounded-full bg-slate-300"></span>
                 <div className="flex items-center gap-1.5 text-teal-700 font-semibold">
@@ -128,7 +131,7 @@ export default function Dashboard() {
                   </div>
                 </div>
                 <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-2xl font-extrabold text-slate-900">28</span>
+                  <span className="text-2xl font-extrabold text-slate-900">{visitCount}</span>
                   <span className="text-sm font-semibold text-slate-500">пацієнтів</span>
                   <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100/70 text-emerald-700 text-[11px] font-bold">
                     Завантаження 92%
@@ -525,11 +528,13 @@ export default function Dashboard() {
                       <span className="material-symbols-outlined text-[20px]">person_add</span>
                     </div>
                     <div>
-                      <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
-                        Новий пацієнт
-                      </span>
+                      <Link href={'/patient/create'}>
+                        <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
+                          {msg.get('dashboard.new_patient')}
+                        </span>
+                      </Link>
                       <span className="text-xs text-slate-400 group-hover:text-teal-100">
-                        Швидка реєстрація картки
+                        {msg.get('dashboard.new_patient_title')}
                       </span>
                     </div>
                   </button>
@@ -543,10 +548,10 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
-                        Записати на прийом
+                        {msg.get('dashboard.new_visit')}
                       </span>
                       <span className="text-xs text-slate-400 group-hover:text-teal-100">
-                        Вибір лікаря та крісла
+                        {msg.get('dashboard.new_visit_title')}
                       </span>
                     </div>
                   </button>
@@ -560,10 +565,10 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
-                        Створити рахунок / Акт
+                        {msg.get('dashboard.new_act')}
                       </span>
                       <span className="text-xs text-slate-400 group-hover:text-teal-100">
-                        Формування рахунку за послуги
+                        {msg.get('dashboard.new_act_title')}
                       </span>
                     </div>
                   </button>

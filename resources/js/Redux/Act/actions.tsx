@@ -32,6 +32,7 @@ export const setActTax = createAction('act/SET_ACT_TAX');
 export const setActCurrency = createAction('act/SET_ACT_CURRENCY');
 export const setShowTableError = createAction('act/SET_TABLE_ERRORS');
 export const setupActStoreErrorAction = createAction('act/SET_STORE_DEFICIT_ERROR');
+export const setRowUpdated = createAction('act/SET_ROW_UPDATED');
 export const updateServiceItemQtyAction = createAction(
   'act/UPDATE_SERVICE_ITEM_QTY',
   (rowIndex: any, itemIndex: any, qty: number) => ({ rowIndex, itemIndex, qty })
@@ -81,7 +82,6 @@ export const updateServiceQuantityAction: any = createAction(
           quantity: baseQty * newServiceQty,
         };
       });
-
       const updatedTargetItem = {
         ...targetItem,
         components: updatedComponents,
@@ -93,6 +93,7 @@ export const updateServiceQuantityAction: any = createAction(
       });
 
       dispatch(setupActStoreErrorAction(response.data.deficits_map || {}));
+
     } catch (error) {
       console.error('Error updating service quantity:', error);
       throw error;
@@ -175,73 +176,69 @@ export const updateComponentQuantityAction: any = createAction(
 
 export const removeComponentAction: any = createAction(
   'act/REMOVE_COMPONENT_SERVICE',
-  async (serviceId: number, updatedTargetItem: any, allActItems: any[]) =>
-    async (dispatch: any) => {
-      try {
-        const servicesPayload = allActItems.map((row: any) =>
-          Number(row.service_id || row.product_id) === Number(serviceId) ? updatedTargetItem : row
-        );
+  async (serviceId: number, updatedTargetItem: any, allActItems: any[]) => {
+    const servicesPayload = allActItems.map((row: any) =>
+      Number(row.service_id || row.product_id) === Number(serviceId)
+        ? { ...updatedTargetItem, components: updatedTargetItem.components || [] }
+        : row
+    );
+    const response = await axios.post('/act/fifo-preview', {
+      services: servicesPayload,
+    });
 
-        const response = await axios.post('/act/fifo-preview', {
-          services: servicesPayload,
-        });
+    const storeItems = response.data.items || [];
+    const deficitsMap = response.data.deficits_map || {};
 
-        const storeItems = response.data.items || [];
-        const deficitsMap = response.data.deficits_map || {};
+    const fifoMap = new Map();
+    storeItems.forEach((item: any) => {
+      const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
+      fifoMap.set(uniqueKey, item);
+    });
 
-        dispatch(setupActStoreErrorAction(deficitsMap));
+    const enrichedServices = servicesPayload.map((service: any) => {
+      const sId = Number(service.service_id || service.product_id);
+      const currentComponents = service.components || [];
 
-        const fifoMap = new Map();
-        storeItems.forEach((item: any) => {
-          const uniqueKey = item.composite_key || `${item.service_id}_${item.material_id}`;
-          fifoMap.set(uniqueKey, item);
-        });
-
-        const enrichedServices = servicesPayload.map((service: any) => {
-          const sId = Number(service.service_id || service.product_id);
-          const updatedComponents = (service.components || []).map((comp: any) => {
-            const mId = Number(comp.material_id || comp.product_id);
-            const uniqueKey = `${sId}_${mId}`;
-            const fifoData = fifoMap.get(uniqueKey);
-            if (fifoData) {
-              return {
-                ...comp,
-                batches: fifoData.batches || [],
-                cost: fifoData.cost ?? 0,
-                available_qty: fifoData.available_qty ?? 0,
-                shortage_qty: fifoData.shortage_qty ?? 0,
-              };
-            }
-            return comp;
-          });
-
-          const calculatedComponentsPrice = updatedComponents.reduce((sum: number, item: any) => {
-            return sum + Number(item.cost || 0);
-          }, 0);
-
-          const baseServicePrice = Number(service.base_price || service.price) || 0;
-          const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
-
+      const updatedComponents = currentComponents.map((comp: any) => {
+        const mId = Number(comp.material_id || comp.product_id);
+        const uniqueKey = `${sId}_${mId}`;
+        const fifoData = fifoMap.get(uniqueKey);
+        if (fifoData) {
           return {
-            ...service,
-            components: updatedComponents,
-            price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+            ...comp,
+            batches: fifoData.batches || [],
+            cost: fifoData.cost ?? 0,
+            available_qty: fifoData.available_qty ?? 0,
+            shortage_qty: fifoData.shortage_qty ?? 0,
           };
-        });
+        }
+        return comp;
+      });
 
-        return {
-          updatedServices: enrichedServices,
-        };
-      } catch (error) {
-        console.error('Error in removeComponentAction:', error);
-        return null;
-      }
-    }
+      const calculatedComponentsPrice = updatedComponents.reduce((sum: number, item: any) => {
+        return sum + Number(item.cost || 0);
+      }, 0);
+
+      const baseServicePrice = Number(service.base_price || service.price) || 0;
+      const totalCalculatedPrice = calculatedComponentsPrice + baseServicePrice;
+
+      return {
+        ...service,
+        components: updatedComponents,
+        price: totalCalculatedPrice > 0 ? totalCalculatedPrice : baseServicePrice,
+      };
+    });
+
+    return {
+      updatedServices: enrichedServices,
+      deficitsMap,
+    };
+  }
 );
 
 export const updateServiceComponentsFifo = createAction(
   'act/UPDATE_SERVICE_COMPONENTS_FIFO',
-  (serviceId: any, components: any) => ({ serviceId, components })
+  (serviceId: any, components: any, price: number) => ({ serviceId, components, price })
 );
 
 export const emptyActRow = () => ({
@@ -260,3 +257,85 @@ export const updateActRowAction = createAction(
   (index: number, patch: any) => ({ index, patch })
 );
 export const removeActRowAction = createAction('act/REMOVE_ROW_BY_INDEX', (index: number) => index);
+
+export const updateComponentMarkupAction = createAction(
+  'act/UPDATE_COMPONENT_MARKUP_NEW',
+  (serviceId: number, materialId: number, markup: number, allActItems: any[]) => {
+    const newMarkup = Number(markup) || 0;
+
+    const enrichedServices = (allActItems || []).map((service: any) => {
+      const sId = Number(service.service_id || service.product_id);
+      if (sId !== Number(serviceId)) {
+        return service;
+      }
+
+      const updatedComponents = (service.components || []).map((comp: any) => {
+        const mId = Number(comp.material_id || comp.product_id);
+        if (mId !== Number(materialId)) {
+          return comp;
+        }
+
+        // 1. Оновлюємо кожну партію (batch), проставляючи їй новий маркап і перераховуючи price_with_markup
+        const updatedBatches = (comp.batches || []).map((batch: any) => {
+          const pricePerUnit = Number(batch.price_per_unit || batch.price || 0);
+          const batchQty = Number(batch.quantity || 1);
+
+          const batchPriceWithMarkup = Number((pricePerUnit * (1 + newMarkup / 100)).toFixed(2));
+          const batchTotal = Number((batchPriceWithMarkup * batchQty).toFixed(2));
+
+          return {
+            ...batch,
+            mark_up: newMarkup, // Записуємо маркап у саму партію
+            price_with_markup: batchPriceWithMarkup,
+            total: batchTotal,
+          };
+        });
+
+        // 2. Рахуємо загальну вартість компонента на основі оновлених батчів
+        // (або беремо з першого батчу, якщо закупка йде по партійно)
+        const baseUnitCost =
+          updatedBatches.length > 0
+            ? Number(updatedBatches[0]?.price_per_unit || 0)
+            : Number(comp.raw_cost || comp.actual_price || 0);
+
+        const qty = Number(comp.quantity || 1);
+
+        const unitCostWithMarkup = Number((baseUnitCost * (1 + newMarkup / 100)).toFixed(2));
+
+        // Якщо сума складається з батчів, сумуємо їхні total, або рахуємо через загальну кількість
+        const totalComponentPrice =
+          updatedBatches.length > 0
+            ? updatedBatches.reduce((sum: any, b: any) => sum + Number(b.total || 0), 0)
+            : Number((unitCostWithMarkup * qty).toFixed(2));
+
+        return {
+          ...comp,
+          mark_up: newMarkup, // Маркап на рівні компонента
+          raw_cost: baseUnitCost,
+          cost: unitCostWithMarkup,
+          batches: updatedBatches, // Зберігаємо оновлені батчі з їхнім маркапом!
+          price: String(totalComponentPrice),
+          total: String(totalComponentPrice),
+        };
+      });
+
+      const calculatedComponentsPrice = updatedComponents.reduce((sum: number, item: any) => {
+        return sum + Number(item.total || item.price || 0);
+      }, 0);
+
+      const baseServicePrice = Number(service.base_price || 0);
+      const totalCalculatedPrice = baseServicePrice + calculatedComponentsPrice;
+
+      return {
+        ...service,
+        components: updatedComponents,
+        price: totalCalculatedPrice,
+        total: (totalCalculatedPrice * Number(service.quantity || 1)).toFixed(2),
+      };
+    });
+
+    return {
+      updatedServices: enrichedServices,
+    };
+  }
+);

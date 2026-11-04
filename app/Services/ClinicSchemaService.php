@@ -299,6 +299,7 @@ class ClinicSchemaService
                 id BIGSERIAL PRIMARY KEY,
                 title VARCHAR(255),
                 clinic_id BIGINT,
+                filial_id BIGINT,
                 doctor_id BIGINT,
                 patient_id BIGINT,
                 cabinet_id BIGINT,
