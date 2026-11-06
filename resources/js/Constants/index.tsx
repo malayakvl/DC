@@ -170,6 +170,7 @@ export const TableHeaders = {
   ],
   [PaginationType.PAYMENTMETHODS]: [
     { titleKey: 'datatable.name', className: '' },
+    { titleKey: 'datatable.bankaccount', className: '' },
     { titleKey: 'datatable.currency', className: '' },
     { titleKey: 'datatable.actions', className: 'text-right' },
   ],

@@ -16,7 +16,7 @@ export default function Header({ auth }: { auth: any }) {
 
   return (
     <>
-      <header className="fixed">
+      <header className="fixed w-full top-h-style" style={{ zIndex: '100' }}>
         <div className="flex px-4 sm:px-10 top-header font-sans h-[75px] tracking-wide relative z-50 header-fixed">
           <div className="relative flex w-full md:justify-between">
             <div>

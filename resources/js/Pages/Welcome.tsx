@@ -26,7 +26,7 @@ import {
   IconShieldLock,
 } from '@tabler/icons-react';
 
-export default function Welcome({ auth }) {
+export default function Welcome({ auth }: { auth: any }) {
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
@@ -151,7 +151,7 @@ export default function Welcome({ auth }) {
         {/* <!-- Top nav --> */}
         <Header auth={auth} />
         {/* <!-- Container --> */}
-        <div className="md:w-full mx-auto relative z-10 pt-[20px]">
+        <div className="md:w-full mx-auto relative z-10 mt-[75px]">
           <div className="relative teaser-container">
             <div className="w-white-teaser">
               <div className="hero-badge">⚡ Сучасна система управління стоматологією</div>
@@ -304,6 +304,115 @@ export default function Welcome({ auth }) {
           {/*    </div>*/}
           {/*  </div>*/}
           {/*</section>*/}
+          <section className="why-section">
+            <div className="why-left">
+              <div className="section-badge">ПЕРЕВАГИ СИСТЕМИ</div>
+
+              <h2>
+                Чому клініки <br />
+                обирають <span>DentalCare</span>
+              </h2>
+
+              <p>
+                Оптимізуйте щоденні процеси, автоматизуйте рутину та зосередьтесь на розвитку вашої
+                клініки.
+              </p>
+              <p>
+                Від першого запису пацієнта до фінансової аналітики — усі ключові процеси об'єднані
+                в одній сучасній системі управління.
+              </p>
+
+              <div className="tooth-preview">
+                {/*<img src="../../images/main-page/t3-removebg-preview.png" alt="" />*/}
+              </div>
+            </div>
+
+            <div className="why-right">
+              <div className="dashboard-preview">
+                <img src="../../images/main-page/dashboard.jpeg" alt="" />
+              </div>
+
+              <div className="floating-item top-left">
+                <div className="benefit-float">
+                  <div className="benefit-icon">
+                    <IconShield size={32} />
+                  </div>
+
+                  <div className="benefit-content">
+                    <h4>Безпека даних</h4>
+                    <span>Захищене зберігання медичної інформації</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="floating-item left-middle">
+                <div className="benefit-float">
+                  <div className="benefit-icon">
+                    <IconDeviceLaptop size={32} />
+                  </div>
+
+                  <div className="benefit-content">
+                    <h4>Доступ 24/7</h4>
+                    <span>Працюйте з будь-якого пристрою</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="floating-item left-bottom">
+                <div className="benefit-float">
+                  <div className="benefit-icon">
+                    <IconWallet size={32} />
+                  </div>
+
+                  <div className="benefit-content">
+                    <h4>Контроль фінансів</h4>
+                    <span>Доходи та витрати в одному місці</span>
+                  </div>
+                </div>
+              </div>
+
+              {/*<div className="floating-item top-right">*/}
+              {/*  <div className="benefit-float">*/}
+              {/*    <div className="benefit-icon">*/}
+              {/*      <IconClock size={32} />*/}
+              {/*    </div>*/}
+
+              {/*    <div className="benefit-content">*/}
+              {/*      <h4>Економія часу</h4>*/}
+              {/*      <span>Менше рутини для адміністраторів</span>*/}
+              {/*    </div>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
+
+              <div className="floating-item right-middle">
+                <div className="benefit-float">
+                  <div className="benefit-icon">
+                    <IconBolt size={32} />
+                  </div>
+
+                  <div className="benefit-content">
+                    <h4>Автоматизація</h4>
+                    <span>Система бере рутину на себе</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="floating-item bottom-center">
+                <div className="benefit-float">
+                  <div className="benefit-icon">
+                    <IconChartBar size={32} />
+                  </div>
+
+                  <div className="benefit-content">
+                    <h4>Аналітика</h4>
+                    <span>Детальні звіти для прийняття рішень</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="circle-line"></div>
+            </div>
+          </section>
           <section className="why-section">
             <div className="why-left">
               <div className="section-badge">ПЕРЕВАГИ СИСТЕМИ</div>

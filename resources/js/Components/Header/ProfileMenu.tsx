@@ -17,14 +17,22 @@ import {
 } from '@tabler/icons-react';
 
 export default function ProfileMenu() {
-  const user = usePage().props.auth.user;
+  const { auth } = usePage<{
+    auth: {
+      user: any;
+      can: any;
+      role: string[] | any[];
+    };
+  }>().props;
+
+  const user = auth.user;
   const appLang = useSelector(appLangSelector);
   const lng = new Lang({
     messages: lngHeader,
     locale: appLang,
   });
-  const permissions = usePage().props.auth.can;
-  const source = user?.name;
+  const permissions = auth.can;
+  const source = user?.name || '';
   const array = source.split(' ');
   const fioResult =
     array[0] + ' ' + (array[1] ? array[1][0] : '') + '. ' + (array[2] ? array[2][0] : '') + '.';
@@ -44,21 +52,21 @@ export default function ProfileMenu() {
                       <div className="h-avatar-user">
                         <img
                           src={
-                            user.clinic_user.avatar
+                            user?.clinic_user?.avatar
                               ? '/storage/users/' + user.clinic_user.avatar
                               : ''
                           }
-                          alt={user.name}
+                          alt={user?.name}
                           className="w-[32px] h-[32px] rounded-full ring-2"
                         />
                         <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
                       </div>
                       <div className="text-left leading-tight mr-2 hidden sm:block">
                         <span className="user-profile-name">
-                          {fioResult} <span className="role-tips">{usePage().props.auth.role}</span>
+                          {fioResult} <span className="role-tips">{auth.role}</span>
                         </span>
                         <small className="user-profile-role">
-                          {usePage().props.auth.role.length > 0 ? (
+                          {auth.role?.length > 0 ? (
                             <>
                               <span className="header-filial-name">{user?.current_filial}</span>
                               <div style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -78,7 +86,6 @@ export default function ProfileMenu() {
             </Dropdown.Trigger>
 
             <Dropdown.Content
-              className={'dropdown-profile-contend'}
               dropdownWClasses={
                 'w-[390px] p-0 rounded-2xl shadow-menu border border-slate-200/90 overflow-hidden text-slate-700 bg-white'
               }
@@ -87,8 +94,10 @@ export default function ProfileMenu() {
               <div className="p-5 pb-4 border-b border-slate-100 flex items-start space-x-3.5 bg-white">
                 <div className="relative flex-shrink-0">
                   <img
-                    src={user.clinic_user.avatar ? '/storage/users/' + user.clinic_user.avatar : ''}
-                    alt={user.name}
+                    src={
+                      user?.clinic_user?.avatar ? '/storage/users/' + user.clinic_user.avatar : ''
+                    }
+                    alt={user?.name}
                     className="w-12 h-12 rounded-full object-cover ring-2 ring-slate-100 shadow-sm"
                   />
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
@@ -98,13 +107,15 @@ export default function ProfileMenu() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <h4 className="text-base font-bold text-slate-900 tracking-tight">
-                      {user.first_name} {user.last_name}
+                      {user?.first_name} {user?.last_name}
                     </h4>
                     <span className="text-[10px] font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded flex-shrink-0">
                       {user?.clinic_user?.role_title || 'Owner'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 truncate font-normal mt-1.5">{user.email}</p>
+                  <p className="text-xs text-slate-500 truncate font-normal mt-1.5">
+                    {user?.email}
+                  </p>
                 </div>
               </div>
 
@@ -117,9 +128,8 @@ export default function ProfileMenu() {
                   </div>
 
                   {/* Item: Моя Клініка (Clinic Create / Settings) */}
-                  {((usePage().props?.auth?.user?.roles?.length > 0 &&
-                    usePage().props?.auth?.user?.roles[0]?.name === 'Admin') ||
-                    permissions['clinic-create']) && (
+                  {((auth?.user?.roles?.length > 0 && auth?.user?.roles[0]?.name === 'Admin') ||
+                    permissions?.['clinic-create']) && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/clinic/create'}
@@ -149,7 +159,7 @@ export default function ProfileMenu() {
                   )}
 
                   {/* Item: Філіали */}
-                  {(permissions['filial-all'] || permissions['filial-view']) && (
+                  {(permissions?.['filial-all'] || permissions?.['filial-view']) && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/filials'}
@@ -179,7 +189,7 @@ export default function ProfileMenu() {
                   )}
 
                   {/* Item: Склади */}
-                  {(permissions['store-all'] || permissions['store-view']) && (
+                  {(permissions?.['store-all'] || permissions?.['store-view']) && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/stores'}
@@ -211,7 +221,7 @@ export default function ProfileMenu() {
                   </div>
 
                   {/* Item: Валюти */}
-                  {(permissions['currency-all'] || permissions['currency-view']) && (
+                  {(permissions?.['currency-all'] || permissions?.['currency-view']) && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/currency'}
@@ -234,7 +244,7 @@ export default function ProfileMenu() {
                   )}
 
                   {/* Item: Ставки податку */}
-                  {(permissions['filial-all'] || permissions['filial-view']) && (
+                  {(permissions?.['filial-all'] || permissions?.['filial-view']) && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/taxes'}
@@ -259,7 +269,7 @@ export default function ProfileMenu() {
                   )}
 
                   {/* Item: Імпорт */}
-                  {permissions['clinic-create'] && (
+                  {permissions?.['clinic-create'] && (
                     <Link
                       className="group flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 transition"
                       href={'/import-data'}

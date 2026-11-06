@@ -36,13 +36,11 @@ export default function NavCustomers() {
       {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
-              isActive
-                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
-                : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
+            className={`header-menu ${
+              isActive ? ' text-teal-700 ' : 'text-slate-700'
             }`}
           >
-            <span className="text-[13px]">{lng.get('menu.customers')}</span>
+            <span>{lng.get('menu.customers')}</span>
           </MenuButton>
           <MenuItems
             transition

@@ -5,18 +5,24 @@ import lngDashboard from '../../Lang/Dashboard/translation';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import React from 'react';
-export default function Dashboard({ clinicsData }) {
+export default function Dashboard({ clinicsData }: { clinicsData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngDashboard,
     locale: appLang,
   });
-  const user = usePage().props.auth.user;
-  console.log(clinicsData);
+  const { auth } = usePage().props as unknown as {
+    auth: {
+      user: any;
+      can: any;
+      role: string[] | any[];
+    };
+  };
+
   return (
     <AuthenticatedLayout header={<Head title="Dashboard Select" />}>
       <Head title={msg.get('dashboard.title')} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[50px]">
+      <div className="mx-auto px-2 sm:px-4 mt-[30px]">
         <section
           className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-10"
           data-purpose="page-hero-and-kpis"
@@ -24,7 +30,7 @@ export default function Dashboard({ clinicsData }) {
           <div className="max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200/70 shadow-sm mb-4">
               <span className="text-sm">👋</span>
-              <span>Вітаємо, {user.name}!</span>
+              <span>Вітаємо, {auth.user.name}!</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
               Оберіть клініку та філію <br className="hidden sm:inline" />
@@ -101,7 +107,7 @@ export default function Dashboard({ clinicsData }) {
 
       <div className="p-4 shadow-md">
         <section className="bg-white rounded-3xl border border-teal-500/20 shadow-card hover:shadow-card-hover smooth-transition overflow-hidden">
-          {clinicsData.map((clinic) => (
+          {clinicsData.map((clinic: any) => (
             <div
               key={clinic.clinic_id}
               className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-100"
@@ -241,7 +247,7 @@ export default function Dashboard({ clinicsData }) {
                   </div>
                 </div>
                 <div className="space-y-3.5">
-                  {clinic.filials.map((filial) => (
+                  {clinic.filials.map((filial: any) => (
                     <div
                       key={filial.id}
                       className="group relative rounded-2xl border border-slate-200 hover:border-teal-500/80 p-5 bg-white hover:bg-teal-50/20 smooth-transition shadow-sm hover:shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4"
@@ -337,7 +343,7 @@ export default function Dashboard({ clinicsData }) {
 
         <div className="workspace-page hidden">
           <div className="clinic-dahsboard-card">
-            {clinicsData.map((clinic) => (
+            {clinicsData.map((clinic: any) => (
               <>
                 <div className="grid grid-cols-1 divide-y divide-slate-100 lg:grid-cols-12 lg:divide-y-0 lg:divide-x overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/50">
                   <div className="flex flex-col justify-between bg-gradient-to-br from-white via-white to-slate-50/70 p-6 sm:p-8 lg:col-span-5">
@@ -517,8 +523,8 @@ export default function Dashboard({ clinicsData }) {
                   </div>
                 </div>
                 <div className="clinic-branches hidden">
-                  {clinic.filials.map((filial) => (
-                    <div className="branch-row">
+                  {clinic.filials.map((filial: any) => (
+                    <div className="branch-row" key={filial.id}>
                       <div>
                         <strong>{filial.name}</strong>
 

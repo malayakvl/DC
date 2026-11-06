@@ -34,13 +34,13 @@ export default function NavServices() {
       {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['service-all']) && (
         <Menu
           as="div"
-          className={`relative top-menu-nav ${
+          className={`relative header-menu ${
             isActive
-              ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs rounded-[8px]'
+              ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20'
               : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
           }`}
         >
-          <MenuButton className="top-nav flex flex-col items-center">
+          <MenuButton className="flex flex-col items-center">
             <NavLink href={'/services'}>{lng.get('menu.services')}</NavLink>
           </MenuButton>
         </Menu>

@@ -72,7 +72,7 @@ const lngHeader = {
     materials: 'Mатеріали',
     invoice: 'Накладні',
     'material.brands': 'Виробники',
-    'material.suppliers': 'Постачальники',
+    'material.suppliers': 'Контрагенти',
     clinic: 'Моя Клініка',
     currencies: 'Валюти',
     taxes: 'Ставки податку',
@@ -141,6 +141,8 @@ const lngHeader = {
       scheduler_section: 'Розклад роботи, кабінети, візити',
       scheduler: 'Розклад роботи лікарів в кабінетах',
     },
+    mclinic: 'Клініка',
+    mdocs: 'Облік',
   },
 };
 export default lngHeader;

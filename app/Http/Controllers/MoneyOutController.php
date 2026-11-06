@@ -112,6 +112,7 @@ class MoneyOutController extends Controller
                 'clinicData' => $clinic,
                 'paymentsMethods' => $paymentsMethods,
                 'listData' => $invoiceData,
+                'statusData' => Invoices::INVOICE_STATUSES,
                 'filters' => $request->only(['date_from', 'date_to'])
             ]);
         });

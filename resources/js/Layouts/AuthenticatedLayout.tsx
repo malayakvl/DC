@@ -15,6 +15,7 @@ import LangMenu from '../Components/Header/LangMenu';
 import NoticeMenu from '../Components/Header/NoticeMenu';
 import { ToastContainer } from 'react-toastify';
 import Footer from '@/Components/Footer/Footer';
+import FloatingDentalChat from '@/Components/Chat/FloatingDentalChat'; // <--- 1. Імпортуємо наш чат
 
 export default function AuthenticatedLayout({ header, children }: { header: any; children: any }) {
   const appLang = useSelector(appLangSelector);
@@ -101,6 +102,8 @@ export default function AuthenticatedLayout({ header, children }: { header: any;
         </div>
       )}
       <Footer />
+      {/* <--- 2. Вставляємо плаваючий чат сюди, щоб він був доступний на всіх сторінках клініки */}
+      <FloatingDentalChat />
       <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
     </div>
   );

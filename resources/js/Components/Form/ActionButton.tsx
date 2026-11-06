@@ -1,17 +1,20 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, ButtonHTMLAttributes } from 'react';
 
+// Extending ButtonHTMLAttributes<HTMLButtonElement> allows all standard button props like onClick
+interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string;
+  disabled?: boolean;
+  children?: ReactNode;
+  icon?: ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+}
 export default function ActionButton({
   className = '',
   disabled = false,
   children = null,
   icon = null,
   ...props
-}: {
-  className?: string;
-  disabled?: boolean;
-  children?: ReactNode;
-  icon?: ReactNode;
-}) {
+}: ActionButtonProps) {
   return (
     <button
       {...props}

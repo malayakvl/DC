@@ -8,20 +8,11 @@ use App\Models\ClinicFilial;
 use App\Models\Customer;
 use App\Models\Filial;
 use App\Models\User;
-use App\Models\ClinicUser;
-use App\Notifications\CustomerInviteNotification;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
-use App\Models\ClinicFilialUser;
 use App\Services\CustomerService;
 use App\Services\AuditLogService;
 
@@ -87,18 +78,6 @@ class CustomerController extends Controller
             )
             ->orderBy('u.last_name')
             ->get();
-            // $customerData = DB::table('core.clinic_user')
-            //     ->join('core.users', 'clinic_user.user_id', '=', 'users.id')
-            //     ->select(
-            //         'users.id',
-            //         'users.first_name',
-            //         'users.last_name',
-            //         'users.email',
-            //         'clinic_user.avatar'
-            //     )
-            //     ->where('clinic_user.clinic_id', $clinicId)
-            //     ->orderBy('users.last_name')
-            //     ->get();
 
             return Inertia::render('Customer/List', [
                 'clinicData'   => $clinicData,

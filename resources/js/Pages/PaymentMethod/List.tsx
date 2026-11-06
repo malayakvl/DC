@@ -37,6 +37,7 @@ export default function List({
 
   // Открыть форму на создание
   const handleOpenCreate = () => {
+    console.log(1);
     clearErrors();
     reset();
     setEditingItem(null);

@@ -33,13 +33,13 @@ export default function NavPatients() {
       {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['patient-edit']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-1.5 py-1 rounded-lg transition-all cursor-pointer ${
+            className={`header-menu ${
               isActive
-                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
+                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20'
                 : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
             }`}
           >
-            <span className="text-[13px]">{lng.get('menu.patients')}</span>
+            <span>{lng.get('menu.patients')}</span>
           </MenuButton>
           <MenuItems
             transition

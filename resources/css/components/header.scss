@@ -6,6 +6,12 @@ body {
   z-index: 9999;
   width: 100%;
 }
+.top-h-style {
+  z-index: 999;
+  top:0;
+  left:0;
+  width:100%;
+}
 
 .top-header {
 
@@ -408,8 +414,8 @@ to-green-400 {
   background: #f8fafc;
 }
 .user-lang {
-  margin-right: 55px;
-  margin-top: -7px;
+  margin-right: 15px;
+  margin-top: -13px;
   background: #f8fafc;
 }
 .separate-m-header {
@@ -471,7 +477,7 @@ to-green-400 {
   padding: 5px 10px;
   max-height: 50px;
   border: solid 1px #c5f9f0;
-  max-width: 240px;
+  max-width: 220px;
 
   &:hover {
     background-color: #dafbf5;
@@ -609,4 +615,19 @@ to-green-400 {
   font-size: 12px;
   font-family: "Google Sans", sans-serif;
   font-weight: normal !important;
+}
+.toggle-top-menu-buttom {
+  @apply w-10 h-10 border;
+  position: absolute;
+  left:-40px;
+  top: -3px;
+  background-color: rgba(238, 242, 255, 0.6);
+  border-color: transparent;
+  //border-color: none;
+  border-radius: 8px;
+}
+.header-menu {
+  @apply flex items-center gap-1.5 px-1 py-1 rounded-lg transition-all cursor-pointer;
+  font-weight: 500 !important;
+  font-size: 14px;
 }

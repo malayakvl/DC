@@ -1,8 +1,6 @@
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import { usePage } from '@inertiajs/react';
-// import lngHeader from './../Lang/Header/translation';
 import lngHeader from './../../Lang/Header/translation';
 
 export default function ApplicationLogo() {
@@ -13,34 +11,39 @@ export default function ApplicationLogo() {
   });
 
   return (
-    <div className="flex items-center space-x-3.5" data-purpose="brand-logo-container">
-      <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 p-[2px] shadow-md shadow-teal-500/20 flex items-center justify-center">
-        <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-          {/* Dental Care Heart Tooth Icon */}
-          <svg
-            className="w-6 h-6 text-teal-600"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2.2"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 4.5C7 .5 2 4 2 9c0 5.5 5 9.5 10 13 5-3.5 10-7.5 10-13 0-5-5-8.5-10-4.5z" />
-            <path d="M12 9v6" strokeDasharray="2 2" strokeWidth="1.5" />
-          </svg>
+    <div className="flex items-center space-x-3 shrink-0" data-purpose="brand-logo-container">
+      {/* Иконка с плавающим бейджем версии */}
+      <div className="relative shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 via-teal-500 to-emerald-400 p-[2px] shadow-sm shadow-teal-500/20 flex items-center justify-center">
+          <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-teal-600"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2.2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 4.5C7 .5 2 4 2 9c0 5.5 5 9.5 10 13 5-3.5 10-7.5 10-13 0-5-5-8.5-10-4.5z" />
+              <path d="M12 9v6" strokeDasharray="2 2" strokeWidth="1.5" />
+            </svg>
+          </div>
         </div>
+        {/* Бейдж версии */}
+        <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white shadow-xs leading-none border border-white">
+          v4.8
+        </span>
       </div>
-      <div className="flex flex-col">
-        <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold tracking-tight text-slate-900">
-            DentalCare<span className="text-teal-600">OS</span>
-          </span>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700 border border-teal-200/60">
-            v4.8 • Cloud
-          </span>
-        </div>
-        <span className="text-xs font-medium text-slate-400">{msg.get('menu.h_slogan')}</span>
+
+      {/* Текстовый блок */}
+      <div className="flex flex-col justify-center min-w-0">
+        <span className="text-base font-bold tracking-tight text-slate-900 leading-none">
+          DentalCare<span className="text-teal-600">OS</span>
+        </span>
+        <span className="text-[10px] font-medium text-slate-400 truncate mt-1 leading-none max-w-[130px] 2xl:max-w-none">
+          {msg.get('menu.h_slogan')}
+        </span>
       </div>
     </div>
   );

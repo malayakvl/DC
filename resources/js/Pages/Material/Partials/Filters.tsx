@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import InputTreeSelect from '../../../Components/Form/InputTreeSelect';
-import InputSelect from '../../../Components/Form/InputSelect';
 import { router } from '@inertiajs/react';
 
 export const Filters = ({
@@ -59,7 +58,6 @@ export const Filters = ({
       [key]: finalValue,
     }));
   };
-console.log(localFilters)
   const handleApplyClick = () => {
     const cleanedFilters = Object.fromEntries(
       Object.entries(localFilters).filter(

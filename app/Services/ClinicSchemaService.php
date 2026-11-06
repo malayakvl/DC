@@ -68,6 +68,8 @@ class ClinicSchemaService
             // Create default visit schedule statuses
             $this->createDefaultVisitScheduleStatuses($clinicId);
 
+            $this->createChatTables();
+
             // Seed default payment methods
             $this->seedDefaultPaymentMethods();
         } finally {
@@ -619,6 +621,7 @@ class ClinicSchemaService
             CREATE TABLE IF NOT EXISTS payment_methods (
                 id BIGSERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
+                bank_account VARCHAR(255),
                 currency_id BIGINT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -667,6 +670,131 @@ class ClinicSchemaService
 
         DB::statement("CREATE UNIQUE INDEX patient_login_links_token_uq ON patient_login_links (token);");
 
+    }
+
+    /**
+     * Create Chatify v2 tables inside the clinic schema.
+     */
+    protected function createChatTables(): void
+    {
+        // 1. Conversations
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_conversations (
+                id UUID PRIMARY KEY,
+                type VARCHAR(20) NOT NULL DEFAULT 'direct',
+                name VARCHAR(255),
+                description TEXT,
+                avatar VARCHAR(255),
+                created_by BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_ch_conversations_user FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE CASCADE
+            )
+        ");
+        DB::statement("CREATE INDEX IF NOT EXISTS ch_conversations_type_created_at_idx ON ch_conversations (type, created_at)");
+
+        // 2. Participants
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_conversation_participants (
+                id UUID PRIMARY KEY,
+                conversation_id UUID NOT NULL,
+                user_id BIGINT NOT NULL,
+                role VARCHAR(20) NOT NULL DEFAULT 'member',
+                permissions JSONB,
+                last_read_at TIMESTAMP,
+                is_pinned BOOLEAN NOT NULL DEFAULT FALSE,
+                pin_order INT,
+                hidden_at TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ch_conversation_participants_unique UNIQUE (conversation_id, user_id),
+                CONSTRAINT fk_ch_participants_conv FOREIGN KEY (conversation_id) REFERENCES ch_conversations(id) ON DELETE CASCADE,
+                CONSTRAINT fk_ch_participants_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            )
+        ");
+        DB::statement("CREATE INDEX IF NOT EXISTS ch_participants_user_conv_idx ON ch_conversation_participants (user_id, conversation_id)");
+
+        // 3. Messages
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_messages (
+                id UUID PRIMARY KEY,
+                conversation_id UUID NOT NULL,
+                user_id BIGINT NOT NULL,
+                kind VARCHAR(20) NOT NULL DEFAULT 'user',
+                body TEXT,
+                attachment JSONB,
+                system_event JSONB,
+                edited_at TIMESTAMP,
+                reply_to_message_id UUID,
+                forwarded_from_message_id UUID,
+                deleted_at TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_ch_messages_conv FOREIGN KEY (conversation_id) REFERENCES ch_conversations(id) ON DELETE CASCADE,
+                CONSTRAINT fk_ch_messages_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE,
+                CONSTRAINT fk_ch_messages_reply FOREIGN KEY (reply_to_message_id) REFERENCES ch_messages(id) ON DELETE SET NULL,
+                CONSTRAINT fk_ch_messages_forward FOREIGN KEY (forwarded_from_message_id) REFERENCES ch_messages(id) ON DELETE SET NULL
+            )
+        ");
+        DB::statement("CREATE INDEX IF NOT EXISTS ch_messages_conv_created_at_idx ON ch_messages (conversation_id, created_at)");
+
+        // 4. User Settings
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_user_settings (
+                user_id BIGINT PRIMARY KEY,
+                avatar VARCHAR(255) NOT NULL DEFAULT 'avatar.png',
+                dark_mode BOOLEAN NOT NULL DEFAULT FALSE,
+                messenger_color VARCHAR(255),
+                theme_preferences JSONB,
+                chat_background VARCHAR(255),
+                active_status BOOLEAN NOT NULL DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_ch_user_settings_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            )
+        ");
+
+        // 5. Favorites
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_favorites (
+                id UUID PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                favorite_user_id BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ch_favorites_unique UNIQUE (user_id, favorite_user_id),
+                CONSTRAINT fk_ch_favorites_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE,
+                CONSTRAINT fk_ch_favorites_fav_user FOREIGN KEY (favorite_user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            )
+        ");
+
+        // 6. Message User States
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_message_user_states (
+                id UUID PRIMARY KEY,
+                message_id UUID NOT NULL,
+                user_id BIGINT NOT NULL,
+                hidden_at TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ch_msg_user_states_unique UNIQUE (message_id, user_id),
+                CONSTRAINT fk_ch_msg_states_msg FOREIGN KEY (message_id) REFERENCES ch_messages(id) ON DELETE CASCADE,
+                CONSTRAINT fk_ch_msg_states_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            )
+        ");
+
+        // 7. Blocks
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS ch_user_blocks (
+                id UUID PRIMARY KEY,
+                blocker_id BIGINT NOT NULL,
+                blocked_user_id BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ch_user_blocks_unique UNIQUE (blocker_id, blocked_user_id)
+            )
+        ");
+        DB::statement("CREATE INDEX IF NOT EXISTS ch_user_blocks_blocked_idx ON ch_user_blocks (blocked_user_id)");
     }
 
     /**

@@ -1,0 +1,34 @@
+.chat-bg {
+  position: relative;
+  background-color: white !important;
+  z-index: 1; /* Чтобы содержимое чата было выше фона */
+}
+
+.chat-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  //background-image: url(../../images/chat/bg-1.jpeg);
+  background-size: contain; /* или contain / repeat в зависимости от вашей верстки */
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.2; /* Регулируйте значение от 0.1 (едва заметно) до 0.9 */
+  z-index: -1;
+  pointer-events: none; /* Чтобы фон не перехватывал клики мышкой */
+}
+.chat-bg-mon { background-image: url(../../images/chat/bg-mon.png);opacity: 0.1; }
+.chat-bg-tue { background-image: url(../../images/chat/bg-tue.jpg);opacity: 0.1; }
+.chat-bg-wed { background-image: url(../../images/chat/5.png); opacity: 0.1;}
+.chat-bg-thu::before { background-image: url(../../images/chat/bg-thursday.webp); opacity: 0.1;}
+.chat-bg-fri::before { background-image: url(../../images/chat/bg-fri.jpeg); opacity: 0.1;}
+.chat-bg-sat { background-image: url(../../images/chat/bg-sat.webp);opacity: 0.1; }
+.chat-bg-sun { background-image: url(../../images/chat/bg-sun.jpeg);opacity: 0.1; }
+
+.chat-messages-container {
+  @apply h-[350px] flex flex-col bg-white overflow-hidden;
+  overflow-y: scroll;
+  padding: 16px;
+}
