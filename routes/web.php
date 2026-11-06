@@ -76,7 +76,8 @@ Route::middleware(['auth'])->prefix('chatify/v1')->group(function () {
     // История сообщений конкретного диалога
     Route::get('/messages/{conversation}', [ChatController::class, 'getMessages'])->name('chat.messages');
 
-    Route::post('/chatify/v1/read/{conversationId}', [ChatController::class, 'markAsRead']);
+// 💥 Убираем лишний префикс chatify/v1 здесь:
+    Route::post('/read/{conversationId}', [ChatController::class, 'markAsRead']);
 });
 
 

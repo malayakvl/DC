@@ -15,6 +15,17 @@ export default function FloatingDentalChat() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Функция автоскролла вниз
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Скролимся вниз при изменении списка сообщений (когда отправила или прилетел поллинг)
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // const { auth } = usePage().props as unknown as {
   //   auth: {
@@ -70,7 +81,7 @@ export default function FloatingDentalChat() {
   }, []); // Пустой массив — выполнится один раз при монтировании и будет опрашивать фон
 
   // При клике на конкретный диалог
-  const handleSelectConversation = (conv) => {
+  const handleSelectConversation = (conv: any) => {
     setActiveConversation(conv);
 
     if (!conv.id) {
@@ -78,24 +89,19 @@ export default function FloatingDentalChat() {
       return;
     }
 
-    // 1. Стучим на бэк, чтобы пометить сообщения как прочитанные
-    fetch(`/chatify/v1/read/${conv.id}`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-      },
-    });
+    // 1. Стучим на бэк через axios — он сам передаст CSRF-токен из кук
+    (window as any).axios
+      .post(`/chatify/v1/read/${conv.id}`)
+      .catch((err: any) => console.error('Помилка прочтення:', err));
 
-    // 2. Сразу локально сбрасываем счетчик непрочитанных для этого юзера в списке
-    setConversations(prev =>
-      prev.map(c => c.id === conv.id ? { ...c, unread_count: 0 } : c)
+    // 2. Сразу локально сбрасываем счетчик непрочитанных в списке
+    setConversations((prev: any) =>
+      prev.map((c: any) => (c.id === conv.id ? { ...c, unread_count: 0 } : c))
     );
 
     // 3. Загружаем сообщения чата
     fetch(`/chatify/v1/messages/${conv.id}`, {
-      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -103,31 +109,6 @@ export default function FloatingDentalChat() {
           setMessages(data.data);
         }
       });
-  };
-
-  const handleSelectConversation1 = (conv: any) => {
-    setActiveConversation(conv);
-
-    // Если у карточки нет ID беседы, просто очищаем сообщения для нового чата
-    if (!conv.id) {
-      setMessages([]);
-      return;
-    }
-
-    // Иначе запрашиваем реальную историю
-    fetch(`/chatify/v1/messages/${conv.id}`, {
-      headers: {
-        Accept: 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          setMessages(data.data);
-        }
-      })
-      .catch((err) => console.error('Помилка завантаження повідомлень:', err));
   };
 
   // Polling для активного чата каждые 3 секунды
@@ -310,7 +291,7 @@ export default function FloatingDentalChat() {
               </div>
 
               {/* Список повідомлень */}
-              <div className="chat-messages-container">
+              <div className={`chat-messages-container ${dynamicDayBg}`}>
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-400 text-xs mt-24">
                     {msg.get('chat.empty_message') || 'Напишіть перше повідомлення...'}
@@ -339,6 +320,8 @@ export default function FloatingDentalChat() {
                     </div>
                   ))
                 )}
+                {/* 💥 Якорь для автоскролла в самый низ */}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Панель выбранного файла */}

@@ -29,6 +29,26 @@
 
 .chat-messages-container {
   @apply h-[350px] flex flex-col bg-white overflow-hidden;
-  overflow-y: scroll;
+  overflow-y: auto; /* краще auto замість scroll, щоб скролбар не висів зайвий раз */
   padding: 16px;
+  position: relative;
+}
+
+.chat-messages-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  //background-image: url(../../images/chat/bg-fri.jpeg);
+  opacity: 0.2; /* робимо ледве помітним, щоб текст читався ідеально */
+  background-repeat: no-repeat;
+  background-size: 180px; /* фіксуємо акуратний розмір картинки */
+  background-position: center bottom 10px; /* притискаємо до низу по центру */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Гарантуємо, що весь контент чату лежить вище фону */
+.chat-messages-container > * {
+  position: relative;
+  z-index: 1;
 }
