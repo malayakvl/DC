@@ -63,6 +63,7 @@ export default function FloatingDentalChat() {
         .then((data) => {
           if (data.status === 'success') {
             setConversations(data.data);
+            console.log(data.data);
             const totalUnread = data.data.reduce(
               (acc: number, curr: any) => acc + curr.unread_count,
               0

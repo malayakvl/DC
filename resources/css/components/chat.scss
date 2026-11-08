@@ -10,28 +10,37 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  min-height: 350px;
   //background-image: url(../../images/chat/bg-1.jpeg);
   background-size: contain; /* или contain / repeat в зависимости от вашей верстки */
-  background-position: center;
+  background-position: bottom;
   background-repeat: no-repeat;
   opacity: 0.2; /* Регулируйте значение от 0.1 (едва заметно) до 0.9 */
   z-index: -1;
   pointer-events: none; /* Чтобы фон не перехватывал клики мышкой */
 }
-.chat-bg-mon { background-image: url(../../images/chat/bg-mon.png);opacity: 0.1; }
-.chat-bg-tue { background-image: url(../../images/chat/bg-tue.jpg);opacity: 0.1; }
-.chat-bg-wed { background-image: url(../../images/chat/5.png); opacity: 0.1;}
+.chat-bg-mon::before { background-image: url(../../images/chat/bg-mon.png);opacity: 0.1; }
+.chat-bg-tue::before { background-image: url(../../images/chat/bg-tue.jpg);opacity: 0.1; }
+.chat-bg-wed::before { background-image: url(../../images/chat/bg-wen.png); opacity: 0.1;}
 .chat-bg-thu::before { background-image: url(../../images/chat/bg-thursday.webp); opacity: 0.1;}
 .chat-bg-fri::before { background-image: url(../../images/chat/bg-fri.jpeg); opacity: 0.1;}
-.chat-bg-sat { background-image: url(../../images/chat/bg-sat.webp);opacity: 0.1; }
-.chat-bg-sun { background-image: url(../../images/chat/bg-sun.jpeg);opacity: 0.1; }
+.chat-bg-sat::before { background-image: url(../../images/chat/bg-sat.webp);opacity: 0.1; }
+.chat-bg-sun::before { background-image: url(../../images/chat/bg-sun.jpeg);opacity: 0.1; }
 
 .chat-messages-container {
   @apply h-[350px] flex flex-col bg-white overflow-hidden;
   overflow-y: auto; /* краще auto замість scroll, щоб скролбар не висів зайвий раз */
   padding: 16px;
   position: relative;
+}
+
+.chat-bg-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url(../../images/chat/bg-fri.jpeg);
 }
 
 .chat-messages-container::before {
@@ -41,8 +50,8 @@
   //background-image: url(../../images/chat/bg-fri.jpeg);
   opacity: 0.2; /* робимо ледве помітним, щоб текст читався ідеально */
   background-repeat: no-repeat;
-  background-size: 180px; /* фіксуємо акуратний розмір картинки */
-  background-position: center bottom 10px; /* притискаємо до низу по центру */
+  background-size: 350px; /* фіксуємо акуратний розмір картинки */
+  background-position: 0; /* притискаємо до низу по центру */
   z-index: 0;
   pointer-events: none;
 }

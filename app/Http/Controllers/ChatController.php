@@ -102,6 +102,7 @@ class ChatController extends Controller
                     'id' => $conversationId,
                     'type' => 'direct',
                     'created_by' => $currentUserId,
+                    'receiver_by' => $recipientId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -127,8 +128,6 @@ class ChatController extends Controller
     {
         return $this->withClinicSchema($request, function ($clinicId) use ($request) {
             $currentUserId = $request->user()->id;
-
-
             // Берем всех сотрудников клиники, кроме себя и пациентов
             $users = DB::table('core.clinic_user as cu')
                 ->join('core.users as u', 'cu.user_id', '=', 'u.id')
@@ -176,11 +175,19 @@ class ChatController extends Controller
                         $lastMessageText = $lastMessage->body ?: '📎 Файл';
                         $lastTime = date('H:i', strtotime($lastMessage->created_at));
                     }
-
-                    $unreadCount = DB::table("ch_messages")
-                        ->where('conversation_id', $conversationId)
-                        ->where('user_id', '!=', $currentUserId)
-                        ->count();
+                    $qUnread = "SELECT count(ch_messages.id) as unread_count FROM clinic_1.ch_messages
+                        LEFT JOIN clinic_1.ch_conversations ON clinic_1.ch_messages.conversation_id = clinic_1.ch_conversations.id
+                        WHERE (clinic_1.ch_conversations.receiver_by = " .$currentUserId. " OR clinic_1.ch_conversations.created_by = " .$currentUserId. "
+                        AND clinic_1.ch_messages.user_id != " .$currentUserId. ")
+                        AND (clinic_1.ch_messages.read_at IS NULL AND clinic_1.ch_messages.user_id != " .$currentUserId. ")";
+//                    dd($qUnread);exit;
+                    $rUnread = DB::select($qUnread);
+//                    $unreadCount = DB::table("ch_messages")
+//                        ->where('conversation_id', $conversationId)
+//                        ->where('user_id', '!=', $currentUserId)
+//                        ->where('read_at', 'IS NULL')
+//                        ->count();
+                    $unreadCount = $rUnread[0]->unread_count;
                 }
 
                 // 💥 ВОТ ЭТОТ БЛОК ДОЛЖЕН БЫТЬ ВНЕ ИФА, чтобы попадали ВСЕ сотрудники!
