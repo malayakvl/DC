@@ -81,6 +81,13 @@ export default function List({ customerData }: { customerData: any }) {
                       </Link>
                       <Link
                         className="actn-btns"
+                        title={msg.get('customer.salary')}
+                        href={`customer/salary-calc/${item.id}`}
+                      >
+                        <span className="material-symbols-outlined text-[18px] block">money</span>
+                      </Link>
+                      <Link
+                        className="actn-btns"
                         title={msg.get('customer.delete')}
                         href={`customer/delete/${item.id}`}
                       >

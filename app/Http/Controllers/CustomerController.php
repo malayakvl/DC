@@ -101,35 +101,55 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request, $id) {
-        return $this->withClinicSchema($request, function($clinicId) use ($request) {
-            if ($request->user()->can('customer-view')) {
-                $clinic = $request->user()->clinicByFilial($clinicId);
-                $serverFilePath = public_path('storage/clinic/users/customer-' .$id. '.png');
-                $imagePath = '';
-                if (file_exists($serverFilePath)) {
-                    $imagePath = asset('storage/clinic/users/customer-' .$id. '.png');
-                }
-                $formData = User::where('id', $id)->get();
-                $assignedData = DB::table('clinic_filial_user')
-                    ->select('roles.name AS roleName', 'roles.special', 'clinic_filials.name AS filialName', 'roles.clinic_id AS clinicId')
-                    ->leftJoin('roles', 'roles.id', '=', 'clinic_filial_user.role_id')
-                    ->leftJoin('clinic_filials', 'clinic_filials.id', '=', 'clinic_filial_user.filial_id')
-                    ->where('clinic_filial_user.user_id', $id)
-                    ->where('clinic_filial_user.clinic_id', $clinic->id)
-                    ->get();
-                return Inertia::render('Customer/CustomerShow', [
-                    'formData' => $formData[0],
-                    'rolesData' => $assignedData,
-                    'imagePath' => $imagePath
-                ]);
-            } else {
-                return Inertia::render('Clinic/FilialView', [
-                ]);
-            }
+    public function salaryCalc(Request $request, $userId)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $userId) {
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+            $filialId = $request->session()->get('filial_id');
+            // 1. Отримуємо користувачів/співробітників цієї клініки
+            $usersData = DB::table('core.users')
+                ->join('core.clinic_user', 'users.id', '=', 'clinic_user.user_id')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
+                    $join->on('users.id', '=', 'cfu.user_id')
+                        ->where('cfu.clinic_id', $clinicId)
+                        ->where('cfu.filial_id', $filialId);
+                })
+                ->select(
+                    'users.*',
+                    'clinic_user.avatar',
+                    'cfu.color',
+                    'cfu.phone',
+                    'cfu.inn'
+                )
+                ->where('users.id', $userId)
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->first();
+
+
+//            $usersData = DB::table('core.clinic_user as cu')
+//                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+//                ->where('cu.clinic_id', $clinicId)
+//                ->select(
+//                    'u.id',
+//                    'u.first_name',
+//                    'u.last_name',
+//                    'u.email',
+//                    'cu.avatar'
+//                )
+//                ->orderBy('u.last_name')
+//                ->get();
+
+            // 2. Отримуємо категорії прайсу з динамічної схеми клініки
+            $priceCategories = DB::table("clinic_{$clinicId}.price_categories")
+                ->select('id', 'name')
+                ->orderBy('id')
+                ->get();
+
+            return Inertia::render('Customer/SalaryCalc', [
+                'clinicData' => $clinicData,
+                'usersData' => $usersData,
+                'priceCategories' => $priceCategories,
+            ]);
         });
     }
 
@@ -182,7 +202,6 @@ class CustomerController extends Controller
             }
             $photoPath = '';
             if ($formData->avatar) {
-//                dd(1);exit;
                 $serverFilePath = public_path('storage/users/' . $formData->avatar);
                 if (file_exists($serverFilePath)) {
                     $photoPath = asset('storage/users/' . $formData->avatar);
@@ -198,9 +217,6 @@ class CustomerController extends Controller
             ]);
         });
     }
-
-    
-
 
 
 
@@ -255,35 +271,120 @@ class CustomerController extends Controller
         
     }
 
-    public function assignOld(Request $request, $id) {
-        $clinic = $request->user()->clinicByFilial($request->session()->get('clinic_id'));
+    /**
+     * Display the specified resource.
+     */
+    public function showOld(Request $request, $id) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            if (!$request->user()->canClinic('customer-edit')) {
+                return Inertia::render('Layout/NoPermission', ['error' => 'Insufficient permissions']);
+            }
 
-        $customer = User::where('id', $id)->get();
-        $rolesData = Role::where('clinic_id', null)->orWhere('clinic_id', $clinic->id)
-            ->orderBy('name')->get();
-        dd($rolesData);exit;
-        $filialData = ClinicFilial::where('clinic_id', $clinic->id)->get();
-        $assignedData = DB::table('clinic_filial_user')->select()
-            ->where('user_id', $id)
-            ->where('clinic_id', $clinic->id)
-            ->get();
-        if (count($assignedData) > 0) {
-            return Inertia::render('Customer/AssignFilialEdit', [
-                'rolesData' => $rolesData,
-                'clinicData' => $clinic,
-                'filialData' => $filialData,
-                'customer' => $customer[0],
-                'assignedData' => $assignedData
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+
+            $filialId = $request->session()->get('filial_id');
+
+            $formData = DB::table('core.users')
+                ->join('core.clinic_user', 'users.id', '=', 'clinic_user.user_id')
+                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
+                    $join->on('users.id', '=', 'cfu.user_id')
+                        ->where('cfu.clinic_id', $clinicId)
+                        ->where('cfu.filial_id', $filialId);
+                })
+                ->select(
+                    'users.*',
+                    'clinic_user.avatar',
+                    'cfu.color',
+                    'cfu.phone',
+                    'cfu.inn'
+                )
+                ->where('users.id', $id)
+                ->where('clinic_user.clinic_id', $clinicId)
+                ->first();
+
+            if (!$formData) {
+                abort(404);
+            }
+            $photoPath = '';
+            if ($formData->avatar) {
+                $serverFilePath = public_path('storage/users/' . $formData->avatar);
+                if (file_exists($serverFilePath)) {
+                    $photoPath = asset('storage/users/' . $formData->avatar);
+                }
+            }
+            $rolesData = Role::all();
+
+            return Inertia::render('Customer/CustomerShow', [
+                'clinicData' => $clinicData,
+                'formData' => $formData,
+                'roleData' => $rolesData,
+                'photoPath' => $photoPath
             ]);
-        } else {
-            return Inertia::render('Customer/AssignFilial', [
-                'rolesData' => $rolesData,
-                'clinicData' => $clinic,
-                'filialData' => $filialData,
-                'customer' => $customer[0],
-            ]);
-        }
+        });
     }
+
+    public function show(Request $request, $userId)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        $clinic = $request->user()->clinicByFilial($clinicId);
+        $filialId = $request->session()->get('filial_id');
+
+        // 1️⃣ Получаем пользователя из core.users
+        $customer = DB::table('core.users')
+            ->join('core.clinic_user', 'users.id', '=', 'clinic_user.user_id')
+            ->leftJoin("clinic_{$clinicId}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
+                $join->on('users.id', '=', 'cfu.user_id')
+                    ->where('cfu.clinic_id', $clinicId)
+                    ->where('cfu.filial_id', $filialId);
+            })
+            ->select(
+                'users.*',
+                'clinic_user.avatar',
+                'cfu.color',
+                'cfu.phone',
+                'cfu.inn'
+            )
+            ->where('users.id', $userId)
+            ->where('clinic_user.clinic_id', $clinicId)
+            ->first();
+
+        // 3️⃣ Переключаемся в схему клиники и забираем роли + связи
+        $original = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
+
+            // 2️⃣ Получаем список филиалов (они в clinic_{id})
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+
+            // 3.1️⃣ Роли внутри клиники
+            $rolesData = DB::table('roles')
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+
+            // 3.2️⃣ Назначения пользователя по филиалам
+            $assignedData = DB::table('clinic_filial_user')
+                ->where('user_id', $userId)
+                ->where('clinic_id', $clinicId)
+                ->get();
+
+        } finally {
+            DB::statement("SET search_path TO {$original}");
+        }
+
+        // 4️⃣ Если пользователь уже назначен хотя бы в один филиал → страница редактирования
+        return Inertia::render('Customer/CustomerShow', [
+            'rolesData'   => $rolesData,
+            'clinicData'  => $clinic,
+            'filialData'  => $filialData,
+            'formData'    => $customer,
+            'customer'    => $customer,
+            'assignedData'=> $assignedData
+        ]);
+    }
+
 
     public function assign(Request $request, $userId)
     {

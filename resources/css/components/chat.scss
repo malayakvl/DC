@@ -40,24 +40,42 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url(../../images/chat/bg-fri.jpeg);
 }
 
-.chat-messages-container::before {
+/* Внешний родительский блок всего чата */
+.chat-window {
+  position: relative;
+  overflow: hidden; /* Чтобы картинка не вылезала за скругленные углы чата */
+}
+
+.chat-window::before {
   content: "";
   position: absolute;
-  inset: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  height: 350px;
+
   //background-image: url(../../images/chat/bg-fri.jpeg);
-  opacity: 0.2; /* робимо ледве помітним, щоб текст читався ідеально */
   background-repeat: no-repeat;
-  background-size: 350px; /* фіксуємо акуратний розмір картинки */
-  background-position: 0; /* притискаємо до низу по центру */
+  background-size: contain;
+  background-position: bottom center;
+  opacity: 0.2;
+
   z-index: 0;
   pointer-events: none;
 }
 
-/* Гарантуємо, що весь контент чату лежить вище фону */
-.chat-messages-container > * {
+/* Все внутренние блоки (шапка, скролл с сообщениями, поле ввода) делаем выше фона */
+.chat-header,
+.chat-messages-container,
+.chat-input-area {
   position: relative;
   z-index: 1;
+}
+
+/* Прозрачный фон у скролл-блока, чтобы фоновая картинка просвечивала */
+.chat-messages-container {
+  background: transparent;
 }

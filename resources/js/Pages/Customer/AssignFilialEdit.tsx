@@ -1,10 +1,9 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 import FormHeader from '../../Components/Common/FormHeader';
@@ -16,20 +15,24 @@ export default function AssignFilialEdit({
   rolesData,
   customer,
   assignedData,
+}: {
+  clinicData: any;
+  filialData: any;
+  rolesData: any;
+  customer: any;
+  assignedData: any;
 }) {
-  useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
     locale: appLang,
   });
   const { processing, recentlySuccessful } = useForm();
-
   const [values, setValues] = useState({
     permissions: assignedData || [],
   });
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     router.post(`/customer/assign-submit`, {
       customerId: customer.id,
@@ -50,8 +53,6 @@ export default function AssignFilialEdit({
               title={msg.get('customer.attach')}
               description={msg.get('customer.title.description')}
               backUrl="/customers"
-              processing={processing}
-              saveText={msg.get('act.save')}
             />
             {/* Staff Summary Banner Card */}
             <section className="bg-white rounded-xl p-4 sm:p-5 shadow-xs relative overflow-hidden border border-slate-100">
@@ -100,9 +101,9 @@ export default function AssignFilialEdit({
             <form onSubmit={submit} className="flex flex-col gap-6">
               {/* Branch Settings: Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filialData?.map((item) => {
+                {filialData?.map((item: any) => {
                   const currentPermission = values.permissions.find(
-                    (_data) => _data.filial_id === item.id
+                    (_data: any) => _data.filial_id === item.id
                   );
                   const isAssigned = Boolean(currentPermission);
                   const activeColor = currentPermission?.color || customer.color || '#0d9488';
@@ -191,8 +192,8 @@ export default function AssignFilialEdit({
                               }}
                               className="filter-select w-full text-[13px]"
                             >
-                              <option value="">— Оберіть роль або вимкніть —</option>
-                              {rolesData?.map((role) => (
+                              <option value="">{msg.get('customer.select_role')}</option>
+                              {rolesData?.map((role: any) => (
                                 <option key={role.id} value={role.id}>
                                   {role.name}
                                 </option>
@@ -218,6 +219,7 @@ export default function AssignFilialEdit({
                 successMessage={msg.get('customer.saved') || 'Збережено успішно!'}
                 processing={processing}
                 recentlySuccessful={recentlySuccessful}
+                onSave={null}
               />
             </form>
           </div>

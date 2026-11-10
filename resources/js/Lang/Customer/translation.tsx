@@ -58,6 +58,11 @@ const lngCustomer = {
     dragdrop_files: 'Перетягніть фото матеріалу сюди',
     or_select_file_type: 'або виберіть файл з комп’ютера',
     file_sizes: 'PNG, JPG, WebP до 5 МБ',
+    select_role: 'Оберіть роль або вимкніть',
+    'salary.edit': 'Налаштування розрахунку заробітної плати',
+    'salary.description': 'Задаємо базову ставку лікаря та відсоток від виконаних робіт',
+    'salary.percent': 'Відсотки від виробітку за категоріями послуг',
+    'salary.base_price': 'Базова ставка (грн / міс)',
   },
 };
 export default lngCustomer;

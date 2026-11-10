@@ -16,24 +16,12 @@ export default function FloatingDentalChat() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Функция автоскролла вниз
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Функция плавной прокрутки вниз
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
   };
-
-  // Скролимся вниз при изменении списка сообщений (когда отправила или прилетел поллинг)
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // const { auth } = usePage().props as unknown as {
-  //   auth: {
-  //     user: any;
-  //     can: any;
-  //     role: string[] | any[];
-  //   };
-  // };
 
   const currentDay = new Date().getDay();
   const dayBackgrounds = [
@@ -53,7 +41,7 @@ export default function FloatingDentalChat() {
     locale: appLang,
   });
 
-  // Загружаем список диалогов сразу при загрузке страницы, а не только при открытии виджета
+  // Загружаем список диалогов
   useEffect(() => {
     const fetchConversations = () => {
       fetch('/chatify/v1/conversations', {
@@ -63,9 +51,8 @@ export default function FloatingDentalChat() {
         .then((data) => {
           if (data.status === 'success') {
             setConversations(data.data);
-            console.log(data.data);
             const totalUnread = data.data.reduce(
-              (acc: number, curr: any) => acc + curr.unread_count,
+              (acc: number, curr: any) => acc + (curr.unread_count || 0),
               0
             );
             setUnreadCount(totalUnread);
@@ -75,11 +62,9 @@ export default function FloatingDentalChat() {
     };
 
     fetchConversations();
-
-    // Опционально: можно сделать легкий интервал проверки каждые 30 секунд, чтобы бейдж загорался сам, когда пишут
     const interval = setInterval(fetchConversations, 30000);
     return () => clearInterval(interval);
-  }, []); // Пустой массив — выполнится один раз при монтировании и будет опрашивать фон
+  }, []);
 
   // При клике на конкретный диалог
   const handleSelectConversation = (conv: any) => {
@@ -90,17 +75,20 @@ export default function FloatingDentalChat() {
       return;
     }
 
-    // 1. Стучим на бэк через axios — он сам передаст CSRF-токен из кук
+    // 1. Отмечаем прочитанными на бэке
     (window as any).axios
       .post(`/chatify/v1/read/${conv.id}`)
       .catch((err: any) => console.error('Помилка прочтення:', err));
 
-    // 2. Сразу локально сбрасываем счетчик непрочитанных в списке
-    setConversations((prev: any) =>
-      prev.map((c: any) => (c.id === conv.id ? { ...c, unread_count: 0 } : c))
-    );
+    // 2. Сбрасываем счетчик в списке диалогов и сразу пересчитываем общий бейдж `unreadCount`
+    setConversations((prev: any) => {
+      const updated = prev.map((c: any) => (c.id === conv.id ? { ...c, unread_count: 0 } : c));
+      const totalUnread = updated.reduce((acc: number, curr: any) => acc + (curr.unread_count || 0), 0);
+      setUnreadCount(totalUnread);
+      return updated;
+    });
 
-    // 3. Загружаем сообщения чата
+    // 3. Загружаем сообщения чата и скролим вниз
     fetch(`/chatify/v1/messages/${conv.id}`, {
       headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
     })
@@ -108,13 +96,13 @@ export default function FloatingDentalChat() {
       .then((data) => {
         if (data.status === 'success') {
           setMessages(data.data);
+          setTimeout(() => scrollToBottom('auto'), 50); // Мгновенный скролл при открытии
         }
       });
   };
 
-  // Polling для активного чата каждые 3 секунды
+  // Polling для активного чата каждые 3 секунды (ОБНОВЛЕННЫЙ: без дерганья скролла вверх)
   useEffect(() => {
-    // Если чат не выбран или у него еще нет ID (новый пустой чат), ничего не делаем
     if (!activeConversation || !activeConversation.id) return;
 
     const interval = setInterval(() => {
@@ -127,13 +115,19 @@ export default function FloatingDentalChat() {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 'success') {
-            setMessages(data.data);
+            setMessages((prevMessages) => {
+              // Обновляем сообщения только если количество изменилось (пришло новое)
+              if (data.data.length !== prevMessages.length) {
+                setTimeout(() => scrollToBottom('smooth'), 50);
+                return data.data;
+              }
+              return prevMessages;
+            });
           }
         })
         .catch((err) => console.error('Помилка оновлення повідомлень:', err));
-    }, 3000); // интервал 3 секунды
+    }, 3000);
 
-    // Очищаем таймер при закрытии чата или переключении диалога
     return () => clearInterval(interval);
   }, [activeConversation]);
 
@@ -151,6 +145,7 @@ export default function FloatingDentalChat() {
     };
 
     setMessages((prev: any) => [...prev, chatMsg]);
+    setTimeout(() => scrollToBottom('smooth'), 50);
 
     const formData = new FormData();
     formData.append('conversation_id', activeConversation.id);
@@ -171,7 +166,7 @@ export default function FloatingDentalChat() {
           fileInputRef.current.value = '';
         }
 
-        // 1. Сразу подтягиваем свежие сообщения для активного чата
+        // Подтягиваем свежие сообщения после отправки
         if (activeConversation && activeConversation.id) {
           fetch(`/chatify/v1/messages/${activeConversation.id}`, {
             headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
@@ -180,11 +175,12 @@ export default function FloatingDentalChat() {
             .then((data) => {
               if (data.status === 'success') {
                 setMessages(data.data);
+                setTimeout(() => scrollToBottom('smooth'), 50);
               }
             });
         }
 
-        // 2. Обновляем общий список диалогов (превью и время)
+        // Обновляем список диалогов
         fetch('/chatify/v1/conversations', {
           headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         })
@@ -273,7 +269,7 @@ export default function FloatingDentalChat() {
               )}
             </div>
           ) : (
-            <div className="flex-1 flex flex-col bg-white">
+            <div className={`flex-1 flex flex-col bg-white chat-window ${dynamicDayBg}`}>
               {/* Підшапка з кнопкою назад */}
               <div className="px-3 py-2.5 bg-gray-50 border-b border-gray-100 flex items-center space-x-2">
                 <button
@@ -292,7 +288,7 @@ export default function FloatingDentalChat() {
               </div>
 
               {/* Список повідомлень */}
-              <div className={`chat-messages-container ${dynamicDayBg}`}>
+              <div ref={containerRef} className={`chat-messages-container`}>
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-400 text-xs mt-24">
                     {msg.get('chat.empty_message') || 'Напишіть перше повідомлення...'}
@@ -306,8 +302,8 @@ export default function FloatingDentalChat() {
                       <div
                         className={`text-xs px-3.5 py-2 rounded-2xl shadow-sm max-w-[80%] leading-relaxed ${
                           m.sender === 'me'
-                            ? 'bg-orange-600 text-white rounded-tr-none'
-                            : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
+                            ? 'bg-[#fdc88f] text-[#c2410c] rounded-tr-none'
+                            : 'bg-[#f0fdfa] text-[#187b73] border border-gray-100 rounded-tl-none'
                         }`}
                       >
                         {m.body}
@@ -321,7 +317,6 @@ export default function FloatingDentalChat() {
                     </div>
                   ))
                 )}
-                {/* 💥 Якорь для автоскролла в самый низ */}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -393,9 +388,7 @@ export default function FloatingDentalChat() {
 
       {/* Плаваюча кнопка-тригер */}
       <button
-        onClick={() => {
-          setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
         className="relative w-14 h-14 bg-gradient-to-tr from-orange-400 to-orange-900 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none group"
       >
         <svg

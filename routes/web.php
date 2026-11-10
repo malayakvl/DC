@@ -299,6 +299,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/assign/{id}', [CustomerController::class, 'assign'])->name('customer.assign');
     Route::post('/customer/assign-submit', [CustomerController::class, 'assignSubmit'])->name('customer.assignSubmit');
     Route::post('/customer/findByEmail', [CustomerController::class, 'findByEmail'])->name('customer.findByEmail');
+    Route::get('/customer/calculate-salary/{id}', [CustomerController::class, 'salaryCalc'])->name('customer.salaryCalc');
 
     Route::post('/chat/update', [ChatController::class, 'saveMessage'])->name('chat.saveMessage');
 });

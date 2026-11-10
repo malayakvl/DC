@@ -180,13 +180,8 @@ class ChatController extends Controller
                         WHERE (clinic_1.ch_conversations.receiver_by = " .$currentUserId. " OR clinic_1.ch_conversations.created_by = " .$currentUserId. "
                         AND clinic_1.ch_messages.user_id != " .$currentUserId. ")
                         AND (clinic_1.ch_messages.read_at IS NULL AND clinic_1.ch_messages.user_id != " .$currentUserId. ")";
-//                    dd($qUnread);exit;
                     $rUnread = DB::select($qUnread);
-//                    $unreadCount = DB::table("ch_messages")
-//                        ->where('conversation_id', $conversationId)
-//                        ->where('user_id', '!=', $currentUserId)
-//                        ->where('read_at', 'IS NULL')
-//                        ->count();
+
                     $unreadCount = $rUnread[0]->unread_count;
                 }
 

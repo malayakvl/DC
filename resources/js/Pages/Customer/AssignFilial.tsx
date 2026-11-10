@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Head, router, useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import { Link } from '@inertiajs/react';
@@ -12,9 +12,17 @@ import { Transition } from '@headlessui/react';
 
 import { InputColor } from '../../Components/Form/InputColor';
 
-export default function AssignFilial({ clinicData, filialData, rolesData, customer }) {
-  const dispatch = useDispatch();
-  const user = usePage().props.auth.user;
+export default function AssignFilial({
+  clinicData,
+  filialData,
+  rolesData,
+  customer,
+}: {
+  clinicData: any;
+  filialData: any;
+  rolesData: any;
+  customer: any;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
@@ -24,8 +32,7 @@ export default function AssignFilial({ clinicData, filialData, rolesData, custom
   const [values, setValues] = useState({
     permissions: [],
   });
-
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
 
     router.post(`/customer/assign-submit?id=${clinicData.id}`, {
@@ -55,28 +62,28 @@ export default function AssignFilial({ clinicData, filialData, rolesData, custom
             <div>
               <form onSubmit={submit} className="mt-0 space-y-4" encType="multipart/form-data">
                 <div className="grid grid-cols-4 gap-4">
-                  {filialData?.map((item) => (
+                  {filialData?.map((item: any) => (
                     <div key={item.id}>
                       <h5 className="text-lg font-bold text-[#f344b8]">{item.name}</h5>
                       <InputRoleSelect
                         name={`role_id_${item.id}`}
                         values={null}
                         options={rolesData}
-                        onChange={(e) => {
+                        onChange={(e: any) => {
                           const tmpPerm = values['permissions'];
                           const filialId = parseInt(e.target.id.replace('role_id_', ''));
                           const existingIdx = tmpPerm.findIndex(
-                            (obj) => obj.filial_id === filialId
+                            (obj: any) => obj.filial_id === filialId
                           );
 
                           if (existingIdx !== -1) {
                             if (parseInt(e.target.value) > 0) {
-                              tmpPerm[existingIdx].role_id = e.target.value;
+                              (tmpPerm[existingIdx] as any).role_id = e.target.value;
                             } else {
                               tmpPerm.splice(existingIdx, 1);
                             }
                           } else if (parseInt(e.target.value) > 0) {
-                            tmpPerm.push({
+                            (tmpPerm as any).push({
                               filial_id: item.id,
                               role_id: e.target.value,
                               color: customer.color || '#000000',
@@ -93,15 +100,19 @@ export default function AssignFilial({ clinicData, filialData, rolesData, custom
                       <div className="relative mt-2">
                         <InputColor
                           defaultColor={customer.color || '#000000'}
+                          placeholder={''}
+                          tips={''}
+                          style={null}
+                          icon={null}
                           name={`color_${item.id}`}
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             const tmpPerm = values['permissions'];
                             const filialId = parseInt(e.target.id.replace('color_', ''));
                             const existingIdx = tmpPerm.findIndex(
-                              (obj) => obj.filial_id === filialId
+                              (obj: any) => obj.filial_id === filialId
                             );
                             if (existingIdx !== -1) {
-                              tmpPerm[existingIdx].color = e.target.value;
+                              (tmpPerm as any)[existingIdx].color = e.target.value;
                               setValues((values) => ({
                                 ...values,
                                 permissions: [...tmpPerm],

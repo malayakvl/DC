@@ -497,13 +497,13 @@ export default function Dashboard({ visitCount }: { visitCount: number }) {
                   <span className="text-xs text-slate-400">
                     Показано 3 з 28 запланованих записів
                   </span>
-                  <a
+                  <Link
                     className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 hover:text-teal-800 transition-colors"
-                    href="#"
+                    href={'/scheduler'}
                   >
                     <span>Перейти до повного розкладу</span>
                     <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -520,7 +520,8 @@ export default function Dashboard({ visitCount }: { visitCount: number }) {
                 </div>
 
                 <div className="space-y-2">
-                  <button
+                  <Link
+                    href={'/patient/create'}
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-teal-600 hover:text-white transition-all text-left group border border-slate-100"
                     type="button"
                   >
@@ -528,16 +529,14 @@ export default function Dashboard({ visitCount }: { visitCount: number }) {
                       <span className="material-symbols-outlined text-[20px]">person_add</span>
                     </div>
                     <div>
-                      <Link href={'/patient/create'}>
-                        <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
-                          {msg.get('dashboard.new_patient')}
-                        </span>
-                      </Link>
+                      <span className="font-bold block text-sm leading-tight text-slate-800 group-hover:text-white">
+                        {msg.get('dashboard.new_patient')}
+                      </span>
                       <span className="text-xs text-slate-400 group-hover:text-teal-100">
                         {msg.get('dashboard.new_patient_title')}
                       </span>
                     </div>
-                  </button>
+                  </Link>
 
                   <button
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-teal-600 hover:text-white transition-all text-left group border border-slate-100"
@@ -556,7 +555,8 @@ export default function Dashboard({ visitCount }: { visitCount: number }) {
                     </div>
                   </button>
 
-                  <button
+                  <Link
+                    href={'/act/create'}
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-teal-600 hover:text-white transition-all text-left group border border-slate-100"
                     type="button"
                   >
@@ -571,7 +571,7 @@ export default function Dashboard({ visitCount }: { visitCount: number }) {
                         {msg.get('dashboard.new_act_title')}
                       </span>
                     </div>
-                  </button>
+                  </Link>
                 </div>
               </div>
 
