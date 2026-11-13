@@ -66,6 +66,7 @@ class DashboardController extends Controller
             ->where('core.clinic_user.user_id', $userId)
             ->select(
                 'core.clinics.id as clinic_id',
+                'core.clinics.license',
                 'core.clinics.name as clinic_name'
             )
             ->get();
@@ -89,7 +90,7 @@ class DashboardController extends Controller
             // Получаем филиалы с информацией о ролях
             $filials = DB::table('clinic_filials')
                 ->whereIn('id', $assignedFilialIds)
-                ->select('id', 'name', 'address')
+                ->select('id', 'name', 'address', 'start_at', 'end_at')
                 ->orderBy('name', 'asc')
                 ->get()
                 ->map(function ($filial) use ($assignedFilialData) {
@@ -99,13 +100,32 @@ class DashboardController extends Controller
                     return $filial;
                 });
 
+            // get customers in clinic
+            $totalCustomers = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinic->clinic_id}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->where('cu.clinic_id', $clinic->clinic_id)
+                ->whereNull('pt.id')
+                ->count();
+
+            $totalPatients = DB::table("clinic_{$clinic->clinic_id}.patients")
+                ->count();
+
+            $totalVisits = DB::table("clinic_{$clinic->clinic_id}.schedulers")
+                ->whereDate('event_date', today())
+                ->count();
+
             DB::statement("SET search_path TO {$original}");
 
             // 4️⃣ Формируем единый объект
             $result[] = [
                 'clinic_id' => $clinic->clinic_id,
                 'clinic_name' => $clinic->clinic_name,
+                'clinic_license' => $clinic->license,
                 'filials' => $filials,
+                'totalCustomers' => $totalCustomers,
+                'totalPatients' => $totalPatients,
+                'totalVisits' => $totalVisits,
             ];
         }
         // dd($result);exit;

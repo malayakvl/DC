@@ -149,6 +149,12 @@ const lngHeader = {
     tipSalary: {
       finanses_report: 'Звіт по лікарям та іх годинах в клініці',
     },
+    menu_tip_clinic: 'Клініка та робочий простір',
+    clinic_network: 'Мережа відділень клініки',
+    tip_store: 'Залишки, стерилізація, медикаменти',
+    tip_finances: 'Фінанси та налаштування обліку',
+    settings_brand: 'Налаштування бренду та реквізитів',
+    tip_settings: 'Пароль, 2FA, електронний підпис',
   },
 };
 export default lngHeader;

@@ -98,6 +98,8 @@ class ClinicSchemaService
                 clinic_id BIGINT NOT NULL,
                 store_id BIGINT,
                 ceo_id BIGINT,
+                start_at TIME,
+                end_at TIME,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

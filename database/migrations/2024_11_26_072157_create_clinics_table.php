@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('inn');
             $table->string('edrpou');
             $table->string('phone');
+            $table->string('license');
             $table->boolean('is_filial')->nullable();
             $table->foreignId('user_id')->nullable()->index();
             $table->timestamps();

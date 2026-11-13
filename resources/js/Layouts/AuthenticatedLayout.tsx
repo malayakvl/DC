@@ -103,7 +103,7 @@ export default function AuthenticatedLayout({ header, children }: { header: any;
       )}
       <Footer />
       {/* <--- 2. Вставляємо плаваючий чат сюди, щоб він був доступний на всіх сторінках клініки */}
-      <FloatingDentalChat />
+      {user.filial_id != null && <FloatingDentalChat />}
       <div className={`overlay-bg-popup ${showOverlay ? 'show' : 'hidden'}`} />
     </div>
   );

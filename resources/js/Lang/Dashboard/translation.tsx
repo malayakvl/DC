@@ -37,6 +37,25 @@ const lngDashboard = {
     dashboard_title: 'Панель керування клінікою',
     dashboard_work: 'Клініка працює у штатному режимі',
     welcome: 'Вітаємо,',
+    title_moz: 'МОЗ України',
+    descr_clinic: 'Мережа центрів прогресивної стоматології',
+    license: 'Ліцензія',
+    line_id: 'мережі',
+    filials: 'Філії',
+    location: 'локації',
+    customers: 'Персонал',
+    staff: 'співробітників',
+    patient: 'Пацієнти',
+    active: 'активних',
+    visit: 'візити',
+    today: 'Сьогодні',
+    page_title: 'Оберіть клініку та філію',
+    page_subtitle:
+      'Ви маєте авторизований доступ до декількох медичних локацій. Оберіть потрібний робочий\n' +
+      '              простір для керування записами, перегляду карток та фінансів.',
+    active_filials: 'Філії активні',
+    title_tip_filial: 'Прийом триває з',
+    select_for_enter: 'Оберіть філію для входу',
   },
 };
 export default lngDashboard;
