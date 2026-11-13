@@ -36,6 +36,7 @@ const lngDashboard = {
     new_act_title: 'Формування рахунку за послуги',
     dashboard_title: 'Панель керування клінікою',
     dashboard_work: 'Клініка працює у штатному режимі',
+    welcome: 'Вітаємо,',
   },
 };
 export default lngDashboard;

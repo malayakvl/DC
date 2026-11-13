@@ -72,9 +72,9 @@ export default function AuthenticatedLayout({ header, children }: { header: any;
                   {/* Правая часть: Язык, Уведомления, Профиль */}
                   <div className="flex items-center gap-4">
                     <LangMenu />
-                    <NoticeMenu />
+                    {Boolean(user.filial_id) && <NoticeMenu />}
                     <div
-                      className={`separate-m-header ${user?.current_filial ? 'filial-sep' : ''}`}
+                      className={`separate-m-header ${user?.current_filial ? 'filial-sep' : 'separate-m-header-transp'}`}
                     ></div>
                     <ProfileMenu />
                   </div>

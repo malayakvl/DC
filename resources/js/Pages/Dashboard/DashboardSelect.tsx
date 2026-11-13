@@ -30,7 +30,9 @@ export default function Dashboard({ clinicsData }: { clinicsData: any }) {
           <div className="max-w-2xl">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-50 text-teal-800 border border-teal-200/70 shadow-sm mb-4">
               <span className="text-sm">👋</span>
-              <span>Вітаємо, {auth.user.name}!</span>
+              <span>
+                {msg.get('dashboard.welcome')} {auth.user.name}!
+              </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
               Оберіть клініку та філію <br className="hidden sm:inline" />

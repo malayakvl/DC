@@ -23,6 +23,7 @@ dayjs.extend(utc);
 import {
   newPatientDataSelector,
   patientIdSelector,
+  popupAssistantSelector,
   popupCabinetSelector,
   popupDateSelector,
   popupDoctorSelector,
@@ -84,7 +85,7 @@ export default function SchedulerFormCreate({
   });
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
-  const assistantId = useSelector(popupDoctorSelector);
+  const assistantId = useSelector(popupAssistantSelector);
   const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = parsedTimePlus30();
@@ -274,7 +275,7 @@ export default function SchedulerFormCreate({
                 {/* Room/Cabinet Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                    <span>Кабінет</span>
+                    <span>{msg.get('scheduler.cabinet')}</span>
                   </label>
                   <div className={'w-full'}>
                     <InputSelect
@@ -293,7 +294,7 @@ export default function SchedulerFormCreate({
                 {/* Doctor Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                    <span>Лікар</span>
+                    <span>{msg.get('scheduler.doctor')}</span>
                   </label>
                   <InputSelect
                     name={'doctor_id'}
@@ -311,7 +312,7 @@ export default function SchedulerFormCreate({
                 {/* Assistant Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                    <span>Асистент</span>
+                    <span>{msg.get('scheduler.assistant')}</span>
                   </label>
                   <InputSelect
                     name={'assistent_id'}
@@ -351,7 +352,7 @@ export default function SchedulerFormCreate({
                   {/* Start Time */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                      Початок
+                      {msg.get('scheduler.start')}
                     </label>
                     <div className="flex items-center justify-between px-3.5 py-1 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
                       <InputMask
@@ -370,7 +371,7 @@ export default function SchedulerFormCreate({
                   {/* End Time */}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                      Кінець (авто)
+                      {msg.get('scheduler.end')}Кінець (авто)
                     </label>
                     <div className="flex items-center justify-between px-3.5 py-1 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
                       <div className="flex items-center gap-2">

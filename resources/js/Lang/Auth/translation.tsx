@@ -18,6 +18,11 @@ const lngAuth = {
     confirm_password: 'Підтвердження пароля',
     already_registered: 'Вже зареєстровані?',
     register: 'Зареєструватись',
+    register_tab: 'Реєстрація',
+    welcome_cabinet: 'Вітаємо у кабінеті',
+    enter_system: 'Увійдіть у ваш робочий простір',
+    placeholder_last: 'Пупкін',
+    placeholder_first: 'Архістрат',
   },
 };
 export default lngAuth;

@@ -90,6 +90,7 @@ class DashboardController extends Controller
             $filials = DB::table('clinic_filials')
                 ->whereIn('id', $assignedFilialIds)
                 ->select('id', 'name', 'address')
+                ->orderBy('name', 'asc')
                 ->get()
                 ->map(function ($filial) use ($assignedFilialData) {
                     $assignment = $assignedFilialData->firstWhere('filial_id', $filial->id);

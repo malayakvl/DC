@@ -63,7 +63,7 @@ export default function ProfileMenu() {
                       </div>
                       <div className="text-left leading-tight mr-2 hidden sm:block">
                         <span className="user-profile-name">
-                          {fioResult} <span className="role-tips">{auth.role}</span>
+                          {fioResult} {auth.role ?? <span className="role-tips">{auth.role}</span>}
                         </span>
                         <small className="user-profile-role">
                           {auth.role?.length > 0 ? (
