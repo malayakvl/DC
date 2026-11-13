@@ -79,3 +79,19 @@
 .chat-messages-container {
   background: transparent;
 }
+
+.chat-avatar {
+  @apply w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-sm shadow-inner bg-cover bg-no-repeat flex-shrink-0;
+  //border-radius: 50%;
+  //background-size: cover;
+  //display: inline-block;
+  //float:left;
+  //height: 2rem;
+  //width: 2rem;
+}
+
+.chat-name {
+  float: left;
+  margin-top: 12px;
+  margin-left: 10px;
+}

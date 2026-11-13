@@ -274,6 +274,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/store-report', [ReportController::class, 'store'])->name('report.store');
     Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReport'])->name('report.store.data');
+    Route::get('/report/salary-report', [ReportController::class, 'monthlyReport'])->name('report.salary.report');
 
 
 
@@ -300,6 +301,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/customer/assign-submit', [CustomerController::class, 'assignSubmit'])->name('customer.assignSubmit');
     Route::post('/customer/findByEmail', [CustomerController::class, 'findByEmail'])->name('customer.findByEmail');
     Route::get('/customer/calculate-salary/{id}', [CustomerController::class, 'salaryCalc'])->name('customer.salaryCalc');
+    Route::post('/customer/store-salary-settings', [CustomerController::class, 'storeSalarySettings'])->name('customer.storeSalarySettings');
 
     Route::post('/chat/update', [ChatController::class, 'saveMessage'])->name('chat.saveMessage');
 });

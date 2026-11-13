@@ -14,6 +14,8 @@ import NavPatients from './Menu/NavPatients';
 import NavServices from './Menu/NavServices';
 import NavPayments from './Menu/NavPayments';
 import NavReports from './Menu/NavReports';
+import { LayoutDashboard } from 'lucide-react';
+
 
 export default function NavMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,10 +68,12 @@ export default function NavMenu() {
                 {lng.get('menu.mclinic')}
               </span>
 
-              <div className="bg-white rounded-[5px] shadow-sm px-1 py-0">
+              <div className="bg-[#0d9488]  rounded-[5px] px-1 py-0">
                 <Menu as="div" className="relative top-menu-nav">
                   <MenuButton className="">
-                    <NavLink href={'/dashboard'}>D</NavLink>
+                    <NavLink href={'/dashboard'}>
+                      <LayoutDashboard width={16} height={16} color={'white'} />
+                    </NavLink>
                   </MenuButton>
                 </Menu>
               </div>

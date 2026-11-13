@@ -75,7 +75,7 @@ export default function SchedulerFormCreate({
     clinic_id: clinicData.id,
     cabinet_id: formData.cabinet_id,
     doctor_id: formData.doctor_id,
-    assistent: '',
+    assistent: formData.assistant_id,
     comment: formData.comment,
     status_id: formData.status_id,
     event_date: formData.event_date,
@@ -84,6 +84,7 @@ export default function SchedulerFormCreate({
   });
   const { processing, recentlySuccessful } = useForm();
   const doctorId = useSelector(popupDoctorSelector);
+  const assistantId = useSelector(popupDoctorSelector);
   const cabinetId = useSelector(popupCabinetSelector);
   const timeStart = useSelector(popupTimeSelector);
   const timeEnd = parsedTimePlus30();

@@ -63,7 +63,7 @@ class ClinicSchemaService
             $this->createDefaultStore($clinicId);
 
             // Create default patient discount statuses
-            $this->createDefaultPatientDiscountStatuses($clinicId);
+//            $this->createDefaultPatientDiscountStatuses($clinicId);
 
             // Create default visit schedule statuses
             $this->createDefaultVisitScheduleStatuses($clinicId);
@@ -220,6 +220,7 @@ class ClinicSchemaService
                 avatar VARCHAR(255) DEFAULT NULL,
                 invite_token VARCHAR(255) DEFAULT NULL,
                 role_id BIGINT NOT NULL,
+                in_scheduler boolean DEFAULT true,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -1426,6 +1427,42 @@ class ClinicSchemaService
                 ) AS document_date
             FROM store_movements sm
             JOIN store_batches sb ON sb.id = sm.batch_id
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS employee_salary_settings (
+                id BIGSERIAL PRIMARY KEY,
+                user_id BIGINT NOT NULL,
+                base_salary NUMERIC(12, 2) DEFAULT 0.00,
+                salary_type VARCHAR(20) DEFAULT 'hybrid',
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT emp_salary_user_unique UNIQUE (user_id)
+            );
+        ");
+
+        // 2. Таблиця процентів від виробітку по категоріях прайсу
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS employee_category_commissions (
+                id BIGSERIAL PRIMARY KEY,
+                employee_salary_setting_id BIGINT NOT NULL,
+                category_id BIGINT NOT NULL,
+                percentage NUMERIC(5, 2) DEFAULT 0.00,
+                created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                
+                CONSTRAINT fk_emp_commissions_setting 
+                    FOREIGN KEY (employee_salary_setting_id) 
+                    REFERENCES employee_salary_settings(id) 
+                    ON DELETE CASCADE,
+                    
+                CONSTRAINT fk_emp_commissions_category 
+                    FOREIGN KEY (category_id) 
+                    REFERENCES price_categories(id) 
+                    ON DELETE CASCADE,
+                    
+                CONSTRAINT emp_category_unique UNIQUE (employee_salary_setting_id, category_id)
+            );
         ");
     }
 

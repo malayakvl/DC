@@ -143,6 +143,12 @@ const lngHeader = {
     },
     mclinic: 'Клініка',
     mdocs: 'Облік',
+    salary: {
+      report: 'Звіт по лікарям',
+    },
+    tipSalary: {
+      finanses_report: 'Звіт по лікарям та іх годинах в клініці',
+    },
   },
 };
 export default lngHeader;

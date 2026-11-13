@@ -34,7 +34,7 @@ export default function NoticeMenu() {
         onClick={() => setIsOpen(!isOpen)}
         type="button"
         aria-label="Сповіщення"
-        className="relative flex items-center justify-center w-12 h-12 bg-indigo-50/60 hover:bg-indigo-100/80 rounded-2xl transition-colors focus:outline-none"
+        className="relative flex items-center justify-center w-12 h-12  transition-colors focus:outline-none"
       >
         {/* SVG Іконка Дзвоника */}
         <svg

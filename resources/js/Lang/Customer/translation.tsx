@@ -63,6 +63,9 @@ const lngCustomer = {
     'salary.description': 'Задаємо базову ставку лікаря та відсоток від виконаних робіт',
     'salary.percent': 'Відсотки від виробітку за категоріями послуг',
     'salary.base_price': 'Базова ставка (грн / міс)',
+    salary: 'Нарахування заробітної плати',
+    connect: 'Підключено',
+    in_scheduler: 'Веде прийом',
   },
 };
 export default lngCustomer;

@@ -83,7 +83,10 @@ export default function FloatingDentalChat() {
     // 2. Сбрасываем счетчик в списке диалогов и сразу пересчитываем общий бейдж `unreadCount`
     setConversations((prev: any) => {
       const updated = prev.map((c: any) => (c.id === conv.id ? { ...c, unread_count: 0 } : c));
-      const totalUnread = updated.reduce((acc: number, curr: any) => acc + (curr.unread_count || 0), 0);
+      const totalUnread = updated.reduce(
+        (acc: number, curr: any) => acc + (curr.unread_count || 0),
+        0
+      );
       setUnreadCount(totalUnread);
       return updated;
     });
@@ -278,12 +281,20 @@ export default function FloatingDentalChat() {
                 >
                   ← Назад
                 </button>
-                <div className="text-xs font-semibold text-gray-700 truncate flex items-center min-w-[200px]">
-                  <span className="inline-block ml-1">
-                    {activeConversation.peer
-                      ? `${activeConversation.peer.first_name} ${activeConversation.peer.last_name}`
-                      : 'Чат'}
-                  </span>
+                <div className="text-xs font-semibold text-gray-700 truncate flex items-center min-w-[200px] min-h-[45px]">
+                  <div className="inline-block flex ml-1">
+                    <div
+                      style={{
+                        backgroundImage: `url(${activeConversation.peer?.avatar ? `/storage/users/${activeConversation.peer.avatar}` : '/images/no-photo.png'})`,
+                      }}
+                      className={`chat-avatar`}
+                    />
+                    <div className="chat-name">
+                      {activeConversation.peer
+                        ? `${activeConversation.peer.first_name} ${activeConversation.peer.last_name}`
+                        : 'Чат'}
+                    </div>
+                  </div>
                 </div>
               </div>
 

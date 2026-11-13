@@ -82,7 +82,7 @@ export default function List({ customerData }: { customerData: any }) {
                       <Link
                         className="actn-btns"
                         title={msg.get('customer.salary')}
-                        href={`customer/salary-calc/${item.id}`}
+                        href={`customer/calculate-salary/${item.id}`}
                       >
                         <span className="material-symbols-outlined text-[18px] block">money</span>
                       </Link>

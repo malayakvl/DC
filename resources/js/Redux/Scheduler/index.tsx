@@ -40,6 +40,7 @@ const initialState = {
   showPricePopup: false,
   showErrorSchedulePopup: false,
   popupDoctorId: '',
+  popupAssistantId: '',
   dateStart: null,
   timeStart: null,
   statusId: { name: 'planned', color: '#4c95f5' },

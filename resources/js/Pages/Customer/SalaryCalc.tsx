@@ -1,34 +1,49 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngCustomer from '../../Lang/Customer/translation';
 import FormHeader from '@/Components/Common/FormHeader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { router } from '@inertiajs/react'; // переконайся, що імпортовано
 
 interface PriceCategory {
   id: number;
   name: string;
 }
 
+interface SalarySettings {
+  base_salary?: number | string;
+  salary_type?: string;
+  category_commissions?: Record<number, { enabled: boolean; percentage: string | number }>;
+}
+
 export default function SalarySettingsCreate({
   usersData,
   priceCategories,
+  salarySettings = {}, // Отримуємо збережені налаштування з контролера
 }: {
   usersData: any;
   priceCategories: PriceCategory[];
+  salarySettings?: SalarySettings;
 }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngCustomer, locale: appLang });
-
-  // Використовуємо useForm від Inertia
+  // Використовуємо useForm від Inertia із заповненням збережених даних
   const { data, setData, post, processing, errors } = useForm({
-    user_id: '',
-    base_salary: '',
-    salary_type: 'hybrid', // fixed, percent, hybrid
-    category_commissions: priceCategories.reduce((acc, cat) => {
-        acc[cat.id] = { enabled: false, percentage: '' };
+    user_id: usersData.id,
+    base_salary: salarySettings.base_salary || '',
+    salary_type: salarySettings.salary_type || 'hybrid',
+    category_commissions: priceCategories.reduce(
+      (acc: any, cat: any) => {
+        // Якщо для цієї категорії є збережений відсоток — підставляємо його, інакше дефолт
+        acc[cat.id] = salarySettings.category_commissions?.[cat.id] || {
+          enabled: false,
+          percentage: '',
+        };
         return acc;
       },
       {} as Record<number, { enabled: boolean; percentage: string }>
@@ -37,7 +52,13 @@ export default function SalarySettingsCreate({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/salaries/settings'); // шлях до бекенд-роуту збереження
+
+    post(`/customer/store-salary-settings`, {
+      onSuccess: () => {
+        // Тепер тост з'явиться миттєво і безвідмовно, бо сторінка не перезавантажується автоматично
+        toast.success('Налаштування зарплати успішно збережено!');
+      },
+    });
   };
 
   const handleCategoryChange = (catId: number, field: 'enabled' | 'percentage', value: any) => {
@@ -57,11 +78,13 @@ export default function SalarySettingsCreate({
         <div className="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-100 dark:border-gray-700">
           <FormHeader
             title={
-              (usersData?.id
+              (salarySettings?.base_salary !== undefined && salarySettings?.base_salary !== ''
                 ? msg.get('customer.salary.edit')
                 : msg.get('customer.salary.create')) +
               ' ' +
-              usersData.name
+              (usersData.last_name
+                ? `${usersData.last_name} ${usersData.first_name}`
+                : usersData.name)
             }
             description={msg.get('customer.salary.description')}
             backUrl="/customers"
@@ -111,11 +134,11 @@ export default function SalarySettingsCreate({
                             onChange={(e) =>
                               handleCategoryChange(cat.id, 'enabled', e.target.checked)
                             }
-                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500 h-4 w-4"
                           />
                           <label
                             htmlFor={`cat-${cat.id}`}
-                            className="font-medium text-gray-700 dark:text-gray-200 cursor-pointer"
+                            className="text-[15px] text-gray-700 dark:text-gray-200 cursor-pointer"
                           >
                             {cat.name}
                           </label>
@@ -123,8 +146,7 @@ export default function SalarySettingsCreate({
 
                         <div className="flex items-center gap-2">
                           <input
-                            type="number"
-                            step="0.1"
+                            type="text"
                             disabled={!isEnabled}
                             value={data.category_commissions[cat.id]?.percentage || ''}
                             onChange={(e) =>

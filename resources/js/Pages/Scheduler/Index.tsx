@@ -38,6 +38,7 @@ type SchedulerIndexProps = {
   initialView?: 'day' | '3days';
   allowViewSwitch?: boolean;
   statusesData: any[];
+  grouppedOptions: any[];
 };
 
 export default function Index({
@@ -55,6 +56,7 @@ export default function Index({
   initialView = '3days',
   allowViewSwitch = true,
   statusesData,
+  grouppedOptions,
 }: SchedulerIndexProps) {
   const appLang = useSelector(appLangSelector);
   const dispatch = useAppDispatch();
@@ -81,6 +83,7 @@ export default function Index({
             statusesData={statusesData}
             cabinetsData={cabinetData}
             customerData={customerData}
+            grouppedOptions={grouppedOptions}
             onNewAppointment={() => {
               // Логіка відкриття створення нового запису через Redux, якщо потрібно
               // наприклад: dispatch(showSchedulePopupAction(true)); dispatch(showOverlayAction(true));

@@ -106,10 +106,12 @@ class CustomerController extends Controller
         return $this->withClinicSchema($request, function($clinicId) use ($request, $userId) {
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
             $filialId = $request->session()->get('filial_id');
-            // 1. Отримуємо користувачів/співробітників цієї клініки
+            $schema = "clinic_{$clinicId}";
+
+            // 1. Отримуємо співробітника
             $usersData = DB::table('core.users')
                 ->join('core.clinic_user', 'users.id', '=', 'clinic_user.user_id')
-                ->leftJoin("clinic_{$clinicId}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
+                ->leftJoin("{$schema}.clinic_filial_user as cfu", function($join) use ($clinicId, $filialId) {
                     $join->on('users.id', '=', 'cfu.user_id')
                         ->where('cfu.clinic_id', $clinicId)
                         ->where('cfu.filial_id', $filialId);
@@ -125,31 +127,107 @@ class CustomerController extends Controller
                 ->where('clinic_user.clinic_id', $clinicId)
                 ->first();
 
-
-//            $usersData = DB::table('core.clinic_user as cu')
-//                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
-//                ->where('cu.clinic_id', $clinicId)
-//                ->select(
-//                    'u.id',
-//                    'u.first_name',
-//                    'u.last_name',
-//                    'u.email',
-//                    'cu.avatar'
-//                )
-//                ->orderBy('u.last_name')
-//                ->get();
-
-            // 2. Отримуємо категорії прайсу з динамічної схеми клініки
-            $priceCategories = DB::table("clinic_{$clinicId}.price_categories")
+            // 2. Отримуємо категорії прайсу
+            $priceCategories = DB::table("{$schema}.price_categories")
                 ->select('id', 'name')
                 ->orderBy('id')
                 ->get();
+
+            // 3. Отримуємо збережені налаштування зарплати для цього співробітника
+            $salarySetting = DB::table("{$schema}.employee_salary_settings")
+                ->where('user_id', $userId)
+                ->first();
+
+            // 4. Отримуємо збережені відсотки по категоріях, якщо налаштування існують
+            $categoryCommissions = [];
+            if ($salarySetting) {
+                $commissions = DB::table("{$schema}.employee_category_commissions")
+                    ->where('employee_salary_setting_id', $salarySetting->id)
+                    ->get();
+
+                foreach ($commissions as $comm) {
+                    $categoryCommissions[$comm->category_id] = [
+                        'enabled' => true,
+                        'percentage' => $comm->percentage,
+                    ];
+                }
+            }
 
             return Inertia::render('Customer/SalaryCalc', [
                 'clinicData' => $clinicData,
                 'usersData' => $usersData,
                 'priceCategories' => $priceCategories,
+                'salarySettings' => [
+                    'base_salary' => $salarySetting ? $salarySetting->base_salary : '',
+                    'salary_type' => $salarySetting ? $salarySetting->salary_type : 'hybrid',
+                    'category_commissions' => $categoryCommissions,
+                ],
             ]);
+        });
+    }
+
+    public function storeSalarySettings(Request $request)
+    {
+        // Валідація вхідних даних з фронтенду
+        $validated = $request->validate([
+            'user_id' => 'required|integer',
+            'base_salary' => 'required|numeric|min:0',
+            'category_commissions' => 'required|array',
+            'category_commissions.*.enabled' => 'boolean',
+            'category_commissions.*.percentage' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        return $this->withClinicSchema($request, function($clinicId) use ($validated) {
+            $schema = "clinic_{$clinicId}";
+            // Використовуємо транзакцію, щоб запис ставки та комісій пройшов атомарно
+            DB::transaction(function () use ($schema, $validated) {
+
+                // 1. Зберігаємо або оновлюємо базову ставку співробітника
+                // Використовуємо upsert на основі унікального індексу user_id
+                $settingId = DB::table("{$schema}.employee_salary_settings")->updateOrInsert(
+                    ['user_id' => $validated['user_id']],
+                    [
+                        'base_salary' => $validated['base_salary'],
+                        'salary_type' => 'hybrid',
+                        'updated_at' => now(),
+                        'created_at' => now(), // буде проігноровано при оновленні, якщо вже існувало
+                    ]
+                );
+
+                // Отримуємо ID налаштування (бо updateOrInsert повертає boolean в деяких версіях, краще витягнути явно)
+                $setting = DB::table("{$schema}.employee_salary_settings")
+                    ->where('user_id', $validated['user_id'])
+                    ->first();
+
+                $settingId = $setting->id;
+
+                // 2. Зберігаємо відсотки по категоріях прайсу
+                foreach ($validated['category_commissions'] as $categoryId => $commission) {
+                    // Якщо категорія увімкнена і вказано відсоток більший за 0
+                    if (!empty($commission['enabled']) && isset($commission['percentage']) && $commission['percentage'] !== '') {
+                        DB::table("{$schema}.employee_category_commissions")->updateOrInsert(
+                            [
+                                'employee_salary_setting_id' => $settingId,
+                                'category_id' => $categoryId,
+                            ],
+                            [
+                                'percentage' => $commission['percentage'],
+                                'updated_at' => now(),
+                                'created_at' => now(),
+                            ]
+                        );
+                    } else {
+                        // Якщо чекбокс вимкнули — видаляємо запис про комісію для цієї категорії, якщо він існував
+                        DB::table("{$schema}.employee_category_commissions")
+                            ->where('employee_salary_setting_id', $settingId)
+                            ->where('category_id', $categoryId)
+                            ->delete();
+                    }
+                }
+            });
+
+            // У методі storeSalarySettings замість redirect()->back() ставимо:
+            return redirect()->back();
         });
     }
 
@@ -401,7 +479,7 @@ class CustomerController extends Controller
             DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
 
             // 2️⃣ Получаем список филиалов (они в clinic_{id})
-            $filialData = ClinicFilial::where('clinic_id', $clinicId)->get();
+            $filialData = ClinicFilial::where('clinic_id', $clinicId)->orderBy('name')->get();
 
             // 3.1️⃣ Роли внутри клиники
             $rolesData = DB::table('roles')
@@ -447,7 +525,6 @@ class CustomerController extends Controller
 
         // Сохраняем оригинальный search_path
         $original = DB::select("SHOW search_path")[0]->search_path;
-
         try {
             // Переключаемся на схему клиники
             // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
@@ -470,7 +547,9 @@ class CustomerController extends Controller
                             'filial_id' => $item['filial_id'],
                             'role_id'   => $item['role_id'],
                             'color'     => $item['color'] ?? null,
-                            'clinic_id' => $clinicId
+                            'clinic_id' => $clinicId,
+                            'in_scheduler' => $item['in_scheduler'],
+
                         ]);
                     }
                 }
