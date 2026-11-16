@@ -1,16 +1,22 @@
-import InputLabel from '../../../Components/Form/InputLabel';
 import PrimaryButton from '../../../Components/Form/PrimaryButton';
 import { Transition } from '@headlessui/react';
-import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngProducer from '../../../Lang/Producer/translation';
 import InputText from '../../../Components/Form/InputText';
-import InputSelect from '../../../Components/Form/InputSelect';
 
-export default function Form({ clinicData, formData, className = '' }) {
+export default function Form({
+  clinicData,
+  formData,
+  className = '',
+}: {
+  clinicData: any;
+  formData: any;
+  className: string;
+}) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngProducer,
@@ -22,9 +28,9 @@ export default function Form({ clinicData, formData, className = '' }) {
     clinic_id: clinicData.id,
   });
 
-  const { processing, recentlySuccessful, errors } = useForm();
+  const { processing, recentlySuccessful } = useForm();
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -33,7 +39,7 @@ export default function Form({ clinicData, formData, className = '' }) {
     }));
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (formData.id) {
       router.post(`/producer/update?id=${formData.id}`, values);
@@ -57,10 +63,7 @@ export default function Form({ clinicData, formData, className = '' }) {
         <InputText
           name={'name'}
           values={values}
-          dataValue={values.name}
-          value={values.name}
           onChange={handleChange}
-          required
           label={msg.get('producer.name')}
         />
         <div className="flex items-center">

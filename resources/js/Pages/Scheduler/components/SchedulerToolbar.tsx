@@ -45,9 +45,10 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
   const statusFilter = useSelector(schedulerStatusSelector);
   const dispatch = useAppDispatch();
   const tab = useSelector(viewScheduleSelector);
+  const tabStaff = 'roles.doctor';
 
   const dayStep = viewMode === 'day' ? 1 : 3;
-
+console.log(tab);
   const goToDate = (newDate: string) => {
     const dateTo = format(addDays(parseISO(newDate), dayStep - 1), 'yyyy-MM-dd');
     dispatch(setCalendarDateAction(newDate));
@@ -66,7 +67,6 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
     const last = days[days.length - 1].label;
     return days.length > 1 ? `${first} — ${last}` : first;
   }, [days]);
-  console.log('grouppedOptions', grouppedOptions);
 
   return (
     <div>
@@ -212,15 +212,7 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
         {/* ПАНЕЛЬ ТАБІВ РОЛЕЙ */}
       </div>
       <div className="mt-4 flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <div
-          style={{
-            display: 'flex',
-            gap: '8px',
-            padding: '12px 20px',
-            background: '#fff',
-            borderBottom: '1px solid #e2e8f0',
-          }}
-        >
+        <div className="inline-flex items-center p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/60 max-w-full overflow-x-auto custom-scrollbar">
           {grouppedOptions.map((group: any) => {
             // Приклад перевірки: якщо це CEO, можна залишити тільки тих, у кого є прапорць участі в розкладі
             const activeOptions = group.options.filter((person: any) => {
@@ -231,8 +223,8 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
             });
 
             if (activeOptions.length === 0) return null; // Якщо нікого немає — таб не показуємо
-
-            const isActive = tab === group.label;
+console.log(group.label);
+            const isActive = tabStaff === group.label;
 
             return (
               <button
@@ -241,23 +233,14 @@ export const SchedulerToolbar: React.FC<SchedulerToolbarProps> = ({
                   // Тут диспатчимо зміну таба в Redux або локальний стейт
                   // наприклад: dispatch(setViewSchedule(group.label))
                 }}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  border: 'none',
-                  backgroundColor: isActive ? '#2563eb' : '#f1f5f9',
-                  color: isActive ? '#ffffff' : '#475569',
-                  transition: 'all 0.2s ease',
-                }}
+                className={`roles-tab ${isActive ? 'active' : ''}`}
               >
                 {/* Можна витягнути локалізовану назву через msg.get(group.label) або захардкодити мапу */}
                 {group.label === 'roles.doctor' && 'Лікарі'}
                 {group.label === 'roles.ceo' && 'CEO'}
                 {group.label === 'roles.assistant' && 'Асистенти'}
-                {group.label === 'roles.nurse' && 'Медсестри'} ({activeOptions.length})
+                {group.label === 'roles.nurse' && 'Медсестри'}
+                <span>{activeOptions.length}</span>
               </button>
             );
           })}

@@ -19,14 +19,11 @@
 //}
 .w-white-teaser {
   width: 52%;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-
-  padding: 100px 50px 50px 50px;
-
+  padding: 45px 50px 50px 50px;
   position: relative;
   z-index: 3;
   min-height: 400px;
@@ -276,7 +273,7 @@
   font-size: 26px;
 }
 .modules-section {
-  padding: 50px 25px;
+  padding: 50px 45px;
   text-align: center;
 }
 .modules-section h2 {
@@ -323,8 +320,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgba(20,184,166,.08);
-  color: #14B8A6;
+  //background: rgba(20,184,166,.08);
+  //color: #14B8A6;
 }
 .module-item h3 {
   font-size: 18px;
@@ -341,41 +338,38 @@
 .module-item {
   display: flex;
   flex-direction: column;   /* ВАЖНО */
-
-  padding: 24px;
-
-  border-radius: 20px;
-
-  border: 1px solid #E2E8F0;
-
-  background: white;
-
-  min-width: 320px;
-}
-.module-item {
   display: flex;
-  //flex-direction: row;   /* ВАЖНО */
-
   padding: 12px;
-
-  border-radius: 20px;
-
+  border-radius: 8px;
   border: 1px solid #E2E8F0;
-
   background: white;
-
   min-width: 120px;
+  -webkit-box-shadow: -9px -8px 5px 0px rgba(252, 244, 232, 0.75);
+  position: relative;
 }
+//.module-item {
+//  display: flex;
+//  padding: 12px;
+//  border-radius: 20px;
+//  border: 1px solid #E2E8F0;
+//  background: white;
+//  min-width: 120px;
+//  -webkit-box-shadow: -9px -8px 5px 0px rgba(252, 244, 232, 0.75);
+//}
 .module-top {
   display: flex;
   flex-direction: row;
+}
+.module-top .text-block {
+  text-align: left;
 }
 .module-top h3 {
   font-size: 14px;
   font-weight: 700 !important;
   margin: 0;
-  padding-top: 13px;
-  padding-left: 10px;
+  text-align: left;
+  //padding-top: 13px;
+  //padding-left: 10px;
 }
 .module-top h3 span {
   font-size: 13px;
@@ -391,10 +385,10 @@
   text-align: left;
 }
 .b1 {
-  background: rgba(178, 18, 3, 0.08) !important;
+  //background: rgba(178, 18, 3, 0.08) !important;
 }
 .b2 {
-  background: rgba(20, 184, 166, 0.08);
+  //background: rgba(20, 184, 166, 0.08);
 }
 .b3 {
   background: rgba(105, 20, 184, 0.08);
@@ -409,31 +403,31 @@
   background: rgba(184, 20, 102, 0.08) !important;
 }
 .sub-b1 {
-  color: #881405 !important;
+  color: #f87f13 !important;
 }
 .sub-b3 {
-  color: #6016d0 !important;
+  color: #14b8a6 !important;
 }
 .sub-b4 {
-  color: #548ff9 !important;
+  color: #f87f13 !important;
 }
 .sub-b5 {
-  color: #0d1a9f !important;
+  color: #f87f13 !important;
 }
 .sub-b6 {
-  color: #bb1313 !important;
+  color: #14b8a6 !important;
 }
 .b-1 {
-  background: rgba(20, 42, 184, 0.08) !important;
+  background: #fac99d !important;
 }
 .b-2 {
-  background: rgba(50, 8, 122, 0.08) !important;
+  background: #c1f8f2 !important;
 }
 .b-3 {
-  background: rgba(227, 118, 8, 0.08) !important;
+  background: #c1f8f2 !important;
 }
 .b-4 {
-  background: rgba(8, 140, 14, 0.08) !important;
+  background: #fac99d !important;
 }
 .b-5 {
   background: rgba(208, 116, 12, 0.08) !important;
@@ -1013,20 +1007,16 @@
 .why-section {
   display: grid;
   grid-template-columns: 35% 65%;
-  padding: 60px 80px;
+  padding: 0px 80px;
   position: relative;
   background: #F8FAFC;
   padding-bottom: 50px;
 }
 .why-section h2 {
   font-size: 52px;
-
   line-height: 1.1;
-
   font-weight: 800;
-
   margin-bottom: 24px;
-
   color: #0F172A;
 }
 .why-section h2 span {
@@ -1038,9 +1028,7 @@
 }
 .why-left {
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
 }
 .tooth-preview {
@@ -1060,11 +1048,8 @@
 }
 .why-right {
   position: relative;
-
   min-height: 700px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
 }
@@ -1134,7 +1119,7 @@
   background: white;
 }
 .benefit-float h4 {
-  color: #143ab8;
+  color: #f87f13;
 }
 
 .top-left {
@@ -1146,10 +1131,18 @@
   top: 260px;
   left: -20px;
 }
+.left-middle-1 {
+  top: 260px;
+  left: 125px;
+}
 
 .left-bottom {
   bottom: 90px;
   left: 40px;
+}
+.left-bottom-1 {
+  bottom: 145px;
+  left: 135px;
 }
 
 .top-right {
@@ -1161,10 +1154,19 @@
   top: 120px;
   right: 95px;
 }
+.right-middle-1 {
+  top: 120px;
+  left: 645px;
+}
 
 .bottom-center {
   bottom: 145px;
   left: 72%;
+  transform: translateX(-50%);
+}
+.bottom-center-1 {
+  bottom: 145px;
+  left: 52%;
   transform: translateX(-50%);
 }
 .trust-section {

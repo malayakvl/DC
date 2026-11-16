@@ -15,10 +15,6 @@ import {
   IconDental,
   IconPackage,
   IconChartBar,
-  IconMoneybag,
-  IconBuilding,
-  IconStar,
-  IconBasketCog,
   IconDeviceLaptop,
   IconShield,
   IconBolt,
@@ -43,8 +39,8 @@ export default function Welcome({ auth }: { auth: any }) {
     {
       title: 'Розклад',
       subtitle: 'Онлайн',
-      icon: <IconCalendar color={'#881405'} />,
-      description: 'Зручне управління записями та розкладом лікарів',
+      icon: <IconCalendar color={'#f87f13'} />,
+      description: 'Управління записями та розкладом лікарів',
       className: 'b1',
     },
     {
@@ -57,30 +53,30 @@ export default function Welcome({ auth }: { auth: any }) {
     {
       title: 'Лікування',
       subtitle: 'Плани',
-      icon: <IconDental color={'#6016d0'} />,
+      icon: <IconDental color={'#14b8a6'} />,
       description: 'Створення планів лікування та історія',
-      className: 'b3',
+      className: 'b2',
     },
     {
       title: 'Фінанси',
       subtitle: 'Оплати',
-      icon: <IconWallet color={'#548ff9'} />,
+      icon: <IconWallet color={'#f87f13'} />,
       description: 'Облік платежів та розрахунки',
-      className: 'b4',
+      className: 'b1',
     },
     {
       title: 'Матеріали',
       subtitle: 'Склад',
-      icon: <IconPackage color={'#0d1a9f'} />,
-      description: 'Детальні звіти для прийняття рішень',
-      className: 'b5',
+      icon: <IconPackage color={'#f87f13'} />,
+      description: 'Надходження, витрати, переміщення матеріалів',
+      className: 'b1',
     },
     {
       title: 'Аналітика',
       subtitle: 'Звіти',
-      icon: <IconChartBar color={'#bb1313'} />,
-      description: 'Контроль залишків та витрат матеріалів',
-      className: 'b6',
+      icon: <IconChartBar color={'#14b8a6'} />,
+      description: 'Детальні звіти для прийняття рішень',
+      className: 'b2',
     },
   ];
 
@@ -139,7 +135,9 @@ export default function Welcome({ auth }: { auth: any }) {
 
   useEffect(() => {
     if (auth.user) {
-      location.href = '/dashboard';
+      console.log(auth.user);
+      // if (auth.user.filial_id) location.href = '/dashboard';
+      // else location.href = '/dashboard-select';
     }
   }, [auth.user]);
 
@@ -160,11 +158,12 @@ export default function Welcome({ auth }: { auth: any }) {
                 легко та <span>ефективно</span>
               </h1>
               <p className="hero-description">
-                <span>DentalCare</span> об’єднує пацієнтів, розклад, лікування, фінанси та звіти в
-                єдиній системі для зростання вашої клініки.
+                <span>DentalCare</span> сучасна CRM система, яка об’єднує пацієнтів, розклад,
+                лікування, складський облік, фінанси та звіти в єдиній системі для зростання вашої
+                клініки.
               </p>
               <div className="flex gap-4 mt-2">
-                <button className="btn-register">Розпочати безкоштовно →</button>
+                <button className="btn-register">Розпочати безкоштовно</button>
                 <button className="btn-login">Дізнатися більше</button>
               </div>
             </div>
@@ -211,99 +210,25 @@ export default function Welcome({ auth }: { auth: any }) {
             </div>
           </div>
           <section className="modules-section">
-            {/*<h2>*/}
-            {/*  Все, що потрібно <span>сучасній клініці</span>*/}
-            {/*</h2>*/}
             <div className="modules-row">
               {features.map((item, i) => (
                 <div className="module-item" key={i}>
                   <div className="module-top">
                     <div className={`module-icon ${item.className}`}>{item.icon}</div>
-                    <h3>
-                      {item.title}
-                      <span className={`sub-${item.className}`}>{item.subtitle}</span>
-                    </h3>
+                    <div className="text-block">
+                      <h3>
+                        {item.title}
+                        <span className={`sub-${item.className}`}>{item.subtitle}</span>
+                      </h3>
+                      <span className="module-description">{item.description}</span>
+                    </div>
                   </div>
-                  <div className="module-description">{item.description}</div>
+                  {/*<div className="module-description">{item.description}</div>*/}
                 </div>
               ))}
             </div>
           </section>
-          {/*<section className="stats-section">*/}
-          {/*  <div className="stats-wrapper">*/}
-          {/*    <div className="stats-grid">*/}
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-1">*/}
-          {/*            <IconUsers color={'#5197fb'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>12 500+</h3>*/}
-          {/*            <span>Пацієнтів у системі</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
 
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-2">*/}
-          {/*            <IconClock color={'#53069b'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>85+</h3>*/}
-          {/*            <span>Прийомів щодня</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-3">*/}
-          {/*            <IconBasketCog color={'#ee5f07'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>98%</h3>*/}
-          {/*            <span>Автоматизація процесів</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-4">*/}
-          {/*            <IconMoneybag color={'#78c72d'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>₴320K</h3>*/}
-          {/*            <span>Оборот клініки</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-5">*/}
-          {/*            <IconStar color={'#d28410'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>98%</h3>*/}
-          {/*            <span>Задоволених клієнтів</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-          {/*      <div className="stat-item">*/}
-          {/*        <div className="flex">*/}
-          {/*          <div className="module-icon stat-icon b-6">*/}
-          {/*            <IconBuilding color={'#5b5c5d'} />*/}
-          {/*          </div>*/}
-          {/*          <div>*/}
-          {/*            <h3>+4</h3>*/}
-          {/*            <span>Філії та облік між ними</span>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      </div>*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</section>*/}
           <section className="why-section">
             <div className="why-left">
               <div className="section-badge">ПЕРЕВАГИ СИСТЕМИ</div>
@@ -335,7 +260,7 @@ export default function Welcome({ auth }: { auth: any }) {
               <div className="floating-item top-left">
                 <div className="benefit-float">
                   <div className="benefit-icon">
-                    <IconShield size={32} />
+                    <IconShield size={32} color={'#f87f13'} />
                   </div>
 
                   <div className="benefit-content">
@@ -348,7 +273,7 @@ export default function Welcome({ auth }: { auth: any }) {
               <div className="floating-item left-middle">
                 <div className="benefit-float">
                   <div className="benefit-icon">
-                    <IconDeviceLaptop size={32} />
+                    <IconDeviceLaptop size={32} color={'#f87f13'} />
                   </div>
 
                   <div className="benefit-content">
@@ -361,7 +286,7 @@ export default function Welcome({ auth }: { auth: any }) {
               <div className="floating-item left-bottom">
                 <div className="benefit-float">
                   <div className="benefit-icon">
-                    <IconWallet size={32} />
+                    <IconWallet size={32} color={'#f87f13'} />
                   </div>
 
                   <div className="benefit-content">
@@ -371,23 +296,10 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
               </div>
 
-              {/*<div className="floating-item top-right">*/}
-              {/*  <div className="benefit-float">*/}
-              {/*    <div className="benefit-icon">*/}
-              {/*      <IconClock size={32} />*/}
-              {/*    </div>*/}
-
-              {/*    <div className="benefit-content">*/}
-              {/*      <h4>Економія часу</h4>*/}
-              {/*      <span>Менше рутини для адміністраторів</span>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-
               <div className="floating-item right-middle">
                 <div className="benefit-float">
                   <div className="benefit-icon">
-                    <IconBolt size={32} />
+                    <IconBolt size={32} color={'#f87f13'} />
                   </div>
 
                   <div className="benefit-content">
@@ -415,28 +327,6 @@ export default function Welcome({ auth }: { auth: any }) {
           </section>
           <section className="why-section">
             <div className="why-left">
-              <div className="section-badge">ПЕРЕВАГИ СИСТЕМИ</div>
-
-              <h2>
-                Чому клініки <br />
-                обирають <span>DentalCare</span>
-              </h2>
-
-              <p>
-                Оптимізуйте щоденні процеси, автоматизуйте рутину та зосередьтесь на розвитку вашої
-                клініки.
-              </p>
-              <p>
-                Від першого запису пацієнта до фінансової аналітики — усі ключові процеси об'єднані
-                в одній сучасній системі управління.
-              </p>
-
-              <div className="tooth-preview">
-                {/*<img src="../../images/main-page/t3-removebg-preview.png" alt="" />*/}
-              </div>
-            </div>
-
-            <div className="why-right">
               <div className="dashboard-preview">
                 <img src="../../images/main-page/dashboard.jpeg" alt="" />
               </div>
@@ -454,7 +344,7 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
               </div>
 
-              <div className="floating-item left-middle">
+              <div className="floating-item left-middle-1">
                 <div className="benefit-float">
                   <div className="benefit-icon">
                     <IconDeviceLaptop size={32} />
@@ -467,7 +357,7 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
               </div>
 
-              <div className="floating-item left-bottom">
+              <div className="floating-item left-bottom-1">
                 <div className="benefit-float">
                   <div className="benefit-icon">
                     <IconWallet size={32} />
@@ -480,20 +370,7 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
               </div>
 
-              {/*<div className="floating-item top-right">*/}
-              {/*  <div className="benefit-float">*/}
-              {/*    <div className="benefit-icon">*/}
-              {/*      <IconClock size={32} />*/}
-              {/*    </div>*/}
-
-              {/*    <div className="benefit-content">*/}
-              {/*      <h4>Економія часу</h4>*/}
-              {/*      <span>Менше рутини для адміністраторів</span>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-
-              <div className="floating-item right-middle">
+              <div className="floating-item right-middle-1">
                 <div className="benefit-float">
                   <div className="benefit-icon">
                     <IconBolt size={32} />
@@ -506,7 +383,7 @@ export default function Welcome({ auth }: { auth: any }) {
                 </div>
               </div>
 
-              <div className="floating-item bottom-center">
+              <div className="floating-item bottom-center-1">
                 <div className="benefit-float">
                   <div className="benefit-icon">
                     <IconChartBar size={32} />
@@ -521,38 +398,28 @@ export default function Welcome({ auth }: { auth: any }) {
 
               <div className="circle-line"></div>
             </div>
+            <div className="why-right">
+              <div className="section-badge">ПЕРЕВАГИ СИСТЕМИ</div>
+
+              <h2>
+                Чому клініки <br />
+                обирають <span>DentalCare Right</span>
+              </h2>
+
+              <p>
+                Оптимізуйте щоденні процеси, автоматизуйте рутину та зосередьтесь на розвитку вашої
+                клініки.
+              </p>
+              <p>
+                Від першого запису пацієнта до фінансової аналітики — усі ключові процеси об'єднані
+                в одній сучасній системі управління.
+              </p>
+
+              <div className="tooth-preview">
+                {/*<img src="../../images/main-page/t3-removebg-preview.png" alt="" />*/}
+              </div>
+            </div>
           </section>
-          {/*<section className="benefits-section">*/}
-          {/*  <div className="benefits-wrapper">*/}
-          {/*    /!*<div className="hero-badge hero-badge-blue">Чому обирають DentalCare</div>*!/*/}
-          {/*    <div className="benefits-left">*/}
-          {/*      <div className="section-badge">Переваги системи</div>*/}
-
-          {/*      <h2>*/}
-          {/*        Чому клініки <span>обирають DentalCare</span>*/}
-          {/*      </h2>*/}
-
-          {/*      <p>*/}
-          {/*        Оптимізуйте щоденні процеси, автоматизуйте рутину та зосередьтеся на розвитку*/}
-          {/*        вашої клініки.*/}
-          {/*      </p>*/}
-          {/*    </div>*/}
-
-          {/*    <div className="benefits-list">*/}
-          {/*      {benefits.map((item, i) => (*/}
-          {/*        <div className="benefit-row" key={i}>*/}
-          {/*          <div className="benefit-check">{item.icon}</div>*/}
-
-          {/*          <div className="benefit-content">*/}
-          {/*            <h3>{item.title}</h3>*/}
-          {/*            <p>{item.description}</p>*/}
-          {/*          </div>*/}
-          {/*        </div>*/}
-          {/*      ))}*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*</section>*/}
-
           <section className="cta-premium-section">
             <div className="cta-premium-wrapper">
               <div className="cta-left">
@@ -578,6 +445,7 @@ export default function Welcome({ auth }: { auth: any }) {
               <div className="cta-right"></div>
             </div>
           </section>
+
           <section className="trust-section">
             <div className="">
               <div className="trust-header">

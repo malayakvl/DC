@@ -444,23 +444,23 @@ to-green-400 {
 //
 //}
 .btn-login-new {
-  @apply hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-brand-700 hover:text-brand-800 hover:bg-brand-50/70 rounded-xl transition-all
+  @apply hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold bg-[#d8f3f4] text-brand-700 hover:text-brand-800 hover:bg-brand-50/70 rounded-md transition-all
 }
 .btn-register-new {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all;
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-semibold text-white bg-[#f87f13] hover:bg-[#954905] transition-all md:ml-[5px];
 }
 .btn-login {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
-  color: #116aef;
-  border: solid 1px #116aef;
+  color: #f87f13;
+  border: solid 1px #f87f13;
   border-radius: 5px;
 }
 
 .btn-register {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
   color: #fff;
-  border: solid 1px #116aef;
-  background: #116aef;
+  border: solid 1px #f87f13;
+  background: #f87f13;
   border-radius: 5px;
   margin-left: 10px;
 }

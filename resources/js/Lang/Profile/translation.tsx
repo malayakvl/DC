@@ -1,14 +1,12 @@
 const lngProfile = {
   'en.profile': {
     information: 'Profile Information',
-    'information.descr':
-      "Update your account's profile information and email address.",
+    'information.descr': "Update your account's profile information and email address.",
     name: 'Name',
     save: 'Save',
     saved: 'Saved.',
     'update.title': 'Update Password',
-    'update.descr':
-      'Ensure your account is using a long, random password to stay secure.',
+    'update.descr': 'Ensure your account is using a long, random password to stay secure.',
     'password.current': 'Current Password',
     'password.new': 'New Password',
     'password.confirm': 'Confirm Password',
@@ -21,7 +19,7 @@ const lngProfile = {
       'Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.',
   },
   'uk.profile': {
-    information: 'Ігформація профілю',
+    information: 'Інформація профілю',
     'information.descr': 'Оновіть вашу профільну інформацію та email.',
     name: 'Ім`я',
     save: 'Зберегти',
@@ -39,6 +37,13 @@ const lngProfile = {
       'Після видалення облікового запису всі його ресурси та дані будуть остаточно видалені. Будь ласка, введіть свій пароль, щоб підтвердити, що ви хочете остаточно видалити ваш запис.',
     'delete.suredescr1':
       'Після видалення вашого облікового запису всі його ресурси та дані буде остаточно видалено. Перш ніж видаляти свій обліковий запис, завантажте будь-які дані чи інформацію, які ви хочете зберегти.',
+    first_name: 'Ім`я',
+    last_name: 'Прізвище',
+    email: 'Email',
+    password: 'Пароль',
+    password_confirmation: 'Підтвердити пароль',
+    update: 'Оновити',
+    password_mismatch: 'Пароль та підтвердження не співпадають'
   },
 };
 export default lngProfile;

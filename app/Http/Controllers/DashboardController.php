@@ -153,10 +153,13 @@ class DashboardController extends Controller
 //            'filialData' => $filial,
 //            'storesData' => $stores,
 //        ]);
+            if ($filialId) {
+                return Inertia::render('Dashboard/Dashboard', [
+                    'visitCount' => $visitCount,
+                ]);
+            } else {
 
-            return Inertia::render('Dashboard/Dashboard', [
-                'visitCount' => $visitCount,
-            ]);
+            }
         });
     }
 
