@@ -69,6 +69,7 @@ const lngHeaders = {
     contactname: 'Ім`я контакту',
     contacts: 'Контакти',
     payedamount: 'Сплачено',
+    bankaccount: 'Рахунок',
   },
 };
 export default lngHeaders;

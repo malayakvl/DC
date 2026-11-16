@@ -1,23 +1,28 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
-import { Link } from '@inertiajs/react';
 import lngCustomer from '../../Lang/Customer/translation';
 import StickyFormFooter from '../../Components/Common/StickyFormFooter';
 import FormHeader from '../../Components/Common/FormHeader';
 import { InputColor } from '../../Components/Form/InputColor';
+import Checkbox from '@/Components/Form/Checkbox';
 
 export default function AssignFilialEdit({
-  clinicData,
-  filialData,
-  rolesData,
-  customer,
-  assignedData,
+                                           clinicData,
+                                           filialData,
+                                           rolesData,
+                                           customer,
+                                           assignedData,
+                                         }: {
+  clinicData: any;
+  filialData: any;
+  rolesData: any;
+  customer: any;
+  assignedData: any;
 }) {
-  useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngCustomer,
@@ -29,9 +34,9 @@ export default function AssignFilialEdit({
     permissions: assignedData || [],
   });
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
-    router.post(`/customer/assign-submit`, {
+    router.post('/customer/assign-submit', {
       customerId: customer.id,
       clinicId: clinicData.id,
       values,
@@ -50,9 +55,8 @@ export default function AssignFilialEdit({
               title={msg.get('customer.attach')}
               description={msg.get('customer.title.description')}
               backUrl="/customers"
-              processing={processing}
-              saveText={msg.get('act.save')}
             />
+
             {/* Staff Summary Banner Card */}
             <section className="bg-white rounded-xl p-4 sm:p-5 shadow-xs relative overflow-hidden border border-slate-100">
               <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-l from-teal-500/5 via-emerald-500/5 to-transparent pointer-events-none hidden md:block"></div>
@@ -98,15 +102,16 @@ export default function AssignFilialEdit({
 
             {/* Main Form */}
             <form onSubmit={submit} className="flex flex-col gap-6">
-              {/* Branch Settings: Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filialData?.map((item) => {
+                {filialData?.map((item: any) => {
                   const currentPermission = values.permissions.find(
-                    (_data) => _data.filial_id === item.id
+                    (_data: any) => _data.filial_id === item.id
                   );
                   const isAssigned = Boolean(currentPermission);
                   const activeColor = currentPermission?.color || customer.color || '#0d9488';
                   const activeRoleId = currentPermission?.role_id || '';
+                  // default true, если поле ещё не пришло с бэка
+                  const isInScheduler = currentPermission?.in_scheduler ?? true;
 
                   return (
                     <section
@@ -116,7 +121,7 @@ export default function AssignFilialEdit({
                       <div className="absolute top-0 left-0 right-0 h-1 bg-teal-600"></div>
 
                       <div className="flex flex-col gap-4">
-                        {/* Branch Header Bar */}
+                        {/* Branch Header */}
                         <div className="flex items-start justify-between gap-2 pb-2 border-b border-slate-100">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-teal-600 shrink-0">
@@ -129,7 +134,7 @@ export default function AssignFilialEdit({
                                 <h2 className="text-base font-bold text-slate-900">{item.name}</h2>
                                 {isAssigned && (
                                   <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold uppercase">
-                                    Підключено
+                                    {msg.get('customer.connect')}
                                   </span>
                                 )}
                               </div>
@@ -143,7 +148,7 @@ export default function AssignFilialEdit({
                           </div>
                         </div>
 
-                        {/* Schedule Badge Color Selection Section with InputColor */}
+                        {/* Color */}
                         <div className="flex flex-col gap-2 pt-1">
                           <InputColor
                             defaultColor={activeColor}
@@ -157,7 +162,7 @@ export default function AssignFilialEdit({
                           />
                         </div>
 
-                        {/* Role Selection Dropdown */}
+                        {/* Role */}
                         <div className="flex flex-col gap-1.5">
                           <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center justify-between">
                             <span>{msg.get('customer.role') || 'Роль у цій філії'}</span>
@@ -167,7 +172,7 @@ export default function AssignFilialEdit({
                               id={`role_id_${item.id}`}
                               value={activeRoleId}
                               onChange={(e) => {
-                                const tmpPerm = [...values['permissions']];
+                                const tmpPerm = [...values.permissions];
                                 const filialId = item.id;
                                 const existingIdx = tmpPerm.findIndex(
                                   (obj) => obj.filial_id === filialId
@@ -178,6 +183,7 @@ export default function AssignFilialEdit({
                                   if (val) {
                                     tmpPerm[existingIdx].role_id = val;
                                   } else {
+                                    // снимаем привязку полностью
                                     tmpPerm.splice(existingIdx, 1);
                                   }
                                 } else if (val) {
@@ -185,14 +191,15 @@ export default function AssignFilialEdit({
                                     filial_id: filialId,
                                     role_id: val,
                                     color: customer.color || '#0d9488',
+                                    in_scheduler: true, // ← default
                                   });
                                 }
                                 setValues((vals) => ({ ...vals, permissions: tmpPerm }));
                               }}
                               className="filter-select w-full text-[13px]"
                             >
-                              <option value="">— Оберіть роль або вимкніть —</option>
-                              {rolesData?.map((role) => (
+                              <option value="">{msg.get('customer.select_role')}</option>
+                              {rolesData?.map((role: any) => (
                                 <option key={role.id} value={role.id}>
                                   {role.name}
                                 </option>
@@ -203,13 +210,39 @@ export default function AssignFilialEdit({
                             </span>
                           </div>
                         </div>
+
+                        {/* in_scheduler — теперь per filial */}
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                            <span>{msg.get('customer.in_scheduler') || 'Веде прийом'}</span>
+                          </label>
+                          <Checkbox
+                            name={`in_scheduler_${item.id}`}
+                            id={`in_scheduler_${item.id}`}
+                            checked={isInScheduler}
+                            disabled={!isAssigned}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              const tmpPerm = [...values.permissions];
+                              const existingIdx = tmpPerm.findIndex(
+                                (obj) => obj.filial_id === item.id
+                              );
+
+                              if (existingIdx !== -1) {
+                                tmpPerm[existingIdx] = {
+                                  ...tmpPerm[existingIdx],
+                                  in_scheduler: e.target.checked,
+                                };
+                                setValues((vals) => ({ ...vals, permissions: tmpPerm }));
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                     </section>
                   );
                 })}
               </div>
 
-              {/* Master Action Footer Bar */}
               <StickyFormFooter
                 backUrl="/customers"
                 backLabel={msg.get('customer.back') || 'Повернутись'}
@@ -218,6 +251,7 @@ export default function AssignFilialEdit({
                 successMessage={msg.get('customer.saved') || 'Збережено успішно!'}
                 processing={processing}
                 recentlySuccessful={recentlySuccessful}
+                onSave={null}
               />
             </form>
           </div>

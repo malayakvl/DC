@@ -72,7 +72,7 @@ const lngHeader = {
     materials: 'Mатеріали',
     invoice: 'Накладні',
     'material.brands': 'Виробники',
-    'material.suppliers': 'Постачальники',
+    'material.suppliers': 'Контрагенти',
     clinic: 'Моя Клініка',
     currencies: 'Валюти',
     taxes: 'Ставки податку',
@@ -141,6 +141,20 @@ const lngHeader = {
       scheduler_section: 'Розклад роботи, кабінети, візити',
       scheduler: 'Розклад роботи лікарів в кабінетах',
     },
+    mclinic: 'Клініка',
+    mdocs: 'Облік',
+    salary: {
+      report: 'Звіт по лікарям',
+    },
+    tipSalary: {
+      finanses_report: 'Звіт по лікарям та іх годинах в клініці',
+    },
+    menu_tip_clinic: 'Клініка та робочий простір',
+    clinic_network: 'Мережа відділень клініки',
+    tip_store: 'Залишки, стерилізація, медикаменти',
+    tip_finances: 'Фінанси та налаштування обліку',
+    settings_brand: 'Налаштування бренду та реквізитів',
+    tip_settings: 'Пароль, 2FA, електронний підпис',
   },
 };
 export default lngHeader;

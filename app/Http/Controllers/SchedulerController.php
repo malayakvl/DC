@@ -94,7 +94,6 @@ class SchedulerController extends Controller
             $customerData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
             $assistantSelectData = $this->customerService->getEmploeeClinicFilialData($clinicId, $filialId);
 
-
             $groupedOptions = $customerData->groupBy('role_name')->map(function ($group, $roleName) {
                 return [
                     'label' => __('roles.'.$roleName),
@@ -108,6 +107,7 @@ class SchedulerController extends Controller
                     })->values()->toArray()
                 ];
             })->values()->toArray();
+
             $listCabinets = DB::table('cabinets')
                 ->select(
                     'cabinets.id',
@@ -160,7 +160,8 @@ class SchedulerController extends Controller
                 'currencyData' => $clinicData->currency->name,
                 'cabinetData' => $listCabinets,
                 'formData' => $formData,
-                'statusesData' => $statusesData
+                'statusesData' => $statusesData,
+                'grouppedOptions' => $groupedOptions,
             ]);
         });
     }

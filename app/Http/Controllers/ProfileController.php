@@ -22,14 +22,10 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-//        $user->assignRole('Therapist');
-//        $role = Role::where('name', 'Therapist')->first();
-//        $permission = Permission::where('name', 'customer-all')->first();
-//        $permission->assignRole($role);
-
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'profile' => $user
         ]);
     }
 

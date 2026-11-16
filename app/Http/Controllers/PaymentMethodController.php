@@ -123,6 +123,10 @@ class PaymentMethodController extends Controller
             }
             $data->fill($request->validated());
             $data->save();
+            if ($request->bank_account) {
+                $data->bank_account = $request->bank_account;
+                $data->save();
+            }
 
             return Redirect::route('payment-method.index');
         });

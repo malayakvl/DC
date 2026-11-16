@@ -64,7 +64,7 @@ export default function Index3Days({
   const doctorFilterId = useSelector(schedulerDoctorFilterSelector);
   const statusFilter = useSelector(schedulerStatusSelector);
   const baseDate = useState(() => format(new Date(), 'yyyy-MM-dd'));
-
+console.log(groupedOptions);
   // Рефы для блокировки кликов
   const isResizingRef = React.useRef(false);
   const isDraggingRef = React.useRef(false);

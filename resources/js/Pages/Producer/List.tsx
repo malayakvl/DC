@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import React, { useCallback, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngProducer from '../../Lang/Producer/translation';
@@ -10,8 +10,7 @@ import DataTable from '../../Components/Table/DataTable';
 import { PaginationType } from '@/Constants';
 import ListHeader from '../../Components/Common/ListHeader';
 
-export default function List({ listData, clinicData }) {
-  const dispatch = useDispatch();
+export default function List({ listData, clinicData }: { listData: any; clinicData: any }) {
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngProducer,
@@ -19,19 +18,19 @@ export default function List({ listData, clinicData }) {
   });
 
   // Стан для форми: null — закрита, 'create' — створення, або ID елемента — редагування
-  const [editingId, setEditingId] = useState(null);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingId, setEditingId] = useState<any>(null);
+  const [editingItem] = useState<any>(null);
   const formRef = useRef(null);
 
   // Inertia useForm для Producer (тільки назва)
-  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
+  const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm<any>({
     name: '',
   });
 
   // Функция для плавного скролла к форме
   const scrollToForm = () => {
     setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      (formRef as any).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   };
 
@@ -44,7 +43,7 @@ export default function List({ listData, clinicData }) {
   };
 
   // Відкриття форми для редагування
-  const handleOpenEdit = (item) => {
+  const handleOpenEdit = (item: any) => {
     clearErrors();
     setEditingId(item.id);
     setData({
@@ -61,7 +60,7 @@ export default function List({ listData, clinicData }) {
     setEditingId(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
 
     if (editingId === 'create') {
@@ -77,10 +76,6 @@ export default function List({ listData, clinicData }) {
     }
   };
 
-  const sendRequest = useCallback(() => {
-    // return dispatch(fetchItemsAction());
-  }, [dispatch]);
-
   return (
     <AuthenticatedLayout header={<Head title={'Producers'} />}>
       <Head title={'Producers'} />
@@ -95,6 +90,7 @@ export default function List({ listData, clinicData }) {
               onCreateClick={handleOpenCreate}
               createLabel={msg.get('producer.create')}
               isCreateDisabled={Boolean(editingItem?.id)}
+              createHref={null}
             />
             {/* Інлайн-форма створення / редагування */}
             {editingId && (
@@ -157,8 +153,8 @@ export default function List({ listData, clinicData }) {
 
             {/* Таблиця даних */}
             <section className="table-card">
-              <DataTable paginationType={PaginationType.PRODUCERS} sendRequest={sendRequest}>
-                {listData?.map((item) => (
+              <DataTable paginationType={PaginationType.PRODUCERS}>
+                {listData?.map((item: any) => (
                   <tr key={item.id}>
                     <td>
                       <span className="pl-2 font-medium text-slate-800">{item.name}</span>

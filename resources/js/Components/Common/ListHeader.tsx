@@ -13,7 +13,7 @@ export default function ListHeader({
   isCreateDisabled = false,
 }: {
   title: string;
-  count: number;
+  count: number | null;
   totalLabel: any;
   description: any;
   createHref: any | null;
@@ -29,12 +29,13 @@ export default function ListHeader({
           <div className="space-y-1">
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-bold text-on-surface tracking-tight">{title}</h1>
-
               {/* Бейдж кількості */}
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                {count} {totalLabel}
-              </span>
+              {count != null && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-700 text-xs font-semibold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                  {count} {totalLabel}
+                </span>
+              )}
             </div>
 
             {/* Підзаголовок */}
@@ -59,6 +60,7 @@ export default function ListHeader({
               ) : (
                 <ActionButton
                   disabled={isCreateDisabled}
+                  onClick={onCreateClick}
                   icon={
                     <span className="material-symbols-outlined text-[18px] mt-[-5px]">add</span>
                   }

@@ -212,6 +212,7 @@ export default function List({
             customerData={customerData}
             statusData={statusData}
             totalCount={listData.length | 0}
+            filters={filters}
           />
 
           <Pagination listData={listData} />
@@ -254,7 +255,7 @@ export default function List({
                         </button>
                         <Link
                           className="actn-btns hover:bg-rose-50 hover:text-rose-600"
-                          title={msg.get('filial.filial.delete') || 'Видалити'}
+                          title={msg.get('money_in.delete') || 'Видалити'}
                           href={`money-in/delete/${item.id}`}
                         >
                           <span className="material-symbols-outlined text-[18px] block">
@@ -299,17 +300,17 @@ export default function List({
                 <div>
                   <div className="flex items-center gap-1 flex-wrap">
                     <h2 className="text-lg font-semibold text-gray-900 leading-tight mb-0 pb-0">
-                      {editingId ? 'Редагувати платіж' : 'Новий платіж'}
+                      {editingId
+                        ? msg.get('money_in.document_edit')
+                        : msg.get('money_in.document_new')}
                     </h2>
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                      Надходження
+                      {msg.get('money_in.income_title')}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    {editingId
-                      ? 'Зміна параметрів та фіксація даних існуючого платежу'
-                      : 'Оприбуткування та фіксація надходження коштів на касу або рахунок клініки'}
+                    {editingId ? msg.get('money_in.tips_edit') : msg.get('money_in.tips_new')}
                   </p>
                 </div>
               </div>
@@ -333,7 +334,7 @@ export default function List({
                 {/* Doc Number */}
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Номер документа
+                    {msg.get('money_in.document_number')}
                   </label>
                   <div className="relative flex items-center h-[38px] bg-white px-2.5 rounded-lg border border-gray-200 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-600">
                     <div className="flex items-center gap-1 min-w-0 w-full">
@@ -345,7 +346,7 @@ export default function List({
                         className="w-full bg-transparent text-xs font-bold text-gray-800 outline-none border-0 p-0 focus:ring-0"
                         value={docNumber}
                         onChange={(e) => setDocNumber(e.target.value)}
-                        placeholder="№ документа"
+                        placeholder={msg.get('money_in.document_number_laceholder')}
                       />
                     </div>
                   </div>
@@ -354,7 +355,7 @@ export default function List({
                 {/* Date Picker */}
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Дата проведення
+                    {msg.get('money_in.document_date')}
                   </label>
                   <div className="relative flex items-center h-[38px] bg-white px-2.5 rounded-lg border border-gray-200 shadow-sm focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-600">
                     <span className="material-symbols-outlined text-emerald-600 text-[16px] mr-1.5 shrink-0">
@@ -372,7 +373,7 @@ export default function List({
                 {/* Status Select */}
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                    Статус транзакції
+                    {msg.get('money_in.document_status')}
                   </label>
                   <div className="relative flex items-center h-[38px] bg-white px-2.5 rounded-lg border border-gray-200 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mr-2 animate-pulse"></span>
@@ -401,10 +402,10 @@ export default function List({
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-gray-700">
-                      Рахунок / Каса зарахування
+                      {msg.get('money_in.document_account')}
                     </label>
                     <span className="text-[11px] font-bold text-emerald-600">
-                      Баланс: {selectedBalance} ₴
+                      {msg.get('money_in.document_balance')}: {selectedBalance} ₴
                     </span>
                   </div>
                   <div className="relative flex items-center h-[42px] bg-white px-2 rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
@@ -417,7 +418,7 @@ export default function List({
                         value={cashAccount}
                         onChange={(e) => setCashAccount(e.target.value)}
                       >
-                        <option value="">Оберіть рахунок/касу</option>
+                        <option value="">{msg.get('money_in.document_select_account')}</option>
                         {paymentMethods &&
                           paymentMethods.map((payment, index) => (
                             <option key={`payment-${index}`} value={String(payment.id)}>
@@ -433,7 +434,7 @@ export default function List({
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-gray-700">
-                      Відповідальна особа
+                      {msg.get('money_in.document_person')}
                     </label>
                   </div>
                   <div className="relative flex items-center h-[42px] bg-white px-2 rounded-xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
@@ -459,7 +460,7 @@ export default function List({
                         value={responsibleUser}
                         onChange={(e) => setResponsibleUser(e.target.value)}
                       >
-                        <option value="">Оберіть значення</option>
+                        <option value="">{msg.get('money_in.document_select_value')}</option>
                         {customerData?.map((customer: any, cIndx: number) => (
                           <option key={`customer-${cIndx}`} value={customer.id}>
                             {customer.name}
@@ -478,7 +479,7 @@ export default function List({
                     <span className="material-symbols-outlined text-[18px]">
                       account_balance_wallet
                     </span>
-                    Сума надходження до сплати
+                    {msg.get('money_in.document_pay_amount')}
                   </label>
                 </div>
 
@@ -520,7 +521,9 @@ export default function List({
 
                 {/* Quick Amount Presets */}
                 <div className="mt-3 flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[11px] font-medium text-gray-500 mr-1">Швидкі суми:</span>
+                  <span className="text-[11px] font-medium text-gray-500 mr-1">
+                    {msg.get('money_in.document_quick_amount')}:
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleAddAmount(500)}
@@ -562,14 +565,14 @@ export default function List({
               {/* Примітка / Призначення платежу */}
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                  Примітка / Призначення платежу
+                  {msg.get('money_in.document_comment')}
                 </label>
                 <textarea
                   className="w-full bg-white px-2.5 py-2 text-xs font-semibold text-gray-800 rounded-lg border border-gray-200 shadow-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none resize-none"
                   rows={2}
                   value={paymentNote}
                   onChange={(e) => setPaymentNote(e.target.value)}
-                  placeholder="Введіть примітку до платежу..."
+                  placeholder={msg.get('money_in.document_tip_comment')}
                 />
               </div>
 
@@ -579,7 +582,9 @@ export default function List({
                   <span className="material-symbols-outlined text-emerald-600 text-[16px]">
                     lock
                   </span>
-                  <span className="text-gray-500 text-[11px]">Захищений запис у журнал</span>
+                  <span className="text-gray-500 text-[11px]">
+                    {msg.get('money_in.document_text_save')}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-1">
@@ -588,7 +593,7 @@ export default function List({
                     className="px-4 py-2.5 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors"
                     onClick={() => setShowModal(false)}
                   >
-                    Скасувати
+                    {msg.get('money_in.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -596,7 +601,9 @@ export default function List({
                   >
                     <span className="material-symbols-outlined text-[18px]">check</span>
                     <span>
-                      {editingId ? 'Зберегти зміни' : `Оприбуткувати ${amount} ${currencySymbol}`}
+                      {editingId
+                        ? msg.get('money_in.save')
+                        : `${msg.get('money_in.do_save')} ${amount} ${currencySymbol}`}
                     </span>
                   </button>
                 </div>

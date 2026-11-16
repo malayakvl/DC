@@ -37,6 +37,7 @@ const lngScheduler = {
       inclinic: 'У клініці',
       incabinet: 'У кабінеті',
       decline: 'Скасовано',
+      posted: 'Оплачено',
     },
     'add.patient': 'Додати пацієнта',
     'form.firstName': 'Им`я',

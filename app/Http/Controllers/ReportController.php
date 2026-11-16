@@ -238,6 +238,84 @@ class ReportController extends Controller
         });
     }
 
+    public function monthlyReport(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $schema = "clinic_{$clinicId}";
+
+            $month = $request->input('month', now()->format('m'));
+            $year = $request->input('year', now()->format('Y'));
+
+            // 1. Отримуємо всіх співробітників з їхніми базовими ставками
+            $employees = DB::table("{$schema}.employee_salary_settings as ess")
+                ->join('core.users as u', 'ess.user_id', '=', 'u.id')
+                ->select('u.id as user_id', 'u.first_name', 'u.last_name', 'ess.base_salary', 'ess.id as setting_id')
+                ->get();
+
+            $reportData = [];
+
+            foreach ($employees as $emp) {
+                // 2. Отримуємо комісії по категоріях для цього лікаря [category_id => percentage]
+                $commissions = DB::table("{$schema}.employee_category_commissions")
+                    ->where('employee_salary_setting_id', $emp->setting_id)
+                    ->pluck('percentage', 'category_id')
+                    ->toArray();
+
+                // 3. Збираємо всі візити (schedulers) лікаря за обраний місяць/рік
+                $schedulers = DB::table("{$schema}.schedulers")
+                    ->where('doctor_id', $emp->user_id)
+                    ->whereYear('event_date', $year)
+                    ->whereMonth('event_date', $month)
+                    ->select('services', 'total_price')
+                    ->get();
+
+                $totalCommission = 0;
+                $totalServicesAmount = 0;
+
+                foreach ($schedulers as $schedule) {
+                    // Демодуємо JSON-послуги з поля services (як у твоєму прикладі)
+                    $services = json_decode($schedule->services, true);
+
+                    if (is_array($services)) {
+                        foreach ($services as $service) {
+                            $price = (float)($service['total_price'] ?? $service['price'] ?? 0);
+                            $categoryId = (int)($service['category_id'] ?? 0);
+                            $qty = (int)($service['qty'] ?? 1);
+
+                            $itemTotal = $price * $qty;
+                            $totalServicesAmount += $itemTotal;
+
+                            // Шукаємо персональний відсоток для цієї категорії прайсу
+                            $percentage = $commissions[$categoryId] ?? 0;
+
+                            // Додаємо бонус до загальної комісії лікаря
+                            $totalCommission += ($itemTotal * $percentage) / 100;
+                        }
+                    }
+                }
+
+                $totalPayout = (float)$emp->base_salary + $totalCommission;
+
+                $reportData[] = [
+                    'user_id' => $emp->user_id,
+                    'full_name' => "{$emp->last_name} {$emp->first_name}",
+                    'base_salary' => (float)$emp->base_salary,
+                    'services_amount' => (float)$totalServicesAmount,
+                    'total_commission' => (float)$totalCommission,
+                    'total_payout' => (float)$totalPayout,
+                ];
+            }
+
+            return Inertia::render('Report/SalaryReport', [
+                'reportData' => $reportData,
+                'filters' => [
+                    'month' => $month,
+                    'year' => $year,
+                ],
+            ]);
+        });
+    }
+
     /**
      * Remove the specified resource from storage.
      */

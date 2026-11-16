@@ -50,106 +50,114 @@ export default function List({
                 supplierData={supplierData}
                 msg={msg}
                 totalItems={listData.length}
+                filters={{
+                  search: '',
+                  category_id: null,
+                  supplier_id: null,
+                }}
               />
 
               <DataTable paginationType={PaginationType.MATERIALS}>
-                {listData?.map((item: any) => (
-                  <tr className="hover:bg-slate-50/80 transition group" key={item.id}>
-                    {/* Фото и название */}
-                    <td className="py-3.5 px-4 align-middle">
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
-                          <img
-                            src={
-                              item.image
-                                ? `/storage/materials/${item.id}/${item.image}`
-                                : '/images/no-photo.png'
-                            }
-                            className="w-full h-full object-contain"
-                            alt={item.name}
-                            onError={(e) => {
-                              e.currentTarget.src = '/images/no-photo.png';
-                            }}
-                          />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-bold text-slate-900 group-hover:text-teal-600 transition">
-                            {item.name}
+                {listData.data &&
+                  listData.data.map((item: any) => (
+                    <tr className="hover:bg-slate-50/80 transition group" key={item.id}>
+                      {/* Фото и название */}
+                      <td className="py-3.5 px-4 align-middle">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center p-1 shrink-0 overflow-hidden shadow-xs">
+                            <img
+                              src={
+                                item.image
+                                  ? `/storage/materials/${item.id}/${item.image}`
+                                  : '/images/no-photo.png'
+                              }
+                              className="w-full h-full object-contain"
+                              alt={item.name}
+                              onError={(e) => {
+                                e.currentTarget.src = '/images/no-photo.png';
+                              }}
+                            />
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
-                            {item.producerName && <span>{item.producerName}</span>}
-                            {item.producerName && item.categoryName && (
-                              <span className="text-slate-300">•</span>
-                            )}
-                            {item.categoryName && (
-                              <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                                {item.categoryName}
-                              </span>
-                            )}
-                            {item.unitName && (
-                              <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-pink-200 text-slate-900 border border-pink-200">
-                                {item.unitName}
-                              </span>
-                            )}
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-bold text-slate-900 group-hover:text-teal-600 transition">
+                              {item.name}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
+                              {item.producerName && <span>{item.producerName}</span>}
+                              {item.producerName && item.categoryName && (
+                                <span className="text-slate-300">•</span>
+                              )}
+                              {item.categoryName && (
+                                <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                  {item.categoryName}
+                                </span>
+                              )}
+                              {item.unitName && (
+                                <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-pink-200 text-slate-900 border border-pink-200">
+                                  {item.unitName}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Ціна закупівлі */}
-                    <td className="py-3.5 px-4 align-middle whitespace-nowrap">
-                      <div className="text-xs text-slate-600">
-                        {item.price} {currency}
-                      </div>
-                    </td>
+                      {/* Ціна закупівлі */}
+                      <td className="py-3.5 px-4 align-middle whitespace-nowrap">
+                        <div className="text-xs text-slate-600">
+                          {item.price} {currency}
+                        </div>
+                      </td>
 
-                    {/* Роздрібна ціна та відсоток */}
-                    <td className="py-3.5 px-4 align-middle whitespace-nowrap">
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-sm font-bold text-slate-900">
-                          {item.retail_price} {currency}
-                        </span>
-                        {item.percent ? (
-                          <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span className="material-symbols-outlined text-[13px]">
-                              trending_up
+                      {/* Роздрібна ціна та відсоток */}
+                      <td className="py-3.5 px-4 align-middle whitespace-nowrap">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-sm font-bold text-slate-900">
+                            {item.retail_price} {currency}
+                          </span>
+                          {item.percent ? (
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <span className="material-symbols-outlined text-[13px]">
+                                trending_up
+                              </span>
+                              +{item.percent}%
                             </span>
-                            +{item.percent}%
-                          </span>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-xs text-slate-600 font-medium">
-                        {item.weight
-                          ? `${parseFloat(item.weight)} ${item.weightUnitName || ''}`
-                          : ''}
-                      </div>
-                    </td>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="text-xs text-slate-600 font-medium">
+                          {item.weight
+                            ? `${parseFloat(item.weight)} ${item.weightUnitName || ''}`
+                            : ''}
+                        </div>
+                      </td>
 
-                    {/* Дії (Редагувати / Видалити) */}
-                    <td className="py-3.5 px-4 align-middle text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          className="actn-btns"
-                          title={msg.get('filial.filial.edit') || 'Редагувати'}
-                          href={`material/edit/${item.id}`}
-                        >
-                          <span className="material-symbols-outlined text-[18px] block">edit</span>
-                        </Link>
-                        <Link
-                          className="actn-btns hover:bg-rose-50 hover:text-rose-600"
-                          title={msg.get('filial.filial.delete') || 'Видалити'}
-                          href={`material/delete/${item.id}`}
-                        >
-                          <span className="material-symbols-outlined text-[18px] block">
-                            delete
-                          </span>
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      {/* Дії (Редагувати / Видалити) */}
+                      <td className="py-3.5 px-4 align-middle text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            className="actn-btns"
+                            title={msg.get('filial.filial.edit') || 'Редагувати'}
+                            href={`material/edit/${item.id}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px] block">
+                              edit
+                            </span>
+                          </Link>
+                          <Link
+                            className="actn-btns hover:bg-rose-50 hover:text-rose-600"
+                            title={msg.get('filial.filial.delete') || 'Видалити'}
+                            href={`material/delete/${item.id}`}
+                          >
+                            <span className="material-symbols-outlined text-[18px] block">
+                              delete
+                            </span>
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </DataTable>
             </section>
           </div>

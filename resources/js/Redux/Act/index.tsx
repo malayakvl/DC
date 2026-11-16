@@ -8,12 +8,14 @@ import {
   findActItemsAction,
   updateServiceQuantityAction,
   updateComponentQuantityAction,
-  syncAndRecalculateAct,
   setupActStoreErrorAction,
   updateServiceComponentsFifo,
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
+  removeComponentAction,
+  updateComponentMarkupAction,
+  setRowUpdated,
 } from './actions';
 
 const initialState = {
@@ -22,6 +24,7 @@ const initialState = {
   invoiceTax: '',
   curreny: '',
   showTableError: false,
+  rowUpdated: false,
   searchResultServices: [],
   searchResultElementsServices: {}, // Object with row index as key and service items array as value
   filters: {
@@ -66,16 +69,21 @@ const ACTION_HANDLERS = {
   },
   [updateServiceComponentsFifo.toString()]: {
     next: (state: any, action: any) => {
-      const { serviceId, components } = action.payload;
-
+      const { serviceId, components, price } = action.payload;
       const updatedActItems = state.actItems.map((serviceItem: any) => {
         const currentId = Number(
           serviceItem.service_id || serviceItem.product_id || serviceItem.id
         );
+
         if (currentId === Number(serviceId)) {
+          const qty = Number(serviceItem.quantity || 1);
+          const newPrice = price !== undefined ? Number(price) : Number(serviceItem.price || 0);
+
           return {
             ...serviceItem,
             components: components,
+            price: newPrice,
+            total: Number((qty * (newPrice + serviceItem.base_price)).toFixed(2)), // Автоматично оновлюємо загальну суму рядка
           };
         }
         return serviceItem;
@@ -103,6 +111,12 @@ const ACTION_HANDLERS = {
       filters: action.payload,
     }),
   },
+  [setRowUpdated.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      rowUpdated: action.payload,
+    }),
+  },
   [clearFilters.toString()]: {
     next: (state: any) => ({
       ...state,
@@ -128,11 +142,20 @@ const ACTION_HANDLERS = {
       ],
     }),
   },
-  [setupActStoreErrorAction.toString()]: {
+  [removeComponentAction.toString()]: {
     next: (state: any, action: any) => ({
       ...state,
-      actItemsError: action.payload,
+      actItems: action.payload.updatedServices,
     }),
+  },
+  [setupActStoreErrorAction.toString()]: {
+    next: (state: any, action: any) => {
+      return {
+        ...state,
+        // 🚀 Полностью перезаписываем ошибки актуальным состоянием с бэкенда
+        actItemsError: action.payload || {},
+      };
+    },
   },
   [updateServiceItemQtyAction.toString()]: {
     next: (state: any, action: any) => {
@@ -203,8 +226,13 @@ const ACTION_HANDLERS = {
   },
   [removeActRowAction.toString()]: {
     next: (state: any, action: any) => {
-      const index = action.payload;
-      const updatedItems = state.actItems.filter((_: any, idx: number) => idx !== index);
+      const serviceIdToRemove = action.payload;
+
+      // Фільтруємо масив, залишаючи все, окрім того, що має цей service_id (або product_id)
+      const updatedItems = state.actItems.filter(
+        (item: any) => Number(item.service_id || item.product_id) !== Number(serviceIdToRemove)
+      );
+
       return {
         ...state,
         actItems:
@@ -224,6 +252,45 @@ const ACTION_HANDLERS = {
       };
     },
   },
+  // [updateComponentMarkupAction.toString()]: {
+  //   next: (state: any, action: any) => {
+  //     if (!action.payload) return state;
+  //     return {
+  //       ...state,
+  //       actItems: action.payload.updatedServices,
+  //     };
+  //   },
+  // },
+  [updateComponentMarkupAction.toString()]: (state: any, action: any) => {
+    if (!action.payload) return state;
+
+    const { updatedServices, deficitsMap } = action.payload;
+
+    return {
+      ...state,
+      actItems: updatedServices,
+      deficitsError: deficitsMap || state.deficitsError,
+    };
+  },
+  // У вашому Redux слайсі (наприклад, Redux/Act/index.ts)
+  // updateComponentMarkupAction: (state: any, action: any) => {
+  //   // action.payload містить сервіс ID, матеріалу та нове значення націнки (або готовий стан)
+  //   const { serviceId, materialId, markup } = action.payload;
+  //
+  //   // Знаходимо потрібний сервіс та компонент у state і оновлюємо mark_up
+  //   state.actItems = state.actItems.map((row: any) => {
+  //     if (Number(row.service_id || row.product_id) === Number(serviceId)) {
+  //       const updatedComponents = (row.components || []).map((comp: any) => {
+  //         if (Number(comp.material_id || comp.product_id) === Number(materialId)) {
+  //           return { ...comp, mark_up: markup };
+  //         }
+  //         return comp;
+  //       });
+  //       return { ...row, components: updatedComponents };
+  //     }
+  //     return row;
+  //   });
+  // },
 };
 
 export {
@@ -235,12 +302,14 @@ export {
   clearFilters,
   findActItemsAction,
   updateServiceQuantityAction,
-  syncAndRecalculateAct,
   setupActStoreErrorAction,
   updateServiceComponentsFifo,
   addEmptyActRowAction,
   updateActRowAction,
   removeActRowAction,
+  removeComponentAction,
+  updateComponentMarkupAction,
+  setRowUpdated,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

@@ -19,6 +19,7 @@ const lngPaymentMethod = {
     'title.list': 'Платіжні методи',
     'title.edit': 'Редагувати метод оплати',
     'title.view': 'Переглянути метод оплати',
+    'title.total': 'Загалом',
     create: 'Створити метод оплати',
     'title.description': 'Платіжні системи клініки',
     name: 'Назва',

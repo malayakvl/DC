@@ -6,6 +6,12 @@ body {
   z-index: 9999;
   width: 100%;
 }
+.top-h-style {
+  z-index: 999;
+  top:0;
+  left:0;
+  width:100%;
+}
 
 .top-header {
 
@@ -408,13 +414,16 @@ to-green-400 {
   background: #f8fafc;
 }
 .user-lang {
-  margin-right: 55px;
-  margin-top: -7px;
+  margin-right: 15px;
+  margin-top: -13px;
   background: #f8fafc;
 }
 .separate-m-header {
   @apply h-6 w-px bg-slate-200;
   margin-right: 160px;
+}
+.separate-m-header-transp {
+  @apply bg-white;
 }
 .filial-sep {
   margin-right: 180px !important;
@@ -435,23 +444,23 @@ to-green-400 {
 //
 //}
 .btn-login-new {
-  @apply hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-brand-700 hover:text-brand-800 hover:bg-brand-50/70 rounded-xl transition-all
+  @apply hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-semibold bg-[#d8f3f4] text-brand-700 hover:text-brand-800 hover:bg-brand-50/70 rounded-md transition-all
 }
 .btn-register-new {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm transition-all;
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-semibold text-white bg-[#f87f13] hover:bg-[#954905] transition-all md:ml-[5px];
 }
 .btn-login {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
-  color: #116aef;
-  border: solid 1px #116aef;
+  color: #f87f13;
+  border: solid 1px #f87f13;
   border-radius: 5px;
 }
 
 .btn-register {
   @apply text-sm text-slate-300 px-3 py-2 rounded-md  rounded-lg font-bold;
   color: #fff;
-  border: solid 1px #116aef;
-  background: #116aef;
+  border: solid 1px #f87f13;
+  background: #f87f13;
   border-radius: 5px;
   margin-left: 10px;
 }
@@ -471,7 +480,7 @@ to-green-400 {
   padding: 5px 10px;
   max-height: 50px;
   border: solid 1px #c5f9f0;
-  max-width: 240px;
+  max-width: 220px;
 
   &:hover {
     background-color: #dafbf5;
@@ -609,4 +618,19 @@ to-green-400 {
   font-size: 12px;
   font-family: "Google Sans", sans-serif;
   font-weight: normal !important;
+}
+.toggle-top-menu-buttom {
+  @apply w-10 h-10 border;
+  position: absolute;
+  left:-40px;
+  top: -3px;
+  background-color: rgba(238, 242, 255, 0.6);
+  border-color: transparent;
+  //border-color: none;
+  border-radius: 8px;
+}
+.header-menu {
+  @apply flex items-center gap-1.5 px-1 py-1 rounded-lg transition-all cursor-pointer;
+  font-weight: 500 !important;
+  font-size: 14px;
 }

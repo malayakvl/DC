@@ -5,7 +5,7 @@ import Lang from 'lang.js';
 import lngHeader from '../../../Lang/Header/translation';
 import { Link, usePage } from '@inertiajs/react';
 import React from 'react';
-import { FileSpreadsheet, Truck, Boxes, BarChart3 } from 'lucide-react';
+import { FileSpreadsheet, Truck, Boxes, BarChart3, AlarmClockOffIcon } from 'lucide-react';
 
 interface AuthProps {
   auth: {
@@ -26,12 +26,7 @@ export default function NavReports() {
   const { auth } = usePage<AuthProps>().props;
   const permissions = auth.can;
 
-  const activeRoutes = [
-    '/store-report',
-    '/report-balance',
-    '/report-invoices',
-    '/finances-report',
-  ];
+  const activeRoutes = ['/store-report', '/report-balance', '/report-invoices', '/finances-report'];
   const isActive = activeRoutes.some((route) => url.startsWith(route));
 
   return (
@@ -39,13 +34,13 @@ export default function NavReports() {
       {(auth.user?.roles?.[0]?.name === 'Admin' || permissions['customer-all']) && (
         <Menu as="div" className="relative inline-block text-left">
           <MenuButton
-            className={`flex items-center gap-1.5 px-1.5 py-2 rounded-lg transition-all cursor-pointer ${
+            className={`header-menu ${
               isActive
-                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20 shadow-xs'
+                ? 'text-teal-700 bg-teal-50/90 ring-1 ring-teal-500/20'
                 : 'text-black hover:text-slate-900 hover:bg-slate-100/70'
             }`}
           >
-            <span className="text-[13px]">{lng.get('menu.reports')}</span>
+            <span>{lng.get('menu.reports')}</span>
           </MenuButton>
           <MenuItems
             transition
@@ -167,6 +162,34 @@ export default function NavReports() {
                         </div>
                         <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
                           {lng.get('menu.tipStore.finanses_report')}
+                        </p>
+                      </div>
+                    </Link>
+                  </MenuItem>
+                )}
+                {permissions['scheduler-create'] && (
+                  <MenuItem>
+                    <Link
+                      href={'/report/salary-report'}
+                      className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-teal-50/70 transition-colors"
+                    >
+                      <div
+                        className={`mt-0.5 w-9 h-9 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-teal-600 group-hover:text-white transition-all shadow-xs ${
+                          url.startsWith('report/salary-report')
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-slate-100 text-black'
+                        }`}
+                      >
+                        <AlarmClockOffIcon className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold text-slate-800 group-hover:text-teal-900">
+                            {lng.get('menu.salary.report')}
+                          </p>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
+                          {lng.get('menu.tipSalary.finanses_report')}
                         </p>
                       </div>
                     </Link>
