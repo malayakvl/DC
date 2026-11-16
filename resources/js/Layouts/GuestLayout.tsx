@@ -1,8 +1,9 @@
 import Footer from '../Components/Footer/Footer';
 import Header from '../Components/Header/Header';
 import { Head } from '@inertiajs/react';
+import { ReactNode } from 'react';
 
-export default function GuestLayout({ children, auth }) {
+export default function GuestLayout({ children, auth }: { children: ReactNode; auth?: any }) {
   return (
     <>
       <Head title="DentalCare system" />

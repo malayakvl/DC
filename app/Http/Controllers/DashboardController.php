@@ -9,6 +9,9 @@ use App\Models\ClinicFilial;
 use App\Models\Filial;
 use App\Models\Store;
 use App\Models\User;
+use App\Services\AuditLogService;
+use App\Services\ClinicSchemaService;
+use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -18,6 +21,38 @@ use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
+    protected AuditLogService $auditLogService;
+    protected ClinicSchemaService $schemaService;
+    protected CustomerService $customerService;
+
+    public function __construct(ClinicSchemaService $schemaService, AuditLogService $auditLogService, CustomerService $customerService)
+    {
+        $this->schemaService = $schemaService;
+        $this->auditLogService = $auditLogService;
+        $this->customerService = $customerService;
+    }
+
+    /**
+     * Helper для работы с текущей схемой клиники
+     */
+    private function withClinicSchema(Request $request, \Closure $callback)
+    {
+        $clinicId = $request->session()->get('clinic_id');
+        if (!$clinicId) {
+            abort(403, 'Clinic not selected in session.');
+        }
+
+        $originalSearchPath = DB::select("SHOW search_path")[0]->search_path;
+
+        try {
+            // 🔹 Добавляем public и core в search_path, чтобы модели могли найти свои таблицы
+            DB::statement("SET search_path TO clinic_{$clinicId}, public, core");
+            return $callback($clinicId);
+        } finally {
+            DB::statement("SET search_path TO {$originalSearchPath}");
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,12 +66,12 @@ class DashboardController extends Controller
             ->where('core.clinic_user.user_id', $userId)
             ->select(
                 'core.clinics.id as clinic_id',
+                'core.clinics.license',
                 'core.clinics.name as clinic_name'
             )
             ->get();
 
         $result = [];
-
         foreach ($clinics as $clinic) {
 
             // 3️⃣ Получаем названия филиалов из схемы клиники
@@ -55,7 +90,8 @@ class DashboardController extends Controller
             // Получаем филиалы с информацией о ролях
             $filials = DB::table('clinic_filials')
                 ->whereIn('id', $assignedFilialIds)
-                ->select('id', 'name', 'address')
+                ->select('id', 'name', 'address', 'start_at', 'end_at')
+                ->orderBy('name', 'asc')
                 ->get()
                 ->map(function ($filial) use ($assignedFilialData) {
                     $assignment = $assignedFilialData->firstWhere('filial_id', $filial->id);
@@ -64,13 +100,32 @@ class DashboardController extends Controller
                     return $filial;
                 });
 
+            // get customers in clinic
+            $totalCustomers = DB::table('core.clinic_user as cu')
+                ->join('core.users as u', 'cu.user_id', '=', 'u.id')
+                ->leftJoin("clinic_{$clinic->clinic_id}.patients as pt", 'pt.user_id', '=', 'u.id')
+                ->where('cu.clinic_id', $clinic->clinic_id)
+                ->whereNull('pt.id')
+                ->count();
+
+            $totalPatients = DB::table("clinic_{$clinic->clinic_id}.patients")
+                ->count();
+
+            $totalVisits = DB::table("clinic_{$clinic->clinic_id}.schedulers")
+                ->whereDate('event_date', today())
+                ->count();
+
             DB::statement("SET search_path TO {$original}");
 
             // 4️⃣ Формируем единый объект
             $result[] = [
                 'clinic_id' => $clinic->clinic_id,
                 'clinic_name' => $clinic->clinic_name,
+                'clinic_license' => $clinic->license,
                 'filials' => $filials,
+                'totalCustomers' => $totalCustomers,
+                'totalPatients' => $totalPatients,
+                'totalVisits' => $totalVisits,
             ];
         }
         // dd($result);exit;
@@ -82,10 +137,15 @@ class DashboardController extends Controller
 
     public function indexFilial(Request $request)
     {
-        $userId = $request->user()->id;
-        $user = User::where('id', $userId)->first();
-//        $clinicId = $request->session()->get('clinic_id');
-//        $filialId = $request->session()->get('filial_id');
+        return $this->withClinicSchema($request, function () use ($request) {
+            $userId = $request->user()->id;
+            $user = User::where('id', $userId)->first();
+            $clinicId = $request->session()->get('clinic_id');
+            $filialId = $request->session()->get('filial_id');
+            // количество приемов сегодня
+            $visitCount = DB::table('schedulers')->where('clinic_id', $clinicId)
+                ->where('filial_id', $filialId)
+                ->where('event_date', now())->count();
 //        $filial = ClinicFilial::where('id', $filialId)->first();
 //        $stores = Store::where('filial_id', $filialId)->get();
 //        return Inertia::render('Store/StoreIndex', [
@@ -93,9 +153,14 @@ class DashboardController extends Controller
 //            'filialData' => $filial,
 //            'storesData' => $stores,
 //        ]);
+            if ($filialId) {
+                return Inertia::render('Dashboard/Dashboard', [
+                    'visitCount' => $visitCount,
+                ]);
+            } else {
 
-        return Inertia::render('Dashboard/Dashboard', [
-        ]);
+            }
+        });
     }
 
     /**

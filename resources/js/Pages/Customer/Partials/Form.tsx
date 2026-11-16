@@ -1,4 +1,4 @@
-import {  router, useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -26,7 +26,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
     messages: lngCustomer,
     locale: appLang,
   });
-//   const { errors } = usePage().props;
+
   const [values, setValues] = useState({
     id: formData.id,
     name: formData.name,
@@ -44,7 +44,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   const [preview, setPreview] = useState(photoPath ? photoPath : '/images/no-image.png');
   const serchResults = useAppSelector(userSearchResultsSelector);
-  const { data, setData, processing, post, recentlySuccessful, progress, errors } = useForm({
+  const { setData, processing, recentlySuccessful, progress, errors } = useForm({
     id: formData.id,
     name: formData.name,
     first_name: formData.first_name,
@@ -72,7 +72,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
       return (
         <div className="absolute autocomplete">
           <ul>
-            {serchResults.map((_res) => (
+            {serchResults.map((_res: any) => (
               // eslint-disable-next-line react/jsx-key
               <li
                 className="cursor-pointer"
@@ -96,7 +96,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     setValues((values) => ({
@@ -105,7 +105,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
     }));
   };
 
-  const handleChangeEmail = (e) => {
+  const handleChangeEmail = (e: any) => {
     const key = e.target.id;
     const value = e.target.value;
     if (value.length > 3) {
@@ -141,7 +141,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
   //   }));
   // };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     if (selectedFile && !formData.file) {
       formData.file = selectedFile;
@@ -161,8 +161,6 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
           title={formData?.id ? msg.get('customer.title.edit') : msg.get('customer.title.create')}
           description={msg.get('customer.title.description')}
           backUrl="/customers"
-          processing={processing}
-          saveText={msg.get('customer.save') || 'Зберегти зміни'}
         />
       </div>
       <div className="flex-1 max-w-[1780px] w-full mx-auto sm:px-6 lg:px-0 py-6 sm:py-8">
@@ -244,9 +242,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
                   <InputText
                     name={'email'}
                     values={values}
-                    value={values.email}
                     onChange={handleChangeEmail}
-                    required
                     label={msg.get('customer.email')}
                   />
                   <>{renderSearchResult()}</>
@@ -255,33 +251,25 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
                   <InputText
                     name={'last_name'}
                     values={values}
-                    value={values.last_name}
                     onChange={handleChange}
-                    required
                     label={msg.get('customer.last_name')}
                   />
                   <InputText
                     name={'first_name'}
                     values={values}
-                    value={values.first_name}
                     onChange={handleChange}
-                    required
                     label={msg.get('customer.first_name')}
                   />
                   <InputText
                     name={'inn'}
                     values={values}
-                    value={values.inn}
                     onChange={handleChange}
-                    required
                     label={msg.get('customer.inn')}
                   />
                   <InputText
                     name={'phone'}
                     values={values}
-                    value={values.phone}
                     onChange={handleChange}
-                    required
                     label={msg.get('customer.phone')}
                   />
                 </div>
@@ -298,6 +286,7 @@ export default function CustomerForm({ formData, clinicData, photoPath = null }:
             successMessage={msg.get('customer.saved') || 'Збережено успішно!'}
             processing={processing}
             recentlySuccessful={recentlySuccessful}
+            onSave={undefined}
           />
         </form>
       </div>

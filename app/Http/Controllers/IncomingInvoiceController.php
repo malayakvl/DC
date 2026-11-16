@@ -139,19 +139,19 @@ class IncomingInvoiceController extends Controller
 
             $suppliers = DB::table('suppliers')->select('id', 'name')->orderBy('name')->get();
             $paymentMethods = DB::select("
-            SELECT 
-                pm.id,
-                pm.name,
-                c.name as currency_name,
-                COALESCE(SUM(mm.direction * mm.amount), 0) as balance
-            FROM {$schema}.payment_methods pm
-            LEFT JOIN {$schema}.money_movements mm 
-                ON mm.account_id = pm.id
-            LEFT JOIN {$schema}.currencies c 
-                ON c.id = pm.currency_id
-            GROUP BY pm.id, pm.name, c.name
-            ORDER BY pm.name
-        ");
+                SELECT 
+                    pm.id,
+                    pm.name,
+                    c.name as currency_name,
+                    COALESCE(SUM(mm.direction * mm.amount), 0) as balance
+                FROM {$schema}.payment_methods pm
+                LEFT JOIN {$schema}.money_movements mm 
+                    ON mm.account_id = pm.id
+                LEFT JOIN {$schema}.currencies c 
+                    ON c.id = pm.currency_id
+                GROUP BY pm.id, pm.name, c.name
+                ORDER BY pm.name
+            ");
 
             return Inertia::render('InvoiceIncoming/List', [
                 'clinicData' => $clinic,

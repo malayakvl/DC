@@ -10,7 +10,13 @@ import GuestLayout from '../../Layouts/GuestLayout';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import lngAuth from '../../Lang/Auth/translation';
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({
+  status,
+  canResetPassword,
+}: {
+  status: any;
+  canResetPassword: any;
+}) {
   const [values, setValues] = useState({
     email: '',
     password: '',
@@ -18,7 +24,7 @@ export default function Login({ status, canResetPassword }) {
   });
 
   const [processing, setProcessing] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<any>({});
   const [showPassword, setShowPassword] = useState(false);
 
   const appLang = useSelector(appLangSelector);
@@ -27,7 +33,7 @@ export default function Login({ status, canResetPassword }) {
     locale: appLang,
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, id, value, type, checked } = e.target;
     const key = name || id;
     const val = type === 'checkbox' ? checked : value;
@@ -39,11 +45,11 @@ export default function Login({ status, canResetPassword }) {
 
     // Очищаємо помилку поля при вводі
     if (errors[key]) {
-      setErrors((prev) => ({ ...prev, [key]: null }));
+      setErrors((prev: any) => ({ ...prev, [key]: null }));
     }
   };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     setProcessing(true);
     setErrors({});
@@ -90,14 +96,16 @@ export default function Login({ status, canResetPassword }) {
           href="/register"
           className="flex-1 rounded-lg py-2 text-center text-xs font-semibold text-slate-600 transition-all hover:text-slate-900 sm:text-sm"
         >
-          Реєстрація
+          {msg.get('auth.register_tab')}
         </Link>
       </div>
 
       {/* Title & Description */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900">Вітаємо у кабінеті</h2>
-        <p className="mt-1 text-xs text-slate-600 sm:text-sm">Увійдіть у ваш робочий простір</p>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+          {msg.get('auth.welcome_cabinet')}
+        </h2>
+        <p className="mt-1 text-xs text-slate-600 sm:text-sm">{msg.get('auth.enter_system')}</p>
       </div>
 
       {/* Status Message */}

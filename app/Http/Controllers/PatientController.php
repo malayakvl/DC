@@ -71,21 +71,20 @@ class PatientController extends Controller
             $perPage = 50;
             $page = $request->input('page', 1);
             $offset = ($page - 1) * $perPage;
-//            dd($request);exit;
 
             // Fetch filtered patients with balance using the core function
             $results = DB::select("
-    SELECT *, patient_id as id 
-    FROM core.patients_with_balance_ordering(
-        p_schema       => :schema,
-        p_filial_id    => :filial_id,
-        p_patient_name => :patient_name,
-        p_phone        => :phone,
-        p_segment      => :segment,
-        p_limit        => :limit,
-        p_offset       => :offset
-    )
-", [
+                SELECT *, patient_id as id 
+                FROM core.patients_with_balance_ordering(
+                    p_schema       => :schema,
+                    p_filial_id    => :filial_id,
+                    p_patient_name => :patient_name,
+                    p_phone        => :phone,
+                    p_segment      => :segment,
+                    p_limit        => :limit,
+                    p_offset       => :offset
+                )
+            ", [
                 'schema'       => "clinic_{$clinicId}",
                 'filial_id'    => $filialId,
                 'patient_name' => $request->search ?: null,
@@ -95,13 +94,6 @@ class PatientController extends Controller
                 'offset'       => $offset
             ]);
 
-            // Если выбран сегмент «Боржники», фильтруем коллекцию по балансу < 0
-//            if ($segment === 'debtors') {
-//                $results = array_values(array_filter($results, function($patient) {
-//                    return $patient->balance < 0;
-//                }));
-//            }
-            
 
             // Calculate total count for pagination links
             $countQuery = DB::table('patients')

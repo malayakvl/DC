@@ -31,6 +31,7 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\VisitScheduleStatusController;
 use App\Http\Controllers\MoneyInController;
 use App\Http\Controllers\MoneyOutController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -64,12 +65,30 @@ Route::get('/dashboard-select', [DashboardController::class, 'index'])
 Route::get('/clinic/accept', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'accept'])
     ->name('clinic.accept');
 
+Route::middleware(['auth'])->prefix('chatify/v1')->group(function () {
+    // Список пользователей / клиентов для чата
+    Route::get('/users', [ChatController::class, 'getChatCustomers'])->name('chat.customers');
+
+    // Список диалогов с последними сообщениями
+    Route::get('/conversations', [ChatController::class, 'getConversations'])->name('chat.conversations');
+    // Меняем {conversation} на {conversationId}, чтобы пакет не перехватывал запрос
+    Route::get('/messages/{conversationId}', [ChatController::class, 'getMessages'])->name('chat.messages');
+    // История сообщений конкретного диалога
+    Route::get('/messages/{conversation}', [ChatController::class, 'getMessages'])->name('chat.messages');
+
+// 💥 Убираем лишний префикс chatify/v1 здесь:
+    Route::post('/read/{conversationId}', [ChatController::class, 'markAsRead']);
+});
+
 
 Route::middleware('auth')->group(function () {
+    Route::get('/test/conversations', [CabinetController::class, 'getConversations'])->name('test.conversations');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/clinic/create', [ClinicController::class, 'create'])->name('clinic.create');
@@ -110,10 +129,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/finances', [PatientController::class, 'view'])->name('patient.');
     Route::post('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.viewFinances');
 
-    Route::get('/scheduler-visit-statuses', [SchedulerVisitStatusController::class, 'index'])->name('scheduler-visit-status.index');
-    Route::get('/scheduler-visit-status/create', [SchedulerVisitStatusController::class, 'create'])->name('scheduler-visit-status.create');
-    Route::get('/scheduler-visit-status/edit/{id}', [SchedulerVisitStatusController::class, 'edit'])->name('scheduler-visit-status.edit');
-    Route::post('/scheduler-visit-status/update', [SchedulerVisitStatusController::class, 'update'])->name('scheduler-visit-status.update');
+    Route::get('/scheduler-visit-statuses', [VisitScheduleStatusController::class, 'index'])->name('scheduler-visit-status.index');
+    Route::get('/scheduler-visit-status/create', [VisitScheduleStatusController::class, 'create'])->name('scheduler-visit-status.create');
+    Route::get('/scheduler-visit-status/edit/{id}', [VisitScheduleStatusController::class, 'edit'])->name('scheduler-visit-status.edit');
+    Route::post('/scheduler-visit-status/update', [VisitScheduleStatusController::class, 'update'])->name('scheduler-visit-status.update');
 
     Route::get('/patient-statuses', [PatientStatusController::class, 'index'])->name('patient-status.index');
     Route::get('/patient-status/create', [PatientStatusController::class, 'create'])->name('patient-status.create');
@@ -242,6 +261,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/service/findService', [ServiceController::class, 'findService'])->name('service.categories.findService');
     Route::post('/service/findServiceItems', [ServiceController::class, 'findServiceItems'])->name('service.categories.findServiceItems');
     Route::post('/act/fifo-preview', [ActController::class, 'fifoPreview'])->name('act.fifo-preview');
+    Route::post('/act/fifo-preview-func', [ActController::class, 'fifoPreview'])->name('act.fifo-preview');
+    Route::post('/material/find', [ActController::class, 'findMaterial'])->name('act.findMaterial');
 
     // REPORTS ROUTES
     Route::get('/report-balance', [ReportController::class, 'balance'])->name('report.balance');
@@ -254,6 +275,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/store-report', [ReportController::class, 'store'])->name('report.store');
     Route::post('/report/generateStoreReport', [ReportController::class, 'generateStoreReport'])->name('report.store.data');
+    Route::get('/report/salary-report', [ReportController::class, 'monthlyReport'])->name('report.salary.report');
 
 
 
@@ -279,6 +301,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/assign/{id}', [CustomerController::class, 'assign'])->name('customer.assign');
     Route::post('/customer/assign-submit', [CustomerController::class, 'assignSubmit'])->name('customer.assignSubmit');
     Route::post('/customer/findByEmail', [CustomerController::class, 'findByEmail'])->name('customer.findByEmail');
+    Route::get('/customer/calculate-salary/{id}', [CustomerController::class, 'salaryCalc'])->name('customer.salaryCalc');
+    Route::post('/customer/store-salary-settings', [CustomerController::class, 'storeSalarySettings'])->name('customer.storeSalarySettings');
+
+    Route::post('/chat/update', [ChatController::class, 'saveMessage'])->name('chat.saveMessage');
 });
 
 require __DIR__.'/auth.php';

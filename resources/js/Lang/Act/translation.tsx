@@ -99,6 +99,8 @@ const lngAct = {
     view_fifo_description: 'Витрачені матеріали (FIFO списання)',
     view_total_services: 'Всього послуг',
     view_total_pay: 'ВСОГО ДО СПЛАТИ',
+    add_material: 'Додати матеріал',
+    tip_add_material: 'Введіть назву матеріалу для додавання...',
   },
 };
 export default lngAct;

@@ -65,14 +65,48 @@ class MaterialController extends Controller
                 return Inertia::render('Currency/List', ['error' => 'Insufficient permissions']);
             }
             $clinic = $request->user()->clinicByFilial($clinicId);
-            $listData = DB::table('materials')
-                ->select('materials.*', 'material_categories.name AS categoryName', 'producers.name AS producerName',
-                    'material_categories.percent', 'units.name AS unitName', 'weight_units.name AS weightUnitName')
+            // check filter paramters
+            $supplierId = $request->query('supplier_id');
+            $categoryId = $request->query('category_id');
+            $search = $request->query('search');
+
+            $perPage = 50;
+            $page = $request->input('page', 1);
+            $offset = ($page - 1) * $perPage;
+
+            // 2. Будуємо запит
+            $query = DB::table('materials')
+                ->select(
+                    'materials.*',
+                    'material_categories.name AS categoryName',
+                    'producers.name AS producerName',
+                    'material_categories.percent',
+                    'units.name AS unitName',
+                    'weight_units.name AS weightUnitName'
+                )
                 ->leftJoin('material_categories', 'material_categories.id', '=', 'materials.category_id')
                 ->leftJoin('producers', 'producers.id', '=', 'materials.producer_id')
                 ->leftJoin('units', 'units.id', '=', 'materials.unit_id')
-                ->leftJoin('units AS weight_units', 'weight_units.id', '=', 'materials.weightunit_id') // Приєднуємо таблицю одиниць для ваги
-                ->orderBy('name')->get();
+                ->leftJoin('units AS weight_units', 'weight_units.id', '=', 'materials.weightunit_id');
+
+// 3. Додаємо фільтр за пошуком (наприклад, за назвою матеріалу)
+            if (!empty($search)) {
+                $query->where('materials.name', 'LIKE', "%{$search}%");
+            }
+
+// 4. Фільтр за категорією
+            if (!empty($categoryId)) {
+                $query->where('materials.category_id', '=', $categoryId);
+            }
+
+// 5. Фільтр за постачальником (producer_id)
+            if (!empty($supplierId)) {
+                $query->where('materials.producer_id', '=', $supplierId);
+            }
+
+            // 6. Сортування, пагінація та збереження параметрів у посиланнях
+            $listData = $query->orderBy('materials.name')->paginate($perPage)->withQueryString();
+//dd($listData);
             $categories = MaterialCategories::where('parent_id', null)
                 ->orWhere('special', true)
                 ->get();
