@@ -5,7 +5,7 @@ import {
   getPerioStatusChangeSelector,
 } from '../../../Redux/Formula/selectors';
 
-export default function Tooth31({ className = '' }) {
+export default function Tooth31({ className = '' }: { className: string }) {
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
   const tooth31 = perioDiagnozis.tooth31;
   const statusChange = useSelector(getPerioStatusChangeSelector); // do not remove need for update component
@@ -34,11 +34,13 @@ export default function Tooth31({ className = '' }) {
             s18,42,19,66s-21,47-20,93C1049.8,1184.9,1053,1203.9,1053,1203.9z"
           ></path>
         </g>
-        <g id="TH_31" className="common-view" style={{ visibility: tooth31.status !== 'absent' ? 'inherit' : 'hidden' }}>
+        <g
+          id="TH_31"
+          className="common-view"
+          style={{ visibility: tooth31.status !== 'absent' ? 'inherit' : 'hidden' }}
+        >
           <g className="dentin">
-            <g
-              style={{ visibility: 'inherit' }}
-            >
+            <g style={{ visibility: 'inherit' }}>
               <path
                 className="st9"
                 d="M1107.5,1206.7c-0.2,0.7-0.5,1.4-0.8,2c-2.4,5.6-5.6,10.8-10.8,14.1
@@ -50,7 +52,12 @@ export default function Tooth31({ className = '' }) {
               ></path>
             </g>
             <g
-              style={{ visibility: (tooth31.status === 'implant' || tooth31.status === 'middlepart') ? 'hidden' : 'inherit' }}
+              style={{
+                visibility:
+                  tooth31.status === 'implant' || tooth31.status === 'middlepart'
+                    ? 'hidden'
+                    : 'inherit',
+              }}
             >
               <path
                 className="st10"
@@ -63,11 +70,7 @@ export default function Tooth31({ className = '' }) {
             </g>
           </g>
           <g className="pulp">
-            <g
-              className="pulpitis-pfilling"
-              data-position="31"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="31" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target"
                 d="M1091.2,1201.6c0,4.4-0.4,8.8-0.5,13.2c-0.2,3.5-0.2,7-0.3,10.5
@@ -76,11 +79,7 @@ export default function Tooth31({ className = '' }) {
                 C1090.9,1192.1,1091.2,1196.8,1091.2,1201.6z"
               ></path>
             </g>
-            <g
-              className="pulpitis-pfilling"
-              data-position="31"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="31" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target"
                 d="M1091.7,1294.8c-0.2,0-0.5,0-0.8,0.1c-1.4,0.1-2.8,0-4.1-0.3
@@ -89,11 +88,7 @@ export default function Tooth31({ className = '' }) {
                 c0.2,15.7,0.7,31.4,1.1,47.1C1091.6,1290.3,1091.7,1292.6,1091.7,1294.8z"
               ></path>
             </g>
-            <g
-              className="pulpitis-pfilling"
-              data-position="31"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="31" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target part"
                 d="M1093.4,1364.2v0.2C1093.4,1364.3,1093.4,1364.3,1093.4,1364.2L1093.4,1364.2
@@ -115,12 +110,7 @@ export default function Tooth31({ className = '' }) {
               data-position="31"
               style={{ visibility: 'inherit', opacity: 0 }}
             >
-              <circle
-                className="st42"
-                cx="1095.9"
-                cy="1372.9"
-                r="17.5"
-              ></circle>
+              <circle className="st42" cx="1095.9" cy="1372.9" r="17.5"></circle>
             </g>
             <g
               className="level periodontitis"
@@ -131,10 +121,7 @@ export default function Tooth31({ className = '' }) {
               <circle className="st42" cx="1100" cy="1382.9" r="30"></circle>
             </g>
           </g>
-          <g
-            className="pin"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="pin" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st56 hIntact"
               d="M1107.5 1206.6C1107.2 1207.3 1106.9 1208 1106.6 1208.8C1104.2 1214.4 1101 1219.6 1095.8 1222.9C1094.1 1224 1092.2 1224.8 1090.3 1225.4H1090.2C1086.6 1226.4 1082.9 1226.4 1079.3 1225.5C1078.9 1225.4 1078.5 1225.3 1078.1 1225.2C1076.6 1224.7 1075.2 1224.1 1073.8 1223.3C1065.5 1218.5 1061.5 1209.3 1058.6 1200.2C1058.3 1196.2 1058.1 1192.2 1058 1188.3C1057.8 1183.1 1057.7 1177.9 1057.7 1172.7C1057.7 1165.2 1058 1157.8 1058.7 1150.3L1060.1 1147.8L1061.8 1146.8L1099.7 1146.9L1101.3 1148.3L1102.2 1149.8C1104 1158.4 1105.4 1167 1106.3 1175.8C1106.8 1180.8 1107.2 1185.9 1107.4 1191C1107.6 1196.2 1107.6 1201.4 1107.5 1206.6Z"
@@ -145,10 +132,7 @@ export default function Tooth31({ className = '' }) {
               d="M1069 1146.9L1078.1 1225.1L1085.9 1292.2L1088.2 1311.9C1088.3 1312.9 1089.2 1313.7 1090.2 1313.7C1091.3 1313.7 1092.3 1312.8 1092.2 1311.6L1091.6 1286.3L1090.1 1225.3L1088.2 1146.9H1069Z"
             ></path>
           </g>
-          <g
-            className="stump"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="stump" style={{ visibility: 'hidden', opacity: 0 }}>
             <path
               className="st14"
               d="M1090.2,1313.7L1090.2,1313.7c-1,0-1.9-0.8-2-1.8l-10.1-86.8c0.4,0.1,0.8,0.2,1.2,0.3
@@ -162,10 +146,7 @@ export default function Tooth31({ className = '' }) {
             c1.8,8.6,3.2,17.2,4.1,26c0.5,5,0.9,10.1,1.1,15.2C1107.6,1196.2,1107.6,1201.4,1107.5,1206.6z"
             ></path>
           </g>
-          <g
-            className="abutment"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="abutment" style={{ visibility: 'hidden', opacity: 0 }}>
             <path
               className="st16"
               d="M1107.5,1206.6l-10.3,30.4l-21.1,0.8l-17.5-37.6c2.9,9.1,6.9,18.3,15.2,23.1c6.9,3.9,15.3,3.8,22-0.4
@@ -178,10 +159,7 @@ export default function Tooth31({ className = '' }) {
                 l1.6,1.4l0.9,1.5c1.8,8.6,3.2,17.2,4.1,26c0.5,5,0.9,10.1,1.1,15.2C1107.6,1196.2,1107.6,1201.4,1107.5,1206.6z"
             ></path>
           </g>
-          <g
-            className="shaper"
-            style={{ visibility: 'hidden' }}
-          >
+          <g className="shaper" style={{ visibility: 'hidden' }}>
             <path
               className="st44"
               d="M1102.42 1196.45C1102.62 1194.08 1100.72 1192.07 1098.35 1192.12L1072.57 1192.7C1070.2 1192.75 1068.39 1194.85 1068.69 1197.2L1073.68 1236.51C1073.94 1238.55 1075.71 1240.06 1077.76 1240.01L1095.31 1239.52C1097.35 1239.46 1099.02 1237.88 1099.19 1235.85L1102.42 1196.45Z"
@@ -196,41 +174,11 @@ export default function Tooth31({ className = '' }) {
               d="M1103.3,1237c0,0,1.3,40,1.5,49.4c0.2,9.4-0.7,70.2-0.7,70.2s-5.1,6.9-11.9,6.2s-10.7-5.7-10.9-7
                 c-0.3-1.3-4.8-46.2-5.4-52.3c-0.6-6.1-6-65.7-6-65.7L1103.3,1237z"
             ></path>
-            <line
-              className="st19"
-              x1="1108"
-              y1="1247.5"
-              x2="1066.6"
-              y2="1255"
-            ></line>
-            <line
-              className="st19"
-              x1="1108"
-              y1="1271.5"
-              x2="1068.6"
-              y2="1278"
-            ></line>
-            <line
-              className="st19"
-              x1="1110"
-              y1="1294.5"
-              x2="1070.6"
-              y2="1301"
-            ></line>
-            <line
-              className="st19"
-              x1="1111"
-              y1="1317.5"
-              x2="1071.6"
-              y2="1324"
-            ></line>
-            <line
-              className="st19"
-              x1="1112"
-              y1="1341.5"
-              x2="1072.6"
-              y2="1348"
-            ></line>
+            <line className="st19" x1="1108" y1="1247.5" x2="1066.6" y2="1255"></line>
+            <line className="st19" x1="1108" y1="1271.5" x2="1068.6" y2="1278"></line>
+            <line className="st19" x1="1110" y1="1294.5" x2="1070.6" y2="1301"></line>
+            <line className="st19" x1="1111" y1="1317.5" x2="1071.6" y2="1324"></line>
+            <line className="st19" x1="1112" y1="1341.5" x2="1072.6" y2="1348"></line>
           </g>
           <g className="toutline" style={{ visibility: 'inherit' }}>
             <path
@@ -241,10 +189,7 @@ export default function Tooth31({ className = '' }) {
                 c1.8-6.2,2.8-12.6,3.6-19C1115.3,1164.4,1115.9,1147.2,1114.9,1130z"
             ></path>
           </g>
-          <g
-            className="wedge-shaped"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="wedge-shaped" style={{ visibility: 'inherit' }}>
             <path
               className="st7 st59"
               d="M1113.4 1125.2C1114.5 1126.5 1115 1128.3 1114.9 1130C1115.9 1147.2 1115.3 1164.4 1113 1181.5C1112.2 1187.9 1111.2 1194.3 1109.4 1200.5C1108.6 1203.4 1107.7 1206.2 1106.5 1208.9C1104.1 1214.5 1100.9 1219.7 1095.7 1223C1089 1227.2 1080.6 1227.3 1073.7 1223.4C1065.6 1218.8 1061.6 1210 1058.7 1201.1L1058.7 1201.1C1058.6 1200.7 1058.5 1200.3 1058.4 1200C1054.8 1188.7 1052.2 1177 1050.7 1165.2C1049.2 1153.1 1048.9 1141 1049.8 1128.9C1049.4 1126.8 1050.4 1124.7 1052.3 1123.7C1053.1 1123.3 1053.9 1123.1 1054.8 1123.2L1064.2 1123.1L1096.5 1122.8L1109.6 1122.7C1111.1 1123.1 1112.4 1124 1113.4 1125.2ZM1065.53 1201.16C1065.45 1200.86 1065.38 1200.56 1065.31 1200.34C1064.71 1198.43 1064.15 1196.52 1063.63 1194.59C1063.3 1193.35 1064.21 1192.14 1065.49 1192.11L1102.6 1191.07C1103.85 1191.03 1104.83 1192.13 1104.61 1193.36C1104.18 1195.84 1103.65 1198.29 1102.96 1200.71C1102.37 1202.88 1101.7 1204.98 1100.82 1207C1099.04 1211.2 1096.68 1215.1 1092.84 1217.57C1087.9 1220.72 1081.7 1220.79 1076.6 1217.87C1070.62 1214.42 1067.67 1207.83 1065.53 1201.16L1065.53 1201.16Z"
@@ -258,10 +203,7 @@ export default function Tooth31({ className = '' }) {
               d="M1065.31 1200.34C1065.38 1200.56 1065.45 1200.86 1065.53 1201.16L1065.53 1201.16C1067.67 1207.83 1070.62 1214.42 1076.6 1217.87C1081.7 1220.79 1087.9 1220.72 1092.84 1217.57C1096.68 1215.1 1099.04 1211.2 1100.82 1207C1101.7 1204.98 1102.37 1202.88 1102.96 1200.71C1103.65 1198.29 1104.18 1195.84 1104.61 1193.36C1104.83 1192.13 1103.85 1191.03 1102.6 1191.07L1065.49 1192.11C1064.21 1192.14 1063.3 1193.35 1063.63 1194.59C1064.15 1196.52 1064.71 1198.43 1065.31 1200.34Z"
             ></path>
           </g>
-          <g
-            className="tartar"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="tartar" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st61 level2"
               d="M1054.5 1186L1057 1187.5L1058.5 1190.5V1192L1060 1193.5V1195.5L1062 1200.5V1203.5L1064.5 1206.5L1066.5 1211L1067 1213.5L1068.5 1216L1069.5 1217L1072 1219L1073.5 1219.5L1074.5 1220.5L1079 1223L1082 1224L1083.5 1223H1086.5L1090.5 1222L1093.5 1220.5H1096L1097.5 1219L1100.5 1217L1102 1213.5L1104 1209L1105.5 1206.5V1204.5L1107 1203.5L1108 1200.5L1107.5 1199L1108 1197.5V1195L1110 1191L1110.5 1188.5L1111 1186.5L1113 1184.5L1113.5 1185V1186.5L1113 1188.5V1189.5V1192L1112.5 1193.5L1111.5 1196.5V1198V1200.5L1111 1201.5L1110 1203.5V1205V1207.5L1108.5 1209V1211V1212.5L1108 1214V1217L1108.5 1218L1108 1220.5L1107.5 1224V1227.5L1108 1232L1107 1235.5L1107.5 1238L1105.5 1240.5L1102 1242L1097.5 1246L1092 1248.5L1086.5 1249.5H1081L1077 1247.5H1073.5L1072 1246H1068.5L1066.5 1243L1063.5 1242L1062 1239.5V1237L1061 1233V1229.5L1060 1227.5V1225L1058.5 1223L1059 1221.5V1219L1058.5 1217L1059.5 1214.5L1058.5 1212.5V1207.5L1057 1205V1200.5L1055.5 1198L1054.5 1194.5L1055 1192L1053.5 1188L1054.5 1186Z"
@@ -271,10 +213,7 @@ export default function Tooth31({ className = '' }) {
               d="M1054.5 1186L1057 1187.5L1058.5 1190.5V1192L1060 1193.5V1195.5L1062 1200.5V1203.5L1064.5 1206.5L1066.5 1211L1067 1213.5L1068.5 1216L1069.5 1217L1072 1219L1073.5 1219.5L1074.5 1220.5L1079 1223L1082 1224L1083.5 1223H1086.5L1090.5 1222L1093.5 1220.5H1096L1097.5 1219L1100.5 1217L1102 1213.5L1104 1209L1105.5 1206.5V1204.5L1107 1203.5L1108 1200.5L1107.5 1199L1108 1197.5V1195L1110 1191L1110.5 1188.5L1111 1186.5L1113 1184.5V1186.5L1112.5 1189.5V1192L1111.5 1194.5L1111 1197L1110.5 1200.5L1109 1203.5V1206.5L1108 1209V1212.5L1107.5 1214.5V1216L1106 1218.5L1104 1220L1101.5 1221.5L1099.5 1224L1096 1225L1093.5 1225.5L1091.5 1227L1088.5 1228L1086.5 1229H1083.5L1080.5 1228H1077.5L1074.5 1227L1069.5 1225.5L1068.5 1224L1065.5 1222H1063L1061.5 1220L1060 1217V1214.5L1059 1212.5L1059.5 1211.5L1059 1210V1208.5L1058 1206L1057.5 1203.5V1201.5L1057 1199.5L1055.5 1197L1055 1194V1191.5L1054.5 1189.5L1054 1187.5L1054.5 1186Z"
             ></path>
           </g>
-          <g
-            className="header caries-filling"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="header caries-filling" style={{ visibility: 'inherit' }}>
             <g className="caries-filling" data-position="31_4">
               <path
                 className="st58"
@@ -316,27 +255,13 @@ export default function Tooth31({ className = '' }) {
               ></path>
             </g>
             <g className="with">
-              <path
-                className="st54"
-                d="M1100 1164L1097.5 1128"
-              ></path>
-              <path
-                className="st54"
-                d="M1100 1164C1101.5 1188 1102 1191 1105.5 1196.5"
-              ></path>
-              <path
-                className="st54"
-                d="M1065 1165.5V1128.5"
-              ></path>
-              <path
-                className="st54"
-                d="M1065 1165.5C1065 1182 1066 1190.5 1063 1196"
-              ></path>
+              <path className="st54" d="M1100 1164L1097.5 1128"></path>
+              <path className="st54" d="M1100 1164C1101.5 1188 1102 1191 1105.5 1196.5"></path>
+              <path className="st54" d="M1065 1165.5V1128.5"></path>
+              <path className="st54" d="M1065 1165.5C1065 1182 1066 1190.5 1063 1196"></path>
             </g>
           </g>
-          <g
-            style={{ visibility: 'inherit' }}
-          >
+          <g style={{ visibility: 'inherit' }}>
             <g className="vinir" style={{ visibility: 'hidden', opacity: 0 }}>
               <path
                 className="st55"
@@ -344,7 +269,13 @@ export default function Tooth31({ className = '' }) {
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: (tooth31.status !== 'exist' && tooth31.status) ? 'inherit' : 'hidden', opacity: (tooth31.status !== 'exist') ? 1 : 0 }}>
+          <g
+            className="crown"
+            style={{
+              visibility: tooth31.status !== 'exist' && tooth31.status ? 'inherit' : 'hidden',
+              opacity: tooth31.status !== 'exist' ? 1 : 0,
+            }}
+          >
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M1114.9,1130c0.1-1.7-0.4-3.5-1.5-4.8c-1-1.2-2.3-2.1-3.8-2.5l-13.1,0.1l-32.3,0.3

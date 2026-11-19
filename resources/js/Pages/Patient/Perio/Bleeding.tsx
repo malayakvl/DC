@@ -1,94 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
 import { setPerioDiagnoze } from '../../../Redux/Formula';
 
-export default function Bleeding({ toothNum, type }) {
+interface BleedingProps {
+  toothNum: number | string;
+  type: string;
+}
+
+export default function Bleeding({ toothNum, type }: BleedingProps) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
 
-  const setDiagnozis = stage => {
-    console.log('11', perioDiagnozis);
-    perioDiagnozis[`tooth${toothNum}`][`bleeding_${type}_st${stage}`] =
-      !perioDiagnozis[`tooth${toothNum}`][`bleeding_${type}_st${stage}`];
-    dispatch(setPerioDiagnoze(perioDiagnozis));
-    setChangeState(!changeState);
+  const toothKey = `tooth${toothNum}`;
+  const toothData = perioDiagnozis?.[toothKey] || {};
+
+  const handleToggle = (stage: number) => {
+    const fieldKey = `bleeding_${type}_st${stage}`;
+    const updatedDiagnozis = {
+      ...perioDiagnozis,
+      [toothKey]: {
+        ...toothData,
+        [fieldKey]: !toothData[fieldKey],
+      },
+    };
+
+    dispatch(setPerioDiagnoze(updatedDiagnozis));
   };
 
-  useEffect(() => {}, [changeState]);
-
   return (
-    <>
-      <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 300 100"
-        style={{ width: '100%', height: '20px' }}
-        xmlSpace="preserve"
-      >
-        <circle
-          cx="50"
-          cy="50"
-          r="25"
-          onClick={() => {
-            console.log(1)
-            setDiagnozis(1);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-        <circle
-          cx="150"
-          cy="50"
-          r="25"
-          onClick={() => {
-            setDiagnozis(2);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-        <circle
-          cx="250"
-          cy="50"
-          r="25"
-          onClick={() => {
-            setDiagnozis(3);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-      </svg>
-    </>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        height: '22px',
+      }}
+    >
+      {[1, 2, 3].map((stage) => {
+        const isActive = Boolean(toothData[`bleeding_${type}_st${stage}`]);
+
+        return (
+          <button
+            key={stage}
+            type="button"
+            onClick={() => handleToggle(stage)}
+            title={`Кровоточивість (${type}) — точка ${stage}`}
+            className="group"
+            style={{
+              flex: 1,
+              height: '100%',
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <span
+              className="transition-transform duration-150 group-hover:scale-125"
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: isActive ? '#F43F5E' : 'transparent',
+                border: isActive ? '1.5px solid #E11D48' : '1.5px solid #CBD5E1',
+                boxSizing: 'border-box',
+              }}
+            />
+          </button>
+        );
+      })}
+    </div>
   );
 }

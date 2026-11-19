@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import { Link, router } from '@inertiajs/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus, faPencil, faTrash, faCopy, faPrint } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import {
+  FolderPlus,
+  FolderOpen,
+  Plus,
+  UserPlus,
+  Pencil,
+  Copy,
+  Printer,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 import lngFormula from '../../../Lang/Formula/translation';
 import InputText from '../../../Components/Form/InputText';
 import ViewFormula from './../ViewFormula';
@@ -17,12 +26,23 @@ import { emptyFormula } from '@/Constants';
 import ViewDiagnoze from './../ViewDiagnoze';
 import ViewPSR from './../ViewPSR';
 
-export default function History({ patientData, type, treatmentData }) {
+export default function History({
+  patientData,
+  type,
+  treatmentData = [],
+}: {
+  patientData: any;
+  type: string;
+  treatmentData: any[];
+}) {
   const dispatch = useDispatch();
-  const [tab, setTab] = useState<string>(type ? type : 'history');
+  const [tab] = useState<string>(type ? type : 'history');
   const [stageTab, setStageTab] = useState<string>('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setDisableTeethTab] = useState<string>('');
-  const [trType, setTrType] = useState<string>('');
+  const [stageName, setStageName] = useState('');
+  const [collapsedStages, setCollapsedStages] = useState<Record<string, boolean>>({});
+
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({
     messages: lngPatient,
@@ -32,456 +52,519 @@ export default function History({ patientData, type, treatmentData }) {
     messages: lngFormula,
     locale: appLang,
   });
-  const [stageName, setStageName] = useState('');
 
-  const handleTabClick = (tabName) => {
-    setTab(tabName);
+  // 1. Знаходимо останній (активний) етап лікування
+  const activeStage = useMemo(() => {
+    const stages = (treatmentData || []).filter((item) => item.type === 'stage');
+    if (stages.length === 0) return null;
+    return stages.reduce((latest, current) => (current.id > latest.id ? current : latest));
+  }, [treatmentData]);
+
+  // 2. Групуємо документи (formula, perio, psr) по їх stage_id
+  const groupedStages = useMemo(() => {
+    const items = treatmentData || [];
+    const stages = items.filter((item) => item.type === 'stage');
+    const docs = items.filter((item) => item.type !== 'stage');
+
+    const groups = stages.map((stage) => ({
+      stage,
+      documents: docs.filter((doc) => Number(doc.stage_id) === Number(stage.id)),
+    }));
+
+    const orphanDocs = docs.filter(
+      (doc) => !doc.stage_id || !stages.some((s) => Number(s.id) === Number(doc.stage_id))
+    );
+
+    if (orphanDocs.length > 0) {
+      groups.push({
+        stage: null,
+        documents: orphanDocs,
+      });
+    }
+
+    return groups;
+  }, [treatmentData]);
+
+  const toggleStageCollapse = (key: string) => {
+    setCollapsedStages((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const submit = (e) => {
-    e.preventDefault();
-    router.post(`/patient/create-treatment`, {
-      user_id: patientData.id,
-      stage_name: stageName,
-      type: trType,
-    });
+  // Створення етапу або документа без затримок setState
+  const handleCreate = (
+    itemType: 'stage' | 'formula' | 'perio' | 'psr',
+    stageId: number | null = null
+  ) => {
+    if (itemType === 'formula') {
+      dispatch(setChangeDia(Math.random()));
+      dispatch(setSelectedToothNumber(''));
+      dispatch(setClearFormula(emptyFormula));
+    }
+
+    router.post(
+      '/patient/create-treatment',
+      {
+        user_id: patientData.id,
+        stage_name: stageName,
+        stage_id: stageId,
+        type: itemType,
+      },
+      {
+        onSuccess: () => {
+          if (itemType === 'stage') {
+            setStageName('');
+          }
+        },
+      }
+    );
+  };
+
+  const renderDocumentCard = (element: any) => {
+    if (stageTab !== '' && stageTab !== element.type) {
+      return null;
+    }
+
+    return (
+      <div key={element.id} className={`w-full mt-5 patient-stage stage-${element.type}`}>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-left text-[14px] font-bold text-slate-800 m-0">
+            <span className="f-date">{moment.utc(element.created_at).format('DD.MM.YY')}</span>
+            {' - '}
+            {element.stage_name}
+          </h3>
+          <div className="icon-block actions-block">
+            <ul className="flex items-center gap-1.5 m-0 p-0 list-none">
+              <li>
+                <Link
+                  href="/"
+                  title="Призначити пацієнта"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-violet-600 hover:bg-violet-50 hover:border-violet-200 transition-colors"
+                >
+                  <UserPlus className="w-4 h-4" />
+                </Link>
+              </li>
+
+              {['psr', 'perio', 'formula'].includes(element.type) && (
+                <>
+                  <li>
+                    <Link
+                      href={`/${element.type}/edit/${element.id}`}
+                      title="Редагувати"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-teal-600 hover:bg-teal-50 hover:border-teal-200 transition-colors"
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href={`/${element.type}/copy/${element.id}`}
+                      title="Копіювати"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-sky-600 hover:bg-sky-50 hover:border-sky-200 transition-colors"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Link>
+                  </li>
+                </>
+              )}
+
+              <li>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  title="Друк"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 hover:border-slate-300 transition-colors cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                </button>
+              </li>
+
+              <li>
+                <button
+                  type="button"
+                  title="Видалити"
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200 transition-colors cursor-pointer"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {element.type === 'psr' && (
+          <div className="w-full flex flex-row">
+            <div className="w-1/2">
+              <ViewPSR psrData={element} />
+            </div>
+          </div>
+        )}
+
+        {element.type === 'perio' && (
+          <div className="w-full flex flex-row">
+            <div className="w-full">
+              <ViewPerio periodData={element} />
+            </div>
+          </div>
+        )}
+
+        {element.type === 'formula' && (
+          <div className="w-full flex flex-row">
+            <div className="w-1/2">
+              <ViewFormula formulaData={element} />
+            </div>
+            <div className="w-1/2">
+              <ul className="tabs">
+                <li className={'green-tab active'} id={`up-t-${element.id}`}>
+                  <span
+                    onClick={() => {
+                      const id = element.id;
+                      const lowerEl = document.getElementById(`lower_${id}`);
+                      const upperEl = document.getElementById(`upper_${id}`);
+                      const diaUpEl = document.getElementById(`dia-up-${id}`);
+                      const upTEl = document.getElementById(`up-t-${id}`);
+                      const uBEl = document.getElementById(`uB_${id}`);
+                      const lBEl = document.getElementById(`lB_${id}`);
+
+                      const setTeethVisibility = (visibility: 'hidden' | 'inherit') => {
+                        const upperTeeth = [
+                          18, 17, 16, 15, 14, 13, 12, 11, 28, 27, 26, 25, 24, 23, 22, 21,
+                        ];
+                        upperTeeth.forEach((num) => {
+                          const toothEl = document.getElementById(`B-${num}`);
+                          if (toothEl) {
+                            toothEl.style.visibility = visibility;
+                          }
+                        });
+                      };
+
+                      if (!lowerEl?.classList.contains('hide-up-teeth')) {
+                        setDisableTeethTab('up');
+                        diaUpEl?.classList.add('hide-dia');
+                        upTEl?.classList.remove('active');
+                        lowerEl?.classList.remove('show-up-teeth');
+                        upperEl?.classList.remove('show-up-teeth');
+                        lowerEl?.classList.add('hide-up-teeth');
+                        upperEl?.classList.add('hide-teeth');
+                        setTeethVisibility('hidden');
+                        uBEl?.classList.add('hide-bone');
+                        lBEl?.classList.add('move-down-bone');
+                      } else {
+                        setDisableTeethTab('');
+                        diaUpEl?.classList.remove('hide-dia');
+                        upTEl?.classList.add('active');
+                        lowerEl?.classList.remove('hide-up-teeth');
+                        upperEl?.classList.remove('hide-teeth');
+                        lowerEl?.classList.add('show-up-teeth');
+                        upperEl?.classList.add('show-up-teeth');
+                        setTeethVisibility('inherit');
+                        uBEl?.classList.remove('hide-bone');
+                        lBEl?.classList.remove('move-down-bone');
+                      }
+                    }}
+                  >
+                    {msgFormula.get('formula.maxilla')}
+                  </span>
+                </li>
+                <li className={'green-tab active'} id={`bottom-t-${element.id}`}>
+                  <span
+                    onClick={() => {
+                      const id = element.id;
+                      const lowerEl = document.getElementById(`lower_${id}`);
+                      const upperEl = document.getElementById(`upper_${id}`);
+                      const diaDownEl = document.getElementById(`dia-down-${id}`);
+                      const bottomTEl = document.getElementById(`bottom-t-${id}`);
+
+                      const setLowerTeethVisibility = (visibility: 'hidden' | 'inherit') => {
+                        const lowerTeeth = [
+                          38, 37, 36, 35, 34, 33, 32, 31, 48, 47, 46, 45, 44, 43, 42, 41,
+                        ];
+                        lowerTeeth.forEach((num) => {
+                          const toothEl = document.getElementById(`B-${num}`);
+                          if (toothEl) {
+                            toothEl.style.visibility = visibility;
+                          }
+                        });
+                      };
+
+                      if (!lowerEl?.classList.contains('hide-teeth')) {
+                        setDisableTeethTab('down');
+                        diaDownEl?.classList.add('hide-dia');
+                        bottomTEl?.classList.remove('active');
+                        lowerEl?.classList.remove('show-up-teeth');
+                        upperEl?.classList.remove('show-up-teeth');
+                        lowerEl?.classList.add('hide-teeth');
+                        setLowerTeethVisibility('hidden');
+                      } else {
+                        setDisableTeethTab('');
+                        diaDownEl?.classList.remove('hide-dia');
+                        bottomTEl?.classList.add('active');
+                        lowerEl?.classList.remove('hide-teeth');
+                        setLowerTeethVisibility('inherit');
+                      }
+                    }}
+                  >
+                    {msgFormula.get('formula.mandible')}
+                  </span>
+                </li>
+                <li className={'green-tab active'} id={`occlusion-${element.id}`}>
+                  <span
+                    onClick={() => {
+                      const id = element.id;
+                      const diaDownEl = document.getElementById(`dia-down-${id}`);
+                      const diaUpEl = document.getElementById(`dia-up-${id}`);
+                      const occlusionEl = document.getElementById(`occlusion-${id}`);
+                      const axisEl = document.getElementById(`axis_${id}`);
+                      const lBEl = document.getElementById(`lB_${id}`);
+                      const lowerEl = document.getElementById(`lower_${id}`);
+                      const formulaViewEl = document.getElementById(`formula-view-${id}`);
+
+                      const numbersEl =
+                        formulaViewEl?.getElementsByClassName('tooth-number-active');
+                      const bonesEl = formulaViewEl?.getElementsByClassName('tooth-number-active');
+                      const topElements = formulaViewEl?.getElementsByClassName('top-view');
+
+                      diaDownEl?.classList.remove('hide-dia');
+                      diaUpEl?.classList.remove('hide-dia');
+
+                      if (occlusionEl?.classList.contains('active')) {
+                        occlusionEl.classList.remove('active');
+                        axisEl?.classList.add('hide-axis');
+                        lBEl?.classList.add('opclusion');
+                        lowerEl?.classList.add('opclusion');
+
+                        Array.from(numbersEl ?? []).forEach((el) => {
+                          el.classList.add('hide-number');
+                        });
+                        Array.from(topElements ?? []).forEach((el) => {
+                          el.classList.add('tooth-part-hide');
+                        });
+                        Array.from(bonesEl ?? []).forEach((el) => {
+                          el.classList.add('tooth-part-hide');
+                        });
+                      } else {
+                        occlusionEl?.classList.add('active');
+                        axisEl?.classList.remove('hide-axis');
+                        lBEl?.classList.remove('opclusion');
+                        lowerEl?.classList.remove('opclusion');
+
+                        Array.from(numbersEl ?? []).forEach((el) => {
+                          el.classList.remove('hide-number');
+                        });
+                        Array.from(topElements ?? []).forEach((el) => {
+                          el.classList.remove('tooth-part-hide');
+                        });
+                        Array.from(bonesEl ?? []).forEach((el) => {
+                          el.classList.remove('tooth-part-hide');
+                        });
+                      }
+
+                      setDisableTeethTab('occlusion');
+                    }}
+                  >
+                    {msgFormula.get('formula.occlusion')}
+                  </span>
+                </li>
+              </ul>
+              <div
+                className={`tabs-content w-full bg-white border mt-10 patient-stage flex`}
+                id={`up-t-content`}
+              >
+                <ViewDiagnoze formulaData={element} formulaId={element.id} />
+              </div>
+              <div
+                className={`tabs-content`}
+                id={`bottom-t-content`}
+                style={{ display: tab === 'down' ? 'block' : 'none' }}
+              ></div>
+              <div
+                className={`tabs-content`}
+                id={`occlusion-content`}
+                style={{ display: tab === 'occlusion' ? 'block' : 'none' }}
+              ></div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderTreatmentStages = () => {
     return (
-      <>
-        {treatmentData.map((element, index) => {
+      <div className="space-y-6 mt-5">
+        {groupedStages.map(({ stage, documents }) => {
+          const groupKey = stage ? `stage-${stage.id}` : 'stage-unassigned';
+          const isCollapsed = !!collapsedStages[groupKey];
+          const isCurrentActive = stage && activeStage && stage.id === activeStage.id;
+
           return (
             <div
-              key={index}
-              style={{ display: stageTab === '' || stageTab === element.type ? 'block' : 'none' }}
-              className={`w-full bg-white border mt-10 patient-stage stage-${element.type}`}
+              key={groupKey}
+              className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden"
             >
-              <div className="flex justify-between">
-                <h2 className="text-left text-[14px] font-bold">
-                  <span className="f-date">
-                    {moment.utc(element.created_at).format('DD.MM.YY')}
+              {/* Шапка етапу лікування */}
+              <div
+                onClick={() => toggleStageCollapse(groupKey)}
+                className="px-4 py-3 bg-slate-50/80 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/70 transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  {isCollapsed ? (
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                  )}
+                  <FolderOpen className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-bold text-slate-800">
+                    {stage ? stage.stage_name : 'Загальні записи (без етапу)'}
                   </span>
-                  {' - '}
-                  {element.stage_name}
-                </h2>
-                <div className="icon-block actions-block">
-                  <ul>
-                    <li className="inline-block">
-                      <Link href="/" className="f-action-btn f-purple">
-                        <FontAwesomeIcon icon={faUserPlus} color={'#a615bd'} className={'ml-1'} />
-                      </Link>
-                    </li>
-                    {element.type === 'psr' && (
-                      <>
-                        <li className="inline-block">
-                          <Link href={`/psr/edit/${element.id}`} className="f-action-btn">
-                            <FontAwesomeIcon icon={faPencil} />
-                          </Link>
-                        </li>
-                        <li className="inline-block">
-                          <Link href={`/psr/copy/${element.id}`} className="f-action-btn">
-                            <FontAwesomeIcon icon={faCopy} />
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                    {element.type === 'perio' && (
-                      <>
-                        <li className="inline-block">
-                          <Link href={`/perio/edit/${element.id}`} className="f-action-btn">
-                            <FontAwesomeIcon icon={faPencil} />
-                          </Link>
-                        </li>
-                        <li className="inline-block">
-                          <Link href={`/perio/copy/${element.id}`} className="f-action-btn">
-                            <FontAwesomeIcon icon={faCopy} />
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                    {element.type === 'formula' && (
-                      <>
-                        <li className="inline-block">
-                          <Link href={`/formula/edit/${element.id}`} class="f-action-btn">
-                            <FontAwesomeIcon icon={faPencil} color={'#149b97'} className={'ml-1'} />
-                          </Link>
-                        </li>
-                        <li className="inline-block">
-                          <Link href={`/formula/copy/${element.id}`} class="f-action-btn f-yellow">
-                            <FontAwesomeIcon icon={faCopy} color={'#ffc107'} className={'ml-1.5'} />
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                    <li className="inline-block">
-                      <Link href="" className="f-action-btn f-gray">
-                        <FontAwesomeIcon icon={faPrint} color={'#000000'} className={'ml-1'} />
-                      </Link>
-                    </li>
-                    <li className="inline-block">
-                      <Link href="" className="f-action-btn f-red">
-                        <FontAwesomeIcon icon={faTrash} color={'#de0b2b'} className={'ml-1.5'} />
-                      </Link>
-                    </li>
-                  </ul>
+                  {stage && (
+                    <span className="text-xs text-slate-400">
+                      • {moment.utc(stage.created_at).format('DD.MM.YYYY')}
+                    </span>
+                  )}
+                  {isCurrentActive && (
+                    <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+                      Активний етап
+                    </span>
+                  )}
+                  <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-slate-200/70 text-slate-600">
+                    {documents.length}
+                  </span>
                 </div>
-              </div>
-              {element.type === 'psr' && (
-                <div className="w-full flex flex-row">
-                  <div className="w-1/2">
-                    <ViewPSR psrData={element} />
-                  </div>
-                </div>
-              )}
-              {element.type === 'perio' && (
-                <div className="w-full flex flex-row">
-                  <div className="w-1/2">
-                    <ViewPerio perioData={element} />
-                  </div>
-                </div>
-              )}
-              {element.type === 'formula' && (
-                <div className="w-full flex flex-row">
-                  <div className="w-1/2">
-                    <ViewFormula formulaData={element} />
-                  </div>
-                  <div className="w-1/2">
-                    <ul className="tabs">
-                      <li className={'green-tab active'} id={`up-t-${element.id}`}>
-                        <span
-                          onClick={() => {
-                            if (
-                              !document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.contains('hide-up-teeth')
-                            ) {
-                              setDisableTeethTab('up');
-                              document
-                                .getElementById(`dia-up-${element.id}`)
-                                .classList.add('hide-dia');
-                              document
-                                .getElementById(`up-t-${element.id}`)
-                                .classList.remove('active');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.remove('show-up-teeth');
-                              document
-                                .getElementById(`upper_${element.id}`)
-                                .classList.remove('show-up-teeth');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.add('hide-up-teeth');
-                              document
-                                .getElementById(`upper_${element.id}`)
-                                .classList.add('hide-teeth');
-                              for (let i = 18; i >= 11; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              for (let i = 28; i >= 21; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              document
-                                .getElementById(`uB_${element.id}`)
-                                .classList.add('hide-bone');
-                              document
-                                .getElementById(`lB_${element.id}`)
-                                .classList.add('move-down-bone');
-                            } else {
-                              setDisableTeethTab('');
-                              document
-                                .getElementById(`dia-up-${element.id}`)
-                                .classList.remove('hide-dia');
-                              document.getElementById(`up-t-${element.id}`).classList.add('active');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.remove('hide-up-teeth');
-                              document
-                                .getElementById(`upper_${element.id}`)
-                                .classList.remove('hide-teeth');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.add('show-up-teeth');
-                              document
-                                .getElementById(`upper_${element.id}`)
-                                .classList.add('show-up-teeth');
-                              for (let i = 18; i >= 11; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              for (let i = 28; i >= 21; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              document
-                                .getElementById(`uB_${element.id}`)
-                                .classList.remove('hide-bone');
-                              document
-                                .getElementById(`lB_${element.id}`)
-                                .classList.remove('move-down-bone');
-                            }
-                          }}
-                        >
-                          {msgFormula.get('formula.maxilla')}
-                        </span>
-                      </li>
-                      <li className={'green-tab active'} id={`bottom-t-${element.id}`}>
-                        <span
-                          onClick={() => {
-                            if (
-                              !document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.contains('hide-teeth')
-                            ) {
-                              setDisableTeethTab('down');
-                              document
-                                .getElementById(`dia-down-${element.id}`)
-                                .classList.add('hide-dia');
-                              document
-                                .getElementById(`bottom-t-${element.id}`)
-                                .classList.remove('active');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.remove('show-up-teeth');
-                              document
-                                .getElementById(`upper_${element.id}`)
-                                .classList.remove('show-up-teeth');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.add('hide-teeth');
-                              for (let i = 38; i >= 31; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                              for (let i = 48; i >= 41; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'hidden';
-                              }
-                            } else {
-                              setDisableTeethTab('');
-                              document
-                                .getElementById(`dia-down-${element.id}`)
-                                .classList.remove('hide-dia');
-                              document
-                                .getElementById(`bottom-t-${element.id}`)
-                                .classList.add('active');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.remove('hide-teeth');
-                              for (let i = 38; i >= 31; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                              for (let i = 48; i >= 41; i--) {
-                                document.getElementById(`B-${i}`).style.visibility = 'inherit';
-                              }
-                            }
-                          }}
-                        >
-                          {msgFormula.get('formula.mandible')}
-                        </span>
-                      </li>
-                      <li className={'green-tab active'} id={`occlusion-${element.id}`}>
-                        <span
-                          onClick={() => {
-                            document
-                              .getElementById(`dia-down-${element.id}`)
-                              .classList.remove('hide-dia');
-                            document
-                              .getElementById(`dia-up-${element.id}`)
-                              .classList.remove('hide-dia');
-                            if (
-                              document
-                                .getElementById(`occlusion-${element.id}`)
-                                .classList.contains('active')
-                            ) {
-                              document
-                                .getElementById(`occlusion-${element.id}`)
-                                .classList.remove('active');
-                              document
-                                .getElementById(`axis_${element.id}`)
-                                .classList.add('hide-axis');
-                              document
-                                .getElementById(`lB_${element.id}`)
-                                .classList.add('opclusion');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.add('opclusion');
-                              const numbersEl = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('tooth-number-active');
-                              const bonesEl = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('tooth-number-active');
-                              const topElements = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('top-view');
-                              Array.from(numbersEl).forEach((el) => {
-                                el.classList.add('hide-number');
-                              });
-                              Array.from(topElements).forEach((el) => {
-                                el.classList.add('tooth-part-hide');
-                              });
-                              Array.from(bonesEl).forEach((el) => {
-                                el.classList.add('tooth-part-hide');
-                              });
-                            } else {
-                              document
-                                .getElementById(`occlusion-${element.id}`)
-                                .classList.add('active');
-                              document
-                                .getElementById(`axis_${element.id}`)
-                                .classList.remove('hide-axis');
-                              document
-                                .getElementById(`lB_${element.id}`)
-                                .classList.remove('opclusion');
-                              document
-                                .getElementById(`lower_${element.id}`)
-                                .classList.remove('opclusion');
-                              const numbersEl = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('tooth-number-active');
-                              const bonesEl = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('tooth-number-active');
-                              const topElements = document
-                                .getElementById(`formula-view-${element.id}`)
-                                .getElementsByClassName('top-view');
-                              Array.from(numbersEl).forEach((el) => {
-                                el.classList.remove('hide-number');
-                              });
-                              Array.from(topElements).forEach((el) => {
-                                el.classList.remove('tooth-part-hide');
-                              });
-                              Array.from(bonesEl).forEach((el) => {
-                                el.classList.remove('tooth-part-hide');
-                              });
-                            }
-                            setDisableTeethTab('occlusion');
-                          }}
-                        >
-                          {msgFormula.get('formula.occlusion')}
-                        </span>
-                      </li>
-                    </ul>
-                    <div
-                      className={`tabs-content w-full bg-white border mt-10 patient-stage flex`}
-                      id={`up-t-content`}
+
+                {/* Кнопки додавання карти безпосередньо в цей етап */}
+                {stage && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1.5 text-xs"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleCreate('formula', stage.id)}
+                      className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer"
                     >
-                      <ViewDiagnoze formulaData={element} formulaId={element.id} />
-                    </div>
-                    <div
-                      className={`tabs-content`}
-                      id={`bottom-t-content`}
-                      style={{ display: tab === 'down' ? 'block' : 'none' }}
-                    ></div>
-                    <div
-                      className={`tabs-content`}
-                      id={`occlusion-content`}
-                      style={{ display: tab === 'occlusion' ? 'block' : 'none' }}
-                    ></div>
+                      <Plus className="w-3 h-3" />
+                      <span>Формула</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCreate('perio', stage.id)}
+                      className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Періо</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCreate('psr', stage.id)}
+                      className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>PSR</span>
+                    </button>
                   </div>
+                )}
+              </div>
+
+              {/* Вміст етапу */}
+              {!isCollapsed && (
+                <div className="p-4">
+                  {documents.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-slate-400">
+                      У цьому етапі ще немає карт. Додайте зубну формулу, періо-карту або PSR-тест.
+                    </div>
+                  ) : (
+                    documents.map((doc) => renderDocumentCard(doc))
+                  )}
                 </div>
               )}
             </div>
           );
         })}
-      </>
+      </div>
     );
   };
 
-  const setActiveStageTab = (tab) => {
-    if (stageTab === tab) setStageTab('');
-    else setStageTab(tab);
+  const setActiveStageTab = (tabName: string) => {
+    if (stageTab === tabName) setStageTab('');
+    else setStageTab(tabName);
   };
 
   return (
     <>
-      <div className="tr-create-bar">
-        <form onSubmit={submit} className="tr-create-form" encType="multipart/form-data">
-          <div className="tr-input-wrap">
-            <InputText
-              name={'stage_name'}
-              values={''}
-              onChange={(e) => {
-                setStageName(e.target.value);
-              }}
-              required
-              placeholder={msg.get('patient.newstage')}
-              label={null}
-            />
-          </div>
+      <section>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCreate('stage');
+          }}
+        >
+          <div className="w-full bg-gradient-to-r from-teal-50/60 to-slate-50 border border-teal-200/80 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-xs mt-3 mb-4">
+            {/* Ліва частина: Назва нового етапу */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-[280px]">
+              <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
+              <label
+                className="text-xs font-semibold text-teal-900 shrink-0"
+                htmlFor="stage-name-input"
+              >
+                Новий етап:
+              </label>
+              <div className="relative flex-1 max-w-md">
+                <InputText
+                  className="stage-input"
+                  name="stage_name"
+                  values={stageName}
+                  onChange={(e) => setStageName(e.target.value)}
+                  placeholder={msg.get('patient.newstage')}
+                  label=""
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xs transition cursor-pointer"
+              >
+                <FolderPlus className="w-3.5 h-3.5" />
+                <span>Створити етап</span>
+              </button>
+            </div>
 
-          <div className="tr-submit-group">
-            <button
-              className="tr-submit-btn"
-              type="submit"
-              onClick={() => {
-                dispatch(setChangeDia(Math.random()));
-                dispatch(setSelectedToothNumber(''));
-                dispatch(setClearFormula(emptyFormula));
-                setTrType('formula');
-              }}
-            >
-              {msg.get('patient.tab.formula')}
-            </button>
+            {/* Права частина: Швидке створення карти (в активний або введений етап) */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-600 font-medium hidden">
+              <span className="text-slate-400 hidden sm:inline">
+                {activeStage ? `У етап «${activeStage.stage_name}»:` : 'Створити карту:'}
+              </span>
 
-            <button className="tr-submit-btn" type="submit" onClick={() => setTrType('perio')}>
-              {msg.get('patient.tab.perio')}
-            </button>
+              <button
+                type="button"
+                onClick={() => handleCreate('formula', activeStage?.id ?? null)}
+                className="bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 hover:border-teal-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{msg.get('patient.tab.formula')}</span>
+              </button>
 
-            <button className="tr-submit-btn" type="submit" onClick={() => setTrType('psr')}>
-              {msg.get('patient.tab.test')}
-            </button>
+              <button
+                type="button"
+                onClick={() => handleCreate('perio', activeStage?.id ?? null)}
+                className="bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 hover:border-teal-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{msg.get('patient.tab.perio')}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleCreate('psr', activeStage?.id ?? null)}
+                className="bg-white hover:bg-teal-50 text-teal-700 border border-teal-200 hover:border-teal-300 px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{msg.get('patient.tab.test')}</span>
+              </button>
+            </div>
           </div>
         </form>
-      </div>
+      </section>
 
-      {/*<div className="w-full patient-view-border mt-10 patient-stage flex">*/}
-      {/*  <form onSubmit={submit} className="flex flex-row w-full" encType="multipart/form-data">*/}
-      {/*    <div className="w-1/3">*/}
-      {/*      <div className="mt-[-5px] stage-input">*/}
-      {/*        <InputText*/}
-      {/*          name={'stage_name'}*/}
-      {/*          values={''}*/}
-      {/*          onChange={(e) => {*/}
-      {/*            setStageName(e.target.value);*/}
-      {/*          }}*/}
-      {/*          required*/}
-      {/*          placeholder={msg.get('patient.newstage')}*/}
-      {/*          label={null}*/}
-      {/*        />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*    <div className="w-2/3">*/}
-      {/*      <ul className="sub-tab text-right mt-1 mb-4 mt-[-10px]">*/}
-      {/*        <li className="relative">*/}
-      {/*          <button*/}
-      {/*            type="submit"*/}
-      {/*            onClick={() => {*/}
-      {/*              dispatch(setChangeDia(Math.random()));*/}
-      {/*              dispatch(setSelectedToothNumber(''));*/}
-      {/*              dispatch(setClearFormula(emptyFormula));*/}
-      {/*              setTrType('formula');*/}
-      {/*            }}*/}
-      {/*          >*/}
-      {/*            <i className="icon-formula" />*/}
-      {/*            <span className="tabs-title">{msg.get('patient.tab.formula')}</span>*/}
-      {/*          </button>*/}
-      {/*        </li>*/}
-      {/*        <li className="relative">*/}
-      {/*          <button type="submit" onClick={() => setTrType('perio')}>*/}
-      {/*            <i className="icon-perio" />*/}
-      {/*            <span className="tabs-title">{msg.get('patient.tab.perio')}</span>*/}
-      {/*          </button>*/}
-      {/*        </li>*/}
-      {/*        <li className="relative">*/}
-      {/*          <button type="submit" onClick={() => setTrType('psr')}>*/}
-      {/*            <i className="icon-psr" />*/}
-      {/*            <span className="tabs-title">{msg.get('patient.tab.test')}</span>*/}
-      {/*          </button>*/}
-      {/*        </li>*/}
-      {/*      </ul>*/}
-      {/*    </div>*/}
-      {/*  </form>*/}
-      {/*</div>*/}
-      {/*TABS BLOCK*/}
-      <div className="stage-mode-panel">
+      {/* TABS BLOCK */}
+      <div className="stage-mode-panel hidden">
         <div className="exam-tabs">
           <button
             type="button"
@@ -509,39 +592,6 @@ export default function History({ patientData, type, treatmentData }) {
         </div>
       </div>
 
-      {/*<div className="tabs-block w-full patient-view-border mt-10 patient-stage flex">*/}
-      {/*  <div className={`stage-tabs w-full`}>*/}
-      {/*    <ul className={'w-full'}>*/}
-      {/*      <li*/}
-      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'formula' ? 'active' : ''}`}*/}
-      {/*        onClick={() => setActiveStageTab('formula')}*/}
-      {/*      >*/}
-      {/*        <label>*/}
-      {/*          <i className="icon formula-tab"></i>*/}
-      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.formula')}</span>*/}
-      {/*        </label>*/}
-      {/*      </li>*/}
-      {/*      <li*/}
-      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'perio' ? 'active' : ''}`}*/}
-      {/*        onClick={() => setActiveStageTab('perio')}*/}
-      {/*      >*/}
-      {/*        <label>*/}
-      {/*          <i className="icon perio-tab"></i>*/}
-      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.perio')}</span>*/}
-      {/*        </label>*/}
-      {/*      </li>*/}
-      {/*      <li*/}
-      {/*        className={`inline-block w-1/3 text-center ${stageTab === 'psr' ? 'active' : ''}`}*/}
-      {/*        onClick={() => setActiveStageTab('psr')}*/}
-      {/*      >*/}
-      {/*        <label>*/}
-      {/*          <i className="icon psr-tab"></i>*/}
-      {/*          <span className={`text-title-tab`}>{msg.get('patient.tab.test')}</span>*/}
-      {/*        </label>*/}
-      {/*      </li>*/}
-      {/*    </ul>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
       <div className="w-full">{renderTreatmentStages()}</div>
     </>
   );

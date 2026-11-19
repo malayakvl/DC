@@ -30,7 +30,8 @@ export default function Finances({
   clinicData,
   currency,
   scheduleId,
-  actData
+  actData,
+  discountStatus,
 }) {
   const dispatch = useDispatch();
   const [tab, setTab] = useState(type || 'history');
@@ -47,51 +48,49 @@ export default function Finances({
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
     if (pDiscountValue) {
-      const updatedServices = initialServices.map(service => ({
+      const updatedServices = initialServices.map((service) => ({
         ...service,
         discountValue: pDiscountValue,
         discountType: 'percent',
       }));
       // setServices(updatedServices);
-      dispatch(setExistServicesAction((updatedServices)));
+      dispatch(setExistServicesAction(updatedServices));
     }
     setSInit(true);
   }, [pDiscountValue]);
 
   useEffect(() => {
     applyGlobalDiscount();
-  }, [initialServices.length])
+  }, [initialServices.length]);
 
   // Обработчик изменения скидки для конкретного сервиса
   const handleDiscountChange = (serviceId, value) => {
-    const updatedServices = initialServices.map(service => {
+    const updatedServices = initialServices.map((service) => {
       if (service.id === serviceId) {
         const numValue = parseFloat(value) || 0;
         if (value === '' || (!isNaN(value) && numValue >= 0)) {
           if (service.discountType === 'percent' && numValue > 100) return service;
-          if (service.discountType === 'absolute' && numValue > (service.price * (service.qty || 1))) return service;
+          if (service.discountType === 'absolute' && numValue > service.price * (service.qty || 1))
+            return service;
           return { ...service, discountValue: value };
         }
       }
       return service;
     });
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
   };
 
   // Обработчик изменения типа скидки
   const handleTypeChange = (serviceId, newType) => {
-    const updatedServices = initialServices.map(service =>
-      service.id === serviceId
-        ? { ...service, discountType: newType, discountValue: '' }
-        : service
+    const updatedServices = initialServices.map((service) =>
+      service.id === serviceId ? { ...service, discountType: newType, discountValue: '' } : service
     );
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
   };
 
-
-  const submit = e => {
+  const submit = (e) => {
     e.preventDefault();
     router.post(`/patient/update-act`, {
       patient_id: patientData.id,
@@ -101,7 +100,7 @@ export default function Finances({
       discount: globalDiscount,
       discountType: globalDiscountType,
       total: calculateFullTotal(),
-      total_with_discount: calculateTotal()
+      total_with_discount: calculateTotal(),
     });
   };
 
@@ -110,13 +109,13 @@ export default function Finances({
     const numValue = parseFloat(globalDiscount) || 0;
     if (numValue < 0) return;
 
-    const updatedServices = initialServices.map(service => ({
+    const updatedServices = initialServices.map((service) => ({
       ...service,
       discountValue: globalDiscountType === 'percent' && numValue > 100 ? '' : globalDiscount,
       discountType: globalDiscountType,
     }));
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
     // Не очищаем globalDiscount, чтобы значение осталось в поле
   };
 
@@ -141,9 +140,9 @@ export default function Finances({
     const total = price * qty;
 
     if (service.discountType === 'percent') {
-      return (total).toFixed(2);
+      return total.toFixed(2);
     }
-    return (total).toFixed(2);
+    return total.toFixed(2);
   };
 
   // Расчёт общей суммы
@@ -161,8 +160,8 @@ export default function Finances({
 
   const handleTabClick = (tab) => {
     dispatch(setPatientSubTab(tab));
-  }
-console.log('Fin', subTab);
+  };
+  console.log('Fin', subTab);
   return (
     <>
       {/* TABS BLOCK */}
@@ -174,21 +173,25 @@ console.log('Fin', subTab);
                 <span className="btn-quickact cursor-pointer">{msg.get('patient.quickact')}</span>
               </Link>
               <Link href="/" className="ml-2">
-                <span className="btn-acceptpayment cursor-pointer">{msg.get('patient.acceptpayment')}</span>
+                <span className="btn-acceptpayment cursor-pointer">
+                  {msg.get('patient.acceptpayment')}
+                </span>
               </Link>
               <Link href="/" className="ml-2">
-                <span className="btn-returnmoney cursor-pointer">{msg.get('patient.returnmoney')}</span>
+                <span className="btn-returnmoney cursor-pointer">
+                  {msg.get('patient.returnmoney')}
+                </span>
               </Link>
             </div>
           </div>
           <div className="tabls-list mt-2">
             <ul>
-              <li
-                id="actpayment"
-                onClick={() => handleTabClick('actpayment')}
-              >
-                <span className={`btn-white cursor-pointer ${subTab === 'actpayment' ? 'active' : ''}`}>Платежі та акти</span>
-
+              <li id="actpayment" onClick={() => handleTabClick('actpayment')}>
+                <span
+                  className={`btn-white cursor-pointer ${subTab === 'actpayment' ? 'active' : ''}`}
+                >
+                  Платежі та акти
+                </span>
               </li>
               <li
                 id="visits"
@@ -196,7 +199,6 @@ console.log('Fin', subTab);
                 onClick={() => handleTabClick('visits')}
               >
                 <span className="btn-white cursor-pointer">Виконані роботи</span>
-
               </li>
               <li
                 id="plans"
@@ -218,7 +220,9 @@ console.log('Fin', subTab);
                 onClick={() => handleTabClick('finances')}
               >
                 <Link href="/">
-                  <span className="btn-quickact cursor-pointer">{msg.get('patient.createevent')}</span>
+                  <span className="btn-quickact cursor-pointer">
+                    {msg.get('patient.createevent')}
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -227,9 +231,7 @@ console.log('Fin', subTab);
       </div>
       <div className="clearfix" />
 
-      <div className={`w-full flex ${subTab === 'actpayment' ? '' : 'hidden'}`}>
-
-      </div>
+      <div className={`w-full flex ${subTab === 'actpayment' ? '' : 'hidden'}`}></div>
       {subTab === 'act' && (
         <QuickAct
           patientData={patientData}

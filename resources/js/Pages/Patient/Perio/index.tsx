@@ -23,7 +23,7 @@ import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
 
-export default function Index({editPerio}) {
+export default function Index() {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msgFormula = new Lang({
@@ -49,7 +49,7 @@ export default function Index({editPerio}) {
   // *******************************
   // ******* move cursor to other input 18-28
   // *******************************
-  const focusNextUp1828YasenInput = (currentIdx) => {
+  const focusNextUp1828YasenInput = (currentIdx: any) => {
     const nextIdx = currentIdx + 1;
     if (inputUp1828YasenRefs.current[nextIdx]) {
       inputUp1828YasenRefs.current[nextIdx].focus();
@@ -58,7 +58,7 @@ export default function Index({editPerio}) {
       inputDownYasen1828Refs.current[currentIdx].focus();
     }
   };
-  const focusNextUp1828ZondInput = (currentIdx) => {
+  const focusNextUp1828ZondInput = (currentIdx: any) => {
     const nextIdx = currentIdx + 1;
     if (inputUpZond1828Refs.current[nextIdx]) {
       inputUpZond1828Refs.current[nextIdx].focus();
@@ -67,7 +67,7 @@ export default function Index({editPerio}) {
       inputDownZond1828Refs.current[currentIdx].focus();
     }
   };
-  const focusNextDown1828YasenInput = (currentIdx) => {
+  const focusNextDown1828YasenInput = (currentIdx: any) => {
     const nextIdx = currentIdx - 1;
     if (inputDownYasen1828Refs.current[nextIdx]) {
       inputDownYasen1828Refs.current[nextIdx].focus();
@@ -75,7 +75,7 @@ export default function Index({editPerio}) {
       inputUp1828YasenRefs.current[0].focus();
     }
   };
-  const focusNextDown1828ZondInput = (currentIdx) => {
+  const focusNextDown1828ZondInput = (currentIdx: any) => {
     const nextIdx = currentIdx - 1;
     if (inputDownZond1828Refs.current[nextIdx]) {
       inputDownZond1828Refs.current[nextIdx].focus();
@@ -87,7 +87,7 @@ export default function Index({editPerio}) {
   // *******************************
   // ******* move cursor to other input 48-38
   // *******************************
-  const focusNextUp4838YasenInput = (currentIdx) => {
+  const focusNextUp4838YasenInput = (currentIdx: any) => {
     const nextIdx = currentIdx + 1;
     if (inputUp4838YasenRefs.current[nextIdx]) {
       inputUp4838YasenRefs.current[nextIdx].focus();
@@ -96,7 +96,7 @@ export default function Index({editPerio}) {
       inputDownYasen4838Refs.current[currentIdx].focus();
     }
   };
-  const focusNextUp4838ZondInput = (currentIdx) => {
+  const focusNextUp4838ZondInput = (currentIdx: any) => {
     const nextIdx = currentIdx + 1;
     if (inputUpZond4838Refs.current[nextIdx]) {
       inputUpZond4838Refs.current[nextIdx].focus();
@@ -105,7 +105,7 @@ export default function Index({editPerio}) {
       inputDownZond4838Refs.current[currentIdx].focus();
     }
   };
-  const focusNextDown4838YasenInput = (currentIdx) => {
+  const focusNextDown4838YasenInput = (currentIdx: any) => {
     const nextIdx = currentIdx - 1;
     if (inputDownYasen4838Refs.current[nextIdx]) {
       inputDownYasen4838Refs.current[nextIdx].focus();
@@ -113,7 +113,7 @@ export default function Index({editPerio}) {
       inputUp4838YasenRefs.current[0].focus();
     }
   };
-  const focusNextDown4838ZondInput = (currentIdx) => {
+  const focusNextDown4838ZondInput = (currentIdx: any) => {
     const nextIdx = currentIdx - 1;
     if (inputDownZond4838Refs.current[nextIdx]) {
       inputDownZond4838Refs.current[nextIdx].focus();
@@ -123,71 +123,90 @@ export default function Index({editPerio}) {
   };
 
   // Define tooth numbers and indices for mapping
-  const toothNumbersUp = [
-    18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28,
-  ];
-  const toothNumbersDown = [
-    48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
-  ];
-  const toothNumbers = [
-    48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38,
-  ];
+  const toothNumbersUp = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+  const toothNumbersDown = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+  const toothNumbers = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
   const yasenUpKrayVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
   const deepUpZondVestIndices = Array.from({ length: 16 }, (_, i) => i * 3); // Start indices for each tooth (0, 3, 6, ..., 45)
 
   return (
     <div className="w-full scroll-x">
+      <div className="bg-slate-50 border-t border-slate-200/80 px-6 py-3 flex flex-wrap items-center justify-between gap-4 text-xs w-full">
+        <div className="flex items-center flex-wrap gap-4 text-slate-600">
+          <span className="font-semibold text-slate-700">Легенда:</span>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3.5 h-1 bg-rose-600 rounded"></span>
+            <span>Глибина кишені (PPD / CAL)</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3.5 h-1 bg-blue-600 rounded"></span>
+            <span>Ясенний край (GM)</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span>Гнійний ексудат</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+            <span>Зубний наліт / Камінь</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3 h-3 rounded-full border-2 border-blue-600"></span>
+            <span>Фуркація І-ІІІ ст.</span>
+          </div>
+        </div>
+      </div>
       <table className="table-auto perio-table">
         <tbody>
           <tr>
             <td className="title">{msgFormula.get('formula.teeth.status')}</td>
             <td style={{ borderLeft: 'none', borderRight: 'none' }}>
-              <Statuses type={'vest'} toothNum={18} />
+              <Statuses toothNum={18} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={17} />
+              <Statuses toothNum={17} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={16} />
+              <Statuses toothNum={16} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={15} />
+              <Statuses toothNum={15} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={14} />
+              <Statuses toothNum={14} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={13} />
+              <Statuses toothNum={13} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={12} />
+              <Statuses toothNum={12} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={11} />
+              <Statuses toothNum={11} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={21} />
+              <Statuses toothNum={21} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={22} />
+              <Statuses toothNum={22} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={23} />
+              <Statuses toothNum={23} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={24} />
+              <Statuses toothNum={24} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={25} />
+              <Statuses toothNum={25} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={26} />
+              <Statuses toothNum={26} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={27} />
+              <Statuses toothNum={27} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={28} />
+              <Statuses toothNum={28} />
             </td>
           </tr>
           <tr>
@@ -324,11 +343,11 @@ export default function Index({editPerio}) {
               }}
             >
               <div className="relative">
-                <IntersectChart1828Up editPerio={editPerio} />
+                <IntersectChart1828Up />
               </div>
               <FormulaPerio1828 />
               <div className="relative">
-                <IntersectChart1828Down editPerio={editPerio} />
+                <IntersectChart1828Down />
               </div>
             </td>
           </tr>
@@ -476,7 +495,6 @@ export default function Index({editPerio}) {
             ></td>
           </tr>
 
-
           {/*************************/}
           {/*************************/}
           {/*TOOTH 48-38*/}
@@ -589,67 +607,6 @@ export default function Index({editPerio}) {
               </td>
             ))}
           </tr>
-          {/*<tr>*/}
-          {/*  <td className="title">{msgFormula.get('formula.yasn')}</td>*/}
-          {/*  {yasenUpKrayVestIndices.map((sIndx4, i) => (*/}
-          {/*    <td*/}
-          {/*      key={`yasen-vest-${toothNumbers[i]}`}*/}
-          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
-          {/*    >*/}
-          {/*      <div className="col-xs-12 action-zone-v">*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4 + 1}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 1] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*        <YasenKray4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx4 + 2}*/}
-          {/*          ref={(el) => (inputUp4838YasenRefs.current[sIndx4 + 2] = el)}*/}
-          {/*          onEnter={focusNextUp4838YasenInput}*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*    </td>*/}
-          {/*  ))}*/}
-          {/*</tr>*/}
-          {/*<tr>*/}
-          {/*  <td className="title">{msgFormula.get('formula.zond')}</td>*/}
-          {/*  {deepUpZondVestIndices.map((sIndx5, i) => (*/}
-          {/*    <td*/}
-          {/*      key={`deep-zond-${toothNumbersUp[i]}`}*/}
-          {/*      style={i === 0 ? { borderLeft: 'none', borderRight: 'none' } : {}}*/}
-          {/*    >*/}
-          {/*      <div className="col-xs-12 action-zone-v">*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5 + 1}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 1] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*        <DeepZond4838*/}
-          {/*          type="vest"*/}
-          {/*          idx={sIndx5 + 2}*/}
-          {/*          ref={(el) => (inputUpZond4838Refs.current[sIndx5 + 2] = el)}*/}
-          {/*          onEnter={focusNextUp4838ZondInput}*/}
-          {/*        />*/}
-          {/*      </div>*/}
-          {/*    </td>*/}
-          {/*  ))}*/}
-          {/*</tr>*/}
-
           <tr>
             <td className="title" style={{ backgroundColor: 'none' }}>
               <span style={{ display: 'block', marginTop: '50px' }}>
@@ -767,7 +724,7 @@ export default function Index({editPerio}) {
               <DentalDeposits toothNum={43} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
-              <DentalDeposits toothNum={42}  type={'oral'}/>
+              <DentalDeposits toothNum={42} type={'oral'} />
             </td>
             <td style={{ paddingTop: '10px' }}>
               <DentalDeposits toothNum={41} type={'oral'} />
@@ -893,107 +850,132 @@ export default function Index({editPerio}) {
           <tr>
             <td className="title">{msgFormula.get('formula.moving')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Moving toothNum={48} type={'oral'} />
+              <Moving toothNum={48} />
             </td>
             <td>
-              <Moving toothNum={47} type={'oral'} />
+              <Moving toothNum={47} />
             </td>
             <td>
-              <Moving toothNum={46} type={'oral'} />
+              <Moving toothNum={46} />
             </td>
             <td>
-              <Moving toothNum={45} type={'oral'} />
+              <Moving toothNum={45} />
             </td>
             <td>
-              <Moving toothNum={44} type={'oral'} />
+              <Moving toothNum={44} />
             </td>
             <td>
-              <Moving toothNum={43} type={'oral'} />
+              <Moving toothNum={43} />
             </td>
             <td>
-              <Moving toothNum={42} type={'oral'} />
+              <Moving toothNum={42} />
             </td>
             <td>
-              <Moving toothNum={41} type={'oral'} />
+              <Moving toothNum={41} />
             </td>
             <td>
-              <Moving toothNum={31} type={'oral'} />
+              <Moving toothNum={31} />
             </td>
             <td>
-              <Moving toothNum={32} type={'oral'} />
+              <Moving toothNum={32} />
             </td>
             <td>
-              <Moving toothNum={33} type={'oral'} />
+              <Moving toothNum={33} />
             </td>
             <td>
-              <Moving toothNum={34} type={'oral'} />
+              <Moving toothNum={34} />
             </td>
             <td>
-              <Moving toothNum={35} type={'oral'} />
+              <Moving toothNum={35} />
             </td>
             <td>
-              <Moving toothNum={36} type={'oral'} />
+              <Moving toothNum={36} />
             </td>
             <td>
-              <Moving toothNum={37} type={'oral'} />
+              <Moving toothNum={37} />
             </td>
             <td>
-              <Moving toothNum={38} type={'oral'} />
+              <Moving toothNum={38} />
             </td>
           </tr>
           <tr>
             <td className="title">{msgFormula.get('formula.teeth.status')}</td>
             <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-              <Statuses type={'vest'} toothNum={48} />
+              <Statuses toothNum={48} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={47} />
+              <Statuses toothNum={47} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={46} />
+              <Statuses toothNum={46} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={45} />
+              <Statuses toothNum={45} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={44} />
+              <Statuses toothNum={44} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={43} />
+              <Statuses toothNum={43} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={42} />
+              <Statuses toothNum={42} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={41} />
+              <Statuses toothNum={41} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={31} />
+              <Statuses toothNum={31} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={32} />
+              <Statuses toothNum={32} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={33} />
+              <Statuses toothNum={33} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={34} />
+              <Statuses toothNum={34} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={35} />
+              <Statuses toothNum={35} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={36} />
+              <Statuses toothNum={36} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={37} />
+              <Statuses toothNum={37} />
             </td>
             <td>
-              <Statuses type={'vest'} toothNum={38} />
+              <Statuses toothNum={38} />
             </td>
           </tr>
         </tbody>
       </table>
+      <div className="bg-slate-50 border-t border-slate-200/80 px-6 py-3 flex flex-wrap items-center justify-between gap-4 text-xs w-full">
+        <div className="flex items-center flex-wrap gap-4 text-slate-600">
+          <span className="font-semibold text-slate-700">Легенда:</span>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3.5 h-1 bg-rose-600 rounded"></span>
+            <span>Глибина кишені (PPD / CAL)</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3.5 h-1 bg-blue-600 rounded"></span>
+            <span>Ясенний край (GM)</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span>Гнійний ексудат</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+            <span>Зубний наліт / Камінь</span>
+          </div>
+          <div className="flex items-center space-x-1.5">
+            <span className="w-3 h-3 rounded-full border-2 border-blue-600"></span>
+            <span>Фуркація І-ІІІ ст.</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

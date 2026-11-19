@@ -92,7 +92,13 @@ const lngPatient = {
     perio_absent: 'Відсутній',
     perio_implant: 'Імплант',
     perio_crown: 'Коронка',
-    perio_middlepart: 'Проміжна частина'
+    perio_middlepart: 'Проміжна частина',
+    formula_title: 'Зубна формула пацієнта',
+    formula_tab_type: 'Тип зуба',
+    formula_tab_destroy: 'Ураження',
+    formula_tab_endo: 'Endo',
+    formula_tab_construct: 'Конструкції',
+    formula_tab_paradont: 'Пародонт',
   },
 };
 export default lngPatient;

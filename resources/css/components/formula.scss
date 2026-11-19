@@ -393,25 +393,46 @@
 .change-color.diagnoze {
     fill: #6a4f04;
 }
+.circle-blue,
+.circle-yellow,
+.circle-pink {
+    @apply w-6 h-6 rounded flex items-center justify-center bg-slate-100 hover:bg-emerald-500 hover:text-white transition-colors;
+
+    span {
+        @apply w-2.5 h-2.5 rounded-xl bg-emerald-500;
+    }
+}
+
 .circle-blue {
-    @apply w-[15px] h-[15px] bg-blue-100 inline-block mr-3;
     background-color: rgb(170, 250, 169);
 }
+.circle-blue:hover {
+    @apply opacity-100 ring-2 ring-emerald-300;
+}
 .circle-blue.active {
+    @apply opacity-100 ring-2 ring-emerald-500 ring-offset-1 text-white;
     background-color: rgb(16, 187, 76);
 }
+
 .circle-yellow {
-    @apply w-[15px] h-[15px] bg-yellow-100 inline-block mr-3;
     background-color: rgba(241, 237, 22, 0.5);
 }
-.circle-yellow.active {
-    background-color: rgb(236, 232, 12);
+.circle-yellow:hover {
+    @apply opacity-100 ring-2 ring-amber-200;
 }
+.circle-yellow.active {
+    @apply opacity-100 ring-2 ring-amber-400 ring-offset-1 text-white;
+    background-color: #fbbf24;
+}
+
 .circle-pink {
-    @apply w-[15px] h-[15px] inline-block mr-3;
     background-color: rgba(241, 22, 22, 0.5);
 }
+.circle-pink:hover {
+    @apply opacity-100 ring-2 ring-rose-300;
+}
 .circle-pink.active {
+    @apply opacity-100 ring-2 ring-rose-500 ring-offset-1 text-white;
     background-color: rgb(241, 22, 22);
 }
 .st_pointers {
@@ -507,7 +528,12 @@
     flex-direction: column;
     gap: 12px;
 }
-
+.diagnosis-tab-new {
+    @apply flex-1 py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80 font-medium text-xs text-center transition-all truncate min-h-[30px];
+}
+.diagnosis-tab-new.active {
+    @apply bg-white font-bold text-[#115e59];
+}
 .diagnosis-tab {
     display: inline-flex;
     align-items: center;
@@ -594,22 +620,39 @@
     margin-bottom: 14px;
 }
 
+//.diagnosis-group-header {
+//    width: 100%;
+//    height: 52px;
+//
+//    display: flex;
+//    align-items: center;
+//    justify-content: space-between;
+//
+//    padding: 0 18px;
+//
+//    background: #ffffff;
+//    border: 1px solid #dbe7ea;
+//    border-radius: 12px;
+//
+//    cursor: pointer;
+//    transition: all 0.2s ease;
+//}
 .diagnosis-group-header {
-    width: 100%;
-    height: 52px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 18px;
-
-    background: #ffffff;
-    border: 1px solid #dbe7ea;
-    border-radius: 12px;
-
-    cursor: pointer;
-    transition: all 0.2s ease;
+    @apply border border-teal-500/40 rounded-lg p-3 mb-3 bg-teal-50/30 flex items-center justify-between cursor-pointer shadow-xs transition-colors hover:bg-teal-50/50;
+}
+.activeAdult, .activeChild {
+    @apply bg-amber-100 text-amber-800;
+}
+.activeApex {
+    background: #dd841d !important;
+    color: #fff !important;
+    border-color: #653b0b;
+}
+.dia-row {
+    @apply w-full flex items-center justify-between py-2 px-2.5 rounded-xl  text-black font-semibold cursor-pointer;
+}
+.dia-row.active {
+    @apply bg-teal-50 border border-teal-200 text-teal-900;
 }
 
 .diagnosis-group-header:hover {
@@ -668,4 +711,7 @@
     color: #202121;
     box-shadow: inset 0 0 0 1px rgba(177, 183, 183, 0.14);
     font-size: 14px;
+}
+.construct-dia {
+    @apply py-1 px-2.5 rounded-lg bg-white border border-slate-200 hover:border-teal-500 text-xs font-medium text-slate-700 transition-all;
 }

@@ -51,7 +51,8 @@
     border-color: #e3e3e3;
     // width: 74px !important;
     // border-bottom: solid 1px;
-
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 .perio-table td.title{
     text-align: left;
@@ -68,20 +69,21 @@
     width: 15px;
     text-align: center;
     outline: none;
-    font-size: 9px;
+    font-size: 11px;
     padding: 1px;
     margin: 0 2px;
     min-width: 15px !important;
+    font-weight: 800;
 }
 .psr-input-view {
     border: none;
     width: 15px;
-    font-weight: bold;
     text-align: center;
     background: #f4f2fa;
     outline: none;
-    font-size: 9px;
+    font-size: 11px;
     padding: 1px;
     margin: 0 2px;
     min-width: 15px !important;
+    font-weight: 800;
 }

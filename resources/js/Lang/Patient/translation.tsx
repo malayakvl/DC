@@ -64,8 +64,8 @@ const lngPatient = {
     'tab.formula': 'Зубна формула',
     'tab.perio': 'Періо карта',
     'tab.stage': 'Етап лікування',
-    'tab.test': 'Пародонтальний скринінг-тест',
-    newstage: 'Новий етап',
+    'tab.test': 'Скринінг-тест (PSR)',
+    newstage: 'Наприклад: Підготовчий терапевтичний курс (листопад 2026)',
     search: 'Пошук',
     'search.clear': 'Очистити',
     'worked.at': 'Виконано',
@@ -114,6 +114,7 @@ const lngPatient = {
     found_patients: 'пацієнтів',
     clear_filter: 'Очистити фільтри',
     last_visit: 'Останній візит',
+    part_treatment: 'Етап лікування',
   },
 };
 export default lngPatient;
