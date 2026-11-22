@@ -173,21 +173,45 @@
     fill: rgba(241, 236, 110);
 }
 .d-badge {
-    @apply inline-flex items-center rounded-md text-xs font-medium
-        text-black ring-1 ring-inset mr-4 relative;
-    padding: 3px 20px 4px 10px;
-    font-size: 11px;
-    height: 25px;
-    margin-bottom: 10px;
-    background-color: #dff1f2 !important;
-    border-color: rgb(106, 19, 44);
-    box-shadow: none !important;
-    //background-color: rgba(228, 211, 250, 0.3);
-    color:#2f9099;
-    font-weight: bold !important;
-    line-height:10px;
-    cursor:pointer;
+    @apply inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[11px] font-medium bg-teal-50 text-teal-800 border border-teal-200 hover:bg-rose-100 hover:text-rose-700 hover:border-rose-300 transition-all cursor-pointer shadow-xs;
 }
+.d-badge.absent {
+    background: #F1F5F9 !important;
+    border-color: #CBD5E1;
+}
+.d-badge.fissure, .d-badge.wedge_shaped_defect, .d-badge.change_color {
+    background: #FFFBEB !important;
+    border-color: #FDE68A;
+}
+.d-badge.vinir, .d-badge.implant {
+    background: #EFF6FF !important;
+    border-color: #BFDBFE;
+}
+.d-badge.caries_top, .d-badge.caries_left, .d-badge.caries_right, .d-badge.caries_bottom, .d-badge.caries_center {
+    background: #FFFBEB !important;
+    border-color: #FDE68A;
+}
+.d-badge:hover {
+    color: #ac0707;
+    background: #fbdfe0 !important;
+    border-color: #ac0707;
+}
+//.d-badge {
+//    @apply inline-flex items-center rounded-md text-xs font-medium
+//        text-black ring-1 ring-inset mr-4 relative;
+//    padding: 3px 20px 4px 10px;
+//    font-size: 11px;
+//    height: 25px;
+//    margin-bottom: 10px;
+//    background-color: #dff1f2 !important;
+//    border-color: rgb(106, 19, 44);
+//    box-shadow: none !important;
+//    //background-color: rgba(228, 211, 250, 0.3);
+//    color:#2f9099;
+//    font-weight: bold !important;
+//    line-height:10px;
+//    cursor:pointer;
+//}
 .d-badge-view {
     @apply inline-flex items-center rounded-md text-xs font-medium
     text-black ring-1 ring-inset mr-4 relative;

@@ -313,8 +313,8 @@
     font-size: 14px;
 }
 .formula-action .active {
-    background-color: #dff1f2;
-    border-radius: 4px;
+    //background-color: #dff1f2;
+    //border-radius: 4px;
     color: #389b9a;
     font-weight: bold;
 }
@@ -714,4 +714,78 @@
 }
 .construct-dia {
     @apply py-1 px-2.5 rounded-lg bg-white border border-slate-200 hover:border-teal-500 text-xs font-medium text-slate-700 transition-all;
+}
+.tartar-stage-block {
+    @apply bg-slate-100 p-0.5 rounded-lg flex items-center gap-0.5 border border-slate-200;
+    max-width: 100px;
+    float:right;
+    margin-right: 5px;
+}
+.tartar-stage-value {
+    @apply mr-1 cursor-pointer py-0.5 px-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white font-medium text-[11px] transition-all;
+    white-space: nowrap;
+}
+.tartar-stage-value.active {
+    background: white !important;
+}
+.paradont-title {
+    @apply w-[50%] flex-initial cursor-pointer whitespace-nowrap flex-1 py-1.5 px-3 rounded-lg bg-white text-teal-800 font-bold text-xs shadow-xs border border-slate-200 text-center transition-all;
+}
+.parodontit-stage-block {
+    max-width: 150px;
+}
+.parodontit-stage-block-2 {
+    max-width: 220px;
+    margin-right: -10px;
+}
+.dia-right-block {
+    height: 750px;
+    background: #0F8C8B;
+    min-height: 750px;
+    overflow-y: scroll !important;
+}
+.selected-diagnozis {
+    @apply gap-3 max-h-[185px] overflow-y-auto pr-1 py-0.5;
+}
+.diagnosis-group-header.teeth_type {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+}
+.diagnosis-group-header.injuries {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+}
+.diagnosis-group-header.endo {
+    background: #F5F3FF;
+    border-color: #DDD6FE;
+}
+.diagnosis-group-header.constructs {
+    background: #EFF6FF;
+    border-color: #BFDBFE;
+}
+.diagnosis-group-header.paradont {
+    background: #F0FDFA;
+    border-color: #99F6E4;
+}
+.formula-gray-tabs {
+    @apply inline-block items-center space-x-1.5 bg-slate-200/60 p-1 rounded-lg text-xs font-medium;
+    padding: 10px;
+    margin-bottom: 10px
+}
+.formula-gray-tabs .gray-tab {
+    @apply cursor-pointer px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 transition-colors shadow-xs font-semibold;
+}
+.formula-gray-tabs .gray-tab.active {
+    @apply bg-white text-teal-800;
+}
+.tab-view-dia {
+    max-height: 500px;
+    overflow-y: scroll;
+}
+.stage-formula-view {
+    background: #f8fafc;
+}
+.view-formula-white {
+    background: #fff;
+    @apply lg:col-span-7 xl:col-span-7 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden;
 }

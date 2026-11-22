@@ -90,8 +90,7 @@ import Tooth16 from './Tooth16';
 import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
 
-export default function FormulaView({ formulaData, id }) {
-
+export default function FormulaView({ formulaData, id }: { formulaData: any; id: number }) {
   return (
     <>
       <section id={`formula-view-${id}`}>
@@ -157,7 +156,7 @@ export default function FormulaView({ formulaData, id }) {
           <g className="lower" id={`lower_${id}`}>
             {formulaData.tooth48.show && <Tooth48 formulaToothData={formulaData.tooth48} />}
             {formulaData.tooth47.show && <Tooth47 formulaToothData={formulaData.tooth47} />}
-            {formulaData.tooth46.show && <Tooth46 formulaToothData={formulaData.tooth47} />}
+            {formulaData.tooth46.show && <Tooth46 formulaToothData={formulaData.tooth46} />}
             {formulaData.tooth45.show && <Tooth45 formulaToothData={formulaData.tooth45} />}
             {formulaData.tooth85.show && <Tooth85 formulaToothData={formulaData.tooth85} />}
             {formulaData.tooth44.show && <Tooth44 formulaToothData={formulaData.tooth44} />}
