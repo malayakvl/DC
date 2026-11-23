@@ -35,34 +35,43 @@
     margin-top: 10px;
     color: #29425e;
 }
-.patient-stage {
-    border-left-color: #ea8e5b;
-    border-width: 3px;
-    border-top: solid 1px #d2cfcf;
-    border-radius: 5px;
-    border-bottom: solid 1px #d2cfcf;
-    border-right: solid 1px #d2cfcf;
+.patient-view-stage {
     width: 100%;
     min-height: 50px;
     padding: 20px;
     padding-bottom: 5px;
-
+    background: #fff;
+}
+.patient-stage {
+    //border-left-color: #ea8e5b;
+    //border-width: 3px;
+    //border-top: solid 1px #d2cfcf;
+    //border-radius: 5px;
+    //border-bottom: solid 1px #d2cfcf;
+    //border-right: solid 1px #d2cfcf;
+    width: 100%;
+    min-height: 50px;
+    padding: 0px 16px 16px 16px;
+    padding-bottom: 5px;
+    border: 1px solid rgba(14, 165, 164, 0.12);
+    background: #fff;
 }
 .patient-view-border {
-    background: #fff;
-    border-left-color: #0ea5a4;
-    border-width: 3px;
-    border-top: solid 1px #0ea5a4;
-    border-radius: 5px;
-    border-bottom: solid 1px #0ea5a4;
-    border-right: solid 1px #0ea5a4;
     width: 100%;
     height: 100px;
+    @apply bg-white rounded-xl border border-slate-200/80 shadow-sm p-4;
+
+    .profile-photo {
+        @apply relative w-14 h-14 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-400;
+    }
 
     img {
         height: 95px;
         width: auto;
         padding-left:5px;
+    }
+    .patient-info {
+        margin-top: 0px;
     }
 
     .icon-block {
@@ -128,16 +137,16 @@
 }
 .parient-info {
     padding-left: 20px;
-    margin-top: 25px;
+    //margin-top: 25px;
 }
 .patient-content-border {
-    border-left-color: #29425e;
     border-width: 3px;
     border-top: solid 1px #d2cfcf;
     border-radius: 5px;
     border-bottom: solid 1px #d2cfcf;
     border-right: solid 1px #d2cfcf;
     padding: 10px;
+    background: #fefeff;
 }
 // .action-block li {
 //     width: 100%;
@@ -206,29 +215,22 @@
     overflow: hidden;
     overflow-y: scroll;
 }
-.stage-input input[type="text"]
-{
-    border: solid 1px #0ea5a4;
-    outline: none;
-    background: transparent;
-}
-.stage-input input[type="text"]::placeholder
-{
-    color: #6a8f8f;
-}
+//.stage-input input[type="text"]
+//{
+//    border: solid 1px #0ea5a4;
+//    outline: none;
+//    background: transparent;
+//}
+//.stage-input input[type="text"]::placeholder
+//{
+//    color: #6a8f8f;
+//}
 .text-title-tab {
     color: #475569;
     font-size: 16px;
     font-weight: bold;
 }
-.stage-input input[type="text"]:focus
-{
-    border: solid 1px #9462dd;
-}
-.stage-input input[type="text"]:hover
-{
-    border: solid 1px #9462dd;
-}
+
 .white-view {
     background: #ffffff;
     border-left-color: #75caca;
@@ -239,7 +241,7 @@
 
 }
 .text-p-name {
-    color: #fff;
+    color: #000;
 }
 .p-phone {
     @apply text-[#2fb1b0] block text-[14px] font-bold;
@@ -1110,4 +1112,34 @@
     background: rgba(14,165,164,0.12);
     border-color: #0ea5a4;
     color: #0ea5a4;
+}
+
+.tab-view-green {
+    @apply flex flex-wrap items-center gap-1 sm:gap-1.5 text-sm font-medium text-slate-600 bg-[#0d9488] p-1.5 rounded-lg;
+}
+.tab-view-green .tab {
+    @apply px-3 py-1.5 rounded-md text-white hover:text-slate-900 hover:bg-white transition-all;
+}
+.tab-view-green .tab.active {
+    @apply px-3 py-1.5 rounded-md bg-white text-teal-700 font-semibold shadow-sm border-b-2 border-teal-600 transition-all;
+}
+
+.patient-yellow-btns {
+    @apply w-7 h-7 rounded-md bg-[#fffbeb] text-[#dd841d] hover:text-teal-700 hover:bg-slate-50 flex items-center justify-center transition-colors;
+    border: solid 1px #f6e6d4;
+
+}
+.action-patient-icon {
+    list-style: none;
+}
+.action-patient-icon li {
+    display: inline-block;
+}
+.action-patient-icon li a {
+   @apply text-[#dd841d];
+}
+.stage-input {
+    @apply w-full text-xs md:text-sm bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition shadow-inner;
+    height: 35px !important;
+    max-height: 35px !important;
 }

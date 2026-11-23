@@ -92,7 +92,22 @@ const lngPatient = {
     perio_absent: 'Відсутній',
     perio_implant: 'Імплант',
     perio_crown: 'Коронка',
-    perio_middlepart: 'Проміжна частина'
+    absent: 'Відсутній',
+    perio_middlepart: 'Проміжна частина',
+    formula_title: 'Зубна формула пацієнта',
+    formula_tab_type: 'Тип зуба',
+    formula_tab_destroy: 'Ураження',
+    formula_tab_endo: 'Endo',
+    formula_tab_construct: 'Конструкції',
+    formula_tab_paradont: 'Пародонт',
+    formula_maxilla: 'Верхная щелепа',
+    formuala_mandibula: 'Нижня щелепа',
+    formula_used_teeth: 'Призначені статуси вибраних зубів',
+    teeth_selected: 'зубів у вибірці',
+    click_for_cancel: 'Клікніть по діагнозу для швидкого скасування',
+    cancel_all: 'Скасувати всі',
+    teeth_formula: 'Зубна формула пацієнта',
+    formula_active_stage: 'Активний етап',
   },
 };
 export default lngPatient;

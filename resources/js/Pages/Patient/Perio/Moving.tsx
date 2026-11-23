@@ -1,66 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
 import { setPerioDiagnoze } from '../../../Redux/Formula';
 
-export default function Moving({ toothNum, type }) {
+interface MovingProps {
+  toothNum: number | string;
+}
+
+export default function Moving({ toothNum }: MovingProps) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
 
-  const setDiagnozis = () => {
-    let stage = 0;
-    if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 0 || !perioDiagnozis[`tooth${toothNum}`][`moving_st`])
-      stage = 1;
-    else if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 1)
-      stage = 2;
-    else if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 2)
-      stage = 3;
-    else if (perioDiagnozis[`tooth${toothNum}`][`moving_st`] === 3)
-      stage = 0;
+  const toothKey = `tooth${toothNum}`;
+  const currentStage: number = perioDiagnozis?.[toothKey]?.moving_st || 0;
 
-    perioDiagnozis[`tooth${toothNum}`][`moving_st`] = stage;
-    dispatch(setPerioDiagnoze(perioDiagnozis));
-    setChangeState(!changeState);
+  const handleToggleStage = () => {
+    const nextStage = currentStage >= 3 ? 0 : currentStage + 1;
+
+    // Иммутабельное обновление, чтобы React/Redux сам перерисовал компонент
+    const updatedDiagnozis = {
+      ...perioDiagnozis,
+      [toothKey]: {
+        ...perioDiagnozis[toothKey],
+        moving_st: nextStage,
+      },
+    };
+
+    dispatch(setPerioDiagnoze(updatedDiagnozis));
   };
 
   return (
-    <>
-      <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 100 100"
-        style={{ width: '100%', height: '20px' }}
-        xmlSpace="preserve"
-      >
-        <g className="mobility" onClick={() => setDiagnozis()}>
-          <path
-            d="M 0 10 L 100 10 L 100 90 L 0 90 Z"
-            fill="rgba(255, 255, 255, 0)"
-          ></path>
-          <path
-            className="level1"
-            d="M 0 25 L 0 75"
-            strokeWidth="10px"
-            style={{stroke: perioDiagnozis[`tooth${toothNum}`]?.[`moving_st`] >= 1 ? 'red' : 'rgba(200, 200, 200, 0.9)'}}
-          ></path>
-          <path
-            className="level2"
-            d="M 45 25 L 45 75"
-            strokeWidth="10px"
-            style={{stroke: perioDiagnozis[`tooth${toothNum}`]?.[`moving_st`] >= 2 ? 'red' : 'rgba(200, 200, 200, 0.9)'}}
-          ></path>
-          <path
-            className="level3"
-            d="M 90 25 L 90 75"
-            strokeWidth="10px"
-            style={{stroke: perioDiagnozis[`tooth${toothNum}`]?.[`moving_st`] >= 3 ? 'red' : 'rgba(200, 200, 200, 0.9)'}}
-          ></path>
-        </g>
-      </svg>
-    </>
+    <div
+      onClick={handleToggleStage}
+      role="button"
+      tabIndex={0}
+      title={`Рухомість: ${currentStage} ст.`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '3px',
+        height: '20px',
+        cursor: 'pointer',
+      }}
+    >
+      {[1, 2, 3].map((level) => (
+        <span
+          key={level}
+          style={{
+            width: '3.5px',
+            height: '13px',
+            borderRadius: '999px',
+            backgroundColor: currentStage >= level ? '#E11D48' : '#E2E8F0',
+            transition: 'background-color 0.15s ease',
+          }}
+        />
+      ))}
+    </div>
   );
 }

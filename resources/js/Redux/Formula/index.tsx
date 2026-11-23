@@ -59,7 +59,7 @@ import {
   setClearFormula,
   setClearPerio,
   setRemoveDia,
-  setPerioStatusChange
+  setPerioStatusChange,
 } from './actions';
 
 const initialState = {
@@ -87,9 +87,9 @@ const initialState = {
   psrChange: false,
   psrValues: ['', '', '', '', '', '', '', ''],
   psrData: {
-    values:['', '', '', '', '', '', '', ''],
+    values: ['', '', '', '', '', '', '', ''],
     stars: [0, 0, 0, 0, 0, 0, 0, 0],
-    minuses: [0, 0, 0, 0, 0, 0, 0, 0]
+    minuses: [0, 0, 0, 0, 0, 0, 0, 0],
   },
   changeDia: false,
   teethStatuses: {
@@ -9772,7 +9772,7 @@ const initialState = {
       fertilizer_oral_st1: false,
       fertilizer_oral_st2: false,
       fertilizer_oral_st3: false,
-    }
+    },
   },
   // perio chart vest 1828
   vest1828Zond: [
@@ -9876,14 +9876,14 @@ const initialState = {
     '',
   ],
   pZondChartUp: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pKrayChartUp: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pBarUp: [
     0,
@@ -10062,14 +10062,14 @@ const initialState = {
     '',
   ],
   pZondChartDown: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ],
   pKrayChartDown: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pBarDown: [
     0,
@@ -10248,14 +10248,14 @@ const initialState = {
     '',
   ],
   pZondChart2Up: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pKrayChart2Up: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pBar2Up: [
     0,
@@ -10434,14 +10434,14 @@ const initialState = {
     '',
   ],
   pZondChart2Down: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pKrayChart2Down: [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
   ],
   pBar2Down: [
     0,
@@ -10529,138 +10529,138 @@ const initialState = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [setPerioStatusChange.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       perioStatusChange: action.payload,
     }),
   },
   [setRemoveDia.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       removeDia: action.payload,
     }),
   },
   [setSchema.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       schemaType: action.payload,
     }),
   },
   [setTeethType.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       teethType: action.payload,
     }),
   },
   [setAllTeeth.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       allTeeth: action.payload,
     }),
   },
   [setSelectedTooth.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       selectedTooth: action.payload,
     }),
   },
   [setDiagnosis.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       diagnosis: action.payload,
     }),
   },
   [setDiagnosisClass.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       channel_class: action.payload,
     }),
   },
   [setSubDiagnosis.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       subdiagnosis: action.payload,
     }),
   },
 
   [setSealColor1.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       seal_color1: action.payload,
     }),
   },
   [setSealColor2.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       seal_color2: action.payload,
     }),
   },
   [setSealColor3.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       seal_color3: action.payload,
     }),
   },
   [setSealServicalColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       seal_cervical_color: action.payload,
     }),
   },
   [setVinirColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       vinir_color: action.payload,
     }),
   },
   [setCeramicCrownColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       ceramic_crown_color: action.payload,
     }),
   },
   [setMCeramicCrownColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       mceramic_crown_color: action.payload,
     }),
   },
   [setMetalicCrownColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       metalic_crown_color: action.payload,
     }),
   },
   [setZirconiaCrownColor.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       zirconia_crown_color: action.payload,
     }),
   },
   [setNewToothActive.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       teethStatuses: { ...state.teethStatuses, ...action.payload },
     }),
   },
   [setPsrValues.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       psrData: action.payload,
     }),
   },
   [setClearPSR.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       psrData: {
-        values:['', '', '', '', '', '', '', ''],
+        values: ['', '', '', '', '', '', '', ''],
         stars: [0, 0, 0, 0, 0, 0, 0, 0],
-        minuses: [0, 0, 0, 0, 0, 0, 0, 0]
+        minuses: [0, 0, 0, 0, 0, 0, 0, 0],
       },
     }),
   },
   [setDisactiveAll.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       teethStatuses: {
         tooth18: { active: false },
@@ -10719,186 +10719,186 @@ const ACTION_HANDLERS = {
     }),
   },
   [setSelectedToothNumber.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       selectedTooth: action.payload,
     }),
   },
   [setPerioDeepZond.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       teethPerioZond: action.payload,
     }),
   },
   [setDeepZondData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       perioZondData: action.payload,
     }),
   },
   [setPsrChange.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       psrChange: action.payload,
     }),
   },
 
   [setPerioZ1828VestData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       vest1828Zond: action.payload,
     }),
   },
   [setPerioZ4838VestData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       vest4838Zond: action.payload,
     }),
   },
   [setPerioYK1828VestData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       vest1828Yasn: action.payload,
     }),
   },
   [setPerioYK4838VestData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       vest4838Yasn: action.payload,
     }),
   },
   [setPZondChart1828Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pZondChartUp: action.payload,
     }),
   },
   [setPKrayChart1828Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pKrayChartUp: action.payload,
     }),
   },
   [setPBarChart1828Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pBarUp: action.payload,
     }),
   },
 
   [setPerioZ1828OralData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       oral1828Zond: action.payload,
     }),
   },
   [setPerioZ4838OralData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       oral4838Zond: action.payload,
     }),
   },
   [setPerioYK1828OralData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       oral1828Yasn: action.payload,
     }),
   },
   [setPerioYK4838OralData.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       oral4838Yasn: action.payload,
     }),
   },
   [setPZondChart1828Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pZondChartDown: action.payload,
     }),
   },
   [setPKrayChart1828Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pKrayChartDown: action.payload,
     }),
   },
   [setPBarChart1828Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pBarDown: action.payload,
     }),
   },
 
   [setPZondChart4838Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pZondChart2Up: action.payload,
     }),
   },
   [setPBarChart4838Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pBar2Up: action.payload,
     }),
   },
   [setPZondChart4838Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pZondChart2Down: action.payload,
     }),
   },
   [setPBarChart4838Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pBar2Down: action.payload,
     }),
   },
   [setPKrayChart4838Down.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pKrayChart2Down: action.payload,
     }),
   },
   [setPKrayChart4838Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pKrayChart2Up: action.payload,
     }),
   },
 
   [setPerioDiagnoze.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       teethDiagnozesPerio: action.payload,
     }),
   },
 
   [showAllAdult.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       allTeethAdult: action.payload,
     }),
   },
   [showAllChild.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       allTeethChild: action.payload,
     }),
   },
   [setChangeDia.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       changeDia: action.payload,
     }),
   },
   [setDataDiagnozes.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       teethDiagnozes: action.payload,
     }),
   },
   [setClearPerio.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       vest1828Zond: [
         '',
@@ -11001,14 +11001,14 @@ const ACTION_HANDLERS = {
         '',
       ],
       pZondChartUp: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pKrayChartUp: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pBarUp: [
         0,
@@ -11187,14 +11187,14 @@ const ACTION_HANDLERS = {
         '',
       ],
       pZondChartDown: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pKrayChartDown: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pBarDown: [
         0,
@@ -11373,14 +11373,14 @@ const ACTION_HANDLERS = {
         '',
       ],
       pZondChart2Up: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pKrayChart2Up: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pBar2Up: [
         0,
@@ -11559,14 +11559,14 @@ const ACTION_HANDLERS = {
         '',
       ],
       pZondChart2Down: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pKrayChart2Down: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
       pBar2Down: [
         0,
@@ -11642,17 +11642,17 @@ const ACTION_HANDLERS = {
         [0, 0],
         [0, 0],
         0,
-      ]
+      ],
     }),
   },
   [setStateFormula.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       stateFormula: action.payload,
     }),
   },
   [setClearFormula.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       teethDiagnozes: {
         tooth18: {
@@ -15774,7 +15774,7 @@ export {
   setRemoveDia,
   setPerioStatusChange,
   setPsrValues,
-  setClearPSR
+  setClearPSR,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

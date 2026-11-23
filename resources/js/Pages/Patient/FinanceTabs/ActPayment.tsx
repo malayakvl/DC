@@ -14,7 +14,7 @@ import {
 } from '../../../Redux/Patient';
 import { Transition } from '@headlessui/react';
 import Pricing from '../Pricing';
-import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
+import { patientServicesSelector, patientTabSelector } from '../../../Redux/Patient/selectors';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
 import moment from 'moment';
 
@@ -30,7 +30,7 @@ export default function ActPayment({
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngPatient, locale: appLang });
-  const subTab = useSelector(patientSubTabSelector);
+  const subTab = useSelector(patientTabSelector);
   const initialServices = useSelector(patientServicesSelector) || [];
 
 console.log(actData)

@@ -1,16 +1,16 @@
 import { createSelector } from 'reselect';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 // ------------------------------------
 // Selectors
 // ------------------------------------
-const rootSelector = createSelector(
-  state => state,
-  pricing => pricing
-);
+// const rootSelector = createSelector(
+//   state => state,
+//   pricing => pricing
+// );
 
-export const patientTabSelector = state => state.patient.patientTab;
-export const patientSubTabSelector = state => state.patient.patientSubTab;
+export const patientTabSelector = (state: any) => state.patient.patientTab;
+export const patientTreatmentTabSelector = (state: any) => state.patient.patientTreatmentTab;
 
-export const patientFiltersSelector = state => state.patient.filters;
-export const patientClearFiltersSelector = state => state.patient.isClear;
-export const patientServicesSelector = state => state.patient.services;
+export const patientFiltersSelector = (state: any) => state.patient.filters;
+export const patientClearFiltersSelector = (state: any) => state.patient.isClear;
+export const patientServicesSelector = (state: any) => state.patient.services;

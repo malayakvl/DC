@@ -34,11 +34,13 @@ export default function Tooth42({ className = '' }) {
             s-0.8,161-1,167c-1,26-16,39-16,68s17,49,15,87S978.8,1202.9,978.8,1202.9z"
           ></path>
         </g>
-        <g id="TH_42" className="common-view" style={{ visibility: tooth42.status !== 'absent' ? 'inherit' : 'hidden' }}>
+        <g
+          id="TH_42"
+          className="common-view"
+          style={{ visibility: tooth42.status !== 'absent' ? 'inherit' : 'hidden' }}
+        >
           <g className="dentin">
-            <g
-              style={{ visibility: 'inherit' }}
-            >
+            <g style={{ visibility: 'inherit' }}>
               <path
                 className="st9"
                 d="M975.2,1172.7c0,5.2-0.1,10.4-0.3,15.6c-0.7,18.5-2.5,37.1-4.5,55.6
@@ -50,7 +52,12 @@ export default function Tooth42({ className = '' }) {
               ></path>
             </g>
             <g
-              style={{ visibility: (tooth42.status === 'implant' || tooth42.status === 'middlepart') ? 'hidden' : 'inherit' }}
+              style={{
+                visibility:
+                  tooth42.status === 'implant' || tooth42.status === 'middlepart'
+                    ? 'hidden'
+                    : 'inherit',
+              }}
             >
               <path
                 className="st10"
@@ -63,11 +70,7 @@ export default function Tooth42({ className = '' }) {
             </g>
           </g>
           <g className="pulp">
-            <g
-              className="pulpitis-pfilling"
-              data-position="42"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="42" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target"
                 d="M958.4,1196.3c-0.7,6.6-1.9,13-3,19.5c-0.7,3.9-1.3,7.8-2,11.7c0,0,0,0,0,0
@@ -78,11 +81,7 @@ export default function Tooth42({ className = '' }) {
                 C959.3,1182.7,959.1,1189.5,958.4,1196.3z"
               ></path>
             </g>
-            <g
-              className="pulpitis-pfilling"
-              data-position="42"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="42" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target"
                 d="M941,1297.7c1.1,0.2,2.2,0.2,3.2,0.2c0.6,0,1.2,0,1.8-0.1
@@ -92,11 +91,7 @@ export default function Tooth42({ className = '' }) {
                 c0,0,0,0,0,0c0,4.8,0,9.6-0.1,14.5c-0.2,15.7-0.7,31.5-1.1,47.2C941.1,1292.3,941,1295,941,1297.7z"
               ></path>
             </g>
-            <g
-              className="pulpitis-pfilling"
-              data-position="42"
-              style={{ visibility: 'inherit' }}
-            >
+            <g className="pulpitis-pfilling" data-position="42" style={{ visibility: 'inherit' }}>
               <path
                 className="st22 target part"
                 d="M939.4,1367.2L939.4,1367.2c1.7-13.7,3.2-27.5,4.3-41.3
@@ -129,10 +124,7 @@ export default function Tooth42({ className = '' }) {
               <circle className="st42" cx="933.5" cy="1386.4" r="30"></circle>
             </g>
           </g>
-          <g
-            className="pin"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="pin" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st56"
               d="M925.399 1211.6C927.799 1217 930.899 1222 935.899 1225.2C937.699 1226.3 939.599 1227.2 941.499 1227.7C941.799 1227.8 942.099 1227.9 942.399 1227.9C945.999 1228.8 949.899 1228.6 953.499 1227.5C953.599 1227.5 953.699 1227.4 953.799 1227.4C955.199 1226.9 956.599 1226.3 957.899 1225.6C966.299 1220.7 970.299 1211.1 973.199 1201.7C973.599 1200.3 973.999 1198.9 974.399 1197.6C974.599 1194.5 974.699 1191.4 974.899 1188.3C975.099 1183.1 975.199 1177.9 975.199 1172.7C975.199 1165.2 974.899 1157.8 974.199 1150.3L972.799 1147.8L971.099 1146.8L933.199 1146.9L931.599 1148.3L930.699 1149.8C928.899 1158.4 927.499 1167.1 926.599 1175.8C926.099 1180.8 925.699 1185.9 925.499 1191C925.199 1197.8 925.299 1204.7 925.399 1211.6Z"
@@ -143,10 +135,7 @@ export default function Tooth42({ className = '' }) {
               d="M962.2 1146.9L953.9 1227.4H953.8C953.7 1227.4 953.6 1227.5 953.5 1227.5C953.6 1227.5 953.7 1227.4 953.8 1227.4L947.8 1286.2L947.5 1289.2L945.1 1312.6C945 1313.7 944.1 1314.5 943 1314.5C941.8 1314.5 940.9 1313.6 940.9 1312.4L941.1 1284.2V1284.1L941.6 1227.8L942.3 1147L962.2 1146.9Z"
             ></path>
           </g>
-          <g
-            className="stump"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="stump" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st14"
               d="M943,1314.5L943,1314.5c1.1,0,2-0.8,2.1-1.9l8.7-85.2c-0.1,0-0.2,0.1-0.3,0.1c-3.6,1.1-7.4,1.3-11.1,0.4
@@ -160,10 +149,7 @@ export default function Tooth42({ className = '' }) {
             c-1.8,8.6-3.2,17.3-4.1,26c-0.5,5-0.9,10.1-1.1,15.2C925.2,1197.8,925.3,1204.7,925.4,1211.6z"
             ></path>
           </g>
-          <g
-            className="abutment"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="abutment" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st16"
               d="M974.4,1197.5l-17.9,40.2l-19.2-1.2l-11.9-24.9c2.3,5.4,5.5,10.3,10.5,13.6c6.7,4.3,15.1,4.4,22,0.4
@@ -177,10 +163,7 @@ export default function Tooth42({ className = '' }) {
                 C974.8,1157.8,975.2,1165.2,975.2,1172.7z"
             ></path>
           </g>
-          <g
-            className="shaper"
-            style={{ visibility: 'hidden' }}
-          >
+          <g className="shaper" style={{ visibility: 'hidden' }}>
             <path
               className="st44"
               d="M931.222 1196.47C931.063 1194.1 932.99 1192.12 935.363 1192.21L961.236 1193.18C963.609 1193.27 965.382 1195.39 965.047 1197.74L959.45 1236.97C959.159 1239 957.373 1240.49 955.318 1240.4L937.697 1239.64C935.66 1239.55 934.014 1237.95 933.878 1235.91L931.222 1196.47Z"
@@ -195,41 +178,11 @@ export default function Tooth42({ className = '' }) {
               d="M929.3,1236.5c0,0-1.5,49.5-1.8,57.5s-0.5,60.5-0.5,60.5s4.1,6.2,11.8,7c7.8,0.8,11.2-7.2,11.2-7.2
                 s8.6-73.4,9.4-77.6c0.8-4.3,4.1-38.9,4.1-38.9L929.3,1236.5z"
             ></path>
-            <line
-              className="st19"
-              x1="925.9"
-              y1="1246.3"
-              x2="965"
-              y2="1254.3"
-            ></line>
-            <line
-              className="st19"
-              x1="923.9"
-              y1="1269.3"
-              x2="963"
-              y2="1277.3"
-            ></line>
-            <line
-              className="st19"
-              x1="921.9"
-              y1="1293.3"
-              x2="961"
-              y2="1301.3"
-            ></line>
-            <line
-              className="st19"
-              x1="920.8"
-              y1="1316.8"
-              x2="960.1"
-              y2="1323.8"
-            ></line>
-            <line
-              className="st19"
-              x1="918.8"
-              y1="1339.8"
-              x2="958.1"
-              y2="1346.8"
-            ></line>
+            <line className="st19" x1="925.9" y1="1246.3" x2="965" y2="1254.3"></line>
+            <line className="st19" x1="923.9" y1="1269.3" x2="963" y2="1277.3"></line>
+            <line className="st19" x1="921.9" y1="1293.3" x2="961" y2="1301.3"></line>
+            <line className="st19" x1="920.8" y1="1316.8" x2="960.1" y2="1323.8"></line>
+            <line className="st19" x1="918.8" y1="1339.8" x2="958.1" y2="1346.8"></line>
           </g>
           <g className="toutline" style={{ visibility: 'inherit' }}>
             <path
@@ -240,10 +193,7 @@ export default function Tooth42({ className = '' }) {
                 c3.6-11.6,6.2-23.5,7.7-35.6C982.3,1153.8,982.6,1141.4,981.8,1129z"
             ></path>
           </g>
-          <g
-            className="wedge-shaped"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="wedge-shaped" style={{ visibility: 'inherit' }}>
             <path
               className="st7 st59"
               d="M918.435 1125.3C917.335 1126.7 916.835 1128.4 916.935 1130.2C916.035 1147.7 916.635 1165.3 918.835 1182.9C919.435 1188.4 920.335 1194 921.635 1199.4C922.635 1203.3 923.835 1207.2 925.335 1210.9C927.735 1216.6 930.935 1221.9 936.135 1225.3C942.835 1229.6 951.235 1229.7 958.135 1225.7C966.235 1221 970.235 1212 973.135 1202.9C973.185 1202.7 973.235 1202.53 973.285 1202.35C973.335 1202.18 973.385 1202 973.435 1201.8C977.035 1190.2 979.635 1178.3 981.135 1166.2C982.635 1153.9 982.935 1141.5 982.035 1129.1C982.435 1127 981.435 1124.8 979.535 1123.8C978.735 1123.3 977.935 1123.1 977.035 1123.2L968.035 1123.1L939.835 1122.9L922.235 1122.7C920.735 1123.1 919.435 1124 918.435 1125.3ZM968.047 1202.06C968.086 1201.94 968.125 1201.81 968.163 1201.67C969.056 1198.98 969.869 1196.28 970.6 1193.55C970.931 1192.31 970.011 1191.1 968.731 1191.07L928.573 1190.06C927.342 1190.03 926.374 1191.11 926.569 1192.32C926.979 1194.88 927.496 1197.44 928.14 1199.94C928.913 1202.75 929.84 1205.56 930.999 1208.23C932.853 1212.34 935.326 1216.16 939.344 1218.61C944.52 1221.71 951.011 1221.78 956.342 1218.9C962.6 1215.51 965.691 1209.02 967.931 1202.46C967.97 1202.31 968.009 1202.19 968.047 1202.06Z"
@@ -257,10 +207,7 @@ export default function Tooth42({ className = '' }) {
               d="M967.943 1201.67C967.865 1201.95 967.788 1202.17 967.711 1202.46C965.47 1209.02 962.38 1215.51 956.121 1218.9C950.79 1221.78 944.3 1221.71 939.123 1218.61C935.105 1216.16 932.633 1212.34 930.778 1208.23C929.619 1205.56 928.692 1202.75 927.92 1199.94C927.275 1197.44 926.758 1194.88 926.348 1192.32C926.153 1191.11 927.121 1190.03 928.353 1190.06L968.51 1191.07C969.79 1191.1 970.711 1192.31 970.379 1193.55C969.648 1196.28 968.835 1198.98 967.943 1201.67Z"
             ></path>
           </g>
-          <g
-            className="tartar hImplant hEmpty"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="tartar hImplant hEmpty" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st61 level2"
               d="M977.5 1184L975 1187.5L973.5 1190.5V1192L972 1193.5V1195.5L970 1200.5V1203.5L967.5 1206.5L965.5 1211L965 1213.5L963.5 1216L962.5 1217L960 1219L958.5 1219.5L957.5 1220.5L953 1223L950 1224L948.5 1223H945.5L941.5 1222L938.5 1220.5H936L934.5 1219L931.5 1217L930 1213.5L928 1209L926.5 1206.5V1204.5L925 1203.5L924 1200.5L924.5 1199L924 1197.5V1195L922 1191L921.5 1188.5L921 1186.5L919 1183.5L918.5 1185V1186.5L919 1188.5V1189.5V1192L919.5 1193.5L920.5 1196.5V1198V1200.5L921 1201.5L922 1203.5V1205V1207.5L923.5 1209V1211V1212.5L924 1214V1217L923.5 1218L924 1223.5L925 1228V1231.5V1235L926 1238L925.5 1241L926.5 1243.5L932.5 1246.5L938.5 1247.5L943.5 1248.5L947.5 1250L953 1248.5H957.5L962 1247.5L966.5 1244.5L969 1243.5L971 1241L971.5 1238V1235L972.5 1231.5V1229V1227L973 1225L973.5 1223L973 1221.5V1219L973.5 1217L972.5 1214.5L973.5 1212.5V1207.5L975 1205V1200.5L976.5 1198L977.5 1194.5L977 1192L978.5 1188L977.5 1184Z"
@@ -317,38 +264,27 @@ export default function Tooth42({ className = '' }) {
               ></path>
             </g>
             <g className="with">
-              <path
-                className="st54"
-                d="M935.5 1162.5C936.5 1157.17 938.6 1142.4 939 1128"
-              ></path>
-              <path
-                className="st54"
-                d="M935.5 1162.5C932 1181.5 932 1186.6 926 1195"
-              ></path>
-              <path
-                className="st54"
-                d="M967 1164.5C967 1181.5 965.5 1192 969 1198"
-              ></path>
-              <path
-                className="st54"
-                d="M967 1164.5L968.5 1128.5"
-              ></path>
+              <path className="st54" d="M935.5 1162.5C936.5 1157.17 938.6 1142.4 939 1128"></path>
+              <path className="st54" d="M935.5 1162.5C932 1181.5 932 1186.6 926 1195"></path>
+              <path className="st54" d="M967 1164.5C967 1181.5 965.5 1192 969 1198"></path>
+              <path className="st54" d="M967 1164.5L968.5 1128.5"></path>
             </g>
           </g>
-          <g
-            style={{ visibility: 'inherit' }}
-          >
-            <g
-              className="vinir"
-              style={{ visibility: 'inherit', opacity: 0 }}
-            >
+          <g style={{ visibility: 'inherit' }}>
+            <g className="vinir" style={{ visibility: 'inherit', opacity: 0 }}>
               <path
                 className="st55"
                 d="M981.8 1129C982.2 1126.9 981.2 1124.7 979.3 1123.7C978.5 1123.3 977.7 1123.1 976.8 1123.1L967.8 1123L939.6 1122.8L922 1122.6C920.5 1123 919.2 1123.9 918.2 1125.2C917.1 1126.6 916.6 1128.4 916.7 1130.1C915.7 1147.6 916.4 1165.2 918.5 1182.6C919.2 1188.1 920 1193.7 921.3 1199.1C922.3 1203 923.5 1206.9 925 1210.6C927.4 1216.3 930.6 1221.6 935.8 1225C942.5 1229.3 950.9 1229.4 957.8 1225.4C965.9 1220.7 969.9 1211.7 972.8 1202.6C972.9 1202.2 973 1201.9 973.2 1201.5C976.8 1189.9 979.4 1178 980.9 1165.9C982.3 1153.8 982.6 1141.4 981.8 1129Z"
               ></path>
             </g>
           </g>
-          <g className="crown" style={{ visibility: (tooth42.status !== 'exist' && tooth42.status) ? 'inherit' : 'hidden', opacity: (tooth42.status !== 'exist') ? 1 : 0 }}>
+          <g
+            className="crown"
+            style={{
+              visibility: tooth42.status !== 'exist' && tooth42.status ? 'inherit' : 'hidden',
+              opacity: tooth42.status !== 'exist' ? 1 : 0,
+            }}
+          >
             <path
               className={`st46 target temporary-crown crown-fill blue`}
               d="M981.8,1129c0.4-2.1-0.6-4.3-2.5-5.3c-0.8-0.4-1.6-0.6-2.5-0.6l-9-0.1l-28.2-0.2

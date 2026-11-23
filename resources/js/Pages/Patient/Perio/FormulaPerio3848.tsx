@@ -17,7 +17,6 @@ import Tooth37 from './Tooth37';
 import Tooth38 from './Tooth38';
 
 export default function FormulaPerio3848() {
-
   return (
     <section className="f-prerio">
       <svg

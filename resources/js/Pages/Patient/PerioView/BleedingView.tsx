@@ -1,68 +1,52 @@
 import React from 'react';
 
-export default function BleedingView({ data, type, toothNum }) {
+interface BleedingViewProps {
+  data?: Record<string, any> | null;
+  type: string;
+  toothNum: number | string;
+}
+
+export default function BleedingView({ data, type, toothNum }: BleedingViewProps) {
+  const toothData = data?.[`tooth${toothNum}`] || {};
 
   return (
-    <>
-      <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 300 100"
-        style={{ width: '100%', height: '20px' }}
-        xmlSpace="preserve"
-      >
-        <circle
-          cx="50"
-          cy="50"
-          r="25"
-          fill={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st1`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-        <circle
-          cx="150"
-          cy="50"
-          r="25"
-          fill={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st2`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-        <circle
-          cx="250"
-          cy="50"
-          r="25"
-          fill={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgb(250, 107, 107)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            data[`tooth${toothNum}`]?.[`bleeding_${type}_st3`]
-              ? 'rgba(224, 11, 11, 0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        />
-      </svg>
-    </>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        height: '22px',
+      }}
+    >
+      {[1, 2, 3].map((stage) => {
+        const isActive = Boolean(toothData[`bleeding_${type}_st${stage}`]);
+
+        return (
+          <div
+            key={stage}
+            title={`Кровоточивість (${type}) — точка ${stage}`}
+            style={{
+              flex: 1,
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: isActive ? '#F43F5E' : 'transparent',
+                border: isActive ? '1.5px solid #E11D48' : '1.5px solid #CBD5E1',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 }

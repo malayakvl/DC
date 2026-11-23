@@ -102,13 +102,7 @@ import {
 import FormulaDiagnozis from '../Partials/FormulaDiagnozis';
 import { setDataDiagnozes, setStateFormula } from '@/Redux/Formula';
 
-export default function Formula({
-  formulaData,
-  action,
-}: {
-  formulaData: any;
-  action: any;
-}) {
+export default function Formula({formulaData, action }: { formulaData: any; action: any }) {
   const dispatch = useDispatch<any>();
   useSelector(getStatusesSelector);
   const activeNumber = useSelector(getActiveToothNumberSelector);
@@ -126,7 +120,6 @@ export default function Formula({
       // dispatch(setDataDiagnozes(formulaData));
     }
   }, [formulaData]);
-
   return (
     <>
       <section>

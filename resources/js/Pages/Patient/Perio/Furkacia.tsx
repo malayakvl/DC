@@ -1,98 +1,103 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
 import { setPerioDiagnoze } from '../../../Redux/Formula';
 
-export default function Furkacia({ toothNum, type, qty = 1 }) {
+interface FurkaciaProps {
+  toothNum: number | string;
+  type: string;
+  qty?: number;
+}
+
+export default function Furkacia({ toothNum, type, qty = 1 }: FurkaciaProps) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
 
-  const setDiagnozis = stage => {
-    perioDiagnozis[`tooth${toothNum}`][`furkacia_${type}_st${stage}`] =
-      !perioDiagnozis[`tooth${toothNum}`][`furkacia_${type}_st${stage}`];
-    dispatch(setPerioDiagnoze(perioDiagnozis));
-    setChangeState(!changeState);
+  const toothKey = `tooth${toothNum}`;
+  const toothData = perioDiagnozis?.[toothKey] || {};
+
+  const handleToggle = (stage: number) => {
+    const fieldKey = `furkacia_${type}_st${stage}`;
+    const updatedDiagnozis = {
+      ...perioDiagnozis,
+      [toothKey]: {
+        ...toothData,
+        [fieldKey]: !toothData[fieldKey],
+      },
+    };
+
+    dispatch(setPerioDiagnoze(updatedDiagnozis));
   };
 
-  return (
-    <>
-      <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 100 100"
-        style={{ width: '100%', height: '20px' }}
-        xmlSpace="preserve"
+  // Якщо фуркація не передбачена для цього зуба (qty === 0) — показуємо прочерк як на макеті
+  if (!qty) {
+    return (
+      <div
+        style={{
+          height: '22px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#CBD5E1',
+          fontSize: '12px',
+          userSelect: 'none',
+        }}
       >
-        <g className="furcation top" data-tooth="18" data-position="1">
-          {qty === 1 && (
-            <circle
-              cx="50"
-              cy="50"
-              r="25"
-              onClick={() => {
-                setDiagnozis(1);
-              }}
-              fill={
-                perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st1`]
-                  ? 'rgb(255, 255, 255)'
-                  : 'rgba(255, 255, 255, 0)'
-              }
-              stroke={
-                perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st1`]
-                  ? 'rgba(7,36,183,0.9)'
-                  : 'rgba(200, 200, 200, 0.9)'
-              }            strokeWidth="7px"
-            />
-          )}
-          {qty === 2 && (
-            <>
-              <circle
-                cx="0"
-                cy="50"
-                r="25"
-                onClick={() => {
-                  setDiagnozis(1);
-                }}
-                fill={
-                  perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st1`]
-                    ? 'rgb(255, 255, 255)'
-                    : 'rgba(255, 255, 255, 0)'
-                }
-                stroke={
-                  perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st1`]
-                    ? 'rgba(7,36,183,0.9)'
-                    : 'rgba(200, 200, 200, 0.9)'
-                }
-                strokeWidth="7px"
-              />
-              <circle
-                cx="100"
-                cy="50"
-                r="25"
-                onClick={() => {
-                  setDiagnozis(2);
-                }}
-                fill={
-                  perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st2`]
-                    ? 'rgb(255, 255, 255)'
-                    : 'rgba(255, 255, 255, 0)'
-                }
-                stroke={
-                  perioDiagnozis[`tooth${toothNum}`]?.[`furkacia_${type}_st2`]
-                    ? 'rgba(7,36,183,0.9)'
-                    : 'rgba(200, 200, 200, 0.9)'
-                }
-                strokeWidth="7px"
-              />
-            </>
-            )}
-        </g>
-      </svg>
+        -
+      </div>
+    );
+  }
 
-    </>
+  const stages = qty === 2 ? [1, 2] : [1];
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '4px',
+        height: '22px',
+      }}
+    >
+      {stages.map((stage) => {
+        const isActive = Boolean(toothData[`furkacia_${type}_st${stage}`]);
+
+        return (
+          <button
+            key={stage}
+            type="button"
+            onClick={() => handleToggle(stage)}
+            title={`Фуркація (${type}) ${stage}`}
+            style={{
+              // Зручна зона кліку (hitbox), навіть якщо кружечок компактний
+              width: '20px',
+              height: '20px',
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <span
+              style={{
+                width: '11px',
+                height: '11px',
+                borderRadius: '50%',
+                backgroundColor: '#FFFFFF',
+                border: isActive
+                  ? '2px solid #2563EB' // насичений синій як у Stitch
+                  : '1.5px solid #CBD5E1', // мʼякий сірий контур
+                transition: 'all 0.15s ease',
+                boxSizing: 'border-box',
+              }}
+            />
+          </button>
+        );
+      })}
+    </div>
   );
 }

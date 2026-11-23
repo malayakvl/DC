@@ -9,10 +9,10 @@ import Lang from 'lang.js';
 import lngFormula from '../../../Lang/Formula/translation';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 
-export default function Statuses({ toothNum, type }) {
+export default function Statuses({ toothNum }: { toothNum: any; }) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
+  const [changeState] = useState(false);
   const [selectedValue, setSelectedValue] = useState('exist');
   const statusChange = useSelector(getPerioStatusChangeSelector);
   const appLang = useSelector(appLangSelector);
@@ -21,8 +21,7 @@ export default function Statuses({ toothNum, type }) {
     locale: appLang,
   });
 
-
-  const setDiagnozis = (status) => {
+  const setDiagnozis = (status: any) => {
     perioDiagnozis[`tooth${toothNum}`][`status`] = status;
     dispatch(setPerioDiagnoze(perioDiagnozis));
     dispatch(setPerioStatusChange(!statusChange));
@@ -33,16 +32,42 @@ export default function Statuses({ toothNum, type }) {
     if (perioDiagnozis[`tooth${toothNum}`]?.status) {
       setSelectedValue(perioDiagnozis[`tooth${toothNum}`]?.status);
     }
-  }, [perioDiagnozis[`tooth${toothNum}`]])
+  }, [perioDiagnozis[`tooth${toothNum}`]]);
 
   return (
     <>
       <select className="perio-select" data-tooth="18" defaultValue={selectedValue}>
-        <option value="intact" onClick={() => setDiagnozis('exist')}>{msgFormula.get('formula.perio_exist')}</option>
-        <option value="absent" onClick={() => setDiagnozis('absent')} selected={selectedValue === 'absent'}>{msgFormula.get('formula.perio_absent')}</option>
-        <option value="implant" onClick={() => setDiagnozis('implant')} selected={selectedValue === 'implant'}>{msgFormula.get('formula.perio_implant')}</option>
-        <option value="crown" onClick={() => setDiagnozis('crown')} selected={selectedValue === 'crown'}>{msgFormula.get('formula.perio_crown')}</option>
-        <option value="middlepart" onClick={() => setDiagnozis('middlepart')} selected={selectedValue === 'middlepart'}>{msgFormula.get('formula.perio_middlepart')}</option>
+        <option value="intact" onClick={() => setDiagnozis('exist')}>
+          {msgFormula.get('formula.perio_exist')}
+        </option>
+        <option
+          value="absent"
+          onClick={() => setDiagnozis('absent')}
+          selected={selectedValue === 'absent'}
+        >
+          {msgFormula.get('formula.perio_absent')}
+        </option>
+        <option
+          value="implant"
+          onClick={() => setDiagnozis('implant')}
+          selected={selectedValue === 'implant'}
+        >
+          {msgFormula.get('formula.perio_implant')}
+        </option>
+        <option
+          value="crown"
+          onClick={() => setDiagnozis('crown')}
+          selected={selectedValue === 'crown'}
+        >
+          {msgFormula.get('formula.perio_crown')}
+        </option>
+        <option
+          value="middlepart"
+          onClick={() => setDiagnozis('middlepart')}
+          selected={selectedValue === 'middlepart'}
+        >
+          {msgFormula.get('formula.perio_middlepart')}
+        </option>
       </select>
     </>
   );
