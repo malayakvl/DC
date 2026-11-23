@@ -10553,7 +10553,7 @@ const ACTION_HANDLERS = {
     }),
   },
   [setAllTeeth.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       allTeeth: action.payload,
     }),
@@ -10830,7 +10830,7 @@ const ACTION_HANDLERS = {
   },
 
   [setPZondChart4838Up.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       pZondChart2Up: action.payload,
     }),

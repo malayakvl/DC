@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
-import lngFormula from '../../../Lang/Formula/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import { Link, router, useForm } from '@inertiajs/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import {
-  minusServiceAction,
-  setExistServicesAction,
-  plusServiceAction,
-  setPatientSubTab,
-} from '../../../Redux/Patient';
-import PrimaryButton from '../../../Components/Form/PrimaryButton';
-import { Transition } from '@headlessui/react';
-import Pricing from '../Pricing';
-import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
-import SecondaryButton from '../../../Components/Form/SecondaryButton';
+import { setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
+import { patientServicesSelector, patientTabSelector } from '../../../Redux/Patient/selectors';
 import QuickAct from '../FinanceTabs/QuickAct';
 import ActPayment from '../FinanceTabs/ActPayment';
 
@@ -32,15 +20,26 @@ export default function Finances({
   scheduleId,
   actData,
   discountStatus,
+}: {
+  type: any;
+  patientData: any;
+  pDiscountValue: any;
+  pServices: any;
+  tree: any;
+  clinicData: any;
+  currency: any;
+  scheduleId: any;
+  actData: any;
+  discountStatus: any;
 }) {
   const dispatch = useDispatch();
-  const [tab, setTab] = useState(type || 'history');
+  const tab = useSelector(patientTabSelector);
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngPatient, locale: appLang });
-  const subTab = useSelector(patientSubTabSelector);
+  const subTab = useSelector(patientTabSelector);
   const initialServices = useSelector(patientServicesSelector) || [];
   const [sInit, setSInit] = useState(false);
-  const [services, setServices] = useState(initialServices);
+  // const [services, setServices] = useState(initialServices);
   const [globalDiscount, setGlobalDiscount] = useState(pDiscountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
   const { processing, recentlySuccessful, errors } = useForm();
@@ -48,7 +47,7 @@ export default function Finances({
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
     if (pDiscountValue) {
-      const updatedServices = initialServices.map((service) => ({
+      const updatedServices = initialServices.map((service: any) => ({
         ...service,
         discountValue: pDiscountValue,
         discountType: 'percent',
@@ -64,33 +63,33 @@ export default function Finances({
   }, [initialServices.length]);
 
   // Обработчик изменения скидки для конкретного сервиса
-  const handleDiscountChange = (serviceId, value) => {
-    const updatedServices = initialServices.map((service) => {
-      if (service.id === serviceId) {
-        const numValue = parseFloat(value) || 0;
-        if (value === '' || (!isNaN(value) && numValue >= 0)) {
-          if (service.discountType === 'percent' && numValue > 100) return service;
-          if (service.discountType === 'absolute' && numValue > service.price * (service.qty || 1))
-            return service;
-          return { ...service, discountValue: value };
-        }
-      }
-      return service;
-    });
-    // setServices(updatedServices);
-    dispatch(setExistServicesAction(updatedServices));
-  };
+  // const handleDiscountChange = (serviceId: any, value: any) => {
+  //   const updatedServices = initialServices.map((service: any) => {
+  //     if (service.id === serviceId) {
+  //       const numValue = parseFloat(value) || 0;
+  //       if (value === '' || (!isNaN(value) && numValue >= 0)) {
+  //         if (service.discountType === 'percent' && numValue > 100) return service;
+  //         if (service.discountType === 'absolute' && numValue > service.price * (service.qty || 1))
+  //           return service;
+  //         return { ...service, discountValue: value };
+  //       }
+  //     }
+  //     return service;
+  //   });
+  //   // setServices(updatedServices);
+  //   dispatch(setExistServicesAction(updatedServices));
+  // };
 
   // Обработчик изменения типа скидки
-  const handleTypeChange = (serviceId, newType) => {
-    const updatedServices = initialServices.map((service) =>
-      service.id === serviceId ? { ...service, discountType: newType, discountValue: '' } : service
-    );
-    // setServices(updatedServices);
-    dispatch(setExistServicesAction(updatedServices));
-  };
+  // const handleTypeChange = (serviceId, newType) => {
+  //   const updatedServices = initialServices.map((service) =>
+  //     service.id === serviceId ? { ...service, discountType: newType, discountValue: '' } : service
+  //   );
+  //   // setServices(updatedServices);
+  //   dispatch(setExistServicesAction(updatedServices));
+  // };
 
-  const submit = (e) => {
+  const submit = (e: any) => {
     e.preventDefault();
     router.post(`/patient/update-act`, {
       patient_id: patientData.id,
@@ -109,7 +108,7 @@ export default function Finances({
     const numValue = parseFloat(globalDiscount) || 0;
     if (numValue < 0) return;
 
-    const updatedServices = initialServices.map((service) => ({
+    const updatedServices = initialServices.map((service: any) => ({
       ...service,
       discountValue: globalDiscountType === 'percent' && numValue > 100 ? '' : globalDiscount,
       discountType: globalDiscountType,
@@ -120,7 +119,7 @@ export default function Finances({
   };
 
   // Расчёт итоговой цены для сервиса
-  const calculateDiscountedPrice = (service) => {
+  const calculateDiscountedPrice = (service: any) => {
     const price = service.total || 0;
     const qty = service.qty || 1;
     const discount = parseFloat(service.discountValue) || 0;
@@ -133,7 +132,7 @@ export default function Finances({
   };
 
   // Расчёт итоговой цены для сервиса
-  const calculateFullPrice = (service) => {
+  const calculateFullPrice = (service: any) => {
     const price = service.total || 0;
     const qty = service.qty || 1;
     const discount = parseFloat(service.discountValue) || 0;
@@ -148,18 +147,18 @@ export default function Finances({
   // Расчёт общей суммы
   const calculateTotal = () => {
     return initialServices
-      .reduce((sum, service) => sum + parseFloat(calculateDiscountedPrice(service)), 0)
+      .reduce((sum: any, service: any) => sum + parseFloat(calculateDiscountedPrice(service)), 0)
       .toFixed(2);
   };
 
   const calculateFullTotal = () => {
     return initialServices
-      .reduce((sum, service) => sum + parseFloat(calculateFullPrice(service)), 0)
+      .reduce((sum: any, service: any) => sum + parseFloat(calculateFullPrice(service)), 0)
       .toFixed(2);
   };
 
-  const handleTabClick = (tab) => {
-    dispatch(setPatientSubTab(tab));
+  const handleTabClick = (tab: string) => {
+    dispatch(setPatientTab(tab));
   };
   console.log('Fin', subTab);
   return (

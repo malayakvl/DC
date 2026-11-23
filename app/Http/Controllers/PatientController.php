@@ -549,7 +549,7 @@ class PatientController extends Controller
                 })
                 ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
-//            dd($patientData);exit;
+//            dd($patientData->id);exit;
             
             $categories = PriceCategory::get();
             $arrServices = [];
@@ -563,6 +563,7 @@ class PatientController extends Controller
             //get acts
             // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
             $actData = [];
+            $visitsData = Scheduler::where('patient_id', $patientData->id)->get();
 
 
             $quickActData = '';
@@ -583,14 +584,15 @@ class PatientController extends Controller
                     'services' => $arrServices,
                     'tree' => $tree,
                     'scheduleId' => $scheduleId,
-                    'actData' => $actData
+                    'actData' => $actData,
+                    'visitsData' => $visitsData
                 ]);
             } else {
                 return Inertia::render('Patient/View', [
                     'patientData' => $patientData,
                     'type' => 'documents',
-                     'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-//                    'treatmentData' => [],
+                    'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                    'visitsData' => $visitsData,
                     'clinicData' => $clinicData,
                     'quickActData' => [],
                     'currency' => $clinicData->currency->symbol,

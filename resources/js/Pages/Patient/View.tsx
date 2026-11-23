@@ -3,15 +3,16 @@ import { Head } from '@inertiajs/react';
 import React, { useEffect, useState } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 import History from './Tabs/History';
 import Finances from './Tabs/Finances';
-import { patientTabSelector } from '@/Redux/Patient/selectors';
-import { setPatientTab, setExistServicesAction, setPatientSubTab } from '@/Redux/Patient';
+import { setPatientTab, setExistServicesAction, setTreatmentsTab } from '@/Redux/Patient';
+import { useAppDispatch } from '../../hooks';
+import { patientTabSelector, patientTreatmentTabSelector } from '@/Redux/Patient/selectors';
 
 export default function index({
   clinicData,
@@ -25,6 +26,7 @@ export default function index({
   tree,
   scheduleId,
   actData,
+  visitsData
 }: {
   clinicData: any;
   patientData: any;
@@ -37,11 +39,10 @@ export default function index({
   tree: any;
   scheduleId: any;
   actData: any;
+  visitsData: any;
 }) {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  // const tab = useSelector(patientTabSelector);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const appLang = useSelector(appLangSelector);
@@ -49,32 +50,20 @@ export default function index({
     messages: lngPatient,
     locale: appLang,
   });
-  const activeSubTab = 'perio';
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const [globalDiscountType] = useState('percent');
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [tab, setTab] = useState('history');
+  const tab = useSelector(patientTabSelector);
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [subTab, setSubTab] = useState<'stage' | 'formula' | 'psr' | 'perio'>(activeSubTab);
-
-  const handleTabClick1 = (nextTab: string) => {
-    setTab(nextTab);
-  };
-
-  const handleSubTabClick = (nextSubTab: 'stage' | 'formula' | 'psr' | 'perio') => {
-    setSubTab(nextSubTab);
-    // if (onSubTabChange) {
-    //   onSubTabChange(nextSubTab);
-    // }
-  };
+  const treatmentTab = useSelector(patientTreatmentTabSelector);
 
   const mainTabs = [
-    { id: 'documents', label: 'Документи' },
-    { id: 'visits', label: 'Візити' },
-    { id: 'plans', label: 'Плани лікування' },
-    { id: 'history', label: 'Історія лікування' },
-    { id: 'finances', label: 'Фінанси' },
+    { id: 'documents', label: msg.get('patient.tab.documents') },
+    { id: 'visits', label: msg.get('patient.tab.visits') },
+    { id: 'plans', label: msg.get('patient.tab.stage') },
+    { id: 'history', label: msg.get('patient.tab.history') },
+    { id: 'finances', label: msg.get('patient.tab.finances') },
   ];
   const genderLabel =
     patientData?.gender === 'female'
@@ -90,11 +79,11 @@ export default function index({
   if (quickActData.length > 0) {
     dispatch(setPatientTab('finances'));
   }
-  if (scheduleId) {
-    dispatch(setPatientSubTab('act'));
-  } else {
-    dispatch(setPatientSubTab('actpayment'));
-  }
+  // if (scheduleId) {
+  //   dispatch(setP('act'));
+  // } else {
+  //   dispatch(setPatientSubTab('actpayment'));
+  // }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
@@ -200,7 +189,8 @@ export default function index({
                           </>
                         )}
                         <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px] font-mono">
-                          МЕДИЧНА КАРТА №{patientData?.card_number || patientData?.id || '—'}
+                          {msg.get('patient.medical_card')} №
+                          {patientData?.card_number || patientData?.id || '—'}
                         </span>
                       </div>
                     </div>
@@ -227,17 +217,26 @@ export default function index({
               {/*=======================================*/}
               {/*Таби отображения данних*/}
               {/*=======================================*/}
+              {tab == 'history' && (
+
+              )}
               <div className="bg-white rounded-xl border border-slate-200 p-2.5 flex flex-wrap items-center justify-between gap-3 shadow-xs mt-4">
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Folder Stage */}
-                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                  <button
+                    onClick={() => dispatch(setTreatmentsTab('stages'))}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition"
+                  >
                     <svg className="w-4 h-4 text-[#dd851e]" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
                     </svg>
-                    <span>Етап лікування</span>
+                    <span>{msg.get('patient.tab.stage')}</span>
                   </button>
                   {/* Tooth Formula */}
-                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                  <button
+                    onClick={() => dispatch(setTreatmentsTab('formula'))}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition"
+                  >
                     <svg
                       className="w-3.5 h-3.5 text-[#dd841d]"
                       fill="none"
@@ -252,17 +251,23 @@ export default function index({
                         strokeLinejoin="round"
                       ></path>
                     </svg>
-                    <span>Зубна формула</span>
+                    <span>{msg.get('patient.tab.formula')}</span>
                   </button>
                   {/* Periodontal Screening Test PSR */}
-                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                  <button
+                    onClick={() => dispatch(setTreatmentsTab('psr'))}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition"
+                  >
                     <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
                       PSR
                     </span>
-                    <span>Пародонтальний скринінг-тест</span>
+                    <span>{msg.get('patient.tab.test')}</span>
                   </button>
                   {/* Periodontal Chart Active Pill */}
-                  <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                  <button
+                    onClick={() => dispatch(setTreatmentsTab('perio'))}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg hover:bg-slate-50 transition"
+                  >
                     <svg
                       fill="none"
                       stroke="currentColor"
@@ -276,7 +281,7 @@ export default function index({
                         strokeWidth="2"
                       ></path>
                     </svg>
-                    <span>Періо карта</span>
+                    <span>{msg.get('patient.tab.perio')}</span>
                   </button>
                 </div>
               </div>

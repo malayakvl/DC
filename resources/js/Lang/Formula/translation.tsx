@@ -107,6 +107,7 @@ const lngPatient = {
     click_for_cancel: 'Клікніть по діагнозу для швидкого скасування',
     cancel_all: 'Скасувати всі',
     teeth_formula: 'Зубна формула пацієнта',
+    formula_active_stage: 'Активний етап',
   },
 };
 export default lngPatient;

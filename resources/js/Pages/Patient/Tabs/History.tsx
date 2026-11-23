@@ -442,7 +442,7 @@ export default function History({
               {/* Шапка етапу лікування */}
               <div
                 onClick={() => toggleStageCollapse(groupKey)}
-                className="px-4 py-3 bg-[#dadfdf] border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/70 transition-colors"
+                className="px-4 py-3 bg-[#f1f5f9] border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/70 transition-colors"
               >
                 <div className="flex items-center gap-2.5">
                   {isCollapsed ? (
@@ -461,10 +461,10 @@ export default function History({
                   )}
                   {isCurrentActive && (
                     <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                      Активний етап
+                      {msgFormula.get('formula.formula_active_stage')}
                     </span>
                   )}
-                  <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-slate-200/70 text-slate-600">
+                  <span className="px-2 py-0.5 text-[11px] font-medium rounded-full bg-white text-slate-600">
                     {documents.length}
                   </span>
                 </div>
@@ -481,7 +481,7 @@ export default function History({
                       className="px-2.5 py-1 rounded-md bg-white border border-slate-200 text-slate-600 hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
-                      <span>Формула</span>
+                      <span>{msgFormula.get('formula.teeth_formula')}</span>
                     </button>
                     <button
                       type="button"
