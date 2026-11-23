@@ -1,14 +1,13 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
 import { useSelector, useDispatch } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk, faPrint, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { faFloppyDisk, faPencil, faPrint, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import Perio from './Perio/index';
 import {
   chartBarDown2Selector,
@@ -48,37 +47,45 @@ import {
   setPerioZ4838OralData,
 } from '../../Redux/Formula';
 
-export default function index({ patientData, treatmentData, clinicData }) {
+export default function PatientPerioIndex({
+  patientData,
+  treatmentData,
+  clinicData,
+}: {
+  patientData: any;
+  treatmentData: any;
+  clinicData: any;
+}) {
   let tDia, tValues;
 
-  const [tab, setTab] = useState('history');
-  const appLang = useSelector(appLangSelector);
-  const teethDiagnozis = useSelector(perioDiagnozisSelector);
-  const yasen1828VestData = useSelector(getPerioYK1828VDataSelector);
-  const yasen1828OralData = useSelector(getPerioYK1828ODataSelector);
-  const yasen4838VestData = useSelector(getPerioYK4838VDataSelector);
-  const yasen4838OralData = useSelector(getPerioYK4838ODataSelector);
+  const [tab] = useState('history');
+  const appLang: string = useSelector(appLangSelector);
+  const teethDiagnozis: any = useSelector(perioDiagnozisSelector);
+  const yasen1828VestData: any = useSelector(getPerioYK1828VDataSelector);
+  const yasen1828OralData: any = useSelector(getPerioYK1828ODataSelector);
+  const yasen4838VestData: any = useSelector(getPerioYK4838VDataSelector);
+  const yasen4838OralData: any = useSelector(getPerioYK4838ODataSelector);
 
-  const zond1828VestData = useSelector(getPerioZ1828VDataSelector);
-  const zond1828OralData = useSelector(getPerioZ1828ODataSelector);
-  const zond4838VestData = useSelector(getPerioZ4838VDataSelector);
-  const zond4838OralData = useSelector(getPerioZ4838ODataSelector);
+  const zond1828VestData: any = useSelector(getPerioZ1828VDataSelector);
+  const zond1828OralData: any = useSelector(getPerioZ1828ODataSelector);
+  const zond4838VestData: any = useSelector(getPerioZ4838VDataSelector);
+  const zond4838OralData: any = useSelector(getPerioZ4838ODataSelector);
 
-  const zond1828VestChart = useSelector(chartZondUpSelector);
-  const yasen1828VestChart = useSelector(chartKrayUpSelector);
-  const bar1828VestChart = useSelector(chartBarUpSelector);
+  const zond1828VestChart: any = useSelector(chartZondUpSelector);
+  const yasen1828VestChart: any = useSelector(chartKrayUpSelector);
+  const bar1828VestChart: any = useSelector(chartBarUpSelector);
 
-  const zond1828OralChart = useSelector(chartZondDownSelector);
-  const yasen1828OralChart = useSelector(chartKrayDownSelector);
-  const bar1828OralChart = useSelector(chartBarDownSelector);
+  const zond1828OralChart: any = useSelector(chartZondDownSelector);
+  const yasen1828OralChart: any = useSelector(chartKrayDownSelector);
+  const bar1828OralChart: any = useSelector(chartBarDownSelector);
 
-  const zond4838VestChart = useSelector(chartZondUp2Selector);
-  const yasen4838VestChart = useSelector(chartKrayUp2Selector);
-  const bar4838VestChart = useSelector(chartBarUp2Selector);
+  const zond4838VestChart: any = useSelector(chartZondUp2Selector);
+  const yasen4838VestChart: any = useSelector(chartKrayUp2Selector);
+  const bar4838VestChart: any = useSelector(chartBarUp2Selector);
 
-  const zond4838OralChart = useSelector(chartZondDown2Selector);
-  const yasen4838OralChart = useSelector(chartKrayDown2Selector);
-  const bar4838OralChart = useSelector(chartBarDown2Selector);
+  const zond4838OralChart: any = useSelector(chartZondDown2Selector);
+  const yasen4838OralChart: any = useSelector(chartKrayDown2Selector);
+  const bar4838OralChart: any = useSelector(chartBarDown2Selector);
 
   const msg = new Lang({
     messages: lngPatient,
@@ -86,11 +93,11 @@ export default function index({ patientData, treatmentData, clinicData }) {
   });
   const dispatch = useDispatch<any>();
 
-  const handleTabClick = (tabName) => {
-    setTab(tabName);
-  };
+  // const handleTabClick = (tabName: any) => {
+  //   setTab(tabName);
+  // };
 
-  const [values, setValues] = useState({
+  const [values] = useState({
     clinic_id: clinicData.id,
     patientData: patientData,
     treatmentData: teethDiagnozis,
@@ -113,15 +120,12 @@ export default function index({ patientData, treatmentData, clinicData }) {
     }
   }, [treatmentData.formula]);
 
-  // useEffect(() => {
-  //   setEditPerio(true);
-  // }, [treatmentData.perioValues])
-
-  const submit = (e) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    values['treatmentData'] = teethDiagnozis;
-    values['perioValues'] = {
+    const payload: any = { ...values };
+    payload['treatmentData'] = teethDiagnozis;
+    payload['perioValues'] = {
       yk1828Vest: yasen1828VestData,
       yk1828Oral: yasen1828OralData,
       yk4838Vest: yasen4838VestData,
@@ -131,7 +135,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
       z4838Vest: zond4838VestData,
       z4838Oral: zond4838OralData,
     };
-    values['chartsData'] = {
+    payload['chartsData'] = {
       yasen1828VestChart: yasen1828VestChart,
       zond1828VestChart: zond1828VestChart,
       bar1828VestChart: bar1828VestChart,
@@ -148,12 +152,11 @@ export default function index({ patientData, treatmentData, clinicData }) {
       zond4838OralChart: zond4838OralChart,
       bar4838OralChart: bar4838OralChart,
     };
-    values['teethType'] = '';
+    payload['teethType'] = '';
 
     dispatch(setClearPerio());
     if (treatmentData.id) {
-      router.post(`/patient/update-perio?id=${treatmentData.id}`, values);
-    } else {
+      router.post(`/patient/update-perio?id=${treatmentData.id}`, payload);
     }
   };
 
@@ -163,60 +166,58 @@ export default function index({ patientData, treatmentData, clinicData }) {
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <Details patientData={patientData} clinicData={clinicData} />
+            <Details patientData={patientData} clinicData={clinicData} className={''} />
 
-            {tab === 'history' && (
-              <ul className="sub-tab text-right mt-5">
-                <li className="relative">
-                  <Link href="/">
-                    <i className="icon-plan-treatment" />
-                    <span className="inline-block ml-[35px]">Етап лікування</span>
-                  </Link>
-                </li>
-                <li className="relative">
-                  <Link href="/">
-                    <i className="icon-formula" />
-                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.formula')}</span>
-                  </Link>
-                </li>
-                <li className="relative">
-                  <Link href="/">
-                    <i className="icon-psr" />
-                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.test')}</span>
-                  </Link>
-                </li>
-                <li className="relative">
-                  <Link href="/">
-                    <i className="icon-perio" />
-                    <span className="inline-block ml-[35px]">{msg.get('patient.tab.perio')}</span>
-                  </Link>
-                </li>
-              </ul>
-            )}
             <div className="mt-2">
               <div className="inline w-full">
                 <h3 className="text-left inline-block w-[80%]">{treatmentData.stage_name}</h3>
                 <ul className="action-patient-icon inline-block w-[20%] text-right">
                   <li>
-                    <Link href={`patient/edit/`}>
-                      <FontAwesomeIcon icon={faUserDoctor} className="mr-5" />
+                    <Link
+                      href={`/patient/edit/${patientData.id}`}
+                      title="Редагувати картку"
+                      className="patient-yellow-btns"
+                    >
+                      <FontAwesomeIcon
+                        icon={faUserDoctor}
+                        className="text-xs"
+                        style={{ color: '#dd841d' }}
+                      />
                     </Link>
-                    <Link href={`patient/edit/`}>
-                      <FontAwesomeIcon icon={faPrint} className="mr-5" />
+                  </li>
+                  {/*<li>*/}
+                  {/*  <Link href={`patient/edit/`} className={'patient-yellow-list-btns'}>*/}
+                  {/*    <FontAwesomeIcon icon={faUserDoctor} className="mr-5" color={'#dd841d'} />*/}
+                  {/*  </Link>*/}
+                  {/*</li>*/}
+                  <li>
+                    <Link href={`patient/edit/`} className="patient-yellow-btns ml-2">
+                      <FontAwesomeIcon
+                        icon={faPrint}
+                        className="text-xs"
+                        style={{ color: '#dd841d' }}
+                      />
                     </Link>
-                    <Link href={`patient/edit/`}>
-                      <FontAwesomeIcon icon={faFloppyDisk} className="mr-5" />
+                  </li>
+                  <li>
+                    <Link href={`patient/edit/`} className="patient-yellow-btns ml-2">
+                      <FontAwesomeIcon
+                        icon={faFloppyDisk}
+                        className="text-xs"
+                        style={{ color: '#dd841d' }}
+                      />
                     </Link>
                   </li>
                 </ul>
               </div>
               <div className="clearfix" />
               <div className="flex w-full patient-content-border">
-                <Perio editPerio={!!treatmentData.perioValues} />
+                {/*<Perio editPerio={!!treatmentData.perioValues} />*/}
+                <Perio />
 
                 <div className="clearfix" />
               </div>
-              <div className="mt-[20px] mb-[10px] float-right relative z-10">
+              <div className="mt-[20px] mb-[30px] float-right relative z-10">
                 <Link
                   className="btn-back"
                   title={msg.get('patient.back')}
@@ -226,6 +227,7 @@ export default function index({ patientData, treatmentData, clinicData }) {
                 </Link>
                 <PrimaryButton onClick={(e) => submit(e)}>{msg.get('patient.save')}</PrimaryButton>
               </div>
+              <div className="clearfix" style={{ marginBottom: '40px' }}></div>
             </div>
           </div>
         </div>

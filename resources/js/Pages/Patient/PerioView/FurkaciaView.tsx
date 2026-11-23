@@ -1,7 +1,14 @@
 import React from 'react';
 
-export default function Furkacia({ data, type = '', qty = 1 }) {
-
+export default function Furkacia({
+  data,
+  type = '',
+  qty = 1,
+}: {
+  data: any;
+  type: string;
+  qty: number | null;
+}) {
   return (
     <>
       <svg
@@ -22,15 +29,12 @@ export default function Furkacia({ data, type = '', qty = 1 }) {
               r="25"
 
               fill={
-                data?.[`furkacia_${type}_st1`]
-                  ? 'rgb(255, 255, 255)'
-                  : 'rgba(255, 255, 255, 0)'
+                data?.[`furkacia_${type}_st1`] ? 'rgb(255, 255, 255)' : 'rgba(255, 255, 255, 0)'
               }
               stroke={
-                data?.[`furkacia_${type}_st1`]
-                  ? 'rgba(7,36,183,0.9)'
-                  : 'rgba(200, 200, 200, 0.9)'
-              }            strokeWidth="7px"
+                data?.[`furkacia_${type}_st1`] ? 'rgba(7,36,183,0.9)' : 'rgba(200, 200, 200, 0.9)'
+              }
+              strokeWidth="7px"
             />
           )}
           {qty === 2 && (
@@ -40,14 +44,10 @@ export default function Furkacia({ data, type = '', qty = 1 }) {
                 cy="50"
                 r="25"
                 fill={
-                  data?.[`furkacia_${type}_st1`]
-                    ? 'rgb(255, 255, 255)'
-                    : 'rgba(255, 255, 255, 0)'
+                  data?.[`furkacia_${type}_st1`] ? 'rgb(255, 255, 255)' : 'rgba(255, 255, 255, 0)'
                 }
                 stroke={
-                  data?.[`furkacia_${type}_st1`]
-                    ? 'rgba(7,36,183,0.9)'
-                    : 'rgba(200, 200, 200, 0.9)'
+                  data?.[`furkacia_${type}_st1`] ? 'rgba(7,36,183,0.9)' : 'rgba(200, 200, 200, 0.9)'
                 }
                 strokeWidth="7px"
               />
@@ -56,14 +56,10 @@ export default function Furkacia({ data, type = '', qty = 1 }) {
                 cy="50"
                 r="25"
                 fill={
-                  data?.[`furkacia_${type}_st2`]
-                    ? 'rgb(255, 255, 255)'
-                    : 'rgba(255, 255, 255, 0)'
+                  data?.[`furkacia_${type}_st2`] ? 'rgb(255, 255, 255)' : 'rgba(255, 255, 255, 0)'
                 }
                 stroke={
-                  data?.[`furkacia_${type}_st2`]
-                    ? 'rgba(7,36,183,0.9)'
-                    : 'rgba(200, 200, 200, 0.9)'
+                  data?.[`furkacia_${type}_st2`] ? 'rgba(7,36,183,0.9)' : 'rgba(200, 200, 200, 0.9)'
                 }
                 strokeWidth="7px"
               />
@@ -71,7 +67,6 @@ export default function Furkacia({ data, type = '', qty = 1 }) {
           )}
         </g>
       </svg>
-
     </>
   );
 }

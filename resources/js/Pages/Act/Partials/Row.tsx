@@ -21,7 +21,6 @@ import {
   removeComponentAction,
   setRowUpdated,
 } from '../../../Redux/Act';
-// import { useActFifoValidation } from '../hooks/useActFifoValidation';
 import { validateActRows } from '../functions/validateActRows';
 
 export const emptyRow = () => ({

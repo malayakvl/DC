@@ -35,8 +35,6 @@ export default function IntersectChart4838Up() {
   const zond1828VestData = useSelector(chartZondUp2Selector);
   const yasen1828VestData = useSelector(chartKrayUp2Selector);
   const bar1828VestData = useSelector(chartBarUp2Selector);
-  // const zv1828Data = useSelector(getPerioZ1828VDataSelector);
-  // const ykv1828Data = useSelector(getPerioYK1828VDataSelector);
 
   const options = {
     layout: {
@@ -49,7 +47,7 @@ export default function IntersectChart4838Up() {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             let label = context.dataset.label || '';
             if (context.parsed.y !== null) {
               label = 'ГЗ:' + context.parsed.x + ' ЯК: ' + context.parsed.y;
@@ -63,10 +61,10 @@ export default function IntersectChart4838Up() {
     scales: {
       x: {
         ticks: {
-          display: false, // скрыть подписи на оси X
+          display: false,
         },
         title: {
-          display: false, // скрыть название оси X
+          display: false,
         },
         grid: {
           display: false,
@@ -74,10 +72,10 @@ export default function IntersectChart4838Up() {
       },
       y: {
         ticks: {
-          display: false, // скрыть подписи на оси Y
+          display: false,
         },
         title: {
-          display: false, // скрыть название оси Y
+          display: false,
         },
         grid: {
           display: false,
@@ -88,74 +86,9 @@ export default function IntersectChart4838Up() {
     },
   };
 
-  const data = {
-    labels: [
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ],
+  // Аннотируем как any, чтобы TypeScript не ругался на смешение типов Line и Bar
+  const data: any = {
+    labels: Array(65).fill(''),
     datasets: [
       {
         label: 'Глибина зондування',
@@ -163,7 +96,7 @@ export default function IntersectChart4838Up() {
         borderWidth: 2,
         data: zond1828VestData,
         borderColor: 'red',
-        fill: 'rgba(243, 128, 153, 0.4)', // или target: 'Линия B'
+        fill: 'rgba(243, 128, 153, 0.4)',
       },
       {
         label: 'Ясений край',
@@ -171,7 +104,7 @@ export default function IntersectChart4838Up() {
         borderWidth: 2,
         data: yasen1828VestData,
         borderColor: 'blue',
-        fill: '-1', // заполняет между этой и предыдущей линией
+        fill: '-1',
       },
       {
         type: 'bar',
@@ -180,7 +113,6 @@ export default function IntersectChart4838Up() {
         },
         backgroundColor: 'green',
         barThickness: 1,
-        with: 2,
         data: bar1828VestData,
       },
     ],
@@ -188,10 +120,7 @@ export default function IntersectChart4838Up() {
 
   return (
     <>
-      <div
-        style={{ width: '1200px', height: '100px' }}
-        className="chart-intersect-up"
-      >
+      <div style={{ width: '1200px', height: '100px' }} className="chart-intersect-up">
         <Line data={data} options={options} height={100} />
       </div>
     </>

@@ -14,7 +14,6 @@ import {
   emptyStoreReportAction,
   findServiceMaterialCalcAction
 } from './actions';
-import { emptyUserAutocompleteAction } from '../Clinic';
 
 const initialState = {
   searchUnitItems: [],
@@ -30,80 +29,80 @@ const initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [findUnitAction]: {
-    next: (state, action) => ({
+  [findUnitAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       searchUnitItems: action.payload,
     }),
   },
-  [emptyUnitAction]: {
-    next: (state, action) => ({
+  [emptyUnitAction.toString()]: {
+    next: (state: any) => ({
       ...state,
       searchUnitItems: [],
     }),
   },
-  [findSizeAction]: {
-    next: (state, action) => ({
+  [findSizeAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       searchSizeItems: action.payload,
     }),
   },
-  [emptySizeAction]: {
-    next: (state, action) => ({
+  [emptySizeAction.toString()]: {
+    next: (state: any) => ({
       ...state,
       searchSizeItems: [],
     }),
   },
-  [findPercentAction]: {
-    next: (state, action) => ({
+  [findPercentAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       categoryPercent: action.payload,
     }),
   },
-  [setPercentAction]: {
-    next: (state, action) => ({
+  [setPercentAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       categoryPercent: action.payload,
     }),
   },
-  [findMaterialQtyAction]: {
-    next: (state, action) => ({
+  [findMaterialQtyAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       searchResultMaterialsQty: action.payload,
     }),
   },
-  [generateStoreReportAction]: {
-    next: (state, action) => ({
+  [generateStoreReportAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       reportResults: action.payload,
     }),
   },
-  [emptyStoreReportAction]: {
-    next: (state, action) => ({
+  [emptyStoreReportAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       reportResults: action.payload || {},
     }),
   },
-  [findMaterialAction]: {
-    next: (state, action) => ({
+  [findMaterialAction.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
       searchResultMaterials: action.payload,
     }),
   },
-  [findServiceMaterialCalcAction]: {
-      next: (state, action) => ({
-        ...state,
-        searchResultMaterials: action.payload,
-      }),
-    },
-  [emptyMaterialsAutocompleteAction]: {
-    next: (state, action) => ({
+  [findServiceMaterialCalcAction.toString()]: {
+    next: (state: any, action: any) => ({
+      ...state,
+      searchResultMaterials: action.payload,
+    }),
+  },
+  [emptyMaterialsAutocompleteAction.toString()]: {
+    next: (state: any) => ({
       ...state,
       searchResultMaterials: [],
     }),
   },
-  [emptyMaterialsQtyAutocompleteAction]: {
-    next: (state, action) => ({
+  [emptyMaterialsQtyAutocompleteAction.toString()]: {
+    next: (state: any) => ({
       ...state,
       searchResultMaterialsQty: [],
     }),

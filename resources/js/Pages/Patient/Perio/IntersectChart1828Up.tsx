@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import {
   chartZondUpSelector,
@@ -11,11 +11,12 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
   Filler,
-  BarElement,
+  ChartData, // Импортируем тип, если понадобится
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -31,16 +32,10 @@ ChartJS.register(
   Filler
 );
 
-export default function IntersectChart1828Up({editPerio}) {
+export default function IntersectChart1828Up() {
   const zond1828VestData = useSelector(chartZondUpSelector);
   const yasen1828VestData = useSelector(chartKrayUpSelector);
   const bar1828VestData = useSelector(chartBarUpSelector);
-
-  // useEffect(() => {
-  //   if (editPerio) {
-  //     console.log('Edit perio', yasen1828VestData);
-  //   }
-  // }, [editPerio, yasen1828VestData])
 
   const options = {
     layout: {
@@ -53,7 +48,7 @@ export default function IntersectChart1828Up({editPerio}) {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             let label = context.dataset.label || '';
             if (context.parsed.y !== null) {
               label = 'ГЗ:' + context.parsed.x + ' ЯК: ' + context.parsed.y;
@@ -67,10 +62,10 @@ export default function IntersectChart1828Up({editPerio}) {
     scales: {
       x: {
         ticks: {
-          display: false, // скрыть подписи на оси X
+          display: false,
         },
         title: {
-          display: false, // скрыть название оси X
+          display: false,
         },
         grid: {
           display: false,
@@ -78,10 +73,10 @@ export default function IntersectChart1828Up({editPerio}) {
       },
       y: {
         ticks: {
-          display: false, // скрыть подписи на оси Y
+          display: false,
         },
         title: {
-          display: false, // скрыть название оси Y
+          display: false,
         },
         grid: {
           display: false,
@@ -92,74 +87,9 @@ export default function IntersectChart1828Up({editPerio}) {
     },
   };
 
-  const data = {
-    labels: [
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ],
+  // Указываем тип как any, так как здесь смешаны Line и Bar датасеты
+  const data: any = {
+    labels: Array(65).fill(''), // Сделал чуть короче и чище через Array(65).fill('')
     datasets: [
       {
         label: 'Глибина зондування',
@@ -167,7 +97,7 @@ export default function IntersectChart1828Up({editPerio}) {
         borderWidth: 2,
         data: zond1828VestData,
         borderColor: 'red',
-        fill: 'rgba(243, 128, 153, 0.4)', // или target: 'Линия B'
+        fill: 'rgba(243, 128, 153, 0.4)',
       },
       {
         label: 'Ясений край',
@@ -175,7 +105,7 @@ export default function IntersectChart1828Up({editPerio}) {
         borderWidth: 2,
         data: yasen1828VestData,
         borderColor: 'blue',
-        fill: '-1', // заполняет между этой и предыдущей линией
+        fill: '-1',
       },
       {
         type: 'bar',
@@ -184,20 +114,14 @@ export default function IntersectChart1828Up({editPerio}) {
         },
         backgroundColor: 'green',
         barThickness: 1,
-        with: 2,
         data: bar1828VestData,
       },
     ],
   };
 
-
-
   return (
     <>
-      <div
-        style={{ width: '1200px', height: '100px' }}
-        className="chart-intersect-up"
-      >
+      <div style={{ width: '1200px', height: '100px' }} className="chart-intersect-up">
         <Line data={data} options={options} height={100} />
       </div>
     </>

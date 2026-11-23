@@ -47,7 +47,7 @@ export default function IntersectChart1828Down() {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
+          label: function (context: any) {
             let label = context.dataset.label || '';
             if (context.parsed.y !== null) {
               label = 'ГЗ:' + context.parsed.x + ' ЯК: ' + context.parsed.y;
@@ -86,74 +86,9 @@ export default function IntersectChart1828Down() {
     },
   };
 
-  const data = {
-    labels: [
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ],
+  // Явно указываем тип any для data, чтобы TS не ругался на смешанные line/bar датасеты
+  const data: any = {
+    labels: Array(65).fill(''),
     datasets: [
       {
         label: 'Глибина зондування',
@@ -161,7 +96,7 @@ export default function IntersectChart1828Down() {
         borderWidth: 2,
         data: zond1828VestData,
         borderColor: 'red',
-        fill: 'rgba(243, 128, 153, 0.4)', // или target: 'Линия B'
+        fill: 'rgba(243, 128, 153, 0.4)',
       },
       {
         label: 'Ясений край',
@@ -169,7 +104,7 @@ export default function IntersectChart1828Down() {
         borderWidth: 2,
         data: yasen1828VestData,
         borderColor: 'blue',
-        fill: '-1', // заполняет между этой и предыдущей линией
+        fill: '-1',
       },
       {
         type: 'bar',
@@ -178,7 +113,6 @@ export default function IntersectChart1828Down() {
         },
         backgroundColor: 'green',
         barThickness: 1,
-        with: 2,
         data: bar1828VestData,
       },
     ],
@@ -186,10 +120,7 @@ export default function IntersectChart1828Down() {
 
   return (
     <>
-      <div
-        style={{ width: '1200px', height: '100px' }}
-        className="chart-intersect-down"
-      >
+      <div style={{ width: '1200px', height: '100px' }} className="chart-intersect-down">
         <Line data={data} options={options} height={100} />
       </div>
     </>

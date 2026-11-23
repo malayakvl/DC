@@ -1,19 +1,12 @@
 import React from 'react';
 import PeriodontitStage46 from './periodontit46';
 
-export default function Tooth46({ formulaToothData }) {
+export default function Tooth46({ formulaToothData }: { formulaToothData: any }) {
   const tooth46Diagnozis = formulaToothData;
-
   return (
     <>
-      <g
-        id="46"
-        className={`tooth-number-active ${!tooth46Diagnozis.show ? 'hide-number' : ''}`}
-      >
-        <text
-          transform="matrix(1 0 0 1 542.1611 842.0025)"
-          className={`st3 st4 st5`}
-        >
+      <g id="46" className={`tooth-number-active ${!tooth46Diagnozis.show ? 'hide-number' : ''}`}>
+        <text transform="matrix(1 0 0 1 542.1611 842.0025)" className={`st3 st4 st5`}>
           46
         </text>
       </g>
@@ -49,9 +42,7 @@ export default function Tooth46({ formulaToothData }) {
             <g
               style={{
                 visibility:
-                  !tooth46Diagnozis.culttab &&
-                  !tooth46Diagnozis.implant &&
-                  !tooth46Diagnozis.shaper
+                  !tooth46Diagnozis.culttab && !tooth46Diagnozis.implant && !tooth46Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -86,10 +77,7 @@ export default function Tooth46({ formulaToothData }) {
           <g
             className="pulp"
             style={{
-              visibility:
-                tooth46Diagnozis.apex || tooth46Diagnozis.pulpit
-                  ? 'inherit'
-                  : 'hidden',
+              visibility: tooth46Diagnozis.apex || tooth46Diagnozis.pulpit ? 'inherit' : 'hidden',
             }}
           >
             <g
@@ -128,9 +116,7 @@ export default function Tooth46({ formulaToothData }) {
           <g
             style={{
               visibility:
-                tooth46Diagnozis.implant || tooth46Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
+                tooth46Diagnozis.implant || tooth46Diagnozis.shaper ? 'inherit' : 'hidden',
             }}
           >
             <circle className="st48" cx="558.5" cy="979.5" r="26.5"></circle>
@@ -379,10 +365,8 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_left &&
-                      !tooth46Diagnozis.seal_bottom) ||
-                    (!tooth46Diagnozis.seal_left &&
-                      tooth46Diagnozis.seal_bottom)
+                    (tooth46Diagnozis.seal_left && !tooth46Diagnozis.seal_bottom) ||
+                    (!tooth46Diagnozis.seal_left && tooth46Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -393,10 +377,8 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_left &&
-                      !tooth46Diagnozis.seal_center) ||
-                    (!tooth46Diagnozis.seal_left &&
-                      tooth46Diagnozis.seal_center)
+                    (tooth46Diagnozis.seal_left && !tooth46Diagnozis.seal_center) ||
+                    (!tooth46Diagnozis.seal_left && tooth46Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -408,8 +390,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_left &&
-                      !tooth46Diagnozis.seal_top) ||
+                    (tooth46Diagnozis.seal_left && !tooth46Diagnozis.seal_top) ||
                     (!tooth46Diagnozis.seal_left && tooth46Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -421,8 +402,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_center &&
-                      !tooth46Diagnozis.seal_top) ||
+                    (tooth46Diagnozis.seal_center && !tooth46Diagnozis.seal_top) ||
                     (!tooth46Diagnozis.seal_center && tooth46Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -434,8 +414,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_right &&
-                      !tooth46Diagnozis.seal_top) ||
+                    (tooth46Diagnozis.seal_right && !tooth46Diagnozis.seal_top) ||
                     (!tooth46Diagnozis.seal_right && tooth46Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -447,10 +426,8 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth46Diagnozis.seal_right &&
-                      tooth46Diagnozis.seal_center) ||
-                    (tooth46Diagnozis.seal_right &&
-                      !tooth46Diagnozis.seal_center)
+                    (!tooth46Diagnozis.seal_right && tooth46Diagnozis.seal_center) ||
+                    (tooth46Diagnozis.seal_right && !tooth46Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -461,10 +438,8 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_right &&
-                      !tooth46Diagnozis.seal_bottom) ||
-                    (!tooth46Diagnozis.seal_right &&
-                      tooth46Diagnozis.seal_bottom)
+                    (tooth46Diagnozis.seal_right && !tooth46Diagnozis.seal_bottom) ||
+                    (!tooth46Diagnozis.seal_right && tooth46Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -475,10 +450,8 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth46Diagnozis.seal_center &&
-                      tooth46Diagnozis.seal_bottom) ||
-                    (tooth46Diagnozis.seal_center &&
-                      !tooth46Diagnozis.seal_bottom)
+                    (!tooth46Diagnozis.seal_center && tooth46Diagnozis.seal_bottom) ||
+                    (tooth46Diagnozis.seal_center && !tooth46Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -615,9 +588,7 @@ export default function Tooth46({ formulaToothData }) {
             <g
               style={{
                 visibility:
-                  !tooth46Diagnozis.implant &&
-                  !tooth46Diagnozis.apex &&
-                  !tooth46Diagnozis.shaper
+                  !tooth46Diagnozis.implant && !tooth46Diagnozis.apex && !tooth46Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -698,7 +669,7 @@ export default function Tooth46({ formulaToothData }) {
                                 C457,1328.2,456.6,1330.5,456.1,1332.8z"
               />
             </g>
-            <PeriodontitStage46 formulaToothData={formulaToothData} />
+            <PeriodontitStage46 />
           </g>
           {/*PIN*/}
           <g
@@ -785,9 +756,7 @@ export default function Tooth46({ formulaToothData }) {
             className="implant"
             style={{
               visibility:
-                tooth46Diagnozis.abutment ||
-                tooth46Diagnozis.implant ||
-                tooth46Diagnozis.shaper
+                tooth46Diagnozis.abutment || tooth46Diagnozis.implant || tooth46Diagnozis.shaper
                   ? 'inherit'
                   : 'hidden',
             }}
@@ -797,41 +766,11 @@ export default function Tooth46({ formulaToothData }) {
               d="M513.7,1210.2c0,0-2.6,19.3-3.7,29.6c-1.1,10.3-2.9,34.3-3.4,44.1s-0.9,26-0.7,27.4s8.2,9,15.5,9.6
                             c7.3,0.6,14.6-0.5,18.2-6.9s11.1-26.8,13.8-35.9c2.7-9.2,10.4-35.8,11.5-40.9s3.1-14.6,3.1-14.6L513.7,1210.2z"
             />
-            <line
-              className="st19"
-              x1="507.7"
-              y1="1217.4"
-              x2="569.3"
-              y2="1240.9"
-            />
-            <line
-              className="st19"
-              x1="503.7"
-              y1="1236.4"
-              x2="565.3"
-              y2="1259.9"
-            />
-            <line
-              className="st19"
-              x1="499.7"
-              y1="1255.4"
-              x2="561.3"
-              y2="1278.9"
-            />
-            <line
-              className="st19"
-              x1="495.7"
-              y1="1274.4"
-              x2="557.3"
-              y2="1297.9"
-            />
-            <line
-              className="st19"
-              x1="492.7"
-              y1="1293.4"
-              x2="554.3"
-              y2="1316.9"
-            />
+            <line className="st19" x1="507.7" y1="1217.4" x2="569.3" y2="1240.9" />
+            <line className="st19" x1="503.7" y1="1236.4" x2="565.3" y2="1259.9" />
+            <line className="st19" x1="499.7" y1="1255.4" x2="561.3" y2="1278.9" />
+            <line className="st19" x1="495.7" y1="1274.4" x2="557.3" y2="1297.9" />
+            <line className="st19" x1="492.7" y1="1293.4" x2="554.3" y2="1316.9" />
           </g>
           <g
             className="toutline"
@@ -862,9 +801,7 @@ export default function Tooth46({ formulaToothData }) {
             className="wedge-shaped "
             style={{
               visibility:
-                !tooth46Diagnozis.culttab && !tooth46Diagnozis.abutment
-                  ? 'inherit'
-                  : 'hidden',
+                !tooth46Diagnozis.culttab && !tooth46Diagnozis.abutment ? 'inherit' : 'hidden',
             }}
           >
             <path
@@ -901,10 +838,7 @@ export default function Tooth46({ formulaToothData }) {
             ></path>
           </g>
           {/*КАРИЕС*/}
-          <g
-            className="header caries-filling "
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="header caries-filling " style={{ visibility: 'inherit' }}>
             {/*КАРИЕС C*/}
             <g className="caries-filling">
               <path
@@ -996,8 +930,7 @@ export default function Tooth46({ formulaToothData }) {
                     (tooth46Diagnozis.seal_left &&
                       tooth46Diagnozis.seal_top &&
                       !tooth46Diagnozis.seal_center) ||
-                    (!tooth46Diagnozis.seal_left &&
-                      tooth46Diagnozis.seal_center)
+                    (!tooth46Diagnozis.seal_left && tooth46Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -1009,8 +942,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_left &&
-                      !tooth46Diagnozis.seal_bottom) ||
+                    (tooth46Diagnozis.seal_left && !tooth46Diagnozis.seal_bottom) ||
                     (!tooth46Diagnozis.seal_left &&
                       tooth46Diagnozis.seal_bottom &&
                       !tooth46Diagnozis.seal_center) ||
@@ -1028,8 +960,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_bottom &&
-                      !tooth46Diagnozis.seal_center) ||
+                    (tooth46Diagnozis.seal_bottom && !tooth46Diagnozis.seal_center) ||
                     (tooth46Diagnozis.seal_right &&
                       tooth46Diagnozis.seal_left &&
                       tooth46Diagnozis.seal_center &&
@@ -1048,8 +979,7 @@ export default function Tooth46({ formulaToothData }) {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth46Diagnozis.seal_right &&
-                      !tooth46Diagnozis.seal_bottom) ||
+                    (tooth46Diagnozis.seal_right && !tooth46Diagnozis.seal_bottom) ||
                     (!tooth46Diagnozis.seal_right &&
                       tooth46Diagnozis.seal_bottom &&
                       !tooth46Diagnozis.seal_center) ||
@@ -1073,8 +1003,7 @@ export default function Tooth46({ formulaToothData }) {
                     (tooth46Diagnozis.seal_right &&
                       tooth46Diagnozis.seal_top &&
                       !tooth46Diagnozis.seal_center) ||
-                    (!tooth46Diagnozis.seal_right &&
-                      tooth46Diagnozis.seal_center)
+                    (!tooth46Diagnozis.seal_right && tooth46Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}

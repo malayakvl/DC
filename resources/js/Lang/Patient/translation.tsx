@@ -65,7 +65,12 @@ const lngPatient = {
     'tab.perio': 'Періо карта',
     'tab.stage': 'Етап лікування',
     'tab.test': 'Пародонтальний скринінг-тест',
-    newstage: 'Новий етап',
+    'tab.documents': 'Документи',
+    'tab.visits': 'Візити',
+    'tab.tratment': 'Плани лікування',
+    'tab.history': 'Історія лікування',
+    'tab.finances': 'Фінанси',
+    newstage: 'Наприклад: Підготовчий терапевтичний курс (листопад 2026)',
     search: 'Пошук',
     'search.clear': 'Очистити',
     'worked.at': 'Виконано',
@@ -114,6 +119,8 @@ const lngPatient = {
     found_patients: 'пацієнтів',
     clear_filter: 'Очистити фільтри',
     last_visit: 'Останній візит',
+    part_treatment: 'Етап лікування',
+    medical_card: 'МЕДИЧНА КАРТА',
   },
 };
 export default lngPatient;

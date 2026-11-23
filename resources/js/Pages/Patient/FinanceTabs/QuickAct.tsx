@@ -3,85 +3,90 @@ import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
-import { Link, router, useForm } from '@inertiajs/react';
+import { router, useForm } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import {
   minusServiceAction,
   setExistServicesAction,
   plusServiceAction,
-  setPatientSubTab,
+  setPatientTab,
 } from '../../../Redux/Patient';
 import { Transition } from '@headlessui/react';
 import Pricing from '../Pricing';
-import { patientServicesSelector, patientSubTabSelector } from '../../../Redux/Patient/selectors';
+import { patientServicesSelector, patientTabSelector } from '../../../Redux/Patient/selectors';
 import SecondaryButton from '../../../Components/Form/SecondaryButton';
 
 export default function QuickAct({
- patientData,
- pDiscountValue,
- pServices,
- tree,
- clinicData,
- currency,
- scheduleId
+  patientData,
+  pDiscountValue,
+  pServices,
+  tree,
+  clinicData,
+  currency,
+  scheduleId,
+}: {
+  patientData: any;
+  pDiscountValue: any;
+  pServices: any;
+  tree: any;
+  clinicData: any;
+  currency: any;
+  scheduleId: any;
 }) {
   const dispatch = useDispatch();
   const appLang = useSelector(appLangSelector);
   const msg = new Lang({ messages: lngPatient, locale: appLang });
-  const subTab = useSelector(patientSubTabSelector);
+  const subTab = useSelector(patientTabSelector);
   const initialServices = useSelector(patientServicesSelector) || [];
   const [globalDiscount, setGlobalDiscount] = useState(pDiscountValue || '');
   const [globalDiscountType, setGlobalDiscountType] = useState('percent');
-  const { processing, recentlySuccessful, errors } = useForm();
+  const { processing, recentlySuccessful } = useForm();
 
   // Применяем начальную скидку ко всем сервисам при загрузке
   useEffect(() => {
     if (pDiscountValue) {
-      const updatedServices = initialServices.map(service => ({
+      const updatedServices = initialServices.map((service: any) => ({
         ...service,
         discountValue: pDiscountValue,
         discountType: 'percent',
       }));
-      // setServices(updatedServices);
-      dispatch(setExistServicesAction((updatedServices)));
+      dispatch(setExistServicesAction(updatedServices));
     }
   }, [pDiscountValue]);
 
   useEffect(() => {
     applyGlobalDiscount();
-  }, [initialServices.length])
+  }, [initialServices.length]);
 
   // Обработчик изменения скидки для конкретного сервиса
-  const handleDiscountChange = (serviceId, value) => {
-    const updatedServices = initialServices.map(service => {
+  const handleDiscountChange = (serviceId: any, value: any) => {
+    const updatedServices = initialServices.map((service: any) => {
       if (service.id === serviceId) {
         const numValue = parseFloat(value) || 0;
         if (value === '' || (!isNaN(value) && numValue >= 0)) {
           if (service.discountType === 'percent' && numValue > 100) return service;
-          if (service.discountType === 'absolute' && numValue > (service.price * (service.qty || 1))) return service;
+          if (service.discountType === 'absolute' && numValue > service.price * (service.qty || 1))
+            return service;
           return { ...service, discountValue: value };
         }
       }
       return service;
     });
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
   };
 
   // Обработчик изменения типа скидки
-  const handleTypeChange = (serviceId, newType) => {
-    const updatedServices = initialServices.map(service =>
-      service.id === serviceId
-        ? { ...service, discountType: newType, discountValue: '' }
-        : service
+  const handleTypeChange = (serviceId: any, newType: any) => {
+    const updatedServices = initialServices.map((service: any) =>
+      service.id === serviceId ? { ...service, discountType: newType, discountValue: '' } : service
     );
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
   };
 
-
-  const submit = e => {
+  const submit = (e: any) => {
     e.preventDefault();
     router.post(`/patient/update-act`, {
       patient_id: patientData.id,
@@ -91,7 +96,7 @@ export default function QuickAct({
       discount: globalDiscount,
       discountType: globalDiscountType,
       total: calculateFullTotal(),
-      total_with_discount: calculateTotal()
+      total_with_discount: calculateTotal(),
     });
   };
 
@@ -100,18 +105,18 @@ export default function QuickAct({
     const numValue = parseFloat(globalDiscount) || 0;
     if (numValue < 0) return;
 
-    const updatedServices = initialServices.map(service => ({
+    const updatedServices = initialServices.map((service: any) => ({
       ...service,
       discountValue: globalDiscountType === 'percent' && numValue > 100 ? '' : globalDiscount,
       discountType: globalDiscountType,
     }));
     // setServices(updatedServices);
-    dispatch(setExistServicesAction((updatedServices)));
+    dispatch(setExistServicesAction(updatedServices));
     // Не очищаем globalDiscount, чтобы значение осталось в поле
   };
 
   // Расчёт итоговой цены для сервиса
-  const calculateDiscountedPrice = (service) => {
+  const calculateDiscountedPrice = (service: any) => {
     const price = service.total || 0;
     const qty = service.qty || 1;
     const discount = parseFloat(service.discountValue) || 0;
@@ -124,34 +129,34 @@ export default function QuickAct({
   };
 
   // Расчёт итоговой цены для сервиса
-  const calculateFullPrice = (service) => {
+  const calculateFullPrice = (service: any) => {
     const price = service.total || 0;
     const qty = service.qty || 1;
     const discount = parseFloat(service.discountValue) || 0;
     const total = price * qty;
 
     if (service.discountType === 'percent') {
-      return (total).toFixed(2);
+      return total.toFixed(2);
     }
-    return (total).toFixed(2);
+    return total.toFixed(2);
   };
 
   // Расчёт общей суммы
   const calculateTotal = () => {
     return initialServices
-      .reduce((sum, service) => sum + parseFloat(calculateDiscountedPrice(service)), 0)
+      .reduce((sum: any, service: any) => sum + parseFloat(calculateDiscountedPrice(service)), 0)
       .toFixed(2);
   };
 
   const calculateFullTotal = () => {
     return initialServices
-      .reduce((sum, service) => sum + parseFloat(calculateFullPrice(service)), 0)
+      .reduce((sum: any, service: any) => sum + parseFloat(calculateFullPrice(service)), 0)
       .toFixed(2);
   };
 
-  const handleTabClick = (tab) => {
-    dispatch(setPatientSubTab(tab));
-  }
+  // const handleTabClick = (tab: any) => {
+  //   dispatch(setPatientTab(tab));
+  // };
 
   return (
     <>
@@ -198,34 +203,60 @@ export default function QuickAct({
             {initialServices.length > 0 && (
               <table className="w-full mt-10">
                 <thead>
-                <tr>
-                  <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
-                  <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
-                  <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
-                  <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
-                  <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
-                  <th className="text-right pb-3 px-2"></th>
-                </tr>
+                  <tr>
+                    <th className="text-left pb-3 px-2">{msg.get('patient.service')}</th>
+                    <th className="text-center pb-3 px-2">{msg.get('patient.price')}</th>
+                    <th className="text-center pb-3 px-2">{msg.get('patient.quantity')}</th>
+                    <th className="text-left pb-3 px-2">{msg.get('patient.discount')}</th>
+                    <th className="text-right pb-3 px-2">{msg.get('patient.discountedPrice')}</th>
+                    <th className="text-right pb-3 px-2"></th>
+                  </tr>
                 </thead>
                 <tbody>
-                {initialServices.map(service => (
-                  <tr key={service.id}>
-                    <td className="text-left text-[14px] px-2">{service.name}</td>
-                    <td className="text-center text-[14px] px-2">{service.total || ''}</td>
-                    <td className="text-center text-[14px] px-2">
-                      <button className="text-blue-500 hover:text-blue-700 mr-2" onClick={() => dispatch(minusServiceAction(service))}>
-                        <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 12h16" />
-                        </svg>
-                      </button>
-                      {service.qty || 1}
-                      <button className="text-blue-500 hover:text-blue-700 ml-2" onClick={() => dispatch(plusServiceAction(service))}>
-                        <svg className="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="text-left text-[14px] pl-2">
+                  {initialServices.map((service: any) => (
+                    <tr key={service.id}>
+                      <td className="text-left text-[14px] px-2">{service.name}</td>
+                      <td className="text-center text-[14px] px-2">{service.total || ''}</td>
+                      <td className="text-center text-[14px] px-2">
+                        <button
+                          className="text-blue-500 hover:text-blue-700 mr-2"
+                          onClick={() => dispatch(minusServiceAction(service))}
+                        >
+                          <svg
+                            className="w-3 h-3 inline"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M4 12h16"
+                            />
+                          </svg>
+                        </button>
+                        {service.qty || 1}
+                        <button
+                          className="text-blue-500 hover:text-blue-700 ml-2"
+                          onClick={() => dispatch(plusServiceAction(service))}
+                        >
+                          <svg
+                            className="w-3 h-3 inline"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </button>
+                      </td>
+                      <td className="text-left text-[14px] pl-2">
                         <span className="flex">
                           <input
                             id={`d-value${service.id}`}
@@ -245,22 +276,22 @@ export default function QuickAct({
                             <option value="absolute">₴</option>
                           </select>
                         </span>
-                    </td>
-                    <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
-                      {calculateDiscountedPrice(service)}
-                    </td>
-                    <td className="text-right text-[14px] pb-2 px-3">
-                      <FontAwesomeIcon
-                        icon={faClose}
-                        color="#e13333"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          dispatch(minusServiceAction(service))
-                        }}
-                      />
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td id={`d-price-${service.id}`} className="text-right text-[14px] pb-2 px-2">
+                        {calculateDiscountedPrice(service)}
+                      </td>
+                      <td className="text-right text-[14px] pb-2 px-3">
+                        <FontAwesomeIcon
+                          icon={faClose}
+                          color="#e13333"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            dispatch(minusServiceAction(service));
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             )}
@@ -285,9 +316,7 @@ export default function QuickAct({
                 leave="transition ease-in-out"
                 leaveTo="opacity-0"
               >
-                <p className="text-sm text-gray-600">
-                  {msg.get('patient.saved')}
-                </p>
+                <p className="text-sm text-gray-600">{msg.get('patient.saved')}</p>
               </Transition>
             </div>
           </div>
@@ -297,16 +326,10 @@ export default function QuickAct({
         {/*PRICING BLOCK*/}
         <div className={`w-1/2 ml-20`}>
           <div className={`p-pricing`}>
-            <Pricing
-              clinicData={clinicData}
-              tree={tree}
-              services={pServices}
-              currency={currency}
-            />
+            <Pricing clinicData={clinicData} tree={tree} services={pServices} currency={currency} />
           </div>
         </div>
       </div>
-
     </>
   );
 }

@@ -1,100 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTeethDiagnozisSelector, perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
+import { perioDiagnozisSelector } from '../../../Redux/Formula/selectors';
 import { setPerioDiagnoze } from '../../../Redux/Formula';
 
-export default function DentalDeposits({ toothNum, type }) {
+interface DentalDepositsProps {
+  toothNum: number | string;
+  type: string;
+}
+
+export default function DentalDeposits({ toothNum, type }: DentalDepositsProps) {
   const dispatch = useDispatch<any>();
   const perioDiagnozis = useSelector(perioDiagnozisSelector);
-  const [changeState, setChangeState] = useState(false);
 
-  const setDiagnozis = stage => {
-    perioDiagnozis[`tooth${toothNum}`][`dentaldeposit_${type}_st${stage}`] =
-      !perioDiagnozis[`tooth${toothNum}`][`dentaldeposit_${type}_st${stage}`];
-    dispatch(setPerioDiagnoze(perioDiagnozis));
-    setChangeState(!changeState);
+  const toothKey = `tooth${toothNum}`;
+  const toothData = perioDiagnozis?.[toothKey] || {};
+
+  const handleToggle = (stage: number) => {
+    const fieldKey = `dentaldeposit_${type}_st${stage}`;
+    const updatedDiagnozis = {
+      ...perioDiagnozis,
+      [toothKey]: {
+        ...toothData,
+        [fieldKey]: !toothData[fieldKey],
+      },
+    };
+
+    dispatch(setPerioDiagnoze(updatedDiagnozis));
   };
-  useEffect(() => {}, [changeState]);
 
   return (
-    <>
-      <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlnsXlink="http://www.w3.org/1999/xlink"
-        x="0px"
-        y="0px"
-        viewBox="0 0 300 100"
-        style={{ width: '100%', height: '20px' }}
-        xmlSpace="preserve"
-      >
-        <circle
-          className="plaque bottom"
-          data-tooth="48"
-          data-position="1"
-          cx="50"
-          cy="50"
-          r="25"
-          onClick={() => {
-            setDiagnozis(1);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
-              ? 'rgb(201,199,193)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st1`]
-              ? 'rgba(80,79,77,0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        ></circle>
-        <circle
-          className="plaque bottom"
-          data-tooth="48"
-          data-position="2"
-          cx="150"
-          cy="50"
-          r="25"
-          onClick={() => {
-            setDiagnozis(2);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
-              ? 'rgb(201,199,193)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st2`]
-              ? 'rgba(80,79,77,0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        ></circle>
-        <circle
-          className="plaque bottom"
-          data-tooth="48"
-          data-position="3"
-          cx="250"
-          cy="50"
-          r="25"
-          onClick={() => {
-            setDiagnozis(3);
-          }}
-          fill={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
-              ? 'rgb(201,199,193)'
-              : 'rgba(255, 255, 255, 0)'
-          }
-          stroke={
-            perioDiagnozis[`tooth${toothNum}`]?.[`dentaldeposit_${type}_st3`]
-              ? 'rgba(80,79,77,0.9)'
-              : 'rgba(200, 200, 200, 0.9)'
-          }
-          strokeWidth="7px"
-        ></circle>
-      </svg>
-    </>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        height: '22px',
+      }}
+    >
+      {[1, 2, 3].map((stage) => {
+        const isActive = Boolean(toothData[`dentaldeposit_${type}_st${stage}`]);
+
+        return (
+          <button
+            key={stage}
+            type="button"
+            onClick={() => handleToggle(stage)}
+            title={`Зубні відкладення (${type}) — точка ${stage}`}
+            className="group"
+            style={{
+              flex: 1,
+              height: '100%',
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <span
+              className="transition-transform duration-150 group-hover:scale-125"
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: isActive ? '#1E293B' : 'transparent',
+                border: isActive ? '1.5px solid #0F172A' : '1.5px solid #CBD5E1',
+                boxSizing: 'border-box',
+              }}
+            />
+          </button>
+        );
+      })}
+    </div>
   );
 }

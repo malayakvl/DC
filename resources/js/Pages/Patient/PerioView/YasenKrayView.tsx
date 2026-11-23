@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default function YesenKrayView({ data, idx = 1 }) {
-  let value = data[idx];
+export default function YesenKrayView({ data, idx = 1 }: { data: any; idx: number }) {
+  const value = data[idx];
   const inputStyle = {
     color: Number(value) > 5 ? 'red' : Number(value) === 5 ? 'blue' : 'green',
   };

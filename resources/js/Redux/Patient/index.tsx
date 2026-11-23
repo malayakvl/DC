@@ -1,24 +1,24 @@
 import { handleActions } from 'redux-actions';
 import {
   setPatientTab,
-  setPatientSubTab,
+  setTreatmentsTab,
   setFilters,
   clearFilters,
   setServicesAction,
   minusServiceAction,
   plusServiceAction,
-  setExistServicesAction
+  setExistServicesAction,
 } from './actions';
 
 const initialState = {
   patientTab: 'history',
-  patientSubTab: '',
+  patientTreatmentTab: 'all',
   isClear: false,
   filters: {
     filterName: '',
-    filterPhone: ''
+    filterPhone: '',
   },
-  services: []
+  services: [],
 };
 
 // ------------------------------------
@@ -26,76 +26,74 @@ const initialState = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [setPatientTab.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       patientTab: action.payload,
     }),
   },
-  [setPatientSubTab.toString()]: {
-    next: (state, action) => ({
+  [setTreatmentsTab.toString()]: {
+    next: (state: any, action: any) => ({
       ...state,
-      patientSubTab: action.payload,
+      patientTreatmentTab: action.payload,
     }),
   },
   [setFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       filters: action.payload,
     }),
   },
   [clearFilters.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       filters: {
         filterName: '',
-        filterPhone: ''
+        filterPhone: '',
       },
-      isClear: true
+      isClear: true,
     }),
   },
-  [setExistServicesAction]: {
-    next: (state, action) => {
+  [setExistServicesAction.toString()]: {
+    next: (state: any, action: any) => {
       return {
         ...state,
-        services: action.payload// добавить
+        services: action.payload, // добавить
       };
     },
   },
-  [setServicesAction]: {
-    next: (state, action) => {
-      const exists = state.services.some(service => service.id === action.payload.id);
+  [setServicesAction.toString()]: {
+    next: (state: any, action: any) => {
+      const exists = state.services.some((service: any) => service.id === action.payload.id);
       action.payload.qty = 1;
       return {
         ...state,
         services: exists
-          ? state.services.filter(service => service.id !== action.payload.id) // удалить
-          : [...state.services, action.payload] // добавить
+          ? state.services.filter((service: any) => service.id !== action.payload.id) // удалить
+          : [...state.services, action.payload], // добавить
       };
     },
   },
-  [plusServiceAction]: {
-    next: (state, action) => {
-      const _s  = state.services.map(item =>
+  [plusServiceAction.toString()]: {
+    next: (state: any, action: any) => {
+      const _s = state.services.map((item: any) =>
         item.id === action.payload.id ? { ...item, qty: item.qty ? item.qty + 1 : 2 } : item
       );
 
       return {
         ...state,
-        services: _s
+        services: _s,
       };
     },
   },
-  [minusServiceAction]: {
-    next: (state, action) => {
-      const _s =  state.services
-        .map(item =>
-          item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item
-        )
-        .filter(item => item.qty > 0);
+  [minusServiceAction.toString()]: {
+    next: (state: any, action: any) => {
+      const _s = state.services
+        .map((item: any) => (item.id === action.payload.id ? { ...item, qty: item.qty - 1 } : item))
+        .filter((item: any) => item.qty > 0);
 
       return {
         ...state,
-        services: _s
+        services: _s,
       };
     },
   },
@@ -103,13 +101,13 @@ const ACTION_HANDLERS = {
 
 export {
   setPatientTab,
-  setPatientSubTab,
+  setTreatmentsTab,
   setFilters,
   clearFilters,
   setServicesAction,
   plusServiceAction,
   minusServiceAction,
-  setExistServicesAction
+  setExistServicesAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);
