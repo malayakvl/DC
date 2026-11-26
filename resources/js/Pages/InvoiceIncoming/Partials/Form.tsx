@@ -215,7 +215,6 @@ export default function Form({
                 <InputCalendar
                   name={'invoice_date'}
                   values={values}
-                  dataValue={values.invoice_date}
                   value={values.invoice_date}
                   onChange={handleChangeCalendar}
                   required

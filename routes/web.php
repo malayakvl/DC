@@ -122,12 +122,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/patient/update', [PatientController::class, 'update'])->name('patient.update');
     Route::get('/patient/view/{id}/{eventId}', [PatientController::class, 'view'])->name('patient.view');
     Route::get('/patient/view/{id}', [PatientController::class, 'view'])->name('patient.view');
+    Route::get('/patient/plan-create/{id}', [PatientController::class, 'createPlan'])->name('patient.createPlan');
     Route::post('/patient/create-treatment', [PatientController::class, 'createTreatment'])->name('patient.createTreatment');
     Route::get('/patient/cliniccard/{id}', [PatientController::class, 'cliniccard'])->name('patient.cliniccard');
     Route::post('/patient/update-act', [PatientController::class, 'updateAct'])->name('patient.updateAct');
     Route::get('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.finances');
     Route::post('/patient/finances', [PatientController::class, 'view'])->name('patient.');
     Route::post('/patient/finances/{id}', [PatientController::class, 'view'])->name('patient.viewFinances');
+    Route::post('/patient/documents/upload', [PatientController::class, 'uploadDocuments'])
+        ->name('patient.documents.upload');
 
     Route::get('/scheduler-visit-statuses', [VisitScheduleStatusController::class, 'index'])->name('scheduler-visit-status.index');
     Route::get('/scheduler-visit-status/create', [VisitScheduleStatusController::class, 'create'])->name('scheduler-visit-status.create');

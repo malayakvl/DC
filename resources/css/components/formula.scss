@@ -534,6 +534,9 @@
 .diagnosis-tab-new.active {
     @apply bg-white font-bold text-[#115e59];
 }
+.fin-tab {
+    min-width: 150px;
+}
 .diagnosis-tab {
     display: inline-flex;
     align-items: center;

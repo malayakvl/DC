@@ -8,9 +8,15 @@ import { setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
 import { patientServicesSelector, patientTabSelector } from '../../../Redux/Patient/selectors';
 import QuickAct from '../FinanceTabs/QuickAct';
 import ActPayment from '../FinanceTabs/ActPayment';
+import {
+  Plus as LucidePlus,
+  Undo2,
+  CalendarSync as LucideCalendarSync,
+  Download,
+} from 'lucide-react';
 
 export default function Finances({
-  type,
+  typeTab,
   patientData,
   pDiscountValue,
   pServices,
@@ -21,7 +27,7 @@ export default function Finances({
   actData,
   discountStatus,
 }: {
-  type: any;
+  typeTab: any;
   patientData: any;
   pDiscountValue: any;
   pServices: any;
@@ -164,70 +170,57 @@ export default function Finances({
   return (
     <>
       {/* TABS BLOCK */}
-      <div className="tabs-block w-full bg-white mt-5 mb-3 flex">
-        <div className="w-full flex">
-          <div className="sh-btns-block">
-            <div className="mt-2">
-              <Link href="/">
-                <span className="btn-quickact cursor-pointer">{msg.get('patient.quickact')}</span>
-              </Link>
-              <Link href="/" className="ml-2">
-                <span className="btn-acceptpayment cursor-pointer">
-                  {msg.get('patient.acceptpayment')}
-                </span>
-              </Link>
-              <Link href="/" className="ml-2">
-                <span className="btn-returnmoney cursor-pointer">
-                  {msg.get('patient.returnmoney')}
-                </span>
-              </Link>
-            </div>
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-4">
+        <div className="flex flex-wrap items-center gap-4 w-full">
+          <div className="flex gap-2">
+            <button className="btn-quickact cursor-pointer" id="btn-accept-payment" type="button">
+              <LucidePlus className="w-3 h-3" />
+              <span>Прийняти платіж</span>
+            </button>
+            <button className="btn-refund cursor-pointer" id="btn-refund" type="button">
+              <Undo2 className="w-3 h-3" />
+              <span>Повернути кошти</span>
+            </button>
+            <div className="h-6 w-px bg-surface-container mx-1"></div>
           </div>
-          <div className="tabls-list mt-2">
-            <ul>
-              <li id="actpayment" onClick={() => handleTabClick('actpayment')}>
-                <span
-                  className={`btn-white cursor-pointer ${subTab === 'actpayment' ? 'active' : ''}`}
-                >
-                  Платежі та акти
-                </span>
-              </li>
-              <li
-                id="visits"
-                className={tab === 'visits' ? 'active' : ''}
-                onClick={() => handleTabClick('visits')}
-              >
-                <span className="btn-white cursor-pointer">Виконані роботи</span>
-              </li>
-              <li
-                id="plans"
-                className={tab === 'plans' ? 'active' : ''}
-                onClick={() => handleTabClick('plans')}
-              >
-                <span className="btn-white cursor-pointer">Платежі</span>
-              </li>
-              <li
-                id="history"
-                className={tab === 'history' ? 'active' : ''}
-                onClick={() => handleTabClick('history')}
-              >
-                <span className="btn-white cursor-pointer">Акти</span>
-              </li>
-              <li
-                id="finances"
-                className={tab === 'finances' ? 'active' : ''}
-                onClick={() => handleTabClick('finances')}
-              >
-                <Link href="/">
-                  <span className="btn-quickact cursor-pointer">
-                    {msg.get('patient.createevent')}
-                  </span>
-                </Link>
-              </li>
-            </ul>
+          <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
+            <button className="diagnosis-tab-new fin-tab  active" type="button">
+              <span>Усі операції</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-surface-container text-secondary font-data-mono text-label-sm font-semibold">
+                5
+              </span>
+            </button>
+            <button className="diagnosis-tab-new fin-tab" type="button">
+              <span>Виконані роботи</span>
+            </button>
+            <button className="diagnosis-tab-new fin-tab" type="button">
+              <span>Платежі</span>
+            </button>
+            <button className="diagnosis-tab-new fin-tab" type="button">
+              <span>Акти</span>
+            </button>
+          </div>
+          <div className="flex items-end ml-auto">
+            <button
+              className="btn-report-act mr-2 cursor-pointer"
+              title="Акт звірки взаєморозрахунків"
+              type="button"
+            >
+              <LucideCalendarSync className="w-3 h-3" />
+              <span className="hidden sm:inline">Акт звірки</span>
+            </button>
+            <button
+              className="btn-quickact cursor-pointer"
+              title="Експорт виписки у Excel"
+              type="button"
+            >
+              <Download className="w-3 h-3" />
+              <span className="hidden sm:inline">XLSX</span>
+            </button>
           </div>
         </div>
       </div>
+
       <div className="clearfix" />
 
       <div className={`w-full flex ${subTab === 'actpayment' ? '' : 'hidden'}`}></div>

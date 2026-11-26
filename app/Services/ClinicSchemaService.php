@@ -441,6 +441,70 @@ class ClinicSchemaService
             )
         ");
 
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS treatment_plans (
+                id bigserial PRIMARY KEY,
+                patient_id bigint NOT NULL, -- або user_id (як у вас називається ID пацієнта)
+                filial_id bigint,
+                curator_id bigint, -- куратор плану лікування (лікар/менеджер)
+                lead_doctor_id bigint, -- провідний лікар/хірург
+                title character varying(255) NOT NULL, -- напр. План А: Комплексна реабілітація
+                plan_variant character varying(50) DEFAULT 'optimal', -- 'optimal' | 'alternative' | 'custom'
+                status character varying(50) NOT NULL DEFAULT 'draft', -- 'draft' | 'pending_approval' | 'approved' | 'in_progress' | 'completed' | 'archived'
+                estimated_duration character varying(100), -- напр. 3-4 місяці
+                notes text,
+                source_formula_treatment_id bigint REFERENCES clinic_1.patient_treatments(id) ON DELETE SET NULL, -- з якої формули підтягували патології
+                created_by bigint,
+                approved_at timestamp without time zone,
+                created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("CREATE UNIQUE INDEX patient_treatment_pkey ON patient_treatments(id int8_ops);");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS treatment_plans (CREATE TABLE treatment_plan_stages (
+                id bigserial PRIMARY KEY,
+                plan_id bigint NOT NULL REFERENCES clinic_1.treatment_plans(id) ON DELETE CASCADE,
+                sort_order integer NOT NULL DEFAULT 1,
+                title character varying(255) NOT NULL, -- напр. Невідкладна допомога та терапевтична санація
+                description text, -- напр. Термін виконання: 1-2 візити
+                status character varying(50) NOT NULL DEFAULT 'draft', -- 'draft' | 'formed' | 'approved' | 'in_progress' | 'completed'
+                planned_date date,
+                linked_treatment_stage_id bigint REFERENCES clinic_1.patient_treatments(id) ON DELETE SET NULL, -- зв'язок з реальним етапом лікування
+                created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+            );)
+        ");
+
+        DB::statement("CREATE INDEX idx_treatment_plan_stages_plan ON treatment_plan_stages(plan_id);");
+
+        DB::statement("
+            CREATE TABLE treatment_plan_items (
+                id bigserial PRIMARY KEY,
+                stage_id bigint NOT NULL REFERENCES clinic_1.treatment_plan_stages(id) ON DELETE CASCADE,
+                sort_order integer NOT NULL DEFAULT 1,
+                target_type character varying(30) NOT NULL DEFAULT 'tooth', -- 'tooth' | 'upper_jaw' | 'lower_jaw' | 'both_jaws' | 'general'
+                tooth_code character varying(10), -- напр. '18', '45', '48' (NULL якщо щелепа/загальне)
+                diagnosis_code character varying(50), -- напр. 'K02.0' або ключ стану з формули, щоб підсвічувати ✓ В Етапі 2
+                diagnosis_label character varying(255), -- напр. Фісурна пігментація
+                service_id bigint, -- ID послуги з прайсу клініки (NULL якщо введено вручну)
+                service_name character varying(255) NOT NULL, -- назва маніпуляції (снапшот назви)
+                doctor_id bigint, -- виконавець цієї маніпуляції
+                quantity integer NOT NULL DEFAULT 1,
+                unit_label character varying(30) DEFAULT 'посл.', -- 'посл.' | 'сеанс' | 'шт'
+                unit_price numeric(12, 2) NOT NULL DEFAULT 0,
+                discount_percent numeric(5, 2) NOT NULL DEFAULT 0,
+                total_price numeric(12, 2) NOT NULL DEFAULT 0, -- (quantity * unit_price) з урахуванням знижки
+                is_completed boolean NOT NULL DEFAULT false, -- чи вже виконано/закрито актом
+                created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+            );
+        ");
+
+        DB::statement("CREATE INDEX idx_treatment_plan_items_stage ON treatment_plan_items(stage_id);");
+
         // Create patient_treatment table
         DB::statement("
             CREATE TABLE IF NOT EXISTS patient_treatments (
@@ -468,6 +532,30 @@ class ClinicSchemaService
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
+        ");
+
+        DB::statement("
+            CREATE TABLE IF NOT EXISTS patient_documents (
+                id BIGSERIAL PRIMARY KEY,
+                patient_id BIGINT NOT NULL,
+                category VARCHAR(32) NOT NULL,
+                tooth VARCHAR(50) NULL,
+                note VARCHAR(255) NULL,
+                original_name VARCHAR(255) NOT NULL,
+                disk VARCHAR(32) NOT NULL DEFAULT 'public',
+                file_path VARCHAR(255) NOT NULL,
+                mime_type VARCHAR(120) NULL,
+                size BIGINT NOT NULL DEFAULT 0,
+                uploaded_by BIGINT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE INDEX IF NOT EXISTS patient_documents_patient_id_idx
+                ON patient_documents (patient_id);
+            
+                CREATE INDEX IF NOT EXISTS patient_documents_category_idx
+                ON patient_documents (category);
         ");
 
         // Create audit_logs table

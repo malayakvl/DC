@@ -70,6 +70,7 @@ const lngPatient = {
     'tab.tratment': 'Плани лікування',
     'tab.history': 'Історія лікування',
     'tab.finances': 'Фінанси',
+    'tab.plans': 'Плани лікування',
     newstage: 'Наприклад: Підготовчий терапевтичний курс (листопад 2026)',
     search: 'Пошук',
     'search.clear': 'Очистити',

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
 import Lang from 'lang.js';
@@ -7,19 +7,106 @@ import lngPatient from '../../../Lang/Patient/translation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 
+type MainTabId = 'documents' | 'visits' | 'plans' | 'history' | 'finances';
+type SubTabId = 'stage' | 'formula' | 'psr' | 'perio';
+
 interface DetailsProps {
   patientData: any;
   clinicData?: any;
   className?: string | null;
-  activeSubTab?: 'stage' | 'formula' | 'psr' | 'perio';
-  onSubTabChange?: (subTab: 'stage' | 'formula' | 'psr' | 'perio') => void;
+  activeTab?: MainTabId;
+  activeSubTab?: SubTabId;
+  showSubTab?: boolean;
+  onSubTabChange?: (subTab: SubTabId) => void;
+}
+
+const MAIN_TABS: { id: MainTabId; label: string }[] = [
+  { id: 'documents', label: 'Документи' },
+  { id: 'visits', label: 'Візити' },
+  { id: 'plans', label: 'Плани лікування' },
+  { id: 'history', label: 'Історія лікування' },
+  { id: 'finances', label: 'Фінанси' },
+];
+
+const SUB_TABS: {
+  id: SubTabId;
+  label: string;
+  badge?: string;
+  icon: 'folder' | 'tooth' | 'chart';
+}[] = [
+  { id: 'stage', label: 'Етап лікування', icon: 'folder' },
+  { id: 'formula', label: 'Зубна формула', icon: 'tooth' },
+  { id: 'psr', label: 'Пародонтальний скринінг-тест', badge: 'PSR', icon: 'folder' },
+  { id: 'perio', label: 'Періо карта', icon: 'chart' },
+];
+
+function getTabFromUrl(fallback: MainTabId = 'history'): MainTabId {
+  if (typeof window === 'undefined') return fallback;
+  const rawType = new URLSearchParams(window.location.search).get('type') as MainTabId | null;
+  return rawType && MAIN_TABS.some((item) => item.id === rawType) ? rawType : fallback;
+}
+
+function SubTabIcon({ icon, isActive }: { icon: 'folder' | 'tooth' | 'chart'; isActive: boolean }) {
+  if (icon === 'tooth') {
+    return (
+      <svg
+        className={`w-3.5 h-3.5 ${isActive ? 'text-teal-100' : 'text-[#dd841d]'}`}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M7 3C4.5 3 3 5.5 3 9c0 4.5 3 8 4.5 12 .5 1.5 2 1.5 2.5 0 .5-1.5 1-4 2-4s1.5 2.5 2 4c.5 1.5 2 1.5 2.5 0 1.5-4 4.5-7.5 4.5-12 0-3.5-1.5-6-4-6-2 0-3.5 1.5-4.5 2C10.5 4.5 9 3 7 3z"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    );
+  }
+
+  if (icon === 'chart') {
+    return (
+      <svg
+        className={`w-3.5 h-3.5 ${isActive ? 'text-teal-100' : 'text-teal-600'}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      className={`w-3.5 h-3.5 ${isActive ? 'text-teal-100' : 'text-amber-500'}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
 }
 
 export default function Details({
   patientData,
   clinicData,
   className = '',
+  activeTab = 'history',
   activeSubTab = 'perio',
+  showSubTab,
   onSubTabChange,
 }: DetailsProps) {
   const appLang = useSelector(appLangSelector);
@@ -28,29 +115,24 @@ export default function Details({
     locale: appLang,
   });
 
-  const [tab, setTab] = useState('history');
-  const [subTab, setSubTab] = useState<'stage' | 'formula' | 'psr' | 'perio'>(activeSubTab);
+  const patientId =
+    patientData?.id || window.location.pathname.match(/\/patient\/[^/]+\/(\d+)/)?.[1];
+  const [currentTab, setCurrentTab] = useState<MainTabId>(() => getTabFromUrl(activeTab));
+  const [subTab, setSubTab] = useState<SubTabId>(activeSubTab);
 
-  const handleTabClick = (nextTab: string) => {
-    setTab(nextTab);
-  };
+  useEffect(() => {
+    setCurrentTab(getTabFromUrl(activeTab));
+  }, [activeTab]);
 
-  const handleSubTabClick = (nextSubTab: 'stage' | 'formula' | 'psr' | 'perio') => {
+  useEffect(() => {
+    setSubTab(activeSubTab);
+  }, [activeSubTab]);
+
+  const handleSubTabClick = (nextSubTab: SubTabId) => {
     setSubTab(nextSubTab);
-    if (onSubTabChange) {
-      onSubTabChange(nextSubTab);
-    }
+    onSubTabChange?.(nextSubTab);
   };
 
-  const mainTabs = [
-    { id: 'documents', label: 'Документи' },
-    { id: 'visits', label: 'Візити' },
-    { id: 'plans', label: 'Плани лікування' },
-    { id: 'history', label: 'Історія лікування' },
-    { id: 'finances', label: 'Фінанси' },
-  ];
-
-  // Формируем строку пола и возраста, если переданы в patientData
   const genderLabel =
     patientData?.gender === 'female'
       ? 'Жінка'
@@ -68,9 +150,7 @@ export default function Details({
       data-purpose="patient-identity-card"
     >
       <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-4">
-        {/* Верхний ряд: Аватар + Инфо пациента + Основные вкладки */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Левая часть: Фото и метаданные */}
           <div className="flex items-center space-x-4">
             <div className="relative w-14 h-14 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-400">
               {patientData?.avatar ? (
@@ -100,7 +180,6 @@ export default function Details({
                   Активний курс
                 </span>
 
-                {/* Компактные кнопки действий (добавить/редактировать) */}
                 <div className="flex items-center gap-1 ml-1">
                   <Link
                     href="/patient/create"
@@ -145,135 +224,70 @@ export default function Details({
             </div>
           </div>
 
-          {/* Правая часть: Верхние вкладки навигации */}
           <nav className="tab-view-green">
-            {mainTabs.map((item) => {
-              const isActive = tab === item.id;
+            {MAIN_TABS.map((item) => {
+              const isActive = currentTab === item.id;
+              const href = patientId
+                ? `/patient/view/${patientId}?type=${item.id}`
+                : `?type=${item.id}`;
+
               return (
-                <button
+                <Link
                   key={item.id}
-                  type="button"
-                  onClick={() => handleTabClick(item.id)}
+                  href={href}
+                  preserveState
+                  preserveScroll
+                  onSuccess={() => setCurrentTab(item.id)}
                   className={isActive ? 'tab active' : 'tab'}
                 >
                   {item.label}
-                </button>
+                </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Нижний ряд: Клинические подвкладки (показываем в "Історія лікування" или всегда — как удобнее) */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Етап лікування */}
-            <button
-              type="button"
-              onClick={() => handleSubTabClick('stage')}
-              className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
-                subTab === 'stage'
-                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
-                  : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <svg
-                className={`w-3.5 h-3.5 ${subTab === 'stage' ? 'text-teal-100' : 'text-amber-500'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                />
-              </svg>
-              <span>Етап лікування</span>
-            </button>
+        {showSubTab !== false && (
+          <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="flex flex-wrap items-center gap-2">
+              {SUB_TABS.map((item) => {
+                const isActive = subTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleSubTabClick(item.id)}
+                    className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+                      isActive
+                        ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
+                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    <SubTabIcon icon={item.icon} isActive={isActive} />
+                    {item.badge && (
+                      <span
+                        className={`text-[10px] font-bold px-1 rounded ${
+                          isActive ? 'bg-teal-500 text-white' : 'text-amber-600 bg-amber-50'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-            {/* Зубна формула */}
-            <button
-              type="button"
-              onClick={() => handleSubTabClick('formula')}
-              className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
-                subTab === 'formula'
-                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
-                  : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <svg
-                className={`w-3.5 h-3.5 ${subTab === 'formula' ? 'text-teal-100' : 'text-[#dd841d]'}`}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M7 3C4.5 3 3 5.5 3 9c0 4.5 3 8 4.5 12 .5 1.5 2 1.5 2.5 0 .5-1.5 1-4 2-4s1.5 2.5 2 4c.5 1.5 2 1.5 2.5 0 1.5-4 4.5-7.5 4.5-12 0-3.5-1.5-6-4-6-2 0-3.5 1.5-4.5 2C10.5 4.5 9 3 7 3z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span>Зубна формула</span>
-            </button>
-
-            {/* PSR */}
-            <button
-              type="button"
-              onClick={() => handleSubTabClick('psr')}
-              className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
-                subTab === 'psr'
-                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
-                  : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <span
-                className={`text-[10px] font-bold px-1 rounded ${
-                  subTab === 'psr' ? 'bg-teal-500 text-white' : 'text-amber-600 bg-amber-50'
-                }`}
-              >
-                PSR
+            <div className="text-[11px] text-slate-400">
+              Останнє вимірювання:{' '}
+              <span className="font-medium text-slate-600">
+                {patientData?.last_perio_date || '—'}
               </span>
-              <span>Пародонтальний скринінг-тест</span>
-            </button>
-
-            {/* Періо карта */}
-            <button
-              type="button"
-              onClick={() => handleSubTabClick('perio')}
-              className={`inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg font-medium transition-all ${
-                subTab === 'perio'
-                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-600/20'
-                  : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <svg
-                className={`w-3.5 h-3.5 ${subTab === 'perio' ? 'text-teal-100' : 'text-teal-600'}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                />
-              </svg>
-              <span>Періо карта</span>
-            </button>
+              {patientData?.doctor_name && ` (лікар ${patientData.doctor_name})`}
+            </div>
           </div>
-
-          {/* Метаинформация последнего измерения справа */}
-          <div className="text-[11px] text-slate-400">
-            Останнє вимірювання:{' '}
-            <span className="font-medium text-slate-600">
-              {patientData?.last_perio_date || '—'}
-            </span>
-            {patientData?.doctor_name && ` (лікар ${patientData.doctor_name})`}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

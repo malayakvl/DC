@@ -8,6 +8,7 @@ use App\Models\ClinicFilial;
 use App\Models\Patient;
 use App\Models\ActDocument;
 use App\Models\Cabinet;
+use App\Models\PatientDocument;
 use App\Models\PriceCategory;
 use App\Models\Pricing;
 use App\Models\Scheduler;
@@ -152,6 +153,51 @@ class PatientController extends Controller
                 'customerData' => $customerData,
             ]);
         });
+    }
+
+    public function uploadDocuments(Request $request)
+    {
+        return $this->withClinicSchema($request, function($clinicId) use ($request) {
+            $validated = $request->validate([
+                'patient_id' => ['required', 'integer', 'exists:patients,id'],
+                'category'   => ['required', 'string', 'in:photo,ct,xray,consent'],
+                'tooth'      => ['nullable', 'string', 'max:50'],
+                'note'       => ['nullable', 'string', 'max:255'],
+                'files'      => ['required', 'array', 'min:1'],
+                'files.*'    => ['file', 'max:51200', 'mimes:jpg,jpeg,png,pdf,dcm,dicom'], // 50 MB
+            ]);
+
+            $patientId = $validated['patient_id'];
+            // Учитывая мультитенантность (если файлы раскладываются по клинике/тенанту):
+            // $tenantPrefix = tenant('id') ?? auth()->user()->clinic_id;
+            $baseDir = "patients/{$patientId}/documents/{$validated['category']}";
+
+            foreach ($request->file('files') as $uploadedFile) {
+                $path = $uploadedFile->store($baseDir, 'public');
+                $now = now()->toDateTimeString();
+
+                $rows[] = [
+                    'patient_id'    => $patientId,
+                    'category'      => $validated['category'],
+                    'tooth'         => $validated['tooth'] ?? null,
+                    'note'          => $validated['note'] ?? null,
+                    'original_name' => $uploadedFile->getClientOriginalName(),
+                    'disk'          => 'public',
+                    'file_path'     => $path,
+                    'mime_type'     => $uploadedFile->getClientMimeType(),
+                    'size'          => $uploadedFile->getSize() ?? 0,
+                    'uploaded_by'   => auth()->id(),
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
+                ];
+            }
+            if (!empty($rows)) {
+                DB::table('patient_documents')->insert($rows);
+            }
+
+            return back()->with('success', 'Файли успішно завантажено');
+        });
+
     }
 
     /**
@@ -564,7 +610,7 @@ class PatientController extends Controller
             // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
             $actData = [];
             $visitsData = Scheduler::where('patient_id', $patientData->id)->get();
-
+            $documentsData = PatientDocument::where('patient_id', $patientData->id)->get();
 
             $quickActData = '';
             if ($scheduleId) {
@@ -572,7 +618,7 @@ class PatientController extends Controller
 
                 return Inertia::render('Patient/View', [
                     'patientData' => $patientData,
-                    'type' => $type,
+                    'typeTab' => $type,
                     // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
                     'treatmentData' => [],
                     'clinicData' => $clinicData,
@@ -585,12 +631,13 @@ class PatientController extends Controller
                     'tree' => $tree,
                     'scheduleId' => $scheduleId,
                     'actData' => $actData,
-                    'visitsData' => $visitsData
+                    'visitsData' => $visitsData,
+                    'documentsData' => $documentsData
                 ]);
             } else {
                 return Inertia::render('Patient/View', [
                     'patientData' => $patientData,
-                    'type' => 'documents',
+                    'typeTab' => $type,
                     'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
                     'visitsData' => $visitsData,
                     'clinicData' => $clinicData,
@@ -602,9 +649,34 @@ class PatientController extends Controller
                     'services' => $arrServices,
                     'tree' => $tree,
                     'scheduleId' => $scheduleId,
-                    'actData' => $actData
+                    'actData' => $actData,
+                    'visitsData' => $visitsData,
+                    'documentsData' => $documentsData
                 ]);
             }
+        });
+    }
+
+
+    public function createPlan(Request $request, $id) {
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            $clinicData = $request->user()->clinicByFilial($clinicId);
+            $patientData = Patient::withUser()
+                ->where('patients.id', '=', $id)
+                ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
+                ->leftJoin('phones', function ($join) {
+                    $join->on('phones.patient_id', '=', 'patients.id')
+                        ->where('phones.is_primary', '=', true);
+                })
+                ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
+                ->first();
+
+            return Inertia::render('Patient/TreatmentPlan/Create', [
+                'patientData' => $patientData,
+                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                'treatmentData' => [],
+                'clinicData' => $clinicData,
+            ]);
         });
     }
 

@@ -76,6 +76,24 @@
         background-color: #fce4ea;
     }
 }
+.btn-accept-payment {
+    width: auto;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 8px;
+    border: solid 1px #fdf5f6;
+    padding: 5px;
+    background-color: #fdf5f6;
+    background-size: 50%;
+    background-position: center;
+
+    &:hover {
+        border: solid 1px #fce4ea;
+        background-color: #fce4ea;
+    }
+}
 
 
 .btn-store {
@@ -261,33 +279,40 @@
 }
 
 .btn-quickact {
-    padding: 5px 10px;
-    text-align: center;
-    text-transform: uppercase;
-    transition: 0.5s;
-    background-size: 200% auto;
-    background: palevioletred;
-    color: #fff;
-    font-size: 11px;
-    font-weight: bold;
-    border-radius: 4px;
+    font-size: 14px;
+    @apply px-2.5 py-1 rounded-md bg-[#0d9488] border border-[#0d9488] text-white hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer;
+}
+.btn-refund {
+    font-size: 14px;
+    @apply px-2.5 py-1 rounded-md bg-red-500 border border-red-500 text-white hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer;
+}
+.btn-fin-gray {
+    font-size: 14px;
+    @apply px-2.5 py-1 rounded-md bg-[#eff4ff] border border-[#eff4ff] text-black hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer;
+}
+.btn-report-act {
+    font-size: 14px;
+    @apply px-2.5 py-1 rounded-md bg-[#dd841d] border border-[#dd841d] text-white hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer;
+
+}
+.btn-fin-transparent {
+    font-size: 14px;
+    @apply px-2.5 py-1 rounded-md bg-[#fff] border border-gray-500 text-black hover:text-teal-700 hover:border-teal-300 transition flex items-center gap-1 cursor-pointer;
 }
 
-.btn-quickact,
-.btn-acceptpayment,
-.btn-returnmoney {
-    padding: 10px 13px;
-    text-align: center;
-    text-transform: uppercase;
-    transition: 0.5s;
-    background-size: 200% auto;
-    color: #fff;
-    font-size: 11px;
-    font-weight: bold;
-    border-radius: 4px;
-
-    background: palevioletred;
-}
+//.btn-quickact,
+//.btn-acceptpayment,
+//.btn-returnmoney {
+//    padding: 10px 13px;
+//    text-align: center;
+//    text-transform: uppercase;
+//    transition: 0.5s;
+//    background-size: 200% auto;
+//    color: #fff;
+//    font-size: 11px;
+//    font-weight: bold;
+//    border-radius: 4px;
+//}
 
 .btn-acceptpayment {
     background: #078825;
