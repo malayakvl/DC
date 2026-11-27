@@ -382,12 +382,12 @@ export default function Documents({
                   </svg>
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-slate-900 group-hover:text-teal-900 transition truncate">
+                  <div className="text-xs font-bold text-slate-900 group-hover:text-teal-900 transition">
                     {selectedFiles.length > 0
                       ? `Обрано файлів: ${selectedFiles.length} (${formatBytes(totalSelectedSize)})`
                       : 'Перетягніть файли сюди'}
                   </div>
-                  <div className="text-[11px] text-slate-500 truncate">
+                  <div className="text-[11px] text-slate-500">
                     або оберіть з ПК (JPG, PNG, PDF, DICOM до 50 МБ)
                   </div>
                 </div>

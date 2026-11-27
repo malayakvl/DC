@@ -1,16 +1,12 @@
 import AuthenticatedLayout from '../../../Layouts/AuthenticatedLayout';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../../Lang/Patient/translation';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLangSelector } from '../../../Redux/Layout/selectors';
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { setExistServicesAction, setPatientTab } from '../../../Redux/Patient';
-import { patientServicesSelector, patientTabSelector } from '../../../Redux/Patient/selectors';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencil, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { Head, useForm } from '@inertiajs/react';
+import { patientTabSelector } from '../../../Redux/Patient/selectors';
 import StickyFormFooter from '@/Components/Common/StickyFormFooter';
-import DetailsNew from '@/Pages/Patient/Partials/DetailsNew';
 import Details from '@/Pages/Patient/Partials/Details';
 
 export default function Finances({
@@ -85,84 +81,7 @@ export default function Finances({
             <div className="p-4 sm:p-4 mb-8 content-data bg-content">
               <Details patientData={patientData} clinicData={clinicData} showSubTab={false} />
 
-              <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-4">
-                {/* Верхний ряд: Аватар + Инфо пациента + Основные вкладки */}
 
-                <div className="hidden flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                  {/* Левая часть: Фото и метаданные */}
-                  <div className="flex items-center space-x-4">
-                    <div className="relative w-14 h-14 rounded-full bg-slate-100 border-2 border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-400">
-                      {patientData?.avatar ? (
-                        <img
-                          src={`/uploads/patients/${patientData.avatar}`}
-                          alt={`${patientData.first_name || ''} ${patientData.last_name || ''}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <svg className="w-10 h-10 mt-2" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      )}
-                      <span
-                        className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"
-                        title="Активний пацієнт"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                          {patientData?.first_name} {patientData?.last_name}
-                        </h1>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5" />
-                          Активний курс
-                        </span>
-                      </div>
-                      <div className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        {demographics && (
-                          <>
-                            <span>{demographics}</span>
-                            <span className="text-slate-300">•</span>
-                          </>
-                        )}
-                        {patientData?.phone && (
-                          <>
-                            <span className="font-mono">{patientData.phone}</span>
-                            <span className="text-slate-300">•</span>
-                          </>
-                        )}
-                        {patientData?.id && (
-                          <>
-                            <span className="text-slate-400">ID: #{patientData.id}</span>
-                            <span className="text-slate-300">•</span>
-                          </>
-                        )}
-                        <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px] font-mono">
-                          {msg.get('patient.medical_card')} №
-                          {patientData?.card_number || patientData?.id || '—'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Правая часть: Верхние вкладки навигации */}
-                  <nav className="tab-view-green">
-                    {mainTabs.map((item) => {
-                      const isActive = tab === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => handleTabClick(item.id)}
-                          className={isActive ? 'tab active' : 'tab'}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-                  </nav>
-                </div>
-              </div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2.5">

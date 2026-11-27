@@ -237,7 +237,6 @@ export default function Details({
                   href={href}
                   preserveState
                   preserveScroll
-                  onSuccess={() => setCurrentTab(item.id)}
                   className={isActive ? 'tab active' : 'tab'}
                 >
                   {item.label}

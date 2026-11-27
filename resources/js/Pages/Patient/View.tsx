@@ -1,18 +1,15 @@
 import AuthenticatedLayout from '../../Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Lang from 'lang.js';
 import lngPatient from '../../Lang/Patient/translation';
 import { useSelector } from 'react-redux';
 import { appLangSelector } from '@/Redux/Layout/selectors';
-import { Link } from '@inertiajs/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 import History from './Tabs/History';
 import Finances from './Tabs/Finances';
-import { setPatientTab, setExistServicesAction, setTreatmentsTab } from '@/Redux/Patient';
+import { setPatientTab, setTreatmentsTab } from '@/Redux/Patient';
 import { useAppDispatch } from '../../hooks';
-import { patientTabSelector, patientTreatmentTabSelector } from '@/Redux/Patient/selectors';
+import { patientTabSelector } from '@/Redux/Patient/selectors';
 import Plans from '@/Pages/Patient/Tabs/Plans';
 import Visits from '@/Pages/Patient/Tabs/Visits';
 import Documents from '@/Pages/Patient/Tabs/Documents';
@@ -55,96 +52,16 @@ export default function index({
     messages: lngPatient,
     locale: appLang,
   });
-console.log(documentsData);
+
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [globalDiscountType] = useState('percent');
+  // const [globalDiscountType] = useState('percent');
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const tab = typeTab || useSelector(patientTabSelector);
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const treatmentTab = useSelector(patientTreatmentTabSelector);
-  console.log('treatmentTab', treatmentTab);
-
-  const mainTabs = [
-    { id: 'documents', label: msg.get('patient.tab.documents') },
-    { id: 'visits', label: msg.get('patient.tab.visits') },
-    { id: 'plans', label: msg.get('patient.tab.plans') },
-    { id: 'history', label: msg.get('patient.tab.history') },
-    { id: 'finances', label: msg.get('patient.tab.finances') },
-  ];
-  const genderLabel =
-    patientData?.gender === 'female'
-      ? 'Жінка'
-      : patientData?.gender === 'male'
-        ? 'Чоловік'
-        : patientData?.gender || null;
-
-  const demographics = [genderLabel, patientData?.age ? `${patientData.age} років` : null]
-    .filter(Boolean)
-    .join(', ');
 
   if (quickActData.length > 0) {
     dispatch(setPatientTab('finances'));
   }
-  // if (scheduleId) {
-  //   dispatch(setP('act'));
-  // } else {
-  //   dispatch(setPatientSubTab('actpayment'));
-  // }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    if (quickActData.services) {
-      const initialServices = JSON.parse(quickActData.services).map((service: any) => ({
-        ...service,
-        discountValue: discountValue || 0,
-        discountType: globalDiscountType,
-      }));
-      dispatch(setExistServicesAction(initialServices));
-    } else {
-      dispatch(setExistServicesAction([]));
-    }
-  }, [quickActData]);
-
-  // const getInitialTab = (): string => {
-  //   if (typeof window === 'undefined') return mainTabs[0]?.id ?? 'history';
-  //
-  //   const params = new URLSearchParams(window.location.search);
-  //   const typeParam = params.get('type');
-  //   const validTabIds = mainTabs.map((t) => t.id);
-  //
-  //   if (typeParam && validTabIds.includes(typeParam)) {
-  //     return typeParam;
-  //   }
-  //
-  //   return validTabIds.includes('history') ? 'history' : (validTabIds[0]?.id ?? '');
-  // };
-
-  const syncTabToUrl = (nextTabId: string) => {
-    if (typeof window === 'undefined') return;
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('type', nextTabId);
-    window.history.replaceState({}, '', url.toString());
-  };
-
-  const handleTabClick = (tabName: any) => {
-    dispatch(setPatientTab(tabName));
-    syncTabToUrl(tabName);
-  };
-
-  // const getInitialTabOld = (): string => {
-  //   if (typeof window === 'undefined') return mainTabs[0]?.id ?? 'history';
-  //
-  //   const params = new URLSearchParams(window.location.search);
-  //   const typeParam = params.get('type');
-  //   const validTabIds = mainTabs.map((t) => t.id);
-  //
-  //   if (typeParam && validTabIds.includes(typeParam)) {
-  //     return typeParam;
-  //   }
-  //
-  //   return validTabIds.includes('history') ? 'history' : (validTabIds[0]?.id ?? '');
-  // };
 
   return (
     <AuthenticatedLayout header={<Head />}>
