@@ -1,50 +1,42 @@
 import { createAction } from 'redux-actions';
 import axios from 'axios';
 
-export const setPriceItems = createAction('service/SET_PRICING_ITEMS');
-export const setTotalPrice = createAction('service/SET_TOTAL_PRICE');
-export const setShowTableError = createAction('service/SET_TABLE_ERRORS');
+export const setPriceItems: any = createAction('service/SET_PRICING_ITEMS');
+export const setTotalPrice: any = createAction('service/SET_TOTAL_PRICE');
+export const setShowTableError: any = createAction('service/SET_TABLE_ERRORS');
 
 export const findServiceAction: any = createAction(
   'clinic/FIND_SERVICE_EXIST',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
-      const state = getState();
-      return axios.post(`/material/findMaterial`, { searchName: data }, {}).then(async (res) => {
-        return res.data.items;
-      });
-    }
+  async (data: any) => (): Promise<any> => {
+    return axios.post(`/material/findMaterial`, { searchName: data }, {}).then(async (res) => {
+      return res.data.items;
+    });
+  }
 );
 export const findServiceMaterialAction: any = createAction(
   'clinic/FIND_SERVICE_EXIST',
-  async (data: any) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
-      const state = getState();
-      return axios
-        .post(`/material/findMaterialCalc`, { searchName: data }, {})
-        .then(async (res) => {
-          return res.data.items;
-        });
-    }
+  async (data: any) => (): Promise<any> => {
+    return axios.post(`/material/findMaterialCalc`, { searchName: data }, {}).then(async (res) => {
+      return res.data.items;
+    });
+  }
 );
 
 export const findServiceItemsAction: any = createAction(
   'clinic/FIND_SERVICE_COMPONENTS',
-  async (data: any, rowIndex: number) =>
-    (dispatch: Type.Dispatch, getState: () => State.Root): Promise<any> => {
-      const state = getState();
-      return axios.post(`/service/findServiceItems`, { serviceId: data }, {}).then(async (res) => {
-        return {
-          items: res.data.items,
-          rowIndex: rowIndex,
-        };
-      });
-    }
+  async (data: any, rowIndex: number) => (): Promise<any> => {
+    return axios.post(`/service/findServiceItems`, { serviceId: data }, {}).then(async (res) => {
+      return {
+        items: res.data.items,
+        rowIndex: rowIndex,
+      };
+    });
+  }
 );
-export const emptyServicesAutocompleteAction = createAction('service/EMPTY_AUTOCOMPLETE');
-export const emptyServicesQtyAutocompleteAction = createAction('service/REMOVE_AUTOCOMPLETE_QTY');
+export const emptyServicesAutocompleteAction: any = createAction('service/EMPTY_AUTOCOMPLETE');
+export const emptyServicesQtyAutocompleteAction: any = createAction('service/REMOVE_AUTOCOMPLETE_QTY');
 
-export const updateServiceItemQtyAction = createAction(
+export const updateServiceItemQtyAction: any = createAction(
   'service/UPDATE_SERVICE_ITEM_QTY',
-  (rowIndex, itemIndex, qty) => ({ rowIndex, itemIndex, qty })
+  (rowIndex: any, itemIndex: any, qty: any) => ({ rowIndex, itemIndex, qty })
 );

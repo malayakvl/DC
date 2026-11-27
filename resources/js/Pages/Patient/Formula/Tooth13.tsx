@@ -156,25 +156,6 @@ export default function Tooth13() {
     }
   };
 
-  // const showHideTeeth = (type) => {
-  //   if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
-  //     if (teethType === 'adult' && !teethDiagnozis.tooth13.show) {
-  //       document.getElementById('TH-13').classList.add('f-tooth-active');
-  //     }
-  //   }
-  //
-  //   if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
-  //     if (teethType === 'child' && !teethDiagnozis.tooth53.show) {
-  //       document.getElementById('TH-53').classList.remove('f-tooth-active');
-  //     }
-  //     if (teethType === 'adult' && !teethDiagnozis.tooth13.show) {
-  //       document.getElementById('TH-13').classList.remove('f-tooth-active');
-  //       if (teethDiagnozis.tooth53.show) {
-  //         document.getElementById('TH-53').classList.add('f-tooth-active');
-  //       }
-  //     }
-  //   }
-  // };
   const showHideTeeth = (type: HoverActionType) => {
     if (excludeToothEffect.includes(diagnozis)) return;
 

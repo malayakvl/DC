@@ -7,7 +7,7 @@ import {
   emptyServicesAutocompleteAction,
   emptyServicesQtyAutocompleteAction,
   findServiceItemsAction,
-  updateServiceItemQtyAction
+  updateServiceItemQtyAction,
 } from './actions';
 
 const initialState = {
@@ -24,31 +24,31 @@ const initialState = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [setPriceItems.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       priceItems: action.payload,
     }),
   },
   [setTotalPrice.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       totalPrice: action.payload,
     }),
   },
   [setShowTableError.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       showTableError: action.payload,
     }),
   },
   [findServiceAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       searchResultServices: action.payload,
     }),
   },
   [findServiceItemsAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any, action: any) => ({
       ...state,
       searchResultElementsServices: {
         ...state.searchResultElementsServices,
@@ -57,27 +57,27 @@ const ACTION_HANDLERS = {
     }),
   },
   [emptyServicesAutocompleteAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       searchResultServices: [],
     }),
   },
   [emptyServicesQtyAutocompleteAction.toString()]: {
-    next: (state, action) => ({
+    next: (state: any) => ({
       ...state,
       searchResultServices: [],
     }),
   },
 
   [updateServiceItemQtyAction.toString()]: {
-    next: (state, action) => {
+    next: (state: any, action: any) => {
       const { rowIndex, itemIndex, qty } = action.payload;
 
       const currentServiceItems = state.searchResultElementsServices[rowIndex] || [];
 
-      const updatedElements = currentServiceItems.map((item, idx) =>
+      const updatedElements = currentServiceItems.map((item: any, idx: any) =>
         idx === itemIndex
-          ? { ...item, quantity: qty }   // Store as quantity in state if that's what the UI expects
+          ? { ...item, quantity: qty } // Store as quantity in state if that's what the UI expects
           : item
       );
 
@@ -99,7 +99,7 @@ export {
   findServiceAction,
   emptyServicesAutocompleteAction,
   findServiceItemsAction,
-  updateServiceItemQtyAction
+  updateServiceItemQtyAction,
 };
 
 export default handleActions(ACTION_HANDLERS, initialState);

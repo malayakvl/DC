@@ -52,10 +52,7 @@ export default function Header({ auth }: { auth: any }) {
                 <LangMenu />
               </div>
               {auth?.user ? (
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-slate-300 px-3 py-2 rounded-md hover:bg-white/2 rounded-lg bg-gradient-to-r from-[#b44dd6] to-[#7974e3] text-white shadow-[0_12px_40px_rgba(21,195,255,0.12)] font-bold"
-                >
+                <Link href="/dashboard" className="btn-submit mt-[-10px]">
                   {lng.get('menu.dashboard')} <span aria-hidden="true">&rarr;</span>
                 </Link>
               ) : (

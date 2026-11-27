@@ -40,7 +40,12 @@ export default function Tooth11() {
   const teethType = useSelector(teethTypeSelector);
   const selectedTooth = useSelector(getActiveToothNumberSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
-  const setColordedPart = (diagnozis, toothPart = '') => {
+
+  type HoverActionType = 'over' | 'leave';
+  const setToothActive = (id: string, active: boolean) => {
+    document.getElementById(id)?.classList.toggle('f-tooth-active', active);
+  };
+  const setColordedPart = (diagnozis: any, toothPart = '') => {
     if (diagnozis === 'caries') {
       if (toothPart === 'bottom') {
         teethDiagnozis.tooth11.caries_bottom = !teethDiagnozis.tooth11.caries_bottom;
@@ -150,42 +155,76 @@ export default function Tooth11() {
     }
   };
 
-  const showHideTeeth = (type) => {
-    if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
-      if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
-        document.getElementById('TH-11').classList.add('f-tooth-active');
-      }
+  // const showHideTeeth = (type: any) => {
+  //   if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
+  //     if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
+  //       document.getElementById('TH-11').classList.add('f-tooth-active');
+  //     }
+  //   }
+  //
+  //   if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
+  //     if (teethType === 'child' && !teethDiagnozis.tooth51.show) {
+  //       document.getElementById('TH-51').classList.remove('f-tooth-active');
+  //     }
+  //     if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
+  //       document.getElementById('TH-11').classList.remove('f-tooth-active');
+  //       if (teethDiagnozis.tooth51.show) {
+  //         document.getElementById('TH-51').classList.add('f-tooth-active');
+  //       }
+  //     }
+  //   }
+  // };
+  const showHideTeeth = (type: HoverActionType) => {
+    if (excludeToothEffect.includes(diagnozis)) return;
+
+    if (type === 'over' && teethType === 'adult' && !tooth11Diagnozis.show) {
+      setToothActive('TH-11', true);
     }
 
-    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
+    if (type === 'leave') {
       if (teethType === 'child' && !teethDiagnozis.tooth51.show) {
-        document.getElementById('TH-51').classList.remove('f-tooth-active');
+        setToothActive('TH-51', false);
       }
-      if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
-        document.getElementById('TH-11').classList.remove('f-tooth-active');
-        if (teethDiagnozis.tooth51.show) {
-          document.getElementById('TH-51').classList.add('f-tooth-active');
+      if (teethType === 'adult' && !tooth11Diagnozis.show) {
+        setToothActive('TH-11', false);
+        if (teethDiagnozis.tooth53.show) {
+          setToothActive('TH-51', true);
         }
       }
     }
   };
 
-  const showHideTopCommonView = (type) => {
-    if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
-      if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
-        document.getElementById('TH-51').classList.remove('f-tooth-active');
-        document.getElementById('TH-11').classList.add('f-tooth-active');
-      }
+  const showHideTopCommonView = (type: HoverActionType) => {
+    if (excludeToothEffect.includes(diagnozis)) return;
+
+    if (type === 'over' && teethType === 'adult' && !tooth11Diagnozis.show) {
+      setToothActive('TH-51', false);
+      setToothActive('TH-11', true);
     }
-    if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
-      if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
-        document.getElementById('TH-11').classList.remove('f-tooth-active');
-        if (teethDiagnozis.tooth61.show) {
-          document.getElementById('TH-51').classList.add('f-tooth-active');
-        }
+    if (type === 'leave' && teethType === 'adult' && !tooth11Diagnozis.show) {
+      setToothActive('TH-11', false);
+      if (teethDiagnozis.tooth51.show) {
+        setToothActive('TH-51', true);
       }
     }
   };
+
+  // const showHideTopCommonView = (type: any) => {
+  //   if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
+  //     if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
+  //       document.getElementById('TH-51').classList.remove('f-tooth-active');
+  //       document.getElementById('TH-11').classList.add('f-tooth-active');
+  //     }
+  //   }
+  //   if (type === 'leave' && !excludeToothEffect.includes(diagnozis)) {
+  //     if (teethType === 'adult' && !teethDiagnozis.tooth11.show) {
+  //       document.getElementById('TH-11').classList.remove('f-tooth-active');
+  //       if (teethDiagnozis.tooth61.show) {
+  //         document.getElementById('TH-51').classList.add('f-tooth-active');
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -910,8 +949,10 @@ export default function Tooth11() {
           <g
             className="implant"
             style={{
-              visibility: tooth11Diagnozis.abutment ? 'inherit' : 'hidden',
-              opacity: tooth11Diagnozis.abutment ? 1 : 0,
+              visibility:
+                tooth11Diagnozis.abutment || tooth11Diagnozis.implant || tooth11Diagnozis.shaper
+                  ? 'inherit'
+                  : 'hidden',
             }}
           >
             <path

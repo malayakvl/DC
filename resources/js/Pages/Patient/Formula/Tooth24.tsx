@@ -246,10 +246,7 @@ export default function Tooth24() {
 
   return (
     <>
-      <g
-        id="24"
-        className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}
-      >
+      <g id="24" className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}>
         <text
           transform="matrix(1 0 0 1 1339.1816 716.1968)"
           className={`st3 st4 st5 ${selectedTooth === 24 ? 'num-active' : ''}`}
@@ -325,9 +322,7 @@ export default function Tooth24() {
             <g
               style={{
                 visibility:
-                  !tooth24Diagnozis.culttab &&
-                  !tooth24Diagnozis.implant &&
-                  !tooth24Diagnozis.shaper
+                  !tooth24Diagnozis.culttab && !tooth24Diagnozis.implant && !tooth24Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -343,9 +338,7 @@ export default function Tooth24() {
             <g
               style={{
                 visibility:
-                  tooth24Diagnozis?.apex || tooth24Diagnozis.change_color
-                    ? 'inherit'
-                    : 'hidden',
+                  tooth24Diagnozis?.apex || tooth24Diagnozis.change_color ? 'inherit' : 'hidden',
               }}
             >
               <path
@@ -363,10 +356,7 @@ export default function Tooth24() {
             </g>
           </g>
           {/* PULPIT */}
-          <g
-            className="pulp"
-            style={{ visibility: tooth24Diagnozis.apex ? 'inherit' : 'hidden' }}
-          >
+          <g className="pulp" style={{ visibility: tooth24Diagnozis.apex ? 'inherit' : 'hidden' }}>
             <g
               className="pulpitis-pfilling"
               style={{
@@ -390,9 +380,7 @@ export default function Tooth24() {
             className="implant hEmpty hIntact hRoot"
             style={{
               visibility:
-                tooth24Diagnozis.implant || tooth24Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
+                tooth24Diagnozis.implant || tooth24Diagnozis.shaper ? 'inherit' : 'hidden',
             }}
           >
             <circle className="st48" cx="1359.5" cy="596.5" r="20.5" />
@@ -415,15 +403,8 @@ export default function Tooth24() {
             </g>
           </g>
           {/* SHAPER */}
-          <g
-            className="shaper hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
-            <circle
-              className="st44"
-              r="22.435"
-              transform="matrix(-1 0 0 1 1359.57 596.435)"
-            />
+          <g className="shaper hEmpty hIntact hRoot" style={{ visibility: 'hidden', opacity: 0 }}>
+            <circle className="st44" r="22.435" transform="matrix(-1 0 0 1 1359.57 596.435)" />
             <path
               className="st45"
               d="M1361.42 587.739C1360.87 585.804 1358.13 585.804 1357.58 587.739L1357.07 589.511C1356.77 590.549 1355.71 591.164 1354.66 590.902L1352.87 590.454C1350.92 589.965 1349.55 592.339 1350.95 593.785L1352.23 595.109C1352.98 595.884 1352.98 597.116 1352.23 597.891L1350.95 599.215C1349.55 600.661 1350.92 603.035 1352.87 602.546L1354.66 602.098C1355.71 601.836 1356.77 602.451 1357.07 603.489L1357.58 605.261C1358.13 607.196 1360.87 607.196 1361.42 605.261L1361.93 603.489C1362.23 602.451 1363.29 601.836 1364.34 602.098L1366.13 602.546C1368.08 603.035 1369.45 600.661 1368.05 599.215L1366.77 597.891C1366.02 597.116 1366.02 595.884 1366.77 595.109L1368.05 593.785C1369.45 592.339 1368.08 589.965 1366.13 590.454L1364.34 590.902C1363.29 591.164 1362.23 590.549 1361.93 589.511L1361.42 587.739Z"
@@ -451,11 +432,7 @@ export default function Tooth24() {
                             1345.3 613.788 1347.31 616.837C1348.58 618.87 1350.26 620.835 1352.34 622.257C1355.02 624.019 1358.23 624.764 1361.38 624.968C1364.13 625.103 1366.88 624.832 1369.49 623.816C1372.57 
                             622.528 1375.05 620.292 1376.59 617.65C1378.07 615.211 1378.74 612.501 1379.74 609.926C1380.88 606.538 1382.62 603.489 1383.56 599.898Z"
             />
-            <circle
-              className="st45"
-              r="13"
-              transform="matrix(-1 0 0 1 1360.26 595)"
-            />
+            <circle className="st45" r="13" transform="matrix(-1 0 0 1 1360.26 595)" />
           </g>
           {/* PIN */}
           <g
@@ -528,10 +505,7 @@ export default function Tooth24() {
             />
           </g>
           {/*TARTAR*/}
-          <g
-            className="tartar hImplant hEmpty"
-            style={{ visibility: 'inherit', opacity: 0 }}
-          >
+          <g className="tartar hImplant hEmpty" style={{ visibility: 'inherit', opacity: 0 }}>
             <path
               className="st61 level2"
               d="M1339.42 547.688C1336.77 549.678 1334.26 550.706 1331.93 553.152C1329.91 555.241 1327.95 558.757 1326.18 561.165C1324.63 563.271 1323.21 564.234 1322.01 566.552C1320.52 569.347 1319.31 573.577 1318.47 576.679C1317.6 579.926 1316 583.313 1316 586.778C1316 590.953 1316.67 594.938 1317.73 598.796C1318.91 603.063 1320.57 607.176 1322.34 611.218C1323.23 613.273 1325.27 615.311 1326.18 617.341C1327.81 620.952 1328.18 624.563 1329.78 628.174C1331.18 631.338 1333.77 634.502 1335.48 637.666C1336.82 640.271 1337.3 642.827 1339.13 645.129C1340.47 646.819 1343.06 649.629 1344.67 650.967C1347.17 652.97 1349.94 653.126 1352.81 654.088C1355.55 655.005 1358.39 656.768 1361.2 656.989C1363.61 657.134 1366.03 655.813 1368.42 655.455C1371 655.07 1373.54 655.6 1376.01 654.429C1378.56 653.135 1380.88 650.154 1382.92 648.108C1385.39 645.632 1387.45 642.688 1388.99 639.473C1390.29 636.859 1392.36 635.362 1393.21 632.57C1394.12 629.571 1393.79 626.528 1394.75 623.565C1395.61 620.63 1397.73 616.553 1398.73 613.73C1399.55 611.449 1399.24 610.423 1399.97 608.078C1400.65 605.884 1401.26 602.38 1401.73 600.027C1402.38 596.824 1402.8 594.896 1402.94 591.751L1402.58 581.703C1402.22 579.03 1402.74 576.401 1401.86 573.83C1400.82 570.842 1398.29 568.023 1396.62 565.375C1395.05 562.877 1394.35 560.529 1392.4 558.334C1390.59 556.292 1387.54 554.381 1385.56 552.602C1382.56 549.904 1379.37 546.178 1376.01 544.169C1373.57 542.704 1371.03 542.74 1368.42 541.853C1365.42 540.834 1362.31 539 1359.11 539C1355.55 539.051 1352.14 539.791 1348.9 541.051C1345.56 542.353 1342.39 545.464 1339.42 547.688ZM1393.6 582.999C1395.9 588.499 1395.9 594.399 1394.4 600.399C1393.1 605.699 1390.5 610.199 1388.7 615.199C1387.2 618.999 1386.2 622.999 1384 626.599C1381.7 630.499 1378 633.799 1373.4 635.699C1369.5 637.199 1365.4 637.599 1361.3 637.399C1356.6 637.099 1351.8 635.999 1347.8 633.399C1344.7 631.299 1342.2 628.399 1340.3 625.399C1337.3 620.899 1335.2 616.399 1332.7 611.899C1329.2 605.499 1325.3 598.999 1325.3 591.599C1325.3 587.099 1326.8 582.799 1329.3 578.999C1331.4 575.699 1334.3 572.699 1337.4 570.099C1343.5 564.899 1351 560.799 1359.6 560.699C1367.6 560.699 1374.9 564.299 1381.2 568.899C1386.4 572.699 1391.2 577.399 1393.6 582.999Z"
@@ -696,8 +670,7 @@ export default function Tooth24() {
                     (tooth24Diagnozis.seal_right &&
                       !tooth24Diagnozis.seal_bottom &&
                       !tooth24Diagnozis.seal_center) ||
-                    (tooth24Diagnozis.seal_right &&
-                      !tooth24Diagnozis.seal_bottom)
+                    (tooth24Diagnozis.seal_right && !tooth24Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -709,10 +682,8 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth24Diagnozis.seal_right &&
-                      tooth24Diagnozis.seal_center) ||
-                    (tooth24Diagnozis.seal_right &&
-                      !tooth24Diagnozis.seal_center)
+                    (!tooth24Diagnozis.seal_right && tooth24Diagnozis.seal_center) ||
+                    (tooth24Diagnozis.seal_right && !tooth24Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -724,8 +695,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_right &&
-                      !tooth24Diagnozis.seal_top) ||
+                    (tooth24Diagnozis.seal_right && !tooth24Diagnozis.seal_top) ||
                     (!tooth24Diagnozis.seal_right && tooth24Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -738,8 +708,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_center &&
-                      !tooth24Diagnozis.seal_top) ||
+                    (tooth24Diagnozis.seal_center && !tooth24Diagnozis.seal_top) ||
                     (!tooth24Diagnozis.seal_center && tooth24Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -752,8 +721,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_left &&
-                      !tooth24Diagnozis.seal_top) ||
+                    (tooth24Diagnozis.seal_left && !tooth24Diagnozis.seal_top) ||
                     (!tooth24Diagnozis.seal_left && tooth24Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -766,10 +734,8 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_left &&
-                      !tooth24Diagnozis.seal_center) ||
-                    (!tooth24Diagnozis.seal_left &&
-                      tooth24Diagnozis.seal_center)
+                    (tooth24Diagnozis.seal_left && !tooth24Diagnozis.seal_center) ||
+                    (!tooth24Diagnozis.seal_left && tooth24Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -798,10 +764,8 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (!tooth24Diagnozis.seal_right &&
-                      tooth24Diagnozis.seal_center) ||
-                    (tooth24Diagnozis.seal_bottom &&
-                      !tooth24Diagnozis.seal_center)
+                    (!tooth24Diagnozis.seal_right && tooth24Diagnozis.seal_center) ||
+                    (tooth24Diagnozis.seal_bottom && !tooth24Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -810,10 +774,7 @@ export default function Tooth24() {
             </g>
           </g>
           {/* VINIR */}
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="hEmpty hImplant hRoot" style={{ visibility: 'inherit' }}>
             <g
               className="vinir"
               style={{
@@ -927,9 +888,7 @@ export default function Tooth24() {
               className="hRoot hImplant hEmpty"
               style={{
                 visibility:
-                  !tooth24Diagnozis.implant &&
-                  !tooth24Diagnozis.apex &&
-                  !tooth24Diagnozis.shaper
+                  !tooth24Diagnozis.implant && !tooth24Diagnozis.apex && !tooth24Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -1009,7 +968,7 @@ export default function Tooth24() {
               />
             </g>
             {/* Отростки периодонтита */}
-             <PeriodontitStage24 />
+            <PeriodontitStage24 />
           </g>
           {/*PIN*/}
           <g
@@ -1096,10 +1055,7 @@ export default function Tooth24() {
             />
           </g>
           {/* ФОРМУВАЧ */}
-          <g
-            className="shaper hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="shaper hEmpty hIntact hRoot" style={{ visibility: 'hidden', opacity: 0 }}>
             <path
               className="st44"
               d="M1338.31 420.849C1337.74 423.2 1339.38 425.514 1341.78 425.766L1377.05 429.466C1379.45 429.718 1381.53 427.796 1381.46 425.379L1380.38 385.633C1380.32 383.621 1378.78 381.964 1376.78 381.762L1351.91 379.26C1349.92 379.06 1348.09 380.359 1347.62 382.302L1338.31 420.849Z"
@@ -1107,49 +1063,24 @@ export default function Tooth24() {
           </g>
           {/* IMPLANT/CULTTAB */}
           <g
-            className="implant hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden' }}
+            className="implant"
+            style={{
+              visibility:
+                tooth24Diagnozis.abutment || tooth24Diagnozis.implant || tooth24Diagnozis.shaper
+                  ? 'inherit'
+                  : 'hidden',
+            }}
           >
             <path
               className="st18"
               d="M1342.4,382.5l42,3.2c1.6-22.3,2.6-44.6,3.1-66.8c0.5-21.6,0.6-43.2,0.1-64.8c-3.1-4.2-7.6-6.8-12.7-7.2
                             c-5.3-0.5-10.8,1.5-15,5.5c-3.5,22.4-6.7,44.8-9.7,67.2C1347.3,340.6,1344.7,361.5,1342.4,382.5z"
             />
-            <line
-              className="st19"
-              x1="1340.2"
-              y1="364"
-              x2="1388.4"
-              y2="373.9"
-            />
-            <line
-              className="st19"
-              x1="1342.1"
-              y1="338.5"
-              x2="1390.4"
-              y2="348.4"
-            />
-            <line
-              className="st19"
-              x1="1345.1"
-              y1="313"
-              x2="1393.3"
-              y2="322.9"
-            />
-            <line
-              className="st19"
-              x1="1347"
-              y1="287.5"
-              x2="1395.2"
-              y2="297.4"
-            />
-            <line
-              className="st19"
-              x1="1348.9"
-              y1="262"
-              x2="1397.2"
-              y2="271.9"
-            />
+            <line className="st19" x1="1340.2" y1="364" x2="1388.4" y2="373.9" />
+            <line className="st19" x1="1342.1" y1="338.5" x2="1390.4" y2="348.4" />
+            <line className="st19" x1="1345.1" y1="313" x2="1393.3" y2="322.9" />
+            <line className="st19" x1="1347" y1="287.5" x2="1395.2" y2="297.4" />
+            <line className="st19" x1="1348.9" y1="262" x2="1397.2" y2="271.9" />
           </g>
           <g
             className="toutline"
@@ -1179,9 +1110,7 @@ export default function Tooth24() {
             className="wedge-shaped"
             style={{
               visibility:
-                !tooth24Diagnozis.culttab && !tooth24Diagnozis.abutment
-                  ? 'inherit'
-                  : 'hidden',
+                !tooth24Diagnozis.culttab && !tooth24Diagnozis.abutment ? 'inherit' : 'hidden',
             }}
           >
             <path
@@ -1363,8 +1292,7 @@ export default function Tooth24() {
                     (tooth24Diagnozis.seal_right &&
                       tooth24Diagnozis.seal_top &&
                       !tooth24Diagnozis.seal_center) ||
-                    (!tooth24Diagnozis.seal_right &&
-                      tooth24Diagnozis.seal_center)
+                    (!tooth24Diagnozis.seal_right && tooth24Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -1376,8 +1304,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_right &&
-                      !tooth24Diagnozis.seal_top) ||
+                    (tooth24Diagnozis.seal_right && !tooth24Diagnozis.seal_top) ||
                     (!tooth24Diagnozis.seal_right && tooth24Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -1390,8 +1317,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_top &&
-                      !tooth24Diagnozis.seal_center) ||
+                    (tooth24Diagnozis.seal_top && !tooth24Diagnozis.seal_center) ||
                     (tooth24Diagnozis.seal_right &&
                       tooth24Diagnozis.seal_left &&
                       tooth24Diagnozis.seal_center &&
@@ -1410,8 +1336,7 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_left &&
-                      !tooth24Diagnozis.seal_top) ||
+                    (tooth24Diagnozis.seal_left && !tooth24Diagnozis.seal_top) ||
                     (!tooth24Diagnozis.seal_left && tooth24Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -1424,10 +1349,8 @@ export default function Tooth24() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth24Diagnozis.seal_left &&
-                      !tooth24Diagnozis.seal_center) ||
-                    (!tooth24Diagnozis.seal_left &&
-                      tooth24Diagnozis.seal_center)
+                    (tooth24Diagnozis.seal_left && !tooth24Diagnozis.seal_center) ||
+                    (!tooth24Diagnozis.seal_left && tooth24Diagnozis.seal_center)
                       ? 5
                       : 0,
                 }}
@@ -1435,10 +1358,7 @@ export default function Tooth24() {
               />
             </g>
           </g>
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="hEmpty hImplant hRoot" style={{ visibility: 'inherit' }}>
             <g
               className="vinir"
               style={{

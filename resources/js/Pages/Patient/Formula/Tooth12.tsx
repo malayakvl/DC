@@ -1,10 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  setToothDiagnoze,
-  setSelectedToothNumber,
-  setChangeDia,
-} from '../../../Redux/Formula';
+import { setToothDiagnoze, setSelectedToothNumber, setChangeDia } from '../../../Redux/Formula';
 import {
   getDiagnosisSelector,
   getSealColor1Selector,
@@ -26,7 +22,6 @@ import setupDiagnoze from '../../../lib/tFunctions';
 import PeriodontitStage12 from './periodontit12';
 import { excludeToothEffect } from '../../../Constants';
 
-
 export default function Tooth12() {
   const dispatch = useDispatch<any>();
   const diagnozis = useSelector(getDiagnosisSelector);
@@ -45,24 +40,21 @@ export default function Tooth12() {
   const teethType = useSelector(teethTypeSelector);
   const selectedTooth = useSelector(getActiveToothNumberSelector);
   const allTeeth = useSelector(allTeethAdultSelector);
+  console.log('here', tooth12Diagnozis);
 
-  const setColordedPart = (diagnozis, toothPart = '') => {
+  const setColordedPart = (diagnozis: any, toothPart = '') => {
     if (diagnozis === 'caries') {
       if (toothPart === 'bottom') {
-        teethDiagnozis.tooth12.caries_bottom =
-          !teethDiagnozis.tooth12.caries_bottom;
+        teethDiagnozis.tooth12.caries_bottom = !teethDiagnozis.tooth12.caries_bottom;
       }
       if (toothPart === 'center') {
-        teethDiagnozis.tooth12.caries_center =
-          !teethDiagnozis.tooth12.caries_center;
+        teethDiagnozis.tooth12.caries_center = !teethDiagnozis.tooth12.caries_center;
       }
       if (toothPart === 'left') {
-        teethDiagnozis.tooth12.caries_left =
-          !teethDiagnozis.tooth12.caries_left;
+        teethDiagnozis.tooth12.caries_left = !teethDiagnozis.tooth12.caries_left;
       }
       if (toothPart === 'right') {
-        teethDiagnozis.tooth12.caries_right =
-          !teethDiagnozis.tooth12.caries_right;
+        teethDiagnozis.tooth12.caries_right = !teethDiagnozis.tooth12.caries_right;
       }
       if (toothPart === 'top') {
         teethDiagnozis.tooth12.caries_top = !teethDiagnozis.tooth12.caries_top;
@@ -71,72 +63,43 @@ export default function Tooth12() {
     }
     if (diagnozis === 'seal') {
       if (toothPart === 'center') {
-        if (
-          teethDiagnozis.tooth12.seal_center_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth12.seal_center_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth12.seal_center_color = sealColor1;
           teethDiagnozis.tooth12.seal_center = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_center_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_center_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth12.seal_center_color = sealColor2;
           teethDiagnozis.tooth12.seal_center = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_center_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_center_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth12.seal_center_color = sealColor3;
           teethDiagnozis.tooth12.seal_center = true;
         } else {
-          teethDiagnozis.tooth12.seal_center =
-            !teethDiagnozis.tooth12.seal_center;
+          teethDiagnozis.tooth12.seal_center = !teethDiagnozis.tooth12.seal_center;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'bottom') {
-        if (
-          teethDiagnozis.tooth12.seal_bottom_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth12.seal_bottom_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth12.seal_bottom_color = sealColor1;
           teethDiagnozis.tooth12.seal_bottom = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_bottom_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_bottom_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth12.seal_bottom_color = sealColor2;
           teethDiagnozis.tooth12.seal_bottom = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_bottom_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_bottom_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth12.seal_bottom_color = sealColor3;
           teethDiagnozis.tooth12.seal_bottom = true;
         } else {
-          teethDiagnozis.tooth12.seal_bottom =
-            !teethDiagnozis.tooth12.seal_bottom;
+          teethDiagnozis.tooth12.seal_bottom = !teethDiagnozis.tooth12.seal_bottom;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'left') {
-        if (
-          teethDiagnozis.tooth12.seal_left_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth12.seal_left_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth12.seal_left_color = sealColor1;
           teethDiagnozis.tooth12.seal_left = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_left_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_left_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth12.seal_left_color = sealColor2;
           teethDiagnozis.tooth12.seal_left = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_left_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_left_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth12.seal_left_color = sealColor3;
           teethDiagnozis.tooth12.seal_left = true;
         } else {
@@ -145,47 +108,28 @@ export default function Tooth12() {
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'right') {
-        if (
-          teethDiagnozis.tooth12.seal_right_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth12.seal_right_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth12.seal_right_color = sealColor1;
           teethDiagnozis.tooth12.seal_right = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_right_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_right_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth12.seal_right_color = sealColor2;
           teethDiagnozis.tooth12.seal_right = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_right_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_right_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth12.seal_right_color = sealColor3;
           teethDiagnozis.tooth12.seal_right = true;
         } else {
-          teethDiagnozis.tooth12.seal_right =
-            !teethDiagnozis.tooth12.seal_right;
+          teethDiagnozis.tooth12.seal_right = !teethDiagnozis.tooth12.seal_right;
         }
         dispatch(setToothDiagnoze(teethDiagnozis));
       }
       if (toothPart === 'top') {
-        if (
-          teethDiagnozis.tooth12.seal_top_color != sealColor1 &&
-          sealColor1 != ''
-        ) {
+        if (teethDiagnozis.tooth12.seal_top_color != sealColor1 && sealColor1 != '') {
           teethDiagnozis.tooth12.seal_top_color = sealColor1;
           teethDiagnozis.tooth12.seal_top = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_top_color != sealColor2 &&
-          sealColor2 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_top_color != sealColor2 && sealColor2 != '') {
           teethDiagnozis.tooth12.seal_top_color = sealColor2;
           teethDiagnozis.tooth12.seal_top = true;
-        } else if (
-          teethDiagnozis.tooth12.seal_top_color != sealColor3 &&
-          sealColor3 != ''
-        ) {
+        } else if (teethDiagnozis.tooth12.seal_top_color != sealColor3 && sealColor3 != '') {
           teethDiagnozis.tooth12.seal_top_color = sealColor3;
           teethDiagnozis.tooth12.seal_top = true;
         } else {
@@ -208,7 +152,7 @@ export default function Tooth12() {
     }
   };
 
-  const showHideTeeth = type => {
+  const showHideTeeth = (type) => {
     if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth12.show) {
         document.getElementById('TH-12').classList.add('f-tooth-active');
@@ -228,7 +172,7 @@ export default function Tooth12() {
     }
   };
 
-  const showHideTopCommonView = type => {
+  const showHideTopCommonView = (type) => {
     if (type === 'over' && !excludeToothEffect.includes(diagnozis)) {
       if (teethType === 'adult' && !teethDiagnozis.tooth12.show) {
         document.getElementById('TH-52').classList.remove('f-tooth-active');
@@ -247,10 +191,7 @@ export default function Tooth12() {
 
   return (
     <>
-      <g
-        id="12"
-        className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}
-      >
+      <g id="12" className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}>
         <text
           transform="matrix(1 0 0 1 889.209 716.1968)"
           className={`st3 st4 st5 ${selectedTooth === 12 ? 'num-active' : ''}`}
@@ -326,15 +267,13 @@ export default function Tooth12() {
             <g
               style={{
                 visibility:
-                  !tooth12Diagnozis.culttab &&
-                  !tooth12Diagnozis.implant &&
-                  !tooth12Diagnozis.shaper
+                  !tooth12Diagnozis.culttab && !tooth12Diagnozis.implant && !tooth12Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
             >
               <path
-                className="st24"
+                className={`st24 ${tooth12Diagnozis.apex ? 'apex' : ''}`}
                 d="M886.8,597.2c-1.9-4.6,2.9-8.6,9-10.1c5.2-1.3,11.1-1.3,17-1.4c5.9-0.1,11.8-0.4,17.1,0.5
                                 c5.7,0.9,10.9,3.8,10.7,8.5c-0.1,2.5-2.1,4.6-4.3,6.3c-2.5,1.9-5.4,3.5-7.7,5.7c-2.9,2.9-4.5,6.6-7.5,9.4
                                 c-1.7,1.6-3.7,2.8-6.1,3.2c-3.5,0.6-7-0.7-9.7-2.7c-3.4-2.6-5.2-6.4-7.6-9.6c-1-1.4-2.2-2.8-3.7-3.9
@@ -344,9 +283,7 @@ export default function Tooth12() {
             <g
               style={{
                 visibility:
-                  tooth12Diagnozis?.apex || tooth12Diagnozis.change_color
-                    ? 'inherit'
-                    : 'hidden',
+                  tooth12Diagnozis?.apex || tooth12Diagnozis.change_color ? 'inherit' : 'hidden',
               }}
             >
               <path
@@ -360,10 +297,7 @@ export default function Tooth12() {
               />
             </g>
           </g>
-          <g
-            className="pulp"
-            style={{ visibility: tooth12Diagnozis.apex ? 'inherit' : 'hidden' }}
-          >
+          <g className="pulp" style={{ visibility: tooth12Diagnozis.apex ? 'inherit' : 'hidden' }}>
             <g
               className="pulpitis-pfilling"
               style={{
@@ -382,9 +316,7 @@ export default function Tooth12() {
             className="implant"
             style={{
               visibility:
-                tooth12Diagnozis.implant || tooth12Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
+                tooth12Diagnozis.implant || tooth12Diagnozis.shaper ? 'inherit' : 'hidden',
             }}
           >
             <circle className="st48" cx="913" cy="600" r="19" />
@@ -650,8 +582,7 @@ export default function Tooth12() {
                     (tooth12Diagnozis.seal_left &&
                       !tooth12Diagnozis.seal_bottom &&
                       !tooth12Diagnozis.seal_center) ||
-                    (!tooth12Diagnozis.seal_left &&
-                      tooth12Diagnozis.seal_bottom)
+                    (!tooth12Diagnozis.seal_left && tooth12Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -663,8 +594,7 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_left &&
-                      !tooth12Diagnozis.seal_top) ||
+                    (tooth12Diagnozis.seal_left && !tooth12Diagnozis.seal_top) ||
                     (!tooth12Diagnozis.seal_left && tooth12Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -698,8 +628,7 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_right &&
-                      !tooth12Diagnozis.seal_top) ||
+                    (tooth12Diagnozis.seal_right && !tooth12Diagnozis.seal_top) ||
                     (!tooth12Diagnozis.seal_right && tooth12Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -712,10 +641,8 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_right &&
-                      !tooth12Diagnozis.seal_bottom) ||
-                    (!tooth12Diagnozis.seal_right &&
-                      tooth12Diagnozis.seal_bottom)
+                    (tooth12Diagnozis.seal_right && !tooth12Diagnozis.seal_bottom) ||
+                    (!tooth12Diagnozis.seal_right && tooth12Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -724,10 +651,7 @@ export default function Tooth12() {
             </g>
           </g>
           {/* VINIR */}
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="hEmpty hImplant hRoot" style={{ visibility: 'inherit' }}>
             <g
               className="vinir"
               style={{
@@ -803,9 +727,7 @@ export default function Tooth12() {
               className="hRoot hImplant hEmpty"
               style={{
                 visibility:
-                  !tooth12Diagnozis.implant &&
-                  !tooth12Diagnozis.apex &&
-                  !tooth12Diagnozis.shaper
+                  !tooth12Diagnozis.implant && !tooth12Diagnozis.apex && !tooth12Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -966,8 +888,10 @@ export default function Tooth12() {
           <g
             className="implant"
             style={{
-              visibility: tooth12Diagnozis.abutment ? 'inherit' : 'hidden',
-              opacity: tooth12Diagnozis.abutment ? 1 : 0,
+              visibility:
+                tooth12Diagnozis.abutment || tooth12Diagnozis.implant || tooth12Diagnozis.shaper
+                  ? 'inherit'
+                  : 'hidden',
             }}
           >
             <path
@@ -975,35 +899,11 @@ export default function Tooth12() {
               d="M923.1,398.9l-37.9,3.6c-1.8-20.1-3.1-40.2-3.9-60.3c-0.8-19.5-1.2-39-1.1-58.5c2.7-3.8,6.8-6.3,11.4-6.7
                             c4.8-0.5,9.8,1.2,13.7,4.8c3.5,20.2,6.8,40.4,9.8,60.6C917.9,361.1,920.6,380,923.1,398.9z"
             />
-            <line
-              className="st19"
-              x1="924.7"
-              y1="382.1"
-              x2="881.3"
-              y2="391.9"
-            />
-            <line
-              className="st19"
-              x1="922.6"
-              y1="359.1"
-              x2="879.2"
-              y2="368.9"
-            />
-            <line
-              className="st19"
-              x1="919.5"
-              y1="336.1"
-              x2="876.1"
-              y2="345.9"
-            />
+            <line className="st19" x1="924.7" y1="382.1" x2="881.3" y2="391.9" />
+            <line className="st19" x1="922.6" y1="359.1" x2="879.2" y2="368.9" />
+            <line className="st19" x1="919.5" y1="336.1" x2="876.1" y2="345.9" />
             <line className="st19" x1="917.4" y1="313.1" x2="874" y2="322.9" />
-            <line
-              className="st19"
-              x1="915.2"
-              y1="290.1"
-              x2="871.8"
-              y2="299.9"
-            />
+            <line className="st19" x1="915.2" y1="290.1" x2="871.8" y2="299.9" />
           </g>
           <g
             className="toutline"
@@ -1032,9 +932,7 @@ export default function Tooth12() {
             className="wedge-shaped"
             style={{
               visibility:
-                !tooth12Diagnozis.culttab && !tooth12Diagnozis.abutment
-                  ? 'inherit'
-                  : 'hidden',
+                !tooth12Diagnozis.culttab && !tooth12Diagnozis.abutment ? 'inherit' : 'hidden',
             }}
           >
             <path
@@ -1210,8 +1108,7 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_left &&
-                      !tooth12Diagnozis.seal_top) ||
+                    (tooth12Diagnozis.seal_left && !tooth12Diagnozis.seal_top) ||
                     (!tooth12Diagnozis.seal_left &&
                       tooth12Diagnozis.seal_top &&
                       !tooth12Diagnozis.seal_center) ||
@@ -1229,8 +1126,7 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_right &&
-                      !tooth12Diagnozis.seal_top) ||
+                    (tooth12Diagnozis.seal_right && !tooth12Diagnozis.seal_top) ||
                     (!tooth12Diagnozis.seal_right &&
                       !tooth12Diagnozis.seal_left &&
                       tooth12Diagnozis.seal_top &&
@@ -1253,8 +1149,7 @@ export default function Tooth12() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth12Diagnozis.seal_right &&
-                      !tooth12Diagnozis.seal_top) ||
+                    (tooth12Diagnozis.seal_right && !tooth12Diagnozis.seal_top) ||
                     (!tooth12Diagnozis.seal_right &&
                       !tooth12Diagnozis.seal_left &&
                       tooth12Diagnozis.seal_top &&
@@ -1273,10 +1168,7 @@ export default function Tooth12() {
               />
             </g>
           </g>
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="hEmpty hImplant hRoot" style={{ visibility: 'inherit' }}>
             <g
               className="vinir"
               style={{

@@ -108,6 +108,14 @@ const lngPatient = {
     cancel_all: 'Скасувати всі',
     teeth_formula: 'Зубна формула пацієнта',
     formula_active_stage: 'Активний етап',
+    perio_title: 'Перио формула',
+    legend: 'Легенда',
+    deep_legend: 'Глибина кишені (PPD / CAL)',
+    yesen_legend: 'Ясенний край (GM)',
+    fertilizer_legend: 'Гнійний ексудат',
+    tartar_legend: 'Зубний наліт / Камінь',
+    furkaciya_legend: 'Фуркація І-ІІІ ст.',
+    clinic_data: 'Медичні дані пацієнта',
   },
 };
 export default lngPatient;

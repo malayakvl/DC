@@ -8,8 +8,7 @@ class PatientTreatment extends Model
 {
     //
     protected $fillable = [
-        'stage_name',
-        'user_id',
+        'patient_id',
         'type'
     ];
 

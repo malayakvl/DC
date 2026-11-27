@@ -453,7 +453,7 @@ class ClinicSchemaService
                 status character varying(50) NOT NULL DEFAULT 'draft', -- 'draft' | 'pending_approval' | 'approved' | 'in_progress' | 'completed' | 'archived'
                 estimated_duration character varying(100), -- напр. 3-4 місяці
                 notes text,
-                source_formula_treatment_id bigint REFERENCES clinic_1.patient_treatments(id) ON DELETE SET NULL, -- з якої формули підтягували патології
+                source_formula_treatment_id bigint REFERENCES patient_treatments(id) ON DELETE SET NULL, -- з якої формули підтягували патології
                 created_by bigint,
                 approved_at timestamp without time zone,
                 created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -472,7 +472,7 @@ class ClinicSchemaService
                 description text, -- напр. Термін виконання: 1-2 візити
                 status character varying(50) NOT NULL DEFAULT 'draft', -- 'draft' | 'formed' | 'approved' | 'in_progress' | 'completed'
                 planned_date date,
-                linked_treatment_stage_id bigint REFERENCES clinic_1.patient_treatments(id) ON DELETE SET NULL, -- зв'язок з реальним етапом лікування
+                linked_treatment_stage_id bigint REFERENCES patient_treatments(id) ON DELETE SET NULL, -- зв'язок з реальним етапом лікування
                 created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
                 updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
             );)
@@ -509,7 +509,7 @@ class ClinicSchemaService
         DB::statement("
             CREATE TABLE IF NOT EXISTS patient_treatments (
                 id BIGSERIAL PRIMARY KEY,
-                user_id BIGINT NOT NULL,
+                patient_id BIGINT NOT NULL,
                 stage_name VARCHAR(255) NOT NULL,
                 type VARCHAR(255) NOT NULL,
                 filial_id BIGINT,

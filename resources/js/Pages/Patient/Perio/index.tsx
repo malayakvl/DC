@@ -131,28 +131,28 @@ export default function Index() {
 
   return (
     <div className="w-full scroll-x">
-      <div className="bg-slate-50 border-t border-slate-200/80 px-6 py-3 flex flex-wrap items-center justify-between gap-4 text-xs w-full">
+      <div className="bg-slate-50 border-t border-slate-200/80 px-6 py-3 flex flex-wrap items-center justify-between gap-4 text-xs w-full mt-2 mb-4">
         <div className="flex items-center flex-wrap gap-4 text-slate-600">
-          <span className="font-semibold text-slate-700">Легенда:</span>
+          <span className="font-semibold text-slate-700">{msgFormula.get('formula.legend')}:</span>
           <div className="flex items-center space-x-1.5">
             <span className="w-3.5 h-1 bg-rose-600 rounded"></span>
-            <span>Глибина кишені (PPD / CAL)</span>
+            <span>{msgFormula.get('formula.deep_legend')}</span>
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-3.5 h-1 bg-blue-600 rounded"></span>
-            <span>Ясенний край (GM)</span>
+            <span>{msgFormula.get('formula.yesen_legend')}</span>
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-            <span>Гнійний ексудат</span>
+            <span>{msgFormula.get('formula.fertilizer_legend')}</span>
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
-            <span>Зубний наліт / Камінь</span>
+            <span>{msgFormula.get('formula.tartar_legend')}</span>
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-3 h-3 rounded-full border-2 border-blue-600"></span>
-            <span>Фуркація І-ІІІ ст.</span>
+            <span>{msgFormula.get('formula.furkaciya_legend')}</span>
           </div>
         </div>
       </div>

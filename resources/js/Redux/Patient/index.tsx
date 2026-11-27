@@ -11,7 +11,7 @@ import {
 } from './actions';
 
 const initialState = {
-  patientTab: 'history',
+  patientTab: 'medic_data',
   patientTreatmentTab: 'all',
   isClear: false,
   filters: {

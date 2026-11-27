@@ -91,7 +91,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       addRow: handleAddInput,
     }));
 
-    const handleChange = (event, index, customName = null, customValue = null) => {
+    const handleChange = (event: any, index: any, customName = null, customValue = null) => {
       dispatch(setShowTableError(false));
       const name = customName || event.target.name;
       const value = customValue !== null ? customValue : event.target.value;
@@ -134,7 +134,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       setInputs(onChangeValue);
     };
 
-    const handleQuantityChange = (index, delta) => {
+    const handleQuantityChange = (index: any, delta: any) => {
       const onChangeValue = [...inputs];
       const currentQty = parseFloat(onChangeValue[index].quantity) || 0;
       const newQty = Math.max(0.01, currentQty + delta);
@@ -145,7 +145,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
       setInputs(onChangeValue);
     };
 
-    const handleDeleteInput = (index) => {
+    const handleDeleteInput = (index: any) => {
       const newArray = [...inputs];
       newArray.splice(index, 1);
       setInputs(newArray);
@@ -154,18 +154,18 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
     useEffect(() => {
       dispatch(setPriceItems(inputs));
       let totalItemPrice = 0;
-      inputs.forEach((_input) => {
+      inputs.forEach((_input: any) => {
         totalItemPrice += Number(_input.total ? _input.total : 0);
       });
       dispatch(setTotalPrice(totalItemPrice));
     }, [inputs]);
 
-    const renderSearchProducerResult = (index) => {
+    const renderSearchProducerResult = (index: any) => {
       if (serchResults.length > 0 && numRow === index) {
         return (
           <div className="absolute z-50 bg-white shadow-xl rounded-xl border border-slate-200 mt-1 max-h-60 overflow-y-auto left-0 right-0">
             <ul className="divide-y divide-slate-100">
-              {serchResults.map((_res, rIndex) => (
+              {serchResults.map((_res: any, rIndex: any) => (
                 <li
                   key={rIndex}
                   className="cursor-pointer px-4 py-2.5 hover:bg-slate-50 transition-colors text-sm flex items-center justify-between"
@@ -212,7 +212,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
 
     return (
       <>
-        {inputs.map((item, index) => (
+        {inputs.map((item: any, index: any) => (
           <tr
             key={index}
             className="hover:bg-slate-50/80 transition-colors border-b border-slate-100 last:border-none align-top"
@@ -246,7 +246,7 @@ const AddDynamicInputFields = forwardRef<AddDynamicInputFieldsRef, any>(
                 className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-none focus:bg-white focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
               >
                 <option value="">{msg.get('service.unit')}...</option>
-                {unitData?.map((unit) => (
+                {unitData?.map((unit: any) => (
                   <option key={unit.id} value={unit.id}>
                     {unit.name}
                   </option>

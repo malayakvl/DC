@@ -7,7 +7,7 @@ import lngPatient from '../../../Lang/Patient/translation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faPencil } from '@fortawesome/free-solid-svg-icons';
 
-type MainTabId = 'documents' | 'visits' | 'plans' | 'history' | 'finances';
+type MainTabId = 'documents' | 'visits' | 'plans' | 'medic_data' | 'history' | 'finances';
 type SubTabId = 'stage' | 'formula' | 'psr' | 'perio';
 
 interface DetailsProps {
@@ -23,8 +23,9 @@ interface DetailsProps {
 const MAIN_TABS: { id: MainTabId; label: string }[] = [
   { id: 'documents', label: 'Документи' },
   { id: 'visits', label: 'Візити' },
+  { id: 'medic_data', label: 'Медичні дані' },
   { id: 'plans', label: 'Плани лікування' },
-  { id: 'history', label: 'Історія лікування' },
+  { id: 'history', label: 'Етапи лікування' },
   { id: 'finances', label: 'Фінанси' },
 ];
 
@@ -34,12 +35,10 @@ const SUB_TABS: {
   badge?: string;
   icon: 'folder' | 'tooth' | 'chart';
 }[] = [
-  { id: 'stage', label: 'Етап лікування', icon: 'folder' },
   { id: 'formula', label: 'Зубна формула', icon: 'tooth' },
   { id: 'psr', label: 'Пародонтальний скринінг-тест', badge: 'PSR', icon: 'folder' },
   { id: 'perio', label: 'Періо карта', icon: 'chart' },
 ];
-
 function getTabFromUrl(fallback: MainTabId = 'history'): MainTabId {
   if (typeof window === 'undefined') return fallback;
   const rawType = new URLSearchParams(window.location.search).get('type') as MainTabId | null;
@@ -102,9 +101,8 @@ function SubTabIcon({ icon, isActive }: { icon: 'folder' | 'tooth' | 'chart'; is
 
 export default function Details({
   patientData,
-  clinicData,
   className = '',
-  activeTab = 'history',
+  activeTab = 'medic_data',
   activeSubTab = 'perio',
   showSubTab,
   onSubTabChange,
@@ -135,9 +133,9 @@ export default function Details({
 
   const genderLabel =
     patientData?.gender === 'female'
-      ? 'Жінка'
+      ? msg.get('patient.female')
       : patientData?.gender === 'male'
-        ? 'Чоловік'
+        ? msg.get('patient.female')
         : patientData?.gender || null;
 
   const demographics = [genderLabel, patientData?.age ? `${patientData.age} років` : null]
@@ -166,7 +164,7 @@ export default function Details({
               )}
               <span
                 className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"
-                title="Активний пацієнт"
+                title={msg.get('patient.active_patient')}
               />
             </div>
 
@@ -177,20 +175,20 @@ export default function Details({
                 </h1>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5" />
-                  Активний курс
+                  {msg.get('patient.active_course')}
                 </span>
 
                 <div className="flex items-center gap-1 ml-1">
                   <Link
                     href="/patient/create"
-                    title="Додати пацієнта"
+                    title={msg.get('patient.add_patient')}
                     className="patient-yellow-btns"
                   >
                     <FontAwesomeIcon icon={faUserPlus} className="text-xs" />
                   </Link>
                   <Link
                     href={patientData?.id ? `/patient/edit/${patientData.id}` : '#'}
-                    title="Редагувати картку"
+                    title={msg.get('patient.edit_card')}
                     className="patient-yellow-btns"
                   >
                     <FontAwesomeIcon icon={faPencil} className="text-xs" />
@@ -218,28 +216,23 @@ export default function Details({
                   </>
                 )}
                 <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[11px] font-mono">
-                  МЕДИЧНА КАРТА №{patientData?.medical_card_no || patientData?.id || '—'}
+                  {msg.get('patient.medical_card')} №
+                  {patientData?.medical_card_no || patientData?.id || '—'}
                 </span>
               </div>
             </div>
           </div>
 
           <nav className="tab-view-green">
-            {MAIN_TABS.map((item) => {
+            {MAIN_TABS.map((item: any) => {
               const isActive = currentTab === item.id;
               const href = patientId
                 ? `/patient/view/${patientId}?type=${item.id}`
                 : `?type=${item.id}`;
 
               return (
-                <Link
-                  key={item.id}
-                  href={href}
-                  preserveState
-                  preserveScroll
-                  className={isActive ? 'tab active' : 'tab'}
-                >
-                  {item.label}
+                <Link key={item.id} href={href} className={isActive ? 'tab active' : 'tab'}>
+                  {msg.get(`patient.tab.${item.id}`)}
                 </Link>
               );
             })}
@@ -272,14 +265,14 @@ export default function Details({
                         {item.badge}
                       </span>
                     )}
-                    <span>{item.label}</span>
+                    <span>{msg.get(`patient.tab.${item.id}`)}</span>
                   </button>
                 );
               })}
             </div>
 
             <div className="text-[11px] text-slate-400">
-              Останнє вимірювання:{' '}
+              {msg.get('patient.last_measure')}:{' '}
               <span className="font-medium text-slate-600">
                 {patientData?.last_perio_date || '—'}
               </span>

@@ -429,43 +429,42 @@ class PatientController extends Controller
             if (!$request->user()->canClinic('patient-edit')) {
                 return Inertia::render('Customer/List', ['error' => 'Insufficient permissions']);
             }
-
             // 1. Якщо створюємо сам Етап лікування (папку)
-            if ($request->type === 'stage') {
-                $stage = new PatientTreatment();
-                $stage->user_id = $request->user_id;
-                $stage->stage_name = $request->stage_name ?: 'Етап лікування (' . date('d.m.Y') . ')';
-                $stage->type = 'stage';
-                $stage->treatment_date = $request->treatment_date ?: date('Y-m-d');
-                $stage->diagnosis = '';
-                $stage->save();
-
-                return Redirect::back();
-            }
+//            if ($request->type === 'stage') {
+//                $stage = new PatientTreatment();
+//                $stage->user_id = $request->user_id;
+//                $stage->stage_name = $request->stage_name ?: 'Етап лікування (' . date('d.m.Y') . ')';
+//                $stage->type = 'stage';
+//                $stage->treatment_date = $request->treatment_date ?: date('Y-m-d');
+//                $stage->diagnosis = '';
+//                $stage->save();
+//
+//                return Redirect::back();
+//            }
 
             // 2. Визначаємо, до якого етапу прикріпити документ (formula / perio / psr)
-            $stageId = $request->stage_id;
+//            $stageId = $request->stage_id;
 
             // Якщо лікар ввів назву нового етапу і одразу натиснув "+ Періо карта" — створюємо цей етап автоматично
-            if (!$stageId && $request->filled('stage_name')) {
-                $newStage = new PatientTreatment();
-                $newStage->user_id = $request->user_id;
-                $newStage->stage_name = $request->stage_name;
-                $newStage->type = 'stage';
-                $newStage->treatment_date = date('Y-m-d');
-                $newStage->diagnosis = '';
-                $newStage->save();
-
-                $stageId = $newStage->id;
-            }
+//            if (!$stageId && $request->filled('stage_name')) {
+//                $newStage = new PatientTreatment();
+//                $newStage->user_id = $request->user_id;
+//                $newStage->stage_name = $request->stage_name;
+//                $newStage->type = 'stage';
+//                $newStage->treatment_date = date('Y-m-d');
+//                $newStage->diagnosis = '';
+//                $newStage->save();
+//
+//                $stageId = $newStage->id;
+//            }
 
             // Якщо нічого не вводили — беремо останній створений етап пацієнта (якщо він є)
-            if (!$stageId) {
-                $stageId = PatientTreatment::where('user_id', $request->user_id)
-                    ->where('type', 'stage')
-                    ->latest('id')
-                    ->value('id');
-            }
+//            if (!$stageId) {
+//                $stageId = PatientTreatment::where('user_id', $request->user_id)
+//                    ->where('type', 'stage')
+//                    ->latest('id')
+//                    ->value('id');
+//            }
 
             // 3. Створюємо сам документ (formula / perio / psr)
             $defaultTitles = [
@@ -473,11 +472,10 @@ class PatientController extends Controller
                 'perio'   => 'Періо карта',
                 'psr'     => 'Пародонтальний скринінг-тест',
             ];
-
             $patientTreatment = new PatientTreatment();
-            $patientTreatment->user_id = $request->user_id;
-            $patientTreatment->stage_id = $stageId;
-            $patientTreatment->stage_name = $defaultTitles[$request->type] ?? 'Запис';
+            $patientTreatment->patient_id = $request->user_id;
+//            $patientTreatment->stage_id = $stageId;
+//            $patientTreatment->stage_name = $defaultTitles[$request->type] ?? 'Запис';
             $patientTreatment->type = $request->type;
             if ($request->type === 'formula') {
                 $patientTreatment->formula_type = 'adult';
@@ -485,7 +483,6 @@ class PatientController extends Controller
             $patientTreatment->treatment_date = $request->treatment_date ?: date('Y-m-d');
             $patientTreatment->diagnosis = $request->diagnosis ?: '';
             $patientTreatment->save();
-
             if ($request->type === 'formula') {
                 return Redirect::route('patient.formula.edit', ['id' => $patientTreatment->id]);
             } elseif ($request->type === 'perio') {
@@ -605,13 +602,11 @@ class PatientController extends Controller
             $arrCat = array();
             $tree = $this->generateCategories($categories, $arrCat, 0);
             $type = $request->get('type');
-
             //get acts
             // $actData = ActDocument::where('patient_id', '=', $id)->orderBy('doc_date', 'DESC')->get();
             $actData = [];
             $visitsData = Scheduler::where('patient_id', $patientData->id)->get();
             $documentsData = PatientDocument::where('patient_id', $patientData->id)->get();
-
             $quickActData = '';
             if ($scheduleId) {
                 $quickActData = Scheduler::where('id', '=', $scheduleId)->get();
@@ -638,7 +633,7 @@ class PatientController extends Controller
                 return Inertia::render('Patient/View', [
                     'patientData' => $patientData,
                     'typeTab' => $type,
-                    'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
+                    'treatmentData' => PatientTreatment::where('patient_id', '=', $id)->orderBy('created_at', 'desc')->get(),
                     'visitsData' => $visitsData,
                     'clinicData' => $clinicData,
                     'quickActData' => [],
@@ -671,10 +666,24 @@ class PatientController extends Controller
                 ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
 
+            $patientTreatment = PatientTreatment::where('patient_id', '=', $id)->orderBy('created_at', 'ASC')->get();
+            $patientDocuments = PatientDocument::where('patient_id', '=', $id)->get();
+
+            $categories = PriceCategory::get();
+            $arrServices = [];
+            foreach ($categories as $category) {
+                $arrServices[$category->id] = Pricing::where('category_id', '=', $category->id)->orderBy('name')->get();
+            }
+            $arrCat = array();
+            $tree = $this->generateCategories($categories, $arrCat, 0);
+
             return Inertia::render('Patient/TreatmentPlan/Create', [
                 'patientData' => $patientData,
-                // 'treatmentData' => PatientTreatment::where('user_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-                'treatmentData' => [],
+                'treatmentData' => $patientTreatment,
+                'documentsData' => $patientDocuments,
+                'priceCategories' => $tree,
+                'priceServices' => $tree,
+                'services' => $arrServices,
                 'clinicData' => $clinicData,
             ]);
         });
@@ -701,9 +710,8 @@ class PatientController extends Controller
     public function formulaEdit(Request $request, $id) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-//            $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
             $patientData = Patient::withUser()
-                ->where('patients.id', '=', $patientTreatment->user_id)
+                ->where('patients.id', '=', $patientTreatment->patient_id)
                 ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
                 ->leftJoin('phones', function ($join) {
                     $join->on('phones.patient_id', '=', 'patients.id')
@@ -711,7 +719,6 @@ class PatientController extends Controller
                 })
                 ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
-//            dd($patientData);exit;
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
             return Inertia::render('Patient/EditFormula', [
@@ -763,7 +770,7 @@ class PatientController extends Controller
                 $patientTreatment->formula_type = $requestData['teethType'];
                 $patientTreatment->save();
 
-                return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
+                return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'medic_data']);
             }
         });
     }
@@ -780,7 +787,7 @@ class PatientController extends Controller
                 $patientTreatment->chartsData = json_encode($requestData['chartsData']);
                 $patientTreatment->save();
 
-                return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'history']);
+                return redirect()->route('patient.view', ['id' => $requestData['patientData']['id'], 'type' => 'medic_data']);
             }
         });
     }
@@ -809,13 +816,23 @@ class PatientController extends Controller
     public function perioEdit(Request $request, $id) {
         return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
             $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-            $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
+            $patientData = Patient::withUser()
+                ->where('patients.id', '=', $patientTreatment->patient_id)
+                ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
+                ->leftJoin('phones', function ($join) {
+                    $join->on('phones.patient_id', '=', 'patients.id')
+                        ->where('phones.is_primary', '=', true);
+                })
+                ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
+                ->first();
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
             return Inertia::render('Patient/EditPerio', [
                 'patientData' => $patientData,
                 'clinicData' => $clinicData,
                 'treatmentData' => $patientTreatment,
+                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
             ]);
         });
     }
@@ -858,7 +875,7 @@ class PatientController extends Controller
      */
     public function psrEdit(Request $request, $id) {
         $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->user_id)->first();
+        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->patient_id)->first();
         $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
         return Inertia::render('Patient/EditPSR', [

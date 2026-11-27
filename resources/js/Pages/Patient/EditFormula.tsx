@@ -47,7 +47,8 @@ import {
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import DetailsNew from './Partials/DetailsNew';
 import { emptyFormula } from '@/Constants';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faPrint } from '@fortawesome/free-solid-svg-icons';
+import { format } from 'date-fns';
 
 export default function EditFormula({
   patientData,
@@ -287,28 +288,6 @@ export default function EditFormula({
     });
   };
 
-  // const handleSwitchToAdultTeeth = () => {
-  //   dispatch(setTeethType('adult'));
-  //   const primaryToAdultPairs: [number, number][] = [
-  //     [51, 11],
-  //     [61, 21],
-  //     [52, 12],
-  //     [53, 13],
-  //     [54, 14],
-  //     [55, 15],
-  //   ];
-  //
-  //   primaryToAdultPairs.forEach(([primary, adult]) => {
-  //     if (!tData?.[`tooth${primary}`]?.show) {
-  //       const adultEl = document.getElementById(`TH-${adult}`);
-  //       const primaryEl = document.getElementById(`TH-${primary}`);
-  //
-  //       if (adultEl) adultEl.style.visibility = 'inherit';
-  //       if (primaryEl) primaryEl.style.visibility = 'hidden';
-  //     }
-  //   });
-  // };
-
   const toggleGroup = (key: string) => {
     setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -325,39 +304,7 @@ export default function EditFormula({
               discountValue={discountValue}
               className={''}
             />
-            <nav className="bg-white border border-slate-200 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-sm">
-              <div className="flex items-center gap-3 ml-auto">
-                <span className="text-xs text-slate-400 hidden xl:inline-block">
-                  Останній запис:{' '}
-                  <strong className="text-slate-600 font-medium">16.11.26, 16:40</strong> (лікар
-                  Корогод В. Л.)
-                </span>
-                <div className="h-4 w-px bg-slate-200 hidden xl:block"></div>
-                <button className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all shadow-sm">
-                  <i className="ph ph-printer text-base"></i>
-                  <span>{msg.get('patient.print')}</span>
-                </button>
-                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 border border-teal-700 shadow-sm transition-all">
-                  <i className="ph-bold ph-floppy-disk text-base"></i>
-                  <span>{msg.get('patient.save')}</span>
-                </button>
-              </div>
-            </nav>
             <div className="mt-4">
-              {/*<div className="inline w-full">*/}
-              {/*  <div className="patient-actions pb-4 text-right">*/}
-              {/*    <button className="action-chip">*/}
-              {/*      <FontAwesomeIcon icon={faPrint} />*/}
-              {/*      <span>{msg.get('patient.print')}</span>*/}
-              {/*    </button>*/}
-
-              {/*    <button className="action-chip save">*/}
-              {/*      <FontAwesomeIcon icon={faFloppyDisk} />*/}
-              {/*      <span>{msg.get('patient.save')}</span>*/}
-              {/*    </button>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-              {/*<div className="clearfix" />*/}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 items-start">
                 <section className="lg:col-span-7 xl:col-span-8 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
                   <div className="flex items-center gap-2">
@@ -366,6 +313,11 @@ export default function EditFormula({
                     </span>
                     <span className="bg-slate-100 text-slate-600 text-[11px] font-medium px-2 py-0.5 rounded-full">
                       FDI 2-digit System
+                    </span>
+                    <span className="ml-auto">
+                      <strong className="text-slate-600 font-medium">
+                        {format(new Date(treatmentData.updated_at), 'dd.MM.yyyy HH:mm')}
+                      </strong>
                     </span>
                   </div>
 
@@ -409,54 +361,6 @@ export default function EditFormula({
                         </div>
                       </div>
                       <div className="diagnosis-block mt-4">
-                        {/*<div className="diagnosis-filter">*/}
-                        {/*  <div className="diagnosis-tabs">*/}
-                        {/*    <button*/}
-                        {/*      className={`diagnosis-tab all ${activeBlock === 'teeth_type' ? 'active' : ''}`}*/}
-                        {/*      onClick={() => showBlock('teeth_type')}*/}
-                        {/*      type="button"*/}
-                        {/*    >*/}
-                        {/*      <FontAwesomeIcon icon={faTooth} />*/}
-                        {/*      <span>Тип зуба</span>*/}
-                        {/*    </button>*/}
-
-                        {/*    <button*/}
-                        {/*      className={`diagnosis-tab injuries ${activeBlock === 'injuries' ? 'active' : ''}`}*/}
-                        {/*      onClick={() => showBlock('injuries')}*/}
-                        {/*      type="button"*/}
-                        {/*    >*/}
-                        {/*      <FontAwesomeIcon icon={faTriangleExclamation} color={'#f59e0b'} />*/}
-                        {/*      <span>Ураження</span>*/}
-                        {/*    </button>*/}
-
-                        {/*    <button*/}
-                        {/*      className={`diagnosis-tab endo ${activeBlock === 'endo' ? 'active' : ''}`}*/}
-                        {/*      onClick={() => showBlock('endo')}*/}
-                        {/*      type="button"*/}
-                        {/*    >*/}
-                        {/*      <FontAwesomeIcon icon={faSyringe} />*/}
-                        {/*      <span>Endo</span>*/}
-                        {/*    </button>*/}
-
-                        {/*    <button*/}
-                        {/*      className={`diagnosis-tab constructs ${activeBlock === 'constructs' ? 'active' : ''}`}*/}
-                        {/*      onClick={() => showBlock('constructs')}*/}
-                        {/*      type="button"*/}
-                        {/*    >*/}
-                        {/*      <FontAwesomeIcon icon={faCrown} />*/}
-                        {/*      <span>Конструкції</span>*/}
-                        {/*    </button>*/}
-
-                        {/*    <button*/}
-                        {/*      className={`diagnosis-tab parodont ${activeBlock === 'parodont' ? 'active' : ''}`}*/}
-                        {/*      onClick={() => showBlock('parodont')}*/}
-                        {/*      type="button"*/}
-                        {/*    >*/}
-                        {/*      <FontAwesomeIcon icon={faHeartPulse} />*/}
-                        {/*      <span>Пародонт</span>*/}
-                        {/*    </button>*/}
-                        {/*  </div>*/}
-                        {/*</div>*/}
                         <div className="diagnosis-groups">
                           <div className={`diagnosis-group ${openGroups.teeth_type ? 'open' : ''}`}>
                             <button
@@ -522,43 +426,6 @@ export default function EditFormula({
                                         {msgFormula.get('formula.milk')}
                                       </button>
                                     </div>
-                                    {/*<span*/}
-                                    {/*  className={`diagnoze-title flex-initial cursor-pointer ${teethType === 'adult' ? 'active' : ''}`}*/}
-                                    {/*  onClick={() => {*/}
-                                    {/*    dispatch(setTeethType('adult'));*/}
-
-                                    {/*    const primaryToAdultPairs: [number, number][] = [*/}
-                                    {/*      [51, 11],*/}
-                                    {/*      [61, 21],*/}
-                                    {/*      [52, 12],*/}
-                                    {/*      [53, 13],*/}
-                                    {/*      [54, 14],*/}
-                                    {/*      [55, 15],*/}
-                                    {/*    ];*/}
-
-                                    {/*    primaryToAdultPairs.forEach(([primary, adult]) => {*/}
-                                    {/*      if (!tData?.[`tooth${primary}`]?.show) {*/}
-                                    {/*        const adultEl = document.getElementById(`TH-${adult}`);*/}
-                                    {/*        const primaryEl = document.getElementById(*/}
-                                    {/*          `TH-${primary}`*/}
-                                    {/*        );*/}
-
-                                    {/*        if (adultEl) adultEl.style.visibility = 'inherit';*/}
-                                    {/*        if (primaryEl) primaryEl.style.visibility = 'hidden';*/}
-                                    {/*      }*/}
-                                    {/*    });*/}
-                                    {/*  }}*/}
-                                    {/*>*/}
-                                    {/*  {msgFormula.get('formula.stable')}*/}
-                                    {/*</span>*/}
-                                    {/*<span*/}
-                                    {/*  className={`diagnoze-title flex-initial cursor-pointer ml-4 ${teethType !== 'adult' ? 'active' : ''}`}*/}
-                                    {/*  onClick={() => {*/}
-                                    {/*    dispatch(setTeethType('child'));*/}
-                                    {/*  }}*/}
-                                    {/*>*/}
-                                    {/*  {msgFormula.get('formula.milk')}*/}
-                                    {/*</span>*/}
                                   </div>
                                 </li>
                                 <div className={`clearfix`} />
@@ -608,62 +475,6 @@ export default function EditFormula({
                                     </button>
                                   </div>
                                 </li>
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span*/}
-                                {/*    className={`diagnoze-title`}*/}
-                                {/*    onClick={() => {*/}
-                                {/*      // нажали показать все и вибран тип постоянние*/}
-                                {/*      showAllTeeth();*/}
-                                {/*    }}*/}
-                                {/*  >*/}
-                                {/*    {msgFormula.get('formula.allteeth')}*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span*/}
-                                {/*    className={`diagnoze-title ${diagnozis === 'absent' ? 'active' : ''}`}*/}
-                                {/*    onClick={() => {*/}
-                                {/*      dispatch(*/}
-                                {/*        setDiagnosis(diagnozis === 'absent' ? '' : 'absent')*/}
-                                {/*      );*/}
-                                {/*      dispatch(setSubDiagnosis(''));*/}
-                                {/*    }}*/}
-                                {/*  >*/}
-                                {/*    {msgFormula.get('formula.absent.tooth')}*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span*/}
-                                {/*    className={`diagnoze-title flex-initial cursor-pointer`}*/}
-                                {/*    onClick={() => console.log(1)}*/}
-                                {/*  >*/}
-                                {/*    {msgFormula.get('formula.absent.top.teeth')}*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span className={`diagnoze-title flex-initial cursor-pointer`}>*/}
-                                {/*    {msgFormula.get('formula.absent.bottom.teeth')}*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span*/}
-                                {/*    className={`diagnoze-title flex-initial cursor-pointer`}*/}
-                                {/*    onClick={() => console.log(1)}*/}
-                                {/*  >*/}
-                                {/*    {msgFormula.get('formula.absent.all')}*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
-                                {/*<li className={'w-full'}>*/}
-                                {/*  <span*/}
-                                {/*    className={`diagnoze-title ${diagnozis === 'apex' ? 'active' : ''}`}*/}
-                                {/*    onClick={() => {*/}
-                                {/*      dispatch(setSubDiagnosis(''));*/}
-                                {/*      dispatch(setDiagnosis(diagnozis === 'apex' ? '' : 'apex'));*/}
-                                {/*    }}*/}
-                                {/*  >*/}
-                                {/*    {msgFormula.get('formula.apex')}!!*/}
-                                {/*  </span>*/}
-                                {/*</li>*/}
                               </ul>
                             </div>
                           </div>
@@ -2093,7 +1904,9 @@ export default function EditFormula({
                                   </div>
                                 </li>
                                 <li style={{ clear: 'both' }} />
-                                <li className={`dia-row ${diagnozis === 'no_inflammatory_process' ? 'active' : ''}`}>
+                                <li
+                                  className={`dia-row ${diagnozis === 'no_inflammatory_process' ? 'active' : ''}`}
+                                >
                                   <span
                                     onClick={() => {
                                       dispatch(setDiagnosis('no_inflammatory_process'));
@@ -2131,13 +1944,10 @@ export default function EditFormula({
                         </div>
                       </div>
                     </div>
-
                     <div className="clearfix w-full"></div>
-
                   </div>
                 </aside>
                 <div className="clearfix" />
-
               </div>
               <div className="bg-white rounded-xl p-4 shadow-md border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-40">
                 <Link
@@ -2147,9 +1957,15 @@ export default function EditFormula({
                 >
                   {msg.get('patient.back')}
                 </Link>
-                <PrimaryButton onClick={(e) => submit(e)}>
-                  {msg.get('patient.save')}
-                </PrimaryButton>
+                <div>
+                  <button className="btn-back">
+                    <FontAwesomeIcon icon={faPrint} className="text-xs mr-2" />
+                    <span>{msg.get('patient.print')}</span>
+                  </button>
+                  <PrimaryButton onClick={(e) => submit(e)}>
+                    {msg.get('patient.save')}
+                  </PrimaryButton>
+                </div>
               </div>
             </div>
           </div>

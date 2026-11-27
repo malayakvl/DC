@@ -6,8 +6,6 @@ import lngPatient from '../../Lang/Patient/translation';
 import { useSelector, useDispatch } from 'react-redux';
 import { appLangSelector } from '../../Redux/Layout/selectors';
 import { Link } from '@inertiajs/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk, faPencil, faPrint, faUserDoctor } from '@fortawesome/free-solid-svg-icons';
 import Perio from './Perio/index';
 import {
   chartBarDown2Selector,
@@ -32,7 +30,6 @@ import {
   getPerioZ4838VDataSelector,
   perioDiagnozisSelector,
 } from '../../Redux/Formula/selectors';
-import Details from './Partials/Details';
 import PrimaryButton from '../../Components/Form/PrimaryButton';
 import {
   setClearPerio,
@@ -46,20 +43,33 @@ import {
   setPerioZ4838VestData,
   setPerioZ4838OralData,
 } from '../../Redux/Formula';
+import DetailsNew from '@/Pages/Patient/Partials/DetailsNew';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPrint } from '@fortawesome/free-solid-svg-icons';
+import { format } from 'date-fns';
+import lngFormula from '@/Lang/Formula/translation';
+
 
 export default function PatientPerioIndex({
   patientData,
   treatmentData,
   clinicData,
+  discountStatus,
+  discountValue,
 }: {
   patientData: any;
   treatmentData: any;
   clinicData: any;
+  discountStatus: any;
+  discountValue: any;
 }) {
   let tDia, tValues;
-
-  const [tab] = useState('history');
   const appLang: string = useSelector(appLangSelector);
+  const msgFormula = new Lang({
+    messages: lngFormula,
+    locale: appLang,
+  });
+
   const teethDiagnozis: any = useSelector(perioDiagnozisSelector);
   const yasen1828VestData: any = useSelector(getPerioYK1828VDataSelector);
   const yasen1828OralData: any = useSelector(getPerioYK1828ODataSelector);
@@ -166,58 +176,28 @@ export default function PatientPerioIndex({
       <div className="py-0">
         <div>
           <div className="p-4 sm:p-4 mb-8 content-data bg-content">
-            <Details patientData={patientData} clinicData={clinicData} className={''} />
-
+            <DetailsNew
+              patientData={patientData}
+              discountStatus={discountStatus}
+              discountValue={discountValue}
+              className={''}
+            />
             <div className="mt-2">
-              <div className="inline w-full">
-                <h3 className="text-left inline-block w-[80%]">{treatmentData.stage_name}</h3>
-                <ul className="action-patient-icon inline-block w-[20%] text-right">
-                  <li>
-                    <Link
-                      href={`/patient/edit/${patientData.id}`}
-                      title="Редагувати картку"
-                      className="patient-yellow-btns"
-                    >
-                      <FontAwesomeIcon
-                        icon={faUserDoctor}
-                        className="text-xs"
-                        style={{ color: '#dd841d' }}
-                      />
-                    </Link>
-                  </li>
-                  {/*<li>*/}
-                  {/*  <Link href={`patient/edit/`} className={'patient-yellow-list-btns'}>*/}
-                  {/*    <FontAwesomeIcon icon={faUserDoctor} className="mr-5" color={'#dd841d'} />*/}
-                  {/*  </Link>*/}
-                  {/*</li>*/}
-                  <li>
-                    <Link href={`patient/edit/`} className="patient-yellow-btns ml-2">
-                      <FontAwesomeIcon
-                        icon={faPrint}
-                        className="text-xs"
-                        style={{ color: '#dd841d' }}
-                      />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href={`patient/edit/`} className="patient-yellow-btns ml-2">
-                      <FontAwesomeIcon
-                        icon={faFloppyDisk}
-                        className="text-xs"
-                        style={{ color: '#dd841d' }}
-                      />
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="clearfix" />
-              <div className="flex w-full patient-content-border">
-                {/*<Perio editPerio={!!treatmentData.perioValues} />*/}
+              <div className="flex w-full lg:col-span-7 xl:col-span-8 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between mt-4 mb-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="font-bold text-slate-900 text-sm tracking-tight">
+                    {msgFormula.get('formula.perio_title')}
+                  </span>
+                  <span className="ml-auto">
+                    <strong className="text-slate-600 font-medium">
+                      {format(new Date(treatmentData.updated_at), 'dd.MM.yyyy HH:mm')}
+                    </strong>
+                  </span>
+                </div>
                 <Perio />
-
                 <div className="clearfix" />
               </div>
-              <div className="mt-[20px] mb-[30px] float-right relative z-10">
+              <div className="bg-white rounded-xl p-4 shadow-md border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-40">
                 <Link
                   className="btn-back"
                   title={msg.get('patient.back')}
@@ -225,7 +205,15 @@ export default function PatientPerioIndex({
                 >
                   {msg.get('patient.back')}
                 </Link>
-                <PrimaryButton onClick={(e) => submit(e)}>{msg.get('patient.save')}</PrimaryButton>
+                <div>
+                  <button className="btn-back">
+                    <FontAwesomeIcon icon={faPrint} className="text-xs mr-2" />
+                    <span>{msg.get('patient.print')}</span>
+                  </button>
+                  <PrimaryButton onClick={(e) => submit(e)}>
+                    {msg.get('patient.save')}
+                  </PrimaryButton>
+                </div>
               </div>
               <div className="clearfix" style={{ marginBottom: '40px' }}></div>
             </div>

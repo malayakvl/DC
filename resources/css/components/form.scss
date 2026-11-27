@@ -686,3 +686,11 @@ label.float-label {
 .invoice-tip.selected {
     @apply px-3 py-1 rounded-full bg-emerald-600 text-white  text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5;
 }
+.greed-popup-tooth {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+.treatment-etap-win {
+    ax-height: 550px;
+    height: 550px;
+    overflow-y: scroll;
+}

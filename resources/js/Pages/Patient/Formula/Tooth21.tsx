@@ -246,10 +246,7 @@ export default function Tooth21() {
 
   return (
     <>
-      <g
-        id="21"
-        className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}
-      >
+      <g id="21" className={`tooth-number-active ${teethType === 'child' ? 'hide-number' : ''}`}>
         <text
           transform="matrix(1 0 0 1 1076.7275 716.1968)"
           className={`st3 st4 st5 ${selectedTooth === 21 ? 'num-active' : ''}`}
@@ -325,9 +322,7 @@ export default function Tooth21() {
             <g
               style={{
                 visibility:
-                  !tooth21Diagnozis.culttab &&
-                  !tooth21Diagnozis.implant &&
-                  !tooth21Diagnozis.shaper
+                  !tooth21Diagnozis.culttab && !tooth21Diagnozis.implant && !tooth21Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -343,9 +338,7 @@ export default function Tooth21() {
             <g
               style={{
                 visibility:
-                  tooth21Diagnozis?.apex || tooth21Diagnozis.change_color
-                    ? 'inherit'
-                    : 'hidden',
+                  tooth21Diagnozis?.apex || tooth21Diagnozis.change_color ? 'inherit' : 'hidden',
               }}
             >
               <path
@@ -357,10 +350,7 @@ export default function Tooth21() {
               />
             </g>
           </g>
-          <g
-            className="pulp"
-            style={{ visibility: tooth21Diagnozis.apex ? 'inherit' : 'hidden' }}
-          >
+          <g className="pulp" style={{ visibility: tooth21Diagnozis.apex ? 'inherit' : 'hidden' }}>
             <g
               className="pulpitis-pfilling"
               style={{
@@ -378,9 +368,7 @@ export default function Tooth21() {
           <g
             style={{
               visibility:
-                tooth21Diagnozis.implant || tooth21Diagnozis.shaper
-                  ? 'inherit'
-                  : 'hidden',
+                tooth21Diagnozis.implant || tooth21Diagnozis.shaper ? 'inherit' : 'hidden',
             }}
           >
             <circle className="st48" cx="1099.5" cy="604.5" r="23.5" />
@@ -419,10 +407,7 @@ export default function Tooth21() {
             </g>
           </g>
           {/* SHAPER */}
-          <g
-            className="shaper hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="shaper hEmpty hIntact hRoot" style={{ visibility: 'hidden', opacity: 0 }}>
             <circle
               className="st44"
               r="25.535"
@@ -449,11 +434,7 @@ export default function Tooth21() {
               className="st47"
               d="M1126.74 598.243C1128.17 592.764 1123.45 588.891 1117.15 587.286C1110.49 585.585 1102.84 585.963 1095.18 586.246C1088.81 586.53 1082.44 586.908 1077.28 589.269C1074.49 590.592 1072.2 592.386 1071.34 595.22C1069.77 600.321 1073.92 604.855 1077.64 608.917C1079.36 610.806 1081.01 612.79 1082.44 614.963C1084.94 618.836 1086.66 623.559 1090.45 626.77C1092.74 628.66 1095.54 629.888 1098.61 629.982C1102.19 630.171 1105.7 628.849 1108.42 626.582C1112.43 623.275 1114.36 618.552 1115.93 614.018C1116.87 611.373 1117.72 608.728 1119.59 606.461C1121.88 603.722 1125.81 601.833 1126.74 598.243Z"
             ></path>
-            <circle
-              className="st45"
-              r="13"
-              transform="matrix(-1 0 0 1 1100 605)"
-            />
+            <circle className="st45" r="13" transform="matrix(-1 0 0 1 1100 605)" />
           </g>
           {/* PIN */}
           <g
@@ -683,8 +664,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_right &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_right && !tooth21Diagnozis.seal_top) ||
                     (!tooth21Diagnozis.seal_right && tooth21Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -697,8 +677,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_bottom &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_bottom && !tooth21Diagnozis.seal_top) ||
                     (!tooth21Diagnozis.seal_bottom &&
                       !tooth21Diagnozis.seal_center &&
                       tooth21Diagnozis.seal_top) ||
@@ -716,8 +695,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_left &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_left && !tooth21Diagnozis.seal_top) ||
                     (!tooth21Diagnozis.seal_left && tooth21Diagnozis.seal_top)
                       ? 5
                       : 0,
@@ -729,10 +707,8 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_left &&
-                      !tooth21Diagnozis.seal_bottom) ||
-                    (!tooth21Diagnozis.seal_left &&
-                      tooth21Diagnozis.seal_bottom)
+                    (tooth21Diagnozis.seal_left && !tooth21Diagnozis.seal_bottom) ||
+                    (!tooth21Diagnozis.seal_left && tooth21Diagnozis.seal_bottom)
                       ? 5
                       : 0,
                 }}
@@ -814,9 +790,7 @@ export default function Tooth21() {
               id="dentin_v_21"
               style={{
                 visibility:
-                  !tooth21Diagnozis.implant &&
-                  !tooth21Diagnozis.apex &&
-                  !tooth21Diagnozis.shaper
+                  !tooth21Diagnozis.implant && !tooth21Diagnozis.apex && !tooth21Diagnozis.shaper
                     ? 'inherit'
                     : 'hidden',
               }}
@@ -964,10 +938,7 @@ export default function Tooth21() {
             />
           </g>
           {/* ФОРМУВАЧ */}
-          <g
-            className="shaper hEmpty hIntact hRoot"
-            style={{ visibility: 'hidden', opacity: 0 }}
-          >
+          <g className="shaper hEmpty hIntact hRoot" style={{ visibility: 'hidden', opacity: 0 }}>
             <path
               className="st44"
               d="M1074.36 433.822C1073.78 436.197 1075.44 438.538 1077.88 438.764L1119.15 442.601C1121.59 442.827 1123.65 440.834 1123.52 438.393L1121.27 398.596C1121.16 396.614 1119.61 395.013 1117.63 394.837L1088.14 392.209C1086.17 392.033 1084.37 393.318 1083.9 395.233L1074.36 433.822Z"
@@ -977,8 +948,10 @@ export default function Tooth21() {
           <g
             className="implant hEmpty hIntact hRoot"
             style={{
-              visibility: tooth21Diagnozis.abutment ? 'inherit' : 'hidden',
-              opacity: tooth21Diagnozis.abutment ? 1 : 0,
+              visibility:
+                tooth21Diagnozis.abutment || tooth21Diagnozis.implant || tooth21Diagnozis.shaper
+                  ? 'inherit'
+                  : 'hidden',
             }}
           >
             <path
@@ -986,41 +959,11 @@ export default function Tooth21() {
               d="M1079.1,395.2l46.5,3.6c1.7-24.7,2.9-49.4,3.5-74.1c0.6-24,0.6-47.9,0.1-71.8c-3.4-4.6-8.5-7.5-14.1-8
                                 c-5.9-0.5-11.9,1.7-16.7,6.1c-3.9,24.8-7.5,49.7-10.8,74.6C1084.6,348.7,1081.8,371.9,1079.1,395.2z"
             />
-            <line
-              className="st19"
-              x1="1076.7"
-              y1="374.6"
-              x2="1130.2"
-              y2="385.7"
-            />
-            <line
-              className="st19"
-              x1="1078.9"
-              y1="346.4"
-              x2="1132.4"
-              y2="357.4"
-            />
-            <line
-              className="st19"
-              x1="1082.2"
-              y1="318.1"
-              x2="1135.6"
-              y2="329.1"
-            />
-            <line
-              className="st19"
-              x1="1084.3"
-              y1="289.8"
-              x2="1137.8"
-              y2="300.8"
-            />
-            <line
-              className="st19"
-              x1="1086.4"
-              y1="261.5"
-              x2="1139.9"
-              y2="272.6"
-            />
+            <line className="st19" x1="1076.7" y1="374.6" x2="1130.2" y2="385.7" />
+            <line className="st19" x1="1078.9" y1="346.4" x2="1132.4" y2="357.4" />
+            <line className="st19" x1="1082.2" y1="318.1" x2="1135.6" y2="329.1" />
+            <line className="st19" x1="1084.3" y1="289.8" x2="1137.8" y2="300.8" />
+            <line className="st19" x1="1086.4" y1="261.5" x2="1139.9" y2="272.6" />
           </g>
           <g
             className="toutline"
@@ -1050,9 +993,7 @@ export default function Tooth21() {
             className="wedge-shaped hRoot hImplant hEmpty"
             style={{
               visibility:
-                !tooth21Diagnozis.culttab && !tooth21Diagnozis.abutment
-                  ? 'inherit'
-                  : 'hidden',
+                !tooth21Diagnozis.culttab && !tooth21Diagnozis.abutment ? 'inherit' : 'hidden',
             }}
           >
             <path
@@ -1218,8 +1159,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_right &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_right && !tooth21Diagnozis.seal_top) ||
                     (!tooth21Diagnozis.seal_right &&
                       tooth21Diagnozis.seal_top &&
                       !tooth21Diagnozis.seal_center) ||
@@ -1236,8 +1176,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_left &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_left && !tooth21Diagnozis.seal_top) ||
                     (!tooth21Diagnozis.seal_left &&
                       tooth21Diagnozis.seal_top &&
                       !tooth21Diagnozis.seal_center) ||
@@ -1254,8 +1193,7 @@ export default function Tooth21() {
                 style={{
                   stroke: 'rgb(81, 79, 72)',
                   strokeWidth:
-                    (tooth21Diagnozis.seal_left &&
-                      !tooth21Diagnozis.seal_top) ||
+                    (tooth21Diagnozis.seal_left && !tooth21Diagnozis.seal_top) ||
                     (tooth21Diagnozis.seal_left &&
                       tooth21Diagnozis.seal_left &&
                       tooth21Diagnozis.seal_center &&
@@ -1268,10 +1206,7 @@ export default function Tooth21() {
               />
             </g>
           </g>
-          <g
-            className="hEmpty hImplant hRoot"
-            style={{ visibility: 'inherit' }}
-          >
+          <g className="hEmpty hImplant hRoot" style={{ visibility: 'inherit' }}>
             <g
               className="vinir"
               style={{

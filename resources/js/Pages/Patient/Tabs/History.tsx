@@ -538,7 +538,7 @@ export default function History({
         >
           <div className="w-full bg-gradient-to-r from-teal-50/60 to-slate-50 border border-teal-200/80 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-xs mt-3 mb-4">
             {/* Ліва частина: Назва нового етапу */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-[280px]">
+            <div className="hidden flex items-center gap-2.5 flex-1 min-w-[280px]">
               <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
               <label
                 className="text-xs font-semibold text-teal-900 shrink-0"
@@ -566,9 +566,9 @@ export default function History({
             </div>
 
             {/* Права частина: Швидке створення карти (в активний або введений етап) */}
-            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-600 font-medium hidden">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-600 font-medium">
               <span className="text-slate-400 hidden sm:inline">
-                {activeStage ? `У етап «${activeStage.stage_name}»:` : 'Створити карту:'}
+                {activeStage ? `У етап «${activeStage.stage_name}»:` : msg.get('patient.add_medical_data')}
               </span>
 
               <button

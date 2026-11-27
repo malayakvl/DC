@@ -229,7 +229,7 @@ export default function List({
                             <Link
                               href={`/patient/plans/${item.id}`}
                               className="actn-btns"
-                              title="Плани лікування"
+                              title={msg.get('patient.tab.plans')}
                             >
                               <span className="material-symbols-outlined text-[18px] block">
                                 assignment
@@ -240,10 +240,10 @@ export default function List({
                             <Link
                               href={`/patient/view/${item.id}`}
                               className="actn-btns"
-                              title="Зубна карта"
+                              title={msg.get('patient.medical_data')}
                             >
                               <span className="material-symbols-outlined text-[18px] block">
-                                dentistry
+                                medical_information
                               </span>
                             </Link>
 
@@ -251,7 +251,7 @@ export default function List({
                             <Link
                               href={`/patient/finances/${item.id}`}
                               className="actn-btns"
-                              title="Фінанси"
+                              title={msg.get('patient.tab.finances')}
                             >
                               <span className="material-symbols-outlined text-[18px] block">
                                 payments
@@ -267,7 +267,7 @@ export default function List({
                                 sessionStorage.setItem('patient_return_url', window.location.href);
                               }}
                               className="actn-btns"
-                              title="Редагувати"
+                              title={msg.get('patient.list.edit')}
                             >
                               <span className="material-symbols-outlined text-[18px] block">
                                 edit
