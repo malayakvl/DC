@@ -1,9 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  faMinus,
-  faStar,
-} from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faStar } from '@fortawesome/free-solid-svg-icons';
 import Tooth48 from './Tooth48';
 import Tooth47 from './Tooth47';
 import Tooth46 from './Tooth46';
@@ -36,18 +33,12 @@ import Tooth15 from './Tooth15';
 import Tooth16 from './Tooth16';
 import Tooth17 from './Tooth17';
 import Tooth18 from './Tooth18';
-//
-import {
-  getPsrDataSelector,
-  getActiveToothNumberSelector,
-} from '../../../Redux/Formula/selectors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { setPsrValues } from '../../../Redux/Formula';
 
-export default function PSR({ psrData }) {
-  const [values, setValues] = useState(psrData.values); // Массив для хранения значений
-  const [stars, setStars] = useState(psrData.stars); // Массив для хранения звездочек
-  const [minuses, setMinuses] = useState(psrData.minuses); // Массив для хранения звездочек
+export default function PSR({ psrData }: { psrData: any }) {
+  const [values] = useState(psrData.length ? psrData.values : []); // Массив для хранения значений
+  const [stars] = useState(psrData.length ?psrData.stars : []); // Массив для хранения звездочек
+  const [minuses] = useState(psrData.length ? psrData.minuses : []); // Массив для хранения звездочек
 
   return (
     <div className="w-full scroll-x">
@@ -80,60 +71,50 @@ export default function PSR({ psrData }) {
         </svg>
       </section>
       <div className="clearfix" />
-      <div
-        className="flex flex-row psr-b-inputs"
-        style={{ margin: '15px 0', height: '32px' }}
-      >
+      <div className="flex flex-row psr-b-inputs" style={{ margin: '15px 0', height: '32px' }}>
         <div
           style={{ maxWidth: '450px', margin: 'auto' }}
           className=" flex flex-row max-w-[650px] pl-[20px]"
         >
           <div className="flex">
-            {
-              [0, 1, 2].map((index) => (
-                <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
-                  <span className={'psr-view-value'}>{values[index]}</span>
-                  <div>
-                    <span className={`c-gray ${minuses[index] === 1 ? 'active' : ''}`}>
-                      <FontAwesomeIcon icon={faMinus} className="mr-3" />
-                    </span>
-                    <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
-                      <FontAwesomeIcon icon={faStar} className="mr-3" />
-                    </span>
-                  </div>
-                  <div className="clearfix" />
+            {[0, 1, 2].map((index) => (
+              <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
+                <span className={'psr-view-value'}>{values[index]}</span>
+                <div>
+                  <span className={`c-gray ${minuses[index] === 1 ? 'active' : ''}`}>
+                    <FontAwesomeIcon icon={faMinus} className="mr-3" />
+                  </span>
+                  <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
+                    <FontAwesomeIcon icon={faStar} className="mr-3" />
+                  </span>
                 </div>
-              ))
-            }
+                <div className="clearfix" />
+              </div>
+            ))}
           </div>
         </div>
       </div>
       <div className="clearfix" />
-      <div
-        className="flex flex-row psr-b-inputs"
-        style={{ margin: '45px 0', height: '32px' }}
-      >
+      <div className="flex flex-row psr-b-inputs" style={{ margin: '45px 0', height: '32px' }}>
         <div
           style={{ maxWidth: '450px', margin: 'auto' }}
           className=" flex flex-row max-w-[650px] pl-[20px]"
         >
           <div className="flex">
-            {
-              [3, 4, 5].map((index) => (
-                <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
-                  <span className={'psr-view-value'}>{values[index]}</span>
-                  <div>
-                    <span className={'c-gray'}>
-                      <FontAwesomeIcon icon={faMinus} className="mr-3" />
-                    </span>
-                    <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
-                      <FontAwesomeIcon icon={faStar} className="mr-3" />
-                    </span>
-                  </div>
-                  <div className="clearfix" />
+            {[3, 4, 5].map((index) => (
+              <div className={`text-center grid mr-[${index != 2 ? 6 : ''}0px] mt-[10px]`}>
+                <span className={'psr-view-value'}>{values[index]}</span>
+                <div>
+                  <span className={'c-gray'}>
+                    <FontAwesomeIcon icon={faMinus} className="mr-3" />
+                  </span>
+                  <span className={`c-gray ${stars[index] === 1 ? 'active' : ''}`}>
+                    <FontAwesomeIcon icon={faStar} className="mr-3" />
+                  </span>
                 </div>
-              ))
-            }
+                <div className="clearfix" />
+              </div>
+            ))}
           </div>
         </div>
       </div>

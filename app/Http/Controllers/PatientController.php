@@ -467,15 +467,8 @@ class PatientController extends Controller
 //            }
 
             // 3. Створюємо сам документ (formula / perio / psr)
-            $defaultTitles = [
-                'formula' => 'Зубна формула',
-                'perio'   => 'Періо карта',
-                'psr'     => 'Пародонтальний скринінг-тест',
-            ];
             $patientTreatment = new PatientTreatment();
             $patientTreatment->patient_id = $request->user_id;
-//            $patientTreatment->stage_id = $stageId;
-//            $patientTreatment->stage_name = $defaultTitles[$request->type] ?? 'Запис';
             $patientTreatment->type = $request->type;
             if ($request->type === 'formula') {
                 $patientTreatment->formula_type = 'adult';
@@ -592,8 +585,7 @@ class PatientController extends Controller
                 })
                 ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
-//            dd($patientData->id);exit;
-            
+
             $categories = PriceCategory::get();
             $arrServices = [];
             foreach ($categories as $category) {
@@ -634,7 +626,6 @@ class PatientController extends Controller
                     'patientData' => $patientData,
                     'typeTab' => $type,
                     'treatmentData' => PatientTreatment::where('patient_id', '=', $id)->orderBy('created_at', 'desc')->get(),
-                    'visitsData' => $visitsData,
                     'clinicData' => $clinicData,
                     'quickActData' => [],
                     'currency' => $clinicData->currency->symbol,
@@ -826,7 +817,6 @@ class PatientController extends Controller
                 ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
                 ->first();
             $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
-
             return Inertia::render('Patient/EditPerio', [
                 'patientData' => $patientData,
                 'clinicData' => $clinicData,
@@ -874,15 +864,28 @@ class PatientController extends Controller
      * @return Response
      */
     public function psrEdit(Request $request, $id) {
-        $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
-        $patientData = Patient::withUser()->where('patients.id', '=', $patientTreatment->patient_id)->first();
-        $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
+        return $this->withClinicSchema($request, function($clinicId) use ($request, $id) {
+            $patientTreatment = PatientTreatment::where('id', '=', $id)->first();
+            $patientData = Patient::withUser()
+                ->where('patients.id', '=', $patientTreatment->patient_id)
+                ->leftJoin('patient_discount_statuses', 'patient_discount_statuses.id', '=', 'patients.patient_status_id')
+                ->leftJoin('phones', function ($join) {
+                    $join->on('phones.patient_id', '=', 'patients.id')
+                        ->where('phones.is_primary', '=', true);
+                })
+                ->addSelect('patient_discount_statuses.name as discountStatus', 'phones.phone as primary_phone')
+                ->first();
+            $clinicData = Clinic::where('user_id', '=', $request->user()->id)->first();
 
-        return Inertia::render('Patient/EditPSR', [
-            'patientData' => $patientData,
-            'clinicData' => $clinicData,
-            'treatmentData' => $patientTreatment,
-        ]);
+            return Inertia::render('Patient/EditPSR', [
+                'patientData' => $patientData,
+                'clinicData' => $clinicData,
+                'treatmentData' => $patientTreatment,
+                'discountStatus' => $patientData->discountStatus ? $patientData->discountStatus->name : '',
+                'discountValue' => $patientData->discountStatus ? $patientData->discountStatus->discount : 0,
+
+            ]);
+        });
     }
 
     /**

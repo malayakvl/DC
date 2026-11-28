@@ -49,7 +49,6 @@ import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
 import lngFormula from '@/Lang/Formula/translation';
 
-
 export default function PatientPerioIndex({
   patientData,
   treatmentData,

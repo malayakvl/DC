@@ -516,6 +516,7 @@ class ClinicSchemaService
                 treatment_date DATE NOT NULL,
                 diagnosis VARCHAR(255),
                 formula TEXT,
+                psr TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

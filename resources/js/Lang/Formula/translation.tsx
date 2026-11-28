@@ -116,6 +116,8 @@ const lngPatient = {
     tartar_legend: 'Зубний наліт / Камінь',
     furkaciya_legend: 'Фуркація І-ІІІ ст.',
     clinic_data: 'Медичні дані пацієнта',
+    perio: 'Перио карта',
+    psr: 'Пародонтальний скрининг тест',
   },
 };
 export default lngPatient;

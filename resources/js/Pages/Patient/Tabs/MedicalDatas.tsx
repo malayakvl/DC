@@ -126,15 +126,18 @@ export default function MedicalDatas({
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center space-x-3">
             <h2 className="text-sm font-bold text-slate-800 tracking-tight flex items-center">
-              <span>{msgFormula.get('formula.teeth_formula')}</span>
-              <span className="ml-2 text-[10px] font-semibold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full">
-                FDI 2-digit System
-              </span>
+              {element.type === 'formula' && <span>{msgFormula.get('formula.teeth_formula')}</span>}
+              {element.type === 'perio' && <span>{msgFormula.get('formula.perio')}</span>}
+              {element.type === 'psr' && <span>{msgFormula.get('formula.psr')}</span>}
+              {element.type === 'formula' && (
+                <span className="ml-2 text-[10px] font-semibold text-slate-500 bg-slate-200/80 px-2 py-0.5 rounded-full">
+                  FDI 2-digit System
+                </span>
+              )}
             </h2>
             <div className="text-xs text-slate-400">|</div>
             <div className="text-xs font-medium text-slate-600">
-              {moment.utc(element.created_at).format('DD.MM.YY')} -{' '}
-              {element.stage_name || msgFormula.get('formula.teeth_formula')}
+              {moment.utc(element.created_at).format('DD.MM.YY')}
             </div>
           </div>
           <div className="icon-block actions-block">
